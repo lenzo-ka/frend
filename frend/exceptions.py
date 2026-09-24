@@ -1,4 +1,4 @@
-"""Opt-in access to irn's curated ICU break-exception layer."""
+"""Opt-in access to frend's curated ICU break-exception layer."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ from icukit.exceptions import (
 
 
 def english_break_exceptions() -> LoadedExceptionInventory:
-    """Load, compose, and witness-test irn's curated English layer."""
-    resource = files("irn").joinpath("data/exceptions/en.json")
+    """Load, compose, and witness-test frend's curated English layer."""
+    resource = files("frend").joinpath("data/exceptions/en.json")
     layer = cast(ExceptionInventory, loads(resource.read_text(encoding="utf-8")))
     return compose_inventories([layer])
 

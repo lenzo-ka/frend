@@ -21,7 +21,7 @@ import sys
 from decimal import Decimal
 from pathlib import Path
 
-from irn.type_priors import PriorTable, corpus_classes
+from frend.type_priors import PriorTable, corpus_classes
 
 _REPO = Path(__file__).resolve().parents[1]
 _SCRIPT = _REPO / "tools" / "build_type_priors.py"
@@ -52,7 +52,7 @@ def _load_build_tool():
 def _clean_env() -> dict[str, str]:
     """A subprocess environment with no repo on PYTHONPATH (and no corpus override),
     so the script must put the repo root on sys.path itself."""
-    env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "IRN_TN_CORPUS_DIR")}
+    env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "FREND_TN_CORPUS_DIR")}
     return env
 
 

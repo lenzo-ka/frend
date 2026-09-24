@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from irn.spoken_priors import (
+from frend.spoken_priors import (
     SpokenPriorTable,
     load_spoken_prior_table,
     measurement_sub_key,
@@ -36,7 +36,7 @@ def _load_builder():
 
 
 def test_shipped_table_shape_and_denominators():
-    document = json.loads((_REPO / "irn" / "data" / "spoken_priors.json").read_text())
+    document = json.loads((_REPO / "frend" / "data" / "spoken_priors.json").read_text())
     table = load_spoken_prior_table()
     assert table.kinds == tuple(sorted(document["kinds"]))
     assert document["provenance"]["sub_key_rules"] == {
@@ -70,7 +70,7 @@ def test_shipped_table_shape_and_denominators():
 
 
 def test_shipped_normalization_provenance_pins_contract():
-    document = json.loads((_REPO / "irn" / "data" / "spoken_priors.json").read_text())
+    document = json.loads((_REPO / "frend" / "data" / "spoken_priors.json").read_text())
     assert document["provenance"]["normalization"] == _NORMALIZATION_PROVENANCE
     assert _load_builder().build_document(_FIXTURE)["provenance"]["normalization"] == (
         _NORMALIZATION_PROVENANCE
@@ -181,9 +181,9 @@ def test_builder_keeps_each_alternative_with_its_reading_sub_key(monkeypatch):
         return type("Unit", (), {"verbalized": True, "alternatives": (alternative,)})()
 
     monkeypatch.setattr(
-        "irn.lattice.resolve_lattice", lambda detections, source_text: Lattice(detections[0])
+        "frend.lattice.resolve_lattice", lambda detections, source_text: Lattice(detections[0])
     )
-    monkeypatch.setattr("irn.verbalize.verbalize_edge", fake_verbalize)
+    monkeypatch.setattr("frend.verbalize.verbalize_edge", fake_verbalize)
 
     recognized, alternatives = build._alternatives("x", "fraction", {"fraction": (Detector(),)})
 

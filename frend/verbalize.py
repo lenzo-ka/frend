@@ -14,8 +14,8 @@ import icu
 from icukit import AbbreviationValue, DateTimeFormatter
 from icukit.detectors import DateTimeValue, NumberValue
 
-from irn.lattice import ReadingEdge, ReadingLattice
-from irn.spoken_priors import measurement_sub_key, source_prior
+from frend.lattice import ReadingEdge, ReadingLattice
+from frend.spoken_priors import measurement_sub_key, source_prior
 
 __all__ = [
     "SpokenAlternative",

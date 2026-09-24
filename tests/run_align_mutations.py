@@ -45,21 +45,25 @@ class Mutation:
 
 
 def graph(name, test, before, after):
-    return Mutation(name, TEST + test, "irn/align_graph.py", before, after)
+    return Mutation(name, TEST + test, "frend/align_graph.py", before, after)
 
 
 def normalization(name, before, after):
     return Mutation(
-        name, TEST + "test_normalization_contract_generated", "irn/spoken_priors.py", before, after
+        name,
+        TEST + "test_normalization_contract_generated",
+        "frend/spoken_priors.py",
+        before,
+        after,
     )
 
 
 def export(name, test, before, after):
-    return Mutation(name, EXPORT_TEST + test, "irn/align_export.py", before, after)
+    return Mutation(name, EXPORT_TEST + test, "frend/align_export.py", before, after)
 
 
 def attribution(name, test, before, after):
-    return Mutation(name, ATTRIBUTION_TEST + test, "irn/align_attribution.py", before, after)
+    return Mutation(name, ATTRIBUTION_TEST + test, "frend/align_attribution.py", before, after)
 
 
 MUTATIONS = [
@@ -444,50 +448,50 @@ MUTATIONS = [
     Mutation(
         "Link resolver to alignment",
         TEST + "test_one_best_has_no_alignment_import",
-        "irn/fold_resolve.py",
-        "from irn.shape import shape",
-        "from irn.shape import shape\ndef alignment_dependency():\n"
-        "    from irn import align_graph\n    return align_graph",
+        "frend/fold_resolve.py",
+        "from frend.shape import shape",
+        "from frend.shape import shape\ndef alignment_dependency():\n"
+        "    from frend import align_graph\n    return align_graph",
     ),
     Mutation(
         "Change resolved geometry bytes",
         TEST + "test_one_best_untouched",
-        "irn/fold_resolve.py",
+        "frend/fold_resolve.py",
         "return CoverScore(\n        coverage=",
         "return CoverScore(\n        coverage=1 + ",
     ),
     Mutation(
         "Round exact ranking axis to float",
         TEST + "test_exact_ranking_below_double_resolution",
-        "irn/fold_resolve.py",
+        "frend/fold_resolve.py",
         "supported, strength = True, prior.p",
         "supported, strength = True, Decimal(float(prior.p))",
     ),
     Mutation(
         "Truncate upstream reading carrier",
         TEST + "test_upstream_caps_still_refuse",
-        "irn/lattice.py",
+        "frend/lattice.py",
         "if len(candidates) > reading_cap:",
         "candidates = candidates[:reading_cap]\n    if False:",
     ),
     Mutation(
         "Disable upstream spoken bound",
         TEST + "test_upstream_caps_still_refuse",
-        "irn/lattice.py",
+        "frend/lattice.py",
         "if spoken_total > _COMPOSED_SPOKEN_CAP:",
         "if False:",
     ),
     Mutation(
         "Restore date month-first slice",
         TEST + "test_partial_date_alternatives_are_never_cut",
-        "irn/verbalize.py",
+        "frend/verbalize.py",
         "return month_first",
         "return month_first[:8]",
     ),
     Mutation(
         "Restore date ordering half slices",
         "tests/test_verbalize.py::test_date_alternatives_are_never_cut_to_a_prefix",
-        "irn/verbalize.py",
+        "frend/verbalize.py",
         "return _ranked([*month_first, *day_first])",
         "return _ranked([*month_first[:4], *day_first[:4]])",
     ),
@@ -695,7 +699,7 @@ def _failure_details(cases):
 
 
 def _pytest_result(test, root, timeout):
-    with tempfile.TemporaryDirectory(prefix="irn-align-mutation-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="frend-align-mutation-") as temporary:
         report = Path(temporary) / "pytest.xml"
         try:
             result = subprocess.run(

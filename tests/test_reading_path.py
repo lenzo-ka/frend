@@ -1,4 +1,4 @@
-"""IRN's consumer path profile addresses a real ranked resolution."""
+"""frend's consumer path profile addresses a real ranked resolution."""
 
 from __future__ import annotations
 
@@ -21,8 +21,8 @@ from tiergraph.path import (
     resolve_path,
 )
 
-from irn.fold_resolve import _POS, build_lattice, resolve
-from irn.reading_path import IrnReadingProfile
+from frend.fold_resolve import _POS, build_lattice, resolve
+from frend.reading_path import FrendReadingProfile
 
 DETECTORS = [
     FlexibleDateDetector("en_US"),
@@ -33,7 +33,7 @@ DETECTORS = [
 
 def _profile(text: str = "on 1/3/2026 we paid $1,234.50"):
     detections = detect(text, DETECTORS)
-    return detections, IrnReadingProfile(detections)
+    return detections, FrendReadingProfile(detections)
 
 
 def _refuses(code: PathRefusalCode, operation) -> PathRefusal:
@@ -135,7 +135,7 @@ def test_alternatives_refuse_wrong_owner_and_relation():
 
 def test_empty_detections_addresses_the_sole_empty_reading():
     # No detections: the only reading is the empty cover; p0 still exists.
-    profile = IrnReadingProfile([])
+    profile = FrendReadingProfile([])
     reading = resolve_path(profile.graph, profile, "/reading/0")
     assert isinstance(reading, ResolvedAlternative)
     assert reading.value == ()

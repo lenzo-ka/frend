@@ -7,7 +7,7 @@ of different semantic type (``date:Md`` vs ``number:fraction`` for ``"3/24"``),
 which type does a corpus of written surfaces attest more often for that shape?
 
 The table is built offline from a corpus by ``tools/build_type_priors.py`` and
-vendored as ``irn/data/type_priors.json`` (raw ``shape -> class -> count``). The
+vendored as ``frend/data/type_priors.json`` (raw ``shape -> class -> count``). The
 corpus itself is eval-only and never shipped; only the counts are. Runtime loads
 the counts once and derives ``P(class | shape)`` and the sample size ``n(shape)``
 on demand.
@@ -72,7 +72,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal, Protocol, runtime_checkable
 
-from irn.shape import shape
+from frend.shape import shape
 
 __all__ = [
     "MIN_N",

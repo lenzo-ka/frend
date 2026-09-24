@@ -14,11 +14,11 @@ from icukit.recognize import (
     SingleLetterWordDetector,
 )
 
-import irn
-from irn import ReadingLattice, resolve_lattice
-from irn.fold_resolve import CoverScore, _content_key, resolve
-from irn.type_priors import BlendedPrior, IcuBackfillTable, PriorTable
-from irn.verbalize import verbalize_edge
+import frend
+from frend import ReadingLattice, resolve_lattice
+from frend.fold_resolve import CoverScore, _content_key, resolve
+from frend.type_priors import BlendedPrior, IcuBackfillTable, PriorTable
+from frend.verbalize import verbalize_edge
 
 
 def _det(text: str, start: int, end: int, type_: str, captures=()) -> dict:
@@ -291,8 +291,8 @@ def test_resolve_lattice_contract_names_the_choice_carrier():
 
 def test_the_public_surface_names_the_carrier_and_the_composed_graph():
     names = {"ChoiceLattice", "ChoiceGraph", "resolve_choices", "compose_choices", "route_geometry"}
-    exported = names & set(irn.__all__)
-    bound = {name for name in names if hasattr(irn, name)}
+    exported = names & set(frend.__all__)
+    bound = {name for name in names if hasattr(frend, name)}
     assert exported == bound == names
 
 

@@ -1,6 +1,6 @@
 """Import fallback for the composed projects when they are not installed.
 
-irn composes tiergraph and icukit. When either is already importable this does
+frend composes tiergraph and icukit. When either is already importable this does
 nothing. Otherwise, as a development convenience, fall back to a sibling checkout
 laid out beside this one (``../tiergraph/src``, ``../icukit``) if present.
 """

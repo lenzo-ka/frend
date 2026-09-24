@@ -25,8 +25,8 @@ from icukit.recognize import (
     PluralNumeralDetector,
 )
 
-from irn import compose_choices, resolve, resolve_choices, resolve_lattice
-from irn.verbalize import (
+from frend import compose_choices, resolve, resolve_choices, resolve_lattice
+from frend.verbalize import (
     SpokenAlternative,
     _weekday_name,
     register_curated_alternative,
@@ -125,7 +125,7 @@ def test_one_reading_can_produce_unboundedly_many_spoken_forms():
 
 
 def test_date_alternatives_are_never_cut_to_a_prefix(monkeypatch):
-    import irn.verbalize as verbalize
+    import frend.verbalize as verbalize
 
     real_leaf = verbalize._number_leaf
     extra = tuple(f"synthetic year {index}" for index in range(5))
@@ -187,14 +187,14 @@ def test_curated_supplement_is_additive_and_weighted_form_ranks_first():
 
 
 def test_measured_sources_order_by_share(monkeypatch):
-    from irn.spoken_priors import SourceMeasurement
+    from frend.spoken_priors import SourceMeasurement
 
     shares = {
         "curated:lower": SourceMeasurement(3, Decimal("0.3")),
         "curated:higher": SourceMeasurement(7, Decimal("0.7")),
     }
     monkeypatch.setattr(
-        "irn.verbalize.source_prior", lambda kind, source, sub_key: shares.get(source)
+        "frend.verbalize.source_prior", lambda kind, source, sub_key: shares.get(source)
     )
 
     alternatives = (
@@ -219,7 +219,7 @@ def test_measured_sources_order_by_share(monkeypatch):
 
 
 def test_unmeasured_lexical_form_outranks_unmeasured_icu(monkeypatch):
-    monkeypatch.setattr("irn.verbalize.source_prior", lambda kind, source, sub_key: None)
+    monkeypatch.setattr("frend.verbalize.source_prior", lambda kind, source, sub_key: None)
     supplements = {
         ("number:decimal", "42"): (SpokenAlternative("house forty-two", "curated:test"),)
     }
@@ -238,10 +238,10 @@ def test_unmeasured_lexical_form_outranks_unmeasured_icu(monkeypatch):
 
 
 def test_measured_icu_form_outranks_unmeasured_lexical(monkeypatch):
-    from irn.spoken_priors import SourceMeasurement
+    from frend.spoken_priors import SourceMeasurement
 
     monkeypatch.setattr(
-        "irn.verbalize.source_prior",
+        "frend.verbalize.source_prior",
         lambda kind, source, sub_key: (
             SourceMeasurement(1, Decimal("0.1")) if source.startswith("icu-rbnf:") else None
         ),
@@ -264,14 +264,14 @@ def test_measured_icu_form_outranks_unmeasured_lexical(monkeypatch):
 
 
 def test_caller_supplied_weight_wins_over_measured_source(monkeypatch):
-    from irn.spoken_priors import SourceMeasurement
+    from frend.spoken_priors import SourceMeasurement
 
     monkeypatch.setattr(
-        "irn.verbalize.source_prior",
+        "frend.verbalize.source_prior",
         lambda kind, source, sub_key: SourceMeasurement(1, Decimal("1")),
     )
     registry = {}
-    monkeypatch.setattr("irn.verbalize._CURATED", registry)
+    monkeypatch.setattr("frend.verbalize._CURATED", registry)
     register_curated_alternative(
         "number:decimal", "42", "house forty-two", "test", weight=Decimal("0.01")
     )
@@ -300,7 +300,7 @@ def test_rules_without_decimal_separator_degrade_without_passing_float(monkeypat
         def getRules(self):
             return ""
 
-    monkeypatch.setattr("irn.verbalize._spellout_formatter", lambda locale: RejectingFormatter())
+    monkeypatch.setattr("frend.verbalize._spellout_formatter", lambda locale: RejectingFormatter())
     result = verbalize_lattice(
         resolve_lattice(
             [_det("0.125", "number:decimal", NumberValue("0.125"))], source_text="0.125"
@@ -425,7 +425,7 @@ def test_fraction_denominator_measurement_ranks_half_above_second():
 
 
 def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(monkeypatch):
-    from irn.spoken_priors import SpokenPriorTable
+    from frend.spoken_priors import SpokenPriorTable
 
     ordinal = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"
     over = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering"
@@ -446,7 +446,7 @@ def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(mon
         },
         {"sub_key_rules": {"fraction": "denominator"}},
     )
-    monkeypatch.setattr("irn.verbalize.source_prior", table.lookup)
+    monkeypatch.setattr("frend.verbalize.source_prior", table.lookup)
     written = "1/999"
     detection = next(
         item
@@ -468,7 +468,7 @@ def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(mon
 
 def test_sparse_denominator_blends_its_one_row_toward_the_kind_share():
     """One observation is evidence, not a certainty (kal, 2026-09-23)."""
-    from irn.spoken_priors import SUB_KEY_PRIOR_STRENGTH, load_spoken_prior_table, source_prior
+    from frend.spoken_priors import SUB_KEY_PRIOR_STRENGTH, load_spoken_prior_table, source_prior
 
     written = "1/103"
     ordinal = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"
@@ -501,7 +501,7 @@ def test_sparse_denominator_blends_its_one_row_toward_the_kind_share():
 
 
 def test_well_attested_denominator_stays_close_to_its_own_share():
-    from irn.spoken_priors import source_prior
+    from frend.spoken_priors import source_prior
 
     lexical = "icu-rbnf:%spellout-numbering+lexical:en_US"
     blended = source_prior("fraction", lexical, "2")

@@ -1,6 +1,6 @@
-"""Fetch and verify the full corpora irn's data tables are built from.
+"""Fetch and verify the full corpora frend's data tables are built from.
 
-Every shipped table under ``irn/data`` is re-derivable with ``--check`` from
+Every shipped table under ``frend/data`` is re-derivable with ``--check`` from
 public sources, and this tool is how someone else gets those sources.
 ``tools/corpora.json`` pins each one by upstream identity and sha256; nothing is
 used that does not match it.

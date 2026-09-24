@@ -16,8 +16,8 @@ from fractions import Fraction
 
 from tiergraph import Emissions, OutputPlan
 
-from irn.align_graph import AlignGraph, AlignItem
-from irn.spoken_priors import spoken_tokens
+from frend.align_graph import AlignGraph, AlignItem
+from frend.spoken_priors import spoken_tokens
 
 __all__ = [
     "Attribution",

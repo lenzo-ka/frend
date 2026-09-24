@@ -1,4 +1,4 @@
-"""Consumer paths for positions and ranked readings in an IRN resolution."""
+"""Consumer paths for positions and ranked readings in a frend resolution."""
 
 from __future__ import annotations
 
@@ -16,9 +16,9 @@ from tiergraph.path import (
     PathRefusalCode,
 )
 
-from irn.fold_resolve import _POS, DEFAULT_EPSILON, NS, Detection, _dedupe, build_lattice, resolve
+from frend.fold_resolve import _POS, DEFAULT_EPSILON, NS, Detection, _dedupe, build_lattice, resolve
 
-__all__ = ["IrnReadingProfile"]
+__all__ = ["FrendReadingProfile"]
 
 _READINGS = QualifiedName(NS, "readings")
 _INDEX = re.compile(r"(?:0|[1-9][0-9]*)\Z")
@@ -45,7 +45,7 @@ def _index(value: str, segment_index: int, path: CanonicalPath) -> int:
     )
 
 
-class IrnReadingProfile:
+class FrendReadingProfile:
     """Address one resolution snapshot's lattice offsets and ranked readings.
 
     The vocabulary is ``/offset/N`` for the structural position-tier item at
@@ -94,7 +94,7 @@ class IrnReadingProfile:
         return AlternativeRef(ItemRef(_POS, 0), _READINGS, index)
 
     def spell(self, binding: PathBinding, graph: Graph) -> CanonicalPath:
-        """Spell a supported binding in the IRN reading vocabulary."""
+        """Spell a supported binding in the frend reading vocabulary."""
         if graph is not self.graph:
             raise PathRefusal(
                 PathRefusalCode.UNSPELLABLE,

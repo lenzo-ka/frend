@@ -8,13 +8,13 @@ from decimal import Decimal
 import pytest
 from icukit.detectors import Capture, NumberValue
 
-import irn.fold_resolve as fold_resolve
-import irn.lattice as lattice_module
-from irn import ChoiceGraph, ChoiceLattice, compose_choices, resolve_choices, resolve_lattice
-from irn.fold_resolve import CoverScore
-from irn.lattice import LatticeNode, ReadingEdge, _content_identity, route_geometry
-from irn.type_priors import CorpusPrior, ReadingPrior
-from irn.verbalize import verbalize_edge
+import frend.fold_resolve as fold_resolve
+import frend.lattice as lattice_module
+from frend import ChoiceGraph, ChoiceLattice, compose_choices, resolve_choices, resolve_lattice
+from frend.fold_resolve import CoverScore
+from frend.lattice import LatticeNode, ReadingEdge, _content_identity, route_geometry
+from frend.type_priors import CorpusPrior, ReadingPrior
+from frend.verbalize import verbalize_edge
 
 
 def _det(text, start, end, type_, *, value=None, captures=(), **extra):
@@ -267,7 +267,7 @@ def test_content_key_collisions_keep_each_readings_own_prior():
 
 
 def test_the_composer_refuses_a_carrier_with_no_source_text(monkeypatch):
-    monkeypatch.setattr("irn.verbalize.verbalize_edge", lambda *args, **kwargs: pytest.fail())
+    monkeypatch.setattr("frend.verbalize.verbalize_edge", lambda *args, **kwargs: pytest.fail())
     with pytest.raises(ValueError, match="source_text"):
         compose_choices(resolve_choices([]))
 
@@ -276,14 +276,14 @@ def test_the_composed_graph_refuses_rather_than_truncating_at_the_spoken_bound(m
     choices = resolve_choices([], source_text="x")
     alternative = object()
     unit = type("Unit", (), {"alternatives": (alternative,) * ((1 << 16) + 1)})()
-    monkeypatch.setattr("irn.verbalize.verbalize_edge", lambda *args, **kwargs: unit)
+    monkeypatch.setattr("frend.verbalize.verbalize_edge", lambda *args, **kwargs: unit)
     with pytest.raises(ValueError, match="spoken forms.*not readings.*prefix"):
         compose_choices(choices)
     assert not hasattr(ChoiceGraph(choices, ()), "truncated")
 
     two_edges = resolve_choices([], source_text="xy")
     exact = type("Unit", (), {"alternatives": (alternative,) * (1 << 15)})()
-    monkeypatch.setattr("irn.verbalize.verbalize_edge", lambda *args, **kwargs: exact)
+    monkeypatch.setattr("frend.verbalize.verbalize_edge", lambda *args, **kwargs: exact)
     assert len(compose_choices(two_edges).units) == 2
 
     calls = iter((1 << 15, (1 << 15) + 1))
@@ -292,7 +292,7 @@ def test_the_composed_graph_refuses_rather_than_truncating_at_the_spoken_bound(m
         del args, kwargs
         return type("Unit", (), {"alternatives": (alternative,) * next(calls)})()
 
-    monkeypatch.setattr("irn.verbalize.verbalize_edge", spread)
+    monkeypatch.setattr("frend.verbalize.verbalize_edge", spread)
     with pytest.raises(ValueError, match="spoken forms.*not readings.*prefix"):
         compose_choices(two_edges)
 

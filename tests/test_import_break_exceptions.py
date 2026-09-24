@@ -7,7 +7,7 @@ from pathlib import Path
 from icukit.breaker import break_sentence_spans, break_word_spans
 from icukit.exceptions import load_exception_inventory
 
-from irn.exceptions import english_break_exceptions
+from frend.exceptions import english_break_exceptions
 
 
 def _load_importer():
@@ -21,7 +21,7 @@ def _load_importer():
 
 importer = _load_importer()
 _REPO = Path(__file__).resolve().parent.parent
-_INVENTORY = _REPO / "irn" / "data" / "exceptions" / "en.json"
+_INVENTORY = _REPO / "frend" / "data" / "exceptions" / "en.json"
 
 
 def test_curation_keeps_conditioned_titles_and_audits_ambiguous_and_regex_drops() -> None:

@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "irn"
+name = "frend"
 dynamic = ["version"]
-description = "Intermediate Representation Normalizer: text normalization over tiergraph, icukit, and ipakit"
+description = "The front end: text normalization over tiergraph, icukit, and ipakit"
 authors = [
     {name = "Kevin Lenzo", email = "kevinlenzo@gmail.com"}
 ]
@@ -23,16 +23,16 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Text Processing :: Linguistic",
 ]
-# Floors only, deliberately uncapped: a sibling release that breaks irn should break
-# irn's tests where it can be seen, not be held back silently by a cap.
-# icukit 0.4.0 is the floor because it is the release irn is verified against.
+# Floors only, deliberately uncapped: a sibling release that breaks frend should break
+# frend's tests where it can be seen, not be held back silently by a cap.
+# icukit 0.4.0 is the floor because it is the release frend is verified against.
 # OutputPlan first appears in tiergraph 0.2.3.
 dependencies = ["icukit>=0.4", "tiergraph>=0.2.3"]
 
 [project.urls]
-Homepage = "https://github.com/lenzo-ka/irn"
-Repository = "https://github.com/lenzo-ka/irn"
-Issues = "https://github.com/lenzo-ka/irn/issues"
+Homepage = "https://github.com/lenzo-ka/frend"
+Repository = "https://github.com/lenzo-ka/frend"
+Issues = "https://github.com/lenzo-ka/frend/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -41,13 +41,13 @@ dev = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "irn.__version__"}
+version = {attr = "frend.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["irn*"]
+include = ["frend*"]
 
 [tool.setuptools.package-data]
-irn = [
+frend = [
     "py.typed",
     "data/type_priors.json",
     "data/spoken_priors.json",

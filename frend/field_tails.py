@@ -29,7 +29,7 @@ from tiergraph import (
 
 __all__ = ["Field", "FieldTails", "build_field_tails", "ordered_fields"]
 
-NS = "https://ogion.org/irn/field-tails"
+NS = "https://ogion.org/frend/field-tails"
 _CANDIDATES = QualifiedName(NS, "candidates")
 _CANDIDATE = QualifiedName(NS, "candidate")
 _FIELDS = QualifiedName(NS, "fields")
@@ -115,7 +115,7 @@ def build_field_tails(detections: Sequence[Mapping[str, Any]]) -> FieldTails:
         )
 
     graph = Graph(
-        namespaces=(NamespaceDeclaration("irn", NS),),
+        namespaces=(NamespaceDeclaration("frend", NS),),
         tiers=(
             Tier(TierDeclaration(_CANDIDATES, "Detection candidates"), tuple(candidate_items)),
             Tier(TierDeclaration(_FIELDS, "Detection capture fields"), tuple(field_items)),

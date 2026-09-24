@@ -1,4 +1,4 @@
-"""Regenerate the 1-best golden using the irn imported from PYTHONPATH."""
+"""Regenerate the 1-best golden using the frend imported from PYTHONPATH."""
 
 from __future__ import annotations
 
@@ -17,8 +17,8 @@ from icukit.recognize import (
     SingleLetterWordDetector,
 )
 
-from irn.fold_resolve import resolve, resolve_cover
-from irn.lattice import resolve_lattice
+from frend.fold_resolve import resolve, resolve_cover
+from frend.lattice import resolve_lattice
 
 
 def main(path):

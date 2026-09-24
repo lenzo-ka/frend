@@ -15,9 +15,9 @@ from pathlib import Path
 
 import pytest
 
-from irn.fold_resolve import CoverMargin, resolve, resolve_cover
-from irn.shape import shape
-from irn.type_priors import (
+from frend.fold_resolve import CoverMargin, resolve, resolve_cover
+from frend.shape import shape
+from frend.type_priors import (
     MIN_N,
     CorpusPrior,
     PriorTable,
@@ -233,7 +233,7 @@ def test_shape_is_reflective_over_scripts():
 
 
 def test_single_uppercase_shape_is_reflective_and_unambiguous():
-    from irn.shape import SINGLE_UPPERCASE_SHAPE, is_single_uppercase
+    from frend.shape import SINGLE_UPPERCASE_SHAPE, is_single_uppercase
 
     assert is_single_uppercase("I")
     assert is_single_uppercase("Ω")
@@ -244,7 +244,7 @@ def test_single_uppercase_shape_is_reflective_and_unambiguous():
 
 
 def test_decomposed_single_uppercase_agrees_with_its_shape():
-    from irn.shape import SINGLE_UPPERCASE_SHAPE, is_single_uppercase
+    from frend.shape import SINGLE_UPPERCASE_SHAPE, is_single_uppercase
 
     decomposed = "O\u0304\u0301"
     assert is_single_uppercase(decomposed)

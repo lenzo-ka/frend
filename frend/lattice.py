@@ -3,7 +3,7 @@
 This module deliberately does not expose the tiergraph execution graph or its
 lattice-local mixed-radix weights. Geometry remains primary. Semantic priors are
 only choices among readings of the canonical top span signature, as in
-:func:`irn.fold_resolve.resolve`; they are not a global geometry/prior score.
+:func:`frend.fold_resolve.resolve`; they are not a global geometry/prior score.
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from decimal import Decimal
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Literal
 
-from irn.fold_resolve import (
+from frend.fold_resolve import (
     CoverScore,
     Detection,
     _candidates,
@@ -26,7 +26,7 @@ from irn.fold_resolve import (
     _select,
     _span_priors,
 )
-from irn.type_priors import FeatureSource, ReadingPrior, ResolveContext
+from frend.type_priors import FeatureSource, ReadingPrior, ResolveContext
 
 __all__ = [
     "LatticeNode",
@@ -45,7 +45,7 @@ __all__ = [
 ]
 
 if TYPE_CHECKING:
-    from irn.verbalize import CuratedSupplements, VerbalizedUnit
+    from frend.verbalize import CuratedSupplements, VerbalizedUnit
 
 
 @dataclass(frozen=True)
@@ -332,7 +332,7 @@ def resolve_choices(
     snapshot, so a call scales with the payload the detections carry; it also
     builds one passthrough edge and one node per code point, so it scales with
     the length of the text as well. Geometry is recorded rather than applied. Every
-    reading edge carries its own :class:`~irn.fold_resolve.CoverScore`; a route's
+    reading edge carries its own :class:`~frend.fold_resolve.CoverScore`; a route's
     score is their componentwise sum when the edges strictly tile the text.
 
     Identity is total over mappings, sequences, sets, dataclasses, and built-in
@@ -441,7 +441,7 @@ def resolve_choices(
 
 
 def route_geometry(lattice: ChoiceLattice, edge_ids: Sequence[str]) -> CoverScore:
-    """Return the :class:`~irn.fold_resolve.CoverScore` of one route, or refuse.
+    """Return the :class:`~frend.fold_resolve.CoverScore` of one route, or refuse.
 
     A route is a set of strictly forward edges tiling ``0..text_length`` with no
     gap and no overlap; the order they are named in does not matter. On such a set
@@ -518,7 +518,7 @@ def compose_choices(
     """
     if lattice.source_text is None:
         raise ValueError("source_text is required to compose passthrough spoken forms")
-    from irn.verbalize import verbalize_edge
+    from frend.verbalize import verbalize_edge
 
     units = []
     spoken_total = 0

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from icukit.recognize import FlexibleDateDetector, FlexibleNumberDetector
 
-from irn.field_tails import build_field_tails, ordered_fields
+from frend.field_tails import build_field_tails, ordered_fields
 
 
 def _date(locale: str, text: str):
