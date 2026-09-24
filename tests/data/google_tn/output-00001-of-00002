@@ -1,0 +1,8 @@
+PUNCT	.	sil
+MONEY	$5	five dollars
+MEASURE	5 km	five kilometers
+TELEPHONE	555-1234	five five five one two three four
+ADDRESS	10 Downing	ten downing
+LETTERS	IUCN	i u c n
+CARDINAL	99	ninety nine
+<eos>	<eos>

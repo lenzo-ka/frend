@@ -1,0 +1,106 @@
+[
+  {
+    "text": "",
+    "outputs": [
+      "ced0f265693e341e30a9995f321987d510faba373634a9321fb976aad87b1e88",
+      "e08600326d92e3a8ff2b7bdedeb83a15596d3f9265a4805419ee48934ab9addc",
+      "d8986bb594b273d34671e6c6f81834593c024b3200367794ad705b6d53e105d9"
+    ]
+  },
+  {
+    "text": "hello world",
+    "outputs": [
+      "ced0f265693e341e30a9995f321987d510faba373634a9321fb976aad87b1e88",
+      "177a95fd4182f5553ccad25fe9cf14e74da0748f9632409a9de5b9409a2ed7fb",
+      "d8986bb594b273d34671e6c6f81834593c024b3200367794ad705b6d53e105d9"
+    ]
+  },
+  {
+    "text": "I",
+    "outputs": [
+      "59561b6e0a9e1d3c249e5797c0195f9db9833594517fa9703c45573914a479f6",
+      "5086940118653151dee276e9153c764732b1fe05d6f06b513145ffdcf697fd37",
+      "20b4039a01a539b8447a0a8772fd0daeb368262a6cb9bab29282bb0b01001c24"
+    ]
+  },
+  {
+    "text": "V",
+    "outputs": [
+      "9b0fb6391974d6fdf2c419942cddf0b2418bb200d6c48801ccebbd759da65c38",
+      "74d1e83bf22ef3f24176aa12d9c40d167fc476a17c1022276345599fea71ac30",
+      "c9ae3f11ce2a4061a4b504f48804251765f415812e87aad3497db80e79308540"
+    ]
+  },
+  {
+    "text": "I saw V on 3/24 at 12.00",
+    "outputs": [
+      "a8dbcef688e216aabde9e5c0f371a6b3097bf45ac657b12d59c18463afbdcc1a",
+      "904b54ab03fcd568348df59d6463b7d39dd59daed64569d509963d65a3c55db1",
+      "4e0e7a6b44d1c4d81a34236de0261036ebdecedf51800fdb637273fa96a8a417"
+    ]
+  },
+  {
+    "text": "1/3/2026",
+    "outputs": [
+      "c851de94403c0d31e7106df1e897a4ce758a93ca42b452da175b9f1771746dfe",
+      "aa805a8b7ade427023d1d358ec9d4c2178a6acc64f9c3e2621078b027f0676a0",
+      "2384504a87aa3b930d9cab976fecd49bdd7e51a4f0e3b55fabf0c910ea0acaba"
+    ]
+  },
+  {
+    "text": "on 3/24",
+    "outputs": [
+      "3d8e49d1dc730286561c2664442594835c144b5294a509d6f243ee80bef997cc",
+      "5de1faff884f948e6e5687ef675826ad91bbae736f8e934ebba4eb82cd01dbc9",
+      "72b91258abdc6d08c9f019215f0125e41286265f71158723435eb698e3a347b7"
+    ]
+  },
+  {
+    "text": "-5 and 5th",
+    "outputs": [
+      "97d08c9cc0ecdb5457c73ad87df78cfcb89e4da47ac5e3fecb0bfd82b9e77f78",
+      "1e5ca8cab168001bca9a8d3554341e78ce06c34567252900ed51fe12647e2e5f",
+      "11f2a00994b0da438562c539f457cfed122e75022539758b3f07498f97a4cc84"
+    ]
+  },
+  {
+    "text": "$1,234.50",
+    "outputs": [
+      "90d92cbf7413316a0fc121a2bfb2caf938782736228bea25fc3fa5733c80bf9b",
+      "6f19346d6072c40360b7f5624b4257e2549dc7047a848b13f56b35254193d341",
+      "2e43f0df571267323576100b9bff70d9e34f6bdffdc0a5adf3236942819da602"
+    ]
+  },
+  {
+    "text": "1/4",
+    "outputs": [
+      "f415237bc5d2ec609ce89b342d5aae9ca1bed0a4c79374e5749bb45ef069a952",
+      "e0a781fdda40cc982ecf4be10668ecd4887ceb58ea88c75bb96cfa4ff67ebf59",
+      "e6a2acf9829067ea65db204bdd1e6d0a5207d84fe1ca62b4526291f6401bba46"
+    ]
+  },
+  {
+    "text": "ΟΣ'Α",
+    "outputs": [
+      "ced0f265693e341e30a9995f321987d510faba373634a9321fb976aad87b1e88",
+      "1f1d08184c9e9f0aef5248c7bd71af7e6e2daf7b634e9a5a5dccd4f5609ab7b7",
+      "d8986bb594b273d34671e6c6f81834593c024b3200367794ad705b6d53e105d9"
+    ]
+  },
+  {
+    "text": "a b",
+    "outputs": [
+      "eaa94ae4d527f836433068fb0c64280f5cf198a2b162735ba7b7947693d4f357",
+      "b30918b6e3bd17e0de1d563b19dc4e17fd4bccb1ce14c0a3ff216b012063eea4",
+      "8f5b481acc52fe1d6c6346527b4fcb268c3516bba3c15202bf1af0f5eb0187fd"
+    ]
+  },
+  {
+    "text": "10:30",
+    "outputs": [
+      "fd87ee17ed7a5d5843669c340f1048cb23eae7e84602c0ea9780e23a5e4fa65a",
+      "3de5cc006bfa1753183eabc096c3fa6c6f61db9bdeb5b7b6eaeed1eedf5d896a",
+      "2990398a1007cf6494b0868d0865ef7d815f35c9792c84d019de18f296a6b2bc"
+    ]
+  }
+]

@@ -1,0 +1,1015 @@
+{
+  "schema_version": 1,
+  "corpus": "break-exceptions-en-curated",
+  "named_lists": {},
+  "rules": [
+    {
+      "id": "break-exceptions-en:capt",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Capt.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-1",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Capt. Smith today.",
+        "near_miss": "PrefixCapt. Smith today.",
+        "condition_negatives": [
+          "We met Capt. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:col",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Col.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-2",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Col. Smith today.",
+        "near_miss": "PrefixCol. Smith today.",
+        "condition_negatives": [
+          "We met Col. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:lt",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Lt.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-3",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Lt. Smith today.",
+        "near_miss": "PrefixLt. Smith today.",
+        "condition_negatives": [
+          "We met Lt. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:mgr",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Mgr.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-4",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Mgr. Smith today.",
+        "near_miss": "PrefixMgr. Smith today.",
+        "condition_negatives": [
+          "We met Mgr. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:maj",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Maj.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-5",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Maj. Smith today.",
+        "near_miss": "PrefixMaj. Smith today.",
+        "condition_negatives": [
+          "We met Maj. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:ph-d",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Ph.D.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-6",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Ph.D. Smith today.",
+        "near_miss": "PrefixPh.D. Smith today.",
+        "condition_negatives": [
+          "We met Ph.D. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:prof",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Prof.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-7",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Prof. Smith today.",
+        "near_miss": "PrefixProf. Smith today.",
+        "condition_negatives": [
+          "We met Prof. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:pvt",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Pvt.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-8",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Pvt. Smith today.",
+        "near_miss": "PrefixPvt. Smith today.",
+        "condition_negatives": [
+          "We met Pvt. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:rep",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Rep.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-9",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Rep. Smith today.",
+        "near_miss": "PrefixRep. Smith today.",
+        "condition_negatives": [
+          "We met Rep. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:rev",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Rev.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-10",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Rev. Smith today.",
+        "near_miss": "PrefixRev. Smith today.",
+        "condition_negatives": [
+          "We met Rev. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:gen",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Gen.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-11",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Gen. Smith today.",
+        "near_miss": "PrefixGen. Smith today.",
+        "condition_negatives": [
+          "We met Gen. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:hon",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Hon.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-12",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Hon. Smith today.",
+        "near_miss": "PrefixHon. Smith today.",
+        "condition_negatives": [
+          "We met Hon. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:st",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "St.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-15",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met St. Smith today.",
+        "near_miss": "PrefixSt. Smith today.",
+        "condition_negatives": [
+          "We met St. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:sta",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Sta.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-16",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Sta. Smith today.",
+        "near_miss": "PrefixSta. Smith today.",
+        "condition_negatives": [
+          "We met Sta. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:ste",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Ste.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-17",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Ste. Smith today.",
+        "near_miss": "PrefixSte. Smith today.",
+        "condition_negatives": [
+          "We met Ste. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:rd",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Rd.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-19",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Rd. Smith today.",
+        "near_miss": "PrefixRd. Smith today.",
+        "condition_negatives": [
+          "We met Rd. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:rt",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Rt.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-20",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Rt. Smith today.",
+        "near_miss": "PrefixRt. Smith today.",
+        "condition_negatives": [
+          "We met Rt. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:inc",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Inc.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-26",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Inc. Smith today.",
+        "near_miss": "PrefixInc. Smith today.",
+        "condition_negatives": [
+          "We met Inc. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:dept",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Dept.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-27",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Dept. Smith today.",
+        "near_miss": "PrefixDept. Smith today.",
+        "condition_negatives": [
+          "We met Dept. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:wm",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Wm.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-29",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Wm. Smith today.",
+        "near_miss": "PrefixWm. Smith today.",
+        "condition_negatives": [
+          "We met Wm. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:jr",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Jr.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-31",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Jr. Smith today.",
+        "near_miss": "PrefixJr. Smith today.",
+        "condition_negatives": [
+          "We met Jr. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:sr",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Sr.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-32",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Sr. Smith today.",
+        "near_miss": "PrefixSr. Smith today.",
+        "condition_negatives": [
+          "We met Sr. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:dr",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Dr.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-34",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Dr. Smith today.",
+        "near_miss": "PrefixDr. Smith today.",
+        "condition_negatives": [
+          "We met Dr. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:mr",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Mr.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-35",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Mr. Smith today.",
+        "near_miss": "PrefixMr. Smith today.",
+        "condition_negatives": [
+          "We met Mr. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:mrs",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Mrs.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-36",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Mrs. Smith today.",
+        "near_miss": "PrefixMrs. Smith today.",
+        "condition_negatives": [
+          "We met Mrs. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:ms",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "Ms.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-37",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met Ms. Smith today.",
+        "near_miss": "PrefixMs. Smith today.",
+        "condition_negatives": [
+          "We met Ms. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:u-s",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "U.S.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-39",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met U.S. Smith today.",
+        "near_miss": "PrefixU.S. Smith today.",
+        "condition_negatives": [
+          "We met U.S. smith today."
+        ]
+      }
+    },
+    {
+      "id": "break-exceptions-en:u-s-a",
+      "locale": "en",
+      "level": [
+        "word",
+        "sentence"
+      ],
+      "effect": "suppress",
+      "surface": "U.S.A.",
+      "variant": "exact",
+      "conditions": [
+        {
+          "id": "following-capital",
+          "kind": "unicode_set",
+          "direction": "right",
+          "set": "[[:Lu:]]",
+          "skip": {
+            "kind": "whitespace",
+            "max": null
+          }
+        }
+      ],
+      "unconditionality": "conditional",
+      "provenance": {
+        "source": "break_exceptions/en.txt",
+        "source_id": "line-40",
+        "note": "Foreign literal seed; curated into a conditioned sentence rule."
+      },
+      "witnesses": {
+        "positive": "We met U.S.A. Smith today.",
+        "near_miss": "PrefixU.S.A. Smith today.",
+        "condition_negatives": [
+          "We met U.S.A. smith today."
+        ]
+      }
+    }
+  ]
+}

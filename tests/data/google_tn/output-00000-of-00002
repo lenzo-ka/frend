@@ -1,0 +1,8 @@
+PLAIN	Hello	<self>
+DATE	2006	two thousand six
+CARDINAL	12	twelve
+<eos>	<eos>
+FRACTION	1/2	one half
+DECIMAL	3.14	three point one four
+MONEY	dollars	<self>
+DIGIT	007	oh oh seven

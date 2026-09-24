@@ -1,0 +1,3431 @@
+{
+  "kinds": {
+    "cardinal": {
+      "matched": 1995,
+      "source_matched": {
+        "icu-rbnf:%spellout-numbering": 1995
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eighteen",
+          "written_forms": {
+            "18:": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "five",
+          "written_forms": {
+            "V.": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "six",
+          "written_forms": {
+            "6-": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "sixteen",
+          "written_forms": {
+            "16:": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "twenty three",
+          "written_forms": {
+            "23:": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 5,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 0,
+        "unrecognized": 5,
+        "unverbalized": 0
+      }
+    },
+    "date": {
+      "matched": 1946,
+      "source_matched": {
+        "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 93,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 347,
+        "icu-rbnf:%spellout-numbering-year": 922,
+        "icu-rbnf:%spellout-numbering-year+lexical:en_US": 19,
+        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 546
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 4,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o five",
+          "written_forms": {
+            "1905": 4
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 3,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o two",
+          "written_forms": {
+            "1902": 3
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o eight",
+          "written_forms": {
+            "1908": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o six",
+          "written_forms": {
+            "1906": 2
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "april fourth nineteen o four",
+          "written_forms": {
+            "April 4, 1904": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "december ninth twenty fourteen",
+          "written_forms": {
+            "Dec. 9, 2014": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "eighteen o seven",
+          "written_forms": {
+            "1807": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "eighteen o two",
+          "written_forms": {
+            "1802": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "february sixth two thousand eight",
+          "written_forms": {
+            "Feb. 6, 2008": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "fifteen o five",
+          "written_forms": {
+            "1505": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o four",
+          "written_forms": {
+            "1904": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o nine",
+          "written_forms": {
+            "1909": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o one",
+          "written_forms": {
+            "1901": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o seven",
+          "written_forms": {
+            "1907": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "nineteen o three",
+          "written_forms": {
+            "1903": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "november first nineteen o six",
+          "written_forms": {
+            "November 1, 1906": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "november nineteen forty two",
+          "written_forms": {
+            "Nov. 1942": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "november seventeenth o nine",
+          "written_forms": {
+            "11/17/09": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "september twenty ten",
+          "written_forms": {
+            "Sept 2010": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "seventeen o eight",
+          "written_forms": {
+            "1708": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 54,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 24,
+        "unrecognized": 30,
+        "unverbalized": 0
+      }
+    },
+    "decimal": {
+      "matched": 1999,
+      "source_matched": {
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 85,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 114,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 125,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 20,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 5,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 16,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 2,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 20,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 22,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 5,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 1,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 5,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 3,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+lexical:en_US": 1,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US": 6,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 9,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 1,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 1,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": 1,
+        "icu-rbnf:%spellout-numbering": 54,
+        "icu-rbnf:%spellout-numbering+icu-compact:long": 67,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 895,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long": 45,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 283,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long": 15,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 32,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long": 4,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 6,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 4,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 45,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 5,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+lexical:en_US": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 42,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-compact:long": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 9,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 15,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": 7,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "two million",
+          "written_forms": {
+            "2million": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 1,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 0,
+        "unrecognized": 1,
+        "unverbalized": 0
+      }
+    },
+    "fraction": {
+      "matched": 1961,
+      "source_matched": {
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 74,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 16,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 13,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1434,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 424
+      },
+      "sub_keys": {
+        "1": {
+          "matched": 74,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 74
+          }
+        },
+        "10": {
+          "matched": 48,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 48
+          }
+        },
+        "100": {
+          "matched": 34,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 33
+          }
+        },
+        "1000": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "103": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1055": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "109": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1090": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "11": {
+          "matched": 43,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 43
+          }
+        },
+        "110": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "11086": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "112": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "113": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "11464": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "12": {
+          "matched": 24,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 24
+          }
+        },
+        "121": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "123": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1244": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "12640": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "127": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "128": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "13": {
+          "matched": 25,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 25
+          }
+        },
+        "1309": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "132": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "133": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "134": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1344": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "13516": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "136": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "14": {
+          "matched": 30,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 30
+          }
+        },
+        "1400": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "14001": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "142": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "149879": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "15": {
+          "matched": 24,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 24
+          }
+        },
+        "152": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1542": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "159": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "16": {
+          "matched": 30,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 28
+          }
+        },
+        "160": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1626": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "166712": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "167": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1676": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "16863": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "17": {
+          "matched": 12,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 12
+          }
+        },
+        "170": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "171": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1733": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "18": {
+          "matched": 14,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 14
+          }
+        },
+        "180": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "18234": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "185": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1853": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1868": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "19": {
+          "matched": 17,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 17
+          }
+        },
+        "1900": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "1912": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1914": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "192": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1922": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1923": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1928": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "195": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1955": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1956": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1964": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "1966": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1967": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1972": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1973": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "1977": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1978": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1979": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1981": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1985": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "1986": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "1988": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "1989": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1990": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1991": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "1992": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "1996": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "1997": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1998": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "1999": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+          }
+        },
+        "2": {
+          "matched": 283,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+lexical:en_US": 283
+          }
+        },
+        "20": {
+          "matched": 42,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 41
+          }
+        },
+        "2000": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "2001": {
+          "matched": 12,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 12
+          }
+        },
+        "2002": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "2003": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "2004": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
+          }
+        },
+        "2005": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+          }
+        },
+        "2006": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "2007": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+          }
+        },
+        "2008": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "2009": {
+          "matched": 10,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 10
+          }
+        },
+        "2010": {
+          "matched": 7,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+          }
+        },
+        "2011": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
+          }
+        },
+        "2012": {
+          "matched": 8,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
+          }
+        },
+        "2013": {
+          "matched": 8,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
+          }
+        },
+        "2014": {
+          "matched": 26,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 26
+          }
+        },
+        "2015": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "2016": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "20165": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "203": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "21": {
+          "matched": 13,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
+          }
+        },
+        "213": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "214": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "218": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "2188": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "22": {
+          "matched": 7,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+          }
+        },
+        "2202": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "221": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "22104": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "229": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "23": {
+          "matched": 16,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 16
+          }
+        },
+        "230": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "233": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "234": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "235": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "237": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "238": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "23965": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "24": {
+          "matched": 17,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 17
+          }
+        },
+        "240": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "245": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "249": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "25": {
+          "matched": 13,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
+          }
+        },
+        "250": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "251": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "252": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "253": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "256": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "257": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "26": {
+          "matched": 10,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 10
+          }
+        },
+        "2612": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "2612641": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "262": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "27": {
+          "matched": 15,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 15
+          }
+        },
+        "2740": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "279": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "2790": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "28": {
+          "matched": 13,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
+          }
+        },
+        "287": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "288": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "29": {
+          "matched": 7,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+          }
+        },
+        "298": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3": {
+          "matched": 91,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 88
+          }
+        },
+        "30": {
+          "matched": 7,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+          }
+        },
+        "300": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3000": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3002": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3042": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3050": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "31": {
+          "matched": 11,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 11
+          }
+        },
+        "318": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "32": {
+          "matched": 9,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 9
+          }
+        },
+        "320": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "325": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "328": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "33": {
+          "matched": 7,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+          }
+        },
+        "331": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "332": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "337": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "339": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "34": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "340": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "345": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "348": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "35": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
+          }
+        },
+        "350": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3520": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "354": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "356": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "36": {
+          "matched": 11,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 11
+          }
+        },
+        "364": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "368": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "37": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "37062": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "3720": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "373": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "38": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "380": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "387": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "388": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "39": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "392": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "4": {
+          "matched": 154,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 13,
+            "icu-rbnf:%spellout-numbering+lexical:en_US": 141
+          }
+        },
+        "40": {
+          "matched": 8,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
+          }
+        },
+        "400": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "407": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "41": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "412": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "417": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "42": {
+          "matched": 8,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
+          }
+        },
+        "43": {
+          "matched": 9,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 9
+          }
+        },
+        "43001": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "44": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "440": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "446": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "45": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "451": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "452": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "4522": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "46": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "465": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "47": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "479": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "48": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "484": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "485": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "486": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "5": {
+          "matched": 67,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 67
+          }
+        },
+        "50": {
+          "matched": 17,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 17
+          }
+        },
+        "500": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "5000": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "501": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "51": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "515": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "52": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "53": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "5335": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "549": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "55": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
+          }
+        },
+        "56": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "57": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "570": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "577": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "58": {
+          "matched": 7,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+          }
+        },
+        "59": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "598": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "5980": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "599": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "6": {
+          "matched": 36,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 36
+          }
+        },
+        "60": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "600": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "61": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "613": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "62": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "621": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "624": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "63": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "64": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+          }
+        },
+        "640": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "6408": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "645": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "65": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "6505": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "655": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "656": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "66": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "67": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "68": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "69": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "696": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "7": {
+          "matched": 62,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 62
+          }
+        },
+        "70": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "700": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "702": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "706": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "71": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "712": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "72": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "723": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "7239": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "73": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "74": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "75": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "758": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "76": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "77": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "78": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "780": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "786": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "79": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "8": {
+          "matched": 64,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 63
+          }
+        },
+        "80": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
+          }
+        },
+        "800": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "81": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "82": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "821981": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "824": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "83": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "84": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "85": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "855": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "858": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "86": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "861": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "87": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "870": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "88": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "889": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "89": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "892": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "893": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "9": {
+          "matched": 40,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 40
+          }
+        },
+        "90": {
+          "matched": 9,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 9
+          }
+        },
+        "900": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "902": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "91": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "912": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "9122": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "92": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "93": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+          }
+        },
+        "931": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "94": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "946": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "95": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "96": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "97": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+          }
+        },
+        "977": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "98": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+          }
+        },
+        "981120": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+          }
+        },
+        "99": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+          }
+        }
+      },
+      "top_unmatched": [
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "forty one forty seconds",
+          "written_forms": {
+            "41 / 42": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "one fifty thousandth",
+          "written_forms": {
+            "1/50 000": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "seven and a third",
+          "written_forms": {
+            "7 1/3": 1,
+            "7⅓": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eight one thousand nine hundred fifty fourths",
+          "written_forms": {
+            "8 / 1954": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty seven zeroths",
+          "written_forms": {
+            "57/0": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "forty one and a third",
+          "written_forms": {
+            "41 1/3": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four four thousand two hundred thirty seconds",
+          "written_forms": {
+            "4/4 232": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four hundred fifty five four hundred fifty sixths",
+          "written_forms": {
+            "455 / 456": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four hundred forty five four hundred forty sixths",
+          "written_forms": {
+            "445 / 446": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four hundred forty seven four hundred forty eighths",
+          "written_forms": {
+            "447 / 448": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "nine thousand ninety nine one thousand nine hundred ninety fifths",
+          "written_forms": {
+            "9,099/1995": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "ninety two thousandths",
+          "written_forms": {
+            "90 / 2000": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred eighty eighty fourths",
+          "written_forms": {
+            "180/ 84": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one thousand nine hundred ninety nine zeroths",
+          "written_forms": {
+            "1999/0": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one thousand one hundred twelve one thousand seven hundredths",
+          "written_forms": {
+            "1112/ 1700": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one thousand seven hundred seventy six one thousand nine hundred fifty seconds",
+          "written_forms": {
+            "1776/ 1952": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one three thousandth",
+          "written_forms": {
+            "1/3,000": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one twelve thousandth",
+          "written_forms": {
+            "1/12,000": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "seven hundred sixty thousand five hundred three twenty fourths",
+          "written_forms": {
+            "760,503/24": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "seven two hundred sixty three thousand three hundred sixths",
+          "written_forms": {
+            "7/263 306": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 39,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 5,
+        "unrecognized": 34,
+        "unverbalized": 0
+      }
+    },
+    "money": {
+      "matched": 1911,
+      "source_matched": {
+        "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 1,
+        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 442,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 160,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 28,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 4,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 1,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 1233,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 37
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "twenty six thousand five hundred norwegian kroner",
+          "written_forms": {
+            "NOK 26,500": 2
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eight million five hundred thirty one thousand seven hundred dollars",
+          "written_forms": {
+            "HK$8,531,700": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eight thousand five hundred billion rupees",
+          "written_forms": {
+            "Rs 8,500 bn": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eight won",
+          "written_forms": {
+            "8 won": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eighteen thousand six hundred eighty eight norwegian kroner and ninety three ore",
+          "written_forms": {
+            "NOK 18,688.93": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifteen dollars",
+          "written_forms": {
+            "NZ$15": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifteen million rupees",
+          "written_forms": {
+            "Rs.15 million": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifteen norwegian kroner",
+          "written_forms": {
+            "NOK 15": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty billion takas",
+          "written_forms": {
+            "Tk 50b": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty four point two one crore rupees",
+          "written_forms": {
+            "Rs 54.21 crore": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty lakh rupees",
+          "written_forms": {
+            "Rs.50 lakhs": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty rupees",
+          "written_forms": {
+            "Rs 50": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "five hundred forty rupees",
+          "written_forms": {
+            "RS 540": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "five lakh rupees",
+          "written_forms": {
+            "Rs 5 lakh": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "five won",
+          "written_forms": {
+            "5 won": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "forty five jeon",
+          "written_forms": {
+            ".45 won": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four thousand german marks",
+          "written_forms": {
+            "4,000 DM": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "minus eight costa rican colons",
+          "written_forms": {
+            "CRC-8": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "minus nine hundred forty three platinum ounces",
+          "written_forms": {
+            "XPT-943": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "minus nineteen german marks",
+          "written_forms": {
+            "DM-19": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 89,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 4,
+        "unrecognized": 85,
+        "unverbalized": 0
+      }
+    },
+    "ordinal": {
+      "matched": 1971,
+      "source_matched": {
+        "icu-rbnf:%spellout-ordinal": 1756,
+        "lexical:en_US+icu-rbnf:%spellout-ordinal": 210,
+        "lexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US": 5
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 10,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 10,
+            "unverbalized": 0
+          },
+          "spoken": "the fifth",
+          "written_forms": {
+            "V.": 10
+          }
+        },
+        {
+          "count": 6,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 6,
+            "unverbalized": 0
+          },
+          "spoken": "the first",
+          "written_forms": {
+            "I.": 6
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "thirty three thousand one hundred fortieth",
+          "written_forms": {
+            "33, 140th": 3
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "tenths",
+          "written_forms": {
+            "10ths": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "the tenth",
+          "written_forms": {
+            "X.": 2
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "first",
+          "written_forms": {
+            "Ist": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fourteenth",
+          "written_forms": {
+            "XIVth": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundredth",
+          "written_forms": {
+            "Cth": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "second",
+          "written_forms": {
+            "IInd": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "the first s",
+          "written_forms": {
+            "I's": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "twenty fifth",
+          "written_forms": {
+            "XXVth": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 29,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 2,
+        "unrecognized": 27,
+        "unverbalized": 0
+      }
+    },
+    "time": {
+      "matched": 1485,
+      "source_matched": {
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 633,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 208,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 142,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 67,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+surface:letters": 19,
+        "icu-rbnf:%spellout-numbering+surface:letters": 416
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 5,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 5,
+            "unverbalized": 0
+          },
+          "spoken": "ten p m e t",
+          "written_forms": {
+            "10 PM ET": 1,
+            "10 p.m. ET": 2,
+            "10PM ET": 2
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 3,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one a m",
+          "written_forms": {
+            "01.00 AM": 1,
+            "1.00am": 2,
+            "AM1": 1
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 4,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "two p m",
+          "written_forms": {
+            "PM2": 4
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "eighteen hundred u t c",
+          "written_forms": {
+            "18:00 UTC": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "five p m e s t",
+          "written_forms": {
+            "5 p.m. EST": 1,
+            "5:00pm EST": 1,
+            "5PM EST": 1
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "one eleven",
+          "written_forms": {
+            "01.11": 1,
+            "1: 11": 2
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "seven thirty p m e t",
+          "written_forms": {
+            "7:30 pm ET": 1,
+            "7:30pm ET": 2
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "twenty one hundred u t c",
+          "written_forms": {
+            "21:00 UTC": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "two p m e d t",
+          "written_forms": {
+            "2:00 p.m. EDT": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "two thirteen",
+          "written_forms": {
+            "2: 13": 3
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "eight forty six",
+          "written_forms": {
+            "8: 46": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "eight p m",
+          "written_forms": {
+            "8.00 PM": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "eight p m e t",
+          "written_forms": {
+            "8 PM ET": 1,
+            "8:00 pm ET": 1
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "eighteen hours thirty minutes and zero seconds g m t",
+          "written_forms": {
+            "18:30:00 GMT": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "five p m",
+          "written_forms": {
+            "5.00 PM": 1,
+            "5.00 pm": 1
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "four forty four p m e s t",
+          "written_forms": {
+            "4:44pm EST": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "four p m e d t",
+          "written_forms": {
+            "4:00 p.m. EDT": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "fourteen hundred c e t",
+          "written_forms": {
+            "14:00 CET": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "nine eleven",
+          "written_forms": {
+            "09.11": 1,
+            "9: 11": 1
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "nine o clock u t c",
+          "written_forms": {
+            "09:00 UTC": 2
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 515,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 14,
+        "unrecognized": 417,
+        "unverbalized": 84
+      }
+    }
+  },
+  "provenance": {
+    "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "class_to_kind": {
+      "CARDINAL": "cardinal",
+      "DATE": "date",
+      "DECIMAL": "decimal",
+      "FRACTION": "fraction",
+      "MONEY": "money",
+      "ORDINAL": "ordinal",
+      "TIME": "time"
+    },
+    "generated": "2026-09-24",
+    "license": "CC BY-SA 4.0",
+    "normalization": "Written tokens: remove trailing spaces and commas before recognition. Spoken forms and alternatives: split at characters whose Unicode general category starts with P and at whitespace recognized by str.split(), then lowercase each token independently.",
+    "outside_classes": {
+      "ADDRESS": "no verbalized value family",
+      "DIGIT": "no verbalized value family",
+      "ELECTRONIC": "no verbalized value family",
+      "LETTERS": "no verbalized value family",
+      "MEASURE": "measure values are not verbalized",
+      "PLAIN": "not a structured value",
+      "PUNCT": "not a structured value",
+      "TELEPHONE": "no verbalized value family",
+      "VERBATIM": "not a structured value"
+    },
+    "recognition_profile": {
+      "compact_styles": [
+        "long",
+        "short"
+      ],
+      "currency_codes": [
+        "USD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "CNY",
+        "INR",
+        "CAD",
+        "AUD",
+        "KRW",
+        "RUB",
+        "XCD"
+      ],
+      "date_skeletons": [
+        "yMd",
+        "Md",
+        "y"
+      ],
+      "detection_handling": "resolve and verbalize each detection separately",
+      "detector_classes_by_kind": {
+        "cardinal": [
+          "FlexibleNumberDetector",
+          "FlexibleCompactDetector",
+          "FlexibleCompactDetector",
+          "LetterNameDetector",
+          "SingleLetterWordDetector"
+        ],
+        "date": [
+          "DateDetector",
+          "DateDetector",
+          "DateDetector",
+          "FlexibleDateDetector",
+          "FlexibleTextDateDetector",
+          "PluralNumeralDetector",
+          "AlphanumericRunsDetector"
+        ],
+        "decimal": [
+          "FlexibleNumberDetector",
+          "FlexibleCompactDetector",
+          "FlexibleCompactDetector"
+        ],
+        "fraction": [
+          "FlexibleFractionDetector"
+        ],
+        "money": [
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector",
+          "FlexibleCurrencyDetector",
+          "FlexibleCurrencyNameDetector"
+        ],
+        "ordinal": [
+          "FlexibleOrdinalDetector",
+          "FlexibleNumberDetector",
+          "AlphanumericRunsDetector"
+        ],
+        "time": [
+          "FlexibleTimeDetector",
+          "AlphanumericRunsDetector"
+        ]
+      },
+      "full_span_only": true,
+      "locale": "en_US"
+    },
+    "row_counts": {
+      "CARDINAL": 2000,
+      "DATE": 2000,
+      "DECIMAL": 2000,
+      "FRACTION": 2000,
+      "MONEY": 2000,
+      "ORDINAL": 2000,
+      "TIME": 2000
+    },
+    "sample_rule": {
+      "first_eligible_rows_per_class_per_shard": 200,
+      "shards": [
+        "output-00000-of-00100",
+        "output-00010-of-00100",
+        "output-00020-of-00100",
+        "output-00030-of-00100",
+        "output-00040-of-00100",
+        "output-00050-of-00100",
+        "output-00060-of-00100",
+        "output-00070-of-00100",
+        "output-00080-of-00100",
+        "output-00090-of-00100"
+      ]
+    },
+    "skipped_sentinel_rows": 19,
+    "source": "google-tn-en_with_types",
+    "source_measurement": "The verbalizer deduplicates equal text in rule-set order, so a matched row is credited to the first retained source that produces its text and to the sub-key of that same reading. Source priors are disabled while measuring so the table is not measured through the ranking it drives. Shares are raw matched-source counts divided by matched rows in the selected scope, with no smoothing, confidence threshold, or other small-sample correction; each source record retains its matched count.",
+    "sub_key_rules": {
+      "cardinal": null,
+      "date": null,
+      "decimal": null,
+      "fraction": "the decimal integer value of the reading's denominator capture",
+      "money": null,
+      "ordinal": null,
+      "time": null
+    }
+  }
+}
