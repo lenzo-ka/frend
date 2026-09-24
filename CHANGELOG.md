@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+- Remeasured the spoken-priors table against icukit #95, which reads time zones after a
+  time, "." between hour and minute, and Roman ordinals ("V.", "XIVth"). TIME matched
+  rises from 1485 to 1547 of 2000 sampled rows and ORDINAL from 1971 to 1976; no other
+  kind changed. Rows #95 now recognizes and frend does not yet speak are counted as no
+  alternative matched: TIME 14 to 160 (mostly a time zone, which is not yet said) and
+  ORDINAL 2 to 20 (Roman ordinals). Unrecognized TIME rows fall from 417 to 199.
 - Renamed the project from irn to frend, the front end. The package, import and
   distribution name is now `frend` (`import frend`; entries below name the old
   `irn.*` modules, which are now `frend.*`). The corpus directory variable is

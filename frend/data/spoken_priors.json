@@ -2858,9 +2858,9 @@
       }
     },
     "ordinal": {
-      "matched": 1971,
+      "matched": 1976,
       "source_matched": {
-        "icu-rbnf:%spellout-ordinal": 1756,
+        "icu-rbnf:%spellout-ordinal": 1761,
         "lexical:en_US+icu-rbnf:%spellout-ordinal": 210,
         "lexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US": 5
       },
@@ -2869,8 +2869,8 @@
         {
           "count": 10,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 10,
+            "no_alternative_matched": 10,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "the fifth",
@@ -2881,8 +2881,8 @@
         {
           "count": 6,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 6,
+            "no_alternative_matched": 6,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "the first",
@@ -2917,8 +2917,8 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "the tenth",
@@ -2933,97 +2933,37 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "first",
-          "written_forms": {
-            "Ist": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "fourteenth",
-          "written_forms": {
-            "XIVth": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "one hundredth",
-          "written_forms": {
-            "Cth": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "second",
-          "written_forms": {
-            "IInd": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
           "spoken": "the first s",
           "written_forms": {
             "I's": 1
           }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "twenty fifth",
-          "written_forms": {
-            "XXVth": 1
-          }
         }
       ],
       "total": 2000,
-      "unmatched": 29,
+      "unmatched": 24,
       "unmatched_by_reason": {
-        "no_alternative_matched": 2,
-        "unrecognized": 27,
+        "no_alternative_matched": 20,
+        "unrecognized": 4,
         "unverbalized": 0
       }
     },
     "time": {
-      "matched": 1485,
+      "matched": 1547,
       "source_matched": {
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 633,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 208,
-        "icu-rbnf:%spellout-numbering+lexical:en_US": 142,
-        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 67,
-        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+surface:letters": 19,
-        "icu-rbnf:%spellout-numbering+surface:letters": 416
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 646,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 221,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 143,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 81,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+surface:letters": 22,
+        "icu-rbnf:%spellout-numbering+surface:letters": 434
       },
       "sub_keys": {},
       "top_unmatched": [
         {
           "count": 5,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 5,
+            "no_alternative_matched": 5,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "ten p m e t",
@@ -3031,20 +2971,6 @@
             "10 PM ET": 1,
             "10 p.m. ET": 2,
             "10PM ET": 2
-          }
-        },
-        {
-          "count": 4,
-          "reasons": {
-            "no_alternative_matched": 3,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "one a m",
-          "written_forms": {
-            "01.00 AM": 1,
-            "1.00am": 2,
-            "AM1": 1
           }
         },
         {
@@ -3062,8 +2988,8 @@
         {
           "count": 3,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
+            "no_alternative_matched": 3,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "eighteen hundred u t c",
@@ -3074,8 +3000,8 @@
         {
           "count": 3,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
+            "no_alternative_matched": 3,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "five p m e s t",
@@ -3088,21 +3014,8 @@
         {
           "count": 3,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
-            "unverbalized": 0
-          },
-          "spoken": "one eleven",
-          "written_forms": {
-            "01.11": 1,
-            "1: 11": 2
-          }
-        },
-        {
-          "count": 3,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
+            "no_alternative_matched": 3,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "seven thirty p m e t",
@@ -3114,8 +3027,8 @@
         {
           "count": 3,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
+            "no_alternative_matched": 3,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "twenty one hundred u t c",
@@ -3126,8 +3039,8 @@
         {
           "count": 3,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
+            "no_alternative_matched": 3,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "two p m e d t",
@@ -3162,20 +3075,8 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "eight p m",
-          "written_forms": {
-            "8.00 PM": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "eight p m e t",
@@ -3188,8 +3089,8 @@
           "count": 2,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
+            "unrecognized": 0,
+            "unverbalized": 2
           },
           "spoken": "eighteen hours thirty minutes and zero seconds g m t",
           "written_forms": {
@@ -3199,21 +3100,8 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "five p m",
-          "written_forms": {
-            "5.00 PM": 1,
-            "5.00 pm": 1
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "four forty four p m e s t",
@@ -3224,8 +3112,8 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "four p m e d t",
@@ -3236,8 +3124,8 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "fourteen hundred c e t",
@@ -3248,14 +3136,13 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
-          "spoken": "nine eleven",
+          "spoken": "nine o clock u t c",
           "written_forms": {
-            "09.11": 1,
-            "9: 11": 1
+            "09:00 UTC": 2
           }
         },
         {
@@ -3265,18 +3152,67 @@
             "unrecognized": 2,
             "unverbalized": 0
           },
-          "spoken": "nine o clock u t c",
+          "spoken": "nineteen twenty one",
           "written_forms": {
-            "09:00 UTC": 2
+            "19: 21": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "one eleven",
+          "written_forms": {
+            "1: 11": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "one forty four",
+          "written_forms": {
+            "1: 44": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 2
+          },
+          "spoken": "one hour eight minutes and fifty two seconds",
+          "written_forms": {
+            "1:08:52": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "one o clock g m t",
+          "written_forms": {
+            "01:00 GMT": 1,
+            "1:00 GMT": 1
           }
         }
       ],
       "total": 2000,
-      "unmatched": 515,
+      "unmatched": 453,
       "unmatched_by_reason": {
-        "no_alternative_matched": 14,
-        "unrecognized": 417,
-        "unverbalized": 84
+        "no_alternative_matched": 160,
+        "unrecognized": 199,
+        "unverbalized": 94
       }
     }
   },
