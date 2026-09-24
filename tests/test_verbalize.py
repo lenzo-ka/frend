@@ -957,6 +957,10 @@ _COVERAGE = [
     "3D",
     "2Q22",
     "II's",
+    "10 PM ET",
+    "18:00 UTC",
+    "V.",
+    "XIVth",
 ]
 
 
@@ -982,9 +986,40 @@ def test_a_written_leading_zero_may_go_unsaid(written, expected):
 def test_written_ordinal_is_spoken_as_an_ordinal():
     (unit,) = [u for u in _units("29th", [FlexibleOrdinalDetector("en_US")]) if u.verbalized]
 
-    assert unit.alternatives[0].text == "twenty-ninth"
+    assert [a.text for a in unit.alternatives] == ["twenty-ninth"]
     assert all("spellout-ordinal" in a.provenance for a in unit.alternatives)
     assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("written", "expected"),
+    [("V.", {"fifth", "the fifth"}), ("XIVth", {"fourteenth", "the fourteenth"})],
+)
+def test_roman_ordinal_also_reads_with_the(written, expected):
+    """The corpus reads "V." as "the fifth"; a written arabic ordinal gets no "the"."""
+    unit = _full_span_forms(written, [FlexibleOrdinalDetector("en_US")], "ordinal:flexible")
+    assert {a.text for a in unit.alternatives} == expected
+    assert unit.unspoken == ()
+
+
+def test_dot_time_competes_with_the_decimal_and_loses_on_both_layers():
+    """icukit reads "3.14" as a time too; the decimal wins by captures and by the prior.
+
+    The time reading carries fewer captures, so geometry leaves it off the 1-best, and
+    the corpus prior for the shape agrees (TIME is a fraction of a percent of "N.N").
+    Should the captures ever tie, the prior still decides for the decimal.
+    """
+    text = "3.14"
+    detections = detect(text, [FlexibleNumberDetector("en_US"), FlexibleTimeDetector("en_US")])
+    priors = {
+        edge.detection["type"]: edge.prior.p
+        for edge in resolve_lattice(detections, source_text=text).edges
+        if edge.kind == "reading"
+    }
+
+    assert set(priors) == {"number:decimal", "time:flexible"}
+    assert priors["number:decimal"] > 100 * priors["time:flexible"]
+    assert [d["type"] for d in resolve(detections, source_text=text).best] == ["number:decimal"]
 
 
 def test_written_ordinal_is_the_only_reading_of_its_token():
@@ -1086,10 +1121,14 @@ def _full_span_forms(text, detectors, type_):
         ("10:05", {"ten oh five", "ten o five"}),
         ("20:00", {"twenty", "twenty o'clock", "twenty hundred"}),
         ("14:30", {"fourteen thirty"}),
+        ("10 PM ET", {"ten p m e t", "ten o'clock p m e t"}),
+        ("4:44pm EST", {"four forty-four p m e s t"}),
+        ("18:00 UTC", {"eighteen u t c", "eighteen o'clock u t c", "eighteen hundred u t c"}),
     ],
 )
 def test_time_speaks_the_written_hour_minutes_and_period(written, expected):
-    """The corpus reads "5pm" as "five p m" and "20:00" as "twenty hundred"."""
+    """The corpus reads "5pm" as "five p m", "20:00" as "twenty hundred", and a written
+    time zone as its letters after the time ("10 PM ET" "ten p m e t")."""
     unit = _full_span_forms(written, [FlexibleTimeDetector("en_US")], "time:flexible")
     assert {a.text for a in unit.alternatives} == expected
     assert unit.unspoken == ()

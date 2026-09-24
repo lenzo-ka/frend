@@ -578,7 +578,7 @@ _SPOKEN_CAPTURES = {
     "date": frozenset({"y", "M", "d", "month", "weekday"}),
     "ordinal": frozenset({"integer", "ordinal-affix"}),
     "abbreviation": frozenset({"surface"}),
-    "time": frozenset({"H", "m", "day-period"}),
+    "time": frozenset({"H", "m", "day-period", "time-zone"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
     "roman": frozenset({"integer", "apostrophe", "suffix"}),
@@ -598,7 +598,9 @@ def _spoken_time(
 
     With a day period the written 12-hour hour is spoken, not the 24-hour value
     ("12am" is "twelve a m"). A zero-led minute reads "oh five" or "o five"; a bare
-    or on-the-hour time also reads with "o'clock". Seconds are not verbalized.
+    or on-the-hour time also reads with "o'clock". A written time zone follows as
+    its letters, as the corpus reads it ("10 PM ET" "ten p m e t", "18:00 UTC"
+    "eighteen hundred u t c"). Seconds are not verbalized.
     """
     fields = dict(value.fields)
     if "H" not in fields or not set(fields) <= {"H", "m"}:
@@ -607,8 +609,11 @@ def _spoken_time(
     written_hour = _capture_integer(detection, "H")
     hour = written_hour if period is not None and written_hour is not None else Decimal(fields["H"])
     hours = _number_leaf(hour, "cardinal", locale)
-    letters = "".join(ch for ch in str(getattr(period, "text", "")) if ch.isalpha()).lower()
-    tail = [(SpokenAlternative(" ".join(letters), "surface:letters"),)] if letters else []
+    tail = []
+    for capture in (period, _capture(detection, "time-zone")):
+        letters = "".join(ch for ch in str(getattr(capture, "text", "")) if ch.isalpha()).lower()
+        if letters:
+            tail.append((SpokenAlternative(" ".join(letters), "surface:letters"),))
     minute = fields.get("m")
     forms: list[SpokenAlternative] = []
     if minute:
@@ -628,7 +633,8 @@ def _spoken_time(
             forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
         if minute == 0 and period is None:
             # A written on-the-hour 24-hour time: the corpus reads "20:00" "twenty hundred".
-            forms.extend(_compose([hours, (_HUNDRED,)], "{} {}"))
+            parts = [hours, (_HUNDRED,), *tail]
+            forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
     return _ranked(forms)
 
 
@@ -721,15 +727,32 @@ def _roman_readings(
     return _ranked(forms)
 
 
-def _spoken_ordinal(value: NumberValue, locale: str) -> tuple[SpokenAlternative, ...]:
-    """Speak a written ordinal ("29th") through ICU's ordinal spellout."""
+def _spoken_ordinal(
+    value: NumberValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak a written ordinal ("29th") through ICU's ordinal spellout.
+
+    A Roman ordinal ("V.", "XIVth") also reads with "the", as the corpus reads
+    "V." ("the fifth") and as a Roman cardinal already does.
+    """
     try:
         number = Decimal(value.decimal)
     except InvalidOperation as exc:
         raise ValueError(f"invalid captured ordinal {value.decimal!r}") from exc
     if number != number.to_integral_value() or number < 0:
         raise NotImplementedError("ordinal spellout covers non-negative integers only")
-    return _number_leaf(number, "ordinal", locale)
+    ordinals = _number_leaf(number, "ordinal", locale)
+    if getattr(_capture(detection, "integer"), "form", None) != "roman":
+        return ordinals
+    return _ranked(
+        [
+            *ordinals,
+            *(
+                SpokenAlternative(f"the {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
+                for item in ordinals
+            ),
+        ]
+    )
 
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
@@ -913,7 +936,7 @@ def verbalize_edge(
     value = detection["value"]
     try:
         if isinstance(value, NumberValue) and type_.startswith("ordinal:"):
-            alternatives = _spoken_ordinal(value, locale)
+            alternatives = _spoken_ordinal(value, detection, locale)
             key_value: object = value.decimal
             path = "ordinal"
         elif isinstance(value, NumberValue) and type_.startswith("number:plural"):

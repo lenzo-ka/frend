@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+- Spoke icukit #95's time zones and Roman ordinals. A written time zone follows the
+  time as its letters ("10 PM ET" "ten p m e t", "18:00 UTC" "eighteen hundred u t c"),
+  as the corpus reads it, so it is no longer left unspoken. A Roman ordinal also reads
+  with "the" ("V." "the fifth", "XIVth" "the fourteenth"); a written arabic ordinal
+  does not. A dot-separated time ("3.14" as a time) loses to the decimal on captures
+  and on the corpus prior for its shape, and a test pins both. TIME matched rises from
+  1547 to 1700 of 2000 sampled rows and ORDINAL from 1976 to 1994.
 - Remeasured the spoken-priors table against icukit #97, which reads dates without a
   year ("1 July"), dotted months ("Oct. 2006") and era years ("500 BC"), measures by
   wide names and ASCII marks, mixed measures, and "percent". DATE matched rises from
