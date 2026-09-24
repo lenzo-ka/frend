@@ -19,7 +19,7 @@ from typing import Any, NamedTuple, cast
 from icukit.exceptions import ExceptionInventory, ExceptionRule, load_exception_inventory
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "irn" / "data" / "exceptions" / "en.json"
+_OUT = _REPO / "frend" / "data" / "exceptions" / "en.json"
 
 # These are deliberately explicit: changes to policy should produce a reviewable
 # source diff, not emerge accidentally from a heuristic over the foreign file.

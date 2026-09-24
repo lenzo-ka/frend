@@ -15,8 +15,8 @@ from icukit.recognize import (
     FlexibleNumberDetector,
 )
 
-from irn import fold_resolve
-from irn.fold_resolve import CoverMargin, CoverScore, resolve, resolve_cover
+from frend import fold_resolve
+from frend.fold_resolve import CoverMargin, CoverScore, resolve, resolve_cover
 
 
 # A minimal detection for the synthetic tie cases: resolve reads start/end/type/

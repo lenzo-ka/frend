@@ -140,7 +140,7 @@ def test_checked_in_mutation_evidence_matches_current_tree():
     mutations = {mutation.name: mutation for mutation in runner.MUTATIONS}
     runner_hash = hashlib.sha256((root / "tests/run_align_mutations.py").read_bytes()).hexdigest()
 
-    assert "irn/align_export.py" in {mutation.path for mutation in runner.MUTATIONS}
+    assert "frend/align_export.py" in {mutation.path for mutation in runner.MUTATIONS}
     assert "tests/test_align_export.py" in {
         mutation.test.split("::", 1)[0] for mutation in runner.MUTATIONS
     }

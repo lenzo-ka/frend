@@ -1,7 +1,7 @@
 """Build the reflective ICU shape-likelihood count table.
 
 This is generated evidence, not corpus evidence: a fixed cross-locale panel and
-fixed values are formatted through ICU, reduced with :func:`irn.shape.shape`, and
+fixed values are formatted through ICU, reduced with :func:`frend.shape.shape`, and
 tallied as integer ``P(shape | class)`` support counts. Scientific and compact
 notation are deliberately outside v1 because each is a separate notational
 family needing its own class, values, and recipes; folding either into cardinal
@@ -32,11 +32,11 @@ from icukit.locale import format_currency, format_number, format_ordinal, format
 from icukit.measure import format_measure
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "irn" / "data" / "icu_shape_backfill.json"
+_OUT = _REPO / "frend" / "data" / "icu_shape_backfill.json"
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from irn.shape import shape  # noqa: E402 -- make direct script execution work
+from frend.shape import shape  # noqa: E402 -- make direct script execution work
 
 CLASSES = (
     "cardinal",

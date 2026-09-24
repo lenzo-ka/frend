@@ -38,13 +38,13 @@ from tiergraph import (
 from tiergraph.pathplan import PathPlan
 from tiergraph.semiring import COUNTING, LOG_PROBABILITY
 
-from irn.lattice import ChoiceGraph, ReadingEdge
-from irn.spoken_priors import spoken_tokens
-from irn.verbalize import SpokenAlternative
+from frend.lattice import ChoiceGraph, ReadingEdge
+from frend.spoken_priors import spoken_tokens
+from frend.verbalize import SpokenAlternative
 
 __all__ = ["AlignGraph", "AlignItem", "ArcWeight", "arc_weight", "build_align_graph"]
 
-NS = "https://ogion.org/irn/alignment"
+NS = "https://ogion.org/frend/alignment"
 _TIER = QualifiedName(NS, "alignment")
 _TYPE = QualifiedName(NS, "item")
 _NEXT = QualifiedName(NS, "next")
@@ -387,7 +387,7 @@ def build_align_graph(
         (_TOKEN, XsdType.STRING),
     )
     graph = Graph(
-        (NamespaceDeclaration("irn", NS),),
+        (NamespaceDeclaration("frend", NS),),
         (Tier(TierDeclaration(_TIER, "Alignment"), tuple(graph_items)),),
         (
             SimpleRelationDeclaration(QualifiedName(NS, "membership"), _TIER, _TYPE),

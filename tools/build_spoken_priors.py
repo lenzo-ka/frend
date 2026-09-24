@@ -18,7 +18,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "irn" / "data" / "spoken_priors.json"
+_OUT = _REPO / "frend" / "data" / "spoken_priors.json"
 _BUILD_DATE = "2026-09-24"
 _SHARD_STEP = 10
 _ROWS_PER_CLASS_PER_SHARD = 200
@@ -29,7 +29,7 @@ _DATE_SKELETONS = ("yMd", "Md", "y")
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
-from irn.spoken_priors import normalize_spoken  # noqa: E402
+from frend.spoken_priors import normalize_spoken  # noqa: E402
 
 CLASS_TO_KIND = {
     "CARDINAL": "cardinal",
@@ -67,7 +67,7 @@ _CURRENCIES = (
 
 
 def _default_corpus_dir() -> Path:
-    env = os.environ.get("IRN_TN_CORPUS_DIR")
+    env = os.environ.get("FREND_TN_CORPUS_DIR")
     if env:
         return Path(env)
     for base in (_REPO, *_REPO.parents):
@@ -131,9 +131,9 @@ def _detectors():
 def _alternatives(
     written: str, kind: str, detectors: dict
 ) -> tuple[bool, list[tuple[str, str, str | None]]]:
-    from irn.lattice import resolve_lattice
-    from irn.spoken_priors import measurement_sub_key
-    from irn.verbalize import verbalize_edge
+    from frend.lattice import resolve_lattice
+    from frend.spoken_priors import measurement_sub_key
+    from frend.verbalize import verbalize_edge
 
     alternatives: list[tuple[str, str, str | None]] = []
     recognized = False

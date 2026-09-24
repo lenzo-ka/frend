@@ -1,6 +1,6 @@
-"""irn -- the Intermediate Representation Normalizer.
+"""frend -- the front end.
 
-irn composes a fold/hypergraph substrate (tiergraph), internationalization
+frend composes a fold/hypergraph substrate (tiergraph), internationalization
 recognition (icukit), and later phonetics (ipakit) into a text-normalization pipeline:
 recognize formatted values in running text, resolve overlapping readings into a best
 non-overlapping cover, and verbalize the result. It uses tiergraph as a substrate and
@@ -11,8 +11,8 @@ from __future__ import annotations
 
 __version__ = "0.1.0"
 
-from irn.fold_resolve import Resolution, resolve
-from irn.lattice import (
+from frend.fold_resolve import Resolution, resolve
+from frend.lattice import (
     ChoiceGraph,
     ChoiceLattice,
     LatticeNode,
@@ -27,7 +27,7 @@ from irn.lattice import (
     resolve_lattice,
     route_geometry,
 )
-from irn.verbalize import (
+from frend.verbalize import (
     SpokenAlternative,
     VerbalizedLattice,
     VerbalizedPath,

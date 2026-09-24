@@ -24,10 +24,10 @@ from tiergraph import (
 from tiergraph.pathplan import PathPlan
 from tiergraph.semiring import COUNTING
 
-import irn.align_graph as module
-from irn.align_graph import arc_weight, build_align_graph
-from irn.fold_resolve import CoverScore, resolve, resolve_cover
-from irn.lattice import (
+import frend.align_graph as module
+from frend.align_graph import arc_weight, build_align_graph
+from frend.fold_resolve import CoverScore, resolve, resolve_cover
+from frend.lattice import (
     ChoiceGraph,
     ReadingEdge,
     ReadingRank,
@@ -37,9 +37,9 @@ from irn.lattice import (
     resolve_lattice,
     route_geometry,
 )
-from irn.spoken_priors import normalize_spoken, spoken_tokens
-from irn.type_priors import BlendedPrior, CorpusPrior, IcuBackfillTable, PriorTable, ReadingPrior
-from irn.verbalize import SpokenAlternative, VerbalizedUnit
+from frend.spoken_priors import normalize_spoken, spoken_tokens
+from frend.type_priors import BlendedPrior, CorpusPrior, IcuBackfillTable, PriorTable, ReadingPrior
+from frend.verbalize import SpokenAlternative, VerbalizedUnit
 
 
 def prior(p=".2", *, tier="measured", supported=True, n=100, generated_p=None, group="a"):
@@ -515,7 +515,7 @@ def test_one_best_has_no_alignment_import():
     """Kill an import linking the exact resolver to the alignment module."""
     root = Path(__file__).resolve().parents[1]
     for file in ["fold_resolve.py", "lattice.py"]:
-        tree = ast.parse((root / "irn" / file).read_text())
+        tree = ast.parse((root / "frend" / file).read_text())
         imports = [node.module or "" for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)]
         imports += [
             alias.name
@@ -557,9 +557,9 @@ def test_one_best_untouched():
     assert provenance == {
         "baseline_commit": "7c6ef7b5e77adf9016655ee54c9fadce0ee62710",
         "command": (
-            "cd $IRN_BASELINE_CHECKOUT && PYTHONPATH=. python -B "
-            "$IRN_ALIGN_WORKTREE/tests/generate_align_one_best.py "
-            "$IRN_ALIGN_WORKTREE/tests/data/align_one_best.json"
+            "cd $FREND_BASELINE_CHECKOUT && PYTHONPATH=. python -B "
+            "$FREND_ALIGN_WORKTREE/tests/generate_align_one_best.py "
+            "$FREND_ALIGN_WORKTREE/tests/data/align_one_best.json"
         ),
     }
     rows = json.loads((data / "align_one_best.json").read_text())
@@ -615,7 +615,7 @@ def test_exact_ranking_below_double_resolution():
 
 def test_upstream_caps_still_refuse(monkeypatch):
     """Kill silent prefixes in either upstream completeness bound."""
-    import irn.lattice as lattice_module
+    import frend.lattice as lattice_module
 
     ds = [
         {"start": 0, "end": 1, "text": "3", "type": t, "value": None, "captures": ()}
@@ -632,7 +632,7 @@ def test_partial_date_alternatives_are_never_cut(monkeypatch):
     """Kill month-first slicing in the early-return branch for a year-only date."""
     from icukit.detectors import all_detectors
 
-    import irn.verbalize as verbalize
+    import frend.verbalize as verbalize
 
     real_leaf = verbalize._number_leaf
     extra = tuple(SpokenAlternative(f"synthetic year {i}", "test:year") for i in range(12))

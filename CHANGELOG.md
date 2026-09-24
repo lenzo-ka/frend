@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+- Renamed the project from irn to frend, the front end. The package, import and
+  distribution name is now `frend` (`import frend`; entries below name the old
+  `irn.*` modules, which are now `frend.*`). The corpus directory variable is
+  `FREND_TN_CORPUS_DIR` (was `IRN_TN_CORPUS_DIR`), the reading-profile class is
+  `FrendReadingProfile`, and the graph namespaces are `https://ogion.org/frend/...`
+  with the `frend` prefix. Nothing else changed.
 - Spoke and measured the reading types icukit #90 added. A time with a written day
   period speaks its written hour and the period's letters ("5pm" "five p m", "12am"
   "twelve a m"), a zero-led minute reads "oh five" or "o five", and an on-the-hour

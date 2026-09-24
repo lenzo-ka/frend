@@ -24,7 +24,7 @@ from decimal import ROUND_HALF_EVEN, Context, Decimal, localcontext
 from fractions import Fraction
 from pathlib import Path
 
-from irn.align_graph import AlignGraph
+from frend.align_graph import AlignGraph
 
 __all__ = [
     "ArcManifest",

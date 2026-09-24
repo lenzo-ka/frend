@@ -58,8 +58,8 @@ from tiergraph import (
 )
 from tiergraph.semiring import PATH
 
-from irn.shape import shape
-from irn.type_priors import (
+from frend.shape import shape
+from frend.type_priors import (
     BlendedPrior,
     CorpusPrior,
     FeatureSource,
@@ -85,7 +85,7 @@ __all__ = [
     "resolve_cover",
 ]
 
-NS = "https://ogion.org/irn/resolve"
+NS = "https://ogion.org/frend/resolve"
 _POS = QualifiedName(NS, "positions")
 _POS_T = QualifiedName(NS, "position")
 _CAND = QualifiedName(NS, "candidates")
@@ -151,7 +151,7 @@ class Cover:
 
     ``best`` is the chosen detections in span order; ``score`` contains facts
     recomputed directly from those detections. ``priors`` is parallel to ``best``:
-    the corpus :class:`~irn.type_priors.ReadingPrior` for each detection (carrying
+    the corpus :class:`~frend.type_priors.ReadingPrior` for each detection (carrying
     its ``supported`` state), or ``None`` for a type mapping to no corpus class."""
 
     best: tuple[Detection, ...]
@@ -164,7 +164,7 @@ class SpanReading:
     """One candidate reading at a span, paired with its corpus prior.
 
     The unit of the per-span alternatives view: a detection that reads a given
-    ``(start, end)`` span, and the :class:`~irn.type_priors.ReadingPrior` the
+    ``(start, end)`` span, and the :class:`~frend.type_priors.ReadingPrior` the
     corpus attests for it (``None`` for a type mapping to no corpus class)."""
 
     detection: Detection
@@ -215,7 +215,7 @@ class Resolution:
     unchanged by Layer 2.
 
     ``priors`` is parallel to ``covers``: for each cover, the per-detection
-    :class:`~irn.type_priors.ReadingPrior` (or ``None``). ``structural_ambiguous``
+    :class:`~frend.type_priors.ReadingPrior` (or ``None``). ``structural_ambiguous``
     is True when the top geometry level holds more than one span signature -- an
     ambiguity the prior is not allowed to resolve. ``semantic_ambiguous`` is True
     when any span of ``s*`` has no unique best reading. ``ambiguous`` is their
@@ -273,7 +273,7 @@ def _span_priors(
     That branch ranks the readings at each span of ``detections`` and never
     consults a cover, so no cover is enumerated here either -- which is what makes
     the prior available on inputs whose cover set is intractable.
-    :func:`irn.lattice.resolve_choices` is pinned against ``_select``'s own value
+    :func:`frend.lattice.resolve_choices` is pinned against ``_select``'s own value
     rather than trusted to agree with it.
 
     On detections that collide under ``_content_key``, this deliberately differs
@@ -384,7 +384,7 @@ def build_lattice(
         add(f"skip{p}", p, p + 1, Decimal(0))
 
     graph = Graph(
-        (NamespaceDeclaration("irn", NS),),
+        (NamespaceDeclaration("frend", NS),),
         (
             Tier(TierDeclaration(_POS, "Positions"), pos_items),
             Tier(TierDeclaration(_CAND, "Candidates"), tuple(cand_items)),

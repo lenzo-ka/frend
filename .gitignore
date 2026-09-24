@@ -208,5 +208,5 @@ __marimo__/
 TODO.md
 PATTERNS.md
 
-# The program's register: its own nested local repository with no remote, never part of irn.
+# Local scratch, never part of frend; the program register lives outside this repo.
 /untracked/

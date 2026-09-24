@@ -13,19 +13,19 @@ from pathlib import Path
 
 import pytest
 
-from irn.align_attribution import attribute
-from irn.align_export import to_fsg_text
-from irn.align_graph import build_align_graph
-from irn.fold_resolve import CoverScore
-from irn.lattice import (
+from frend.align_attribution import attribute
+from frend.align_export import to_fsg_text
+from frend.align_graph import build_align_graph
+from frend.fold_resolve import CoverScore
+from frend.lattice import (
     ChoiceGraph,
     ReadingEdge,
     ReadingRank,
     SemanticRank,
     resolve_choices,
 )
-from irn.type_priors import ReadingPrior
-from irn.verbalize import SpokenAlternative, VerbalizedUnit
+from frend.type_priors import ReadingPrior
+from frend.verbalize import SpokenAlternative, VerbalizedUnit
 
 
 def prior(p=".2", *, tier="measured", supported=True, n=100):
@@ -420,7 +420,7 @@ def test_one_best_modules_do_not_import_attribution():
     """Kill coupling the exact 1-best resolver to pass-2 attribution."""
     root = Path(__file__).resolve().parents[1]
     for filename in ("fold_resolve.py", "lattice.py"):
-        tree = ast.parse((root / "irn" / filename).read_text(encoding="utf-8"))
+        tree = ast.parse((root / "frend" / filename).read_text(encoding="utf-8"))
         names = [node.module or "" for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)]
         names.extend(
             alias.name
@@ -428,7 +428,7 @@ def test_one_best_modules_do_not_import_attribution():
             if isinstance(node, ast.Import)
             for alias in node.names
         )
-        assert "irn.align_attribution" not in names
+        assert "frend.align_attribution" not in names
 
 
 def test_real_fsg_reader_sequence_can_be_attributed(tmp_path):

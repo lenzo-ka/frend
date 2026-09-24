@@ -13,13 +13,13 @@ from time import perf_counter
 
 import pytest
 
-import irn.align_export as export_module
-from irn.align_export import ExportBudgetError, to_att_text, to_fsg_text, write_att, write_fsg
-from irn.align_graph import build_align_graph
-from irn.fold_resolve import CoverScore
-from irn.lattice import ChoiceGraph, ReadingEdge, ReadingRank, SemanticRank, resolve_choices
-from irn.type_priors import ReadingPrior
-from irn.verbalize import SpokenAlternative, VerbalizedUnit
+import frend.align_export as export_module
+from frend.align_export import ExportBudgetError, to_att_text, to_fsg_text, write_att, write_fsg
+from frend.align_graph import build_align_graph
+from frend.fold_resolve import CoverScore
+from frend.lattice import ChoiceGraph, ReadingEdge, ReadingRank, SemanticRank, resolve_choices
+from frend.type_priors import ReadingPrior
+from frend.verbalize import SpokenAlternative, VerbalizedUnit
 
 
 def prior(p: str) -> ReadingPrior:

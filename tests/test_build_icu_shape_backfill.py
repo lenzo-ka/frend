@@ -7,7 +7,7 @@ from pathlib import Path
 
 from icukit.locale import format_number
 
-from irn.shape import shape
+from frend.shape import shape
 
 
 def _load_builder():

@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from irn.fold_resolve import resolve, resolve_cover
-from irn.type_priors import BlendedPrior, IcuBackfillTable, PriorTable, load_icu_backfill_table
+from frend.fold_resolve import resolve, resolve_cover
+from frend.type_priors import BlendedPrior, IcuBackfillTable, PriorTable, load_icu_backfill_table
 
 
 def _det(type_: str, text: str = "x") -> dict:

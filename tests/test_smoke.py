@@ -1,6 +1,6 @@
-"""Smoke test for the irn package skeleton."""
+"""Smoke test for the frend package skeleton."""
 
-from irn import __version__
+from frend import __version__
 
 
 def test_version_is_a_nonempty_string():

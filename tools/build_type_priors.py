@@ -1,4 +1,4 @@
-"""Build (or verify) the vendored corpus prior table ``irn/data/type_priors.json``.
+"""Build (or verify) the vendored corpus prior table ``frend/data/type_priors.json``.
 
 The table is ``shape -> class -> count``: for every ``(written_surface, class)``
 pair a corpus yields, increment ``counts[shape(written)][class]``. Runtime derives
@@ -19,7 +19,7 @@ the shape signature, the JSON format, the runtime, or the resolver.
 The Google-TN corpus is ~20 GB uncompressed and is never vendored; it is streamed
 line by line at build time. ``--check`` therefore re-derives from it and so needs
 the corpus present at the ``--corpus-dir`` path (default from the
-``IRN_TN_CORPUS_DIR`` environment variable, else the sibling ``tn-corpus``
+``FREND_TN_CORPUS_DIR`` environment variable, else the sibling ``tn-corpus``
 checkout).
 
 Usage::
@@ -41,15 +41,15 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "irn" / "data" / "type_priors.json"
+_OUT = _REPO / "frend" / "data" / "type_priors.json"
 
 
 def _ensure_repo_importable() -> None:
-    """Put the repo root on ``sys.path`` so ``import irn.*`` works.
+    """Put the repo root on ``sys.path`` so ``import frend.*`` works.
 
     Executing this file as a script puts tools/ -- not the repo root -- on
-    ``sys.path``, so ``irn.shape`` is unimportable in a clean environment (no
-    implicit PYTHONPATH). It is called before every ``irn`` import, including inside
+    ``sys.path``, so ``frend.shape`` is unimportable in a clean environment (no
+    implicit PYTHONPATH). It is called before every ``frend`` import, including inside
     the multiprocessing workers, which do not reliably inherit the parent's
     ``sys.path`` under the spawn start method. Idempotent.
     """
@@ -59,7 +59,7 @@ def _ensure_repo_importable() -> None:
 
 
 _ensure_repo_importable()
-from irn.shape import is_single_uppercase  # noqa: E402
+from frend.shape import is_single_uppercase  # noqa: E402
 
 # A fixed build date is used deliberately (no wall clock) so a rebuild from the
 # same corpus is byte-identical and ``--check`` stays a clean drift guard.
@@ -70,13 +70,13 @@ def _default_corpus_dir() -> Path:
     """Resolve the default Google-TN corpus directory without a baked-in absolute
     path.
 
-    ``IRN_TN_CORPUS_DIR`` wins if set; otherwise look for a ``tn-corpus/
+    ``FREND_TN_CORPUS_DIR`` wins if set; otherwise look for a ``tn-corpus/
     en_with_types`` tree beside the repo (walking ancestors), so a sibling checkout
     is found relatively. When nothing is discoverable a non-existent path is
     returned, so the shard glob raises a clear error naming the knobs to set. The
     raw corpus lives outside any repo and is never shipped.
     """
-    env = os.environ.get("IRN_TN_CORPUS_DIR")
+    env = os.environ.get("FREND_TN_CORPUS_DIR")
     if env:
         return Path(env)
     for base in (_REPO, *_REPO.parents):
@@ -143,7 +143,7 @@ _GOOGLE_TN_CLASS_MAP: dict[str, str] = {
 
 def _has_digit(surface: str) -> bool:
     """True if ``surface`` contains at least one Unicode decimal digit (category
-    ``Nd``) -- the same digit notion :mod:`irn.shape` uses to collapse ``N`` runs."""
+    ``Nd``) -- the same digit notion :mod:`frend.shape` uses to collapse ``N`` runs."""
     return any(unicodedata.category(ch) == "Nd" for ch in surface)
 
 
@@ -176,7 +176,7 @@ def _google_tn_files(corpus_dir: Path) -> list[Path]:
     if not files:
         raise FileNotFoundError(
             f"no Google-TN corpus shards (output-*-of-*) under {corpus_dir}; "
-            f"set IRN_TN_CORPUS_DIR or pass --corpus-dir"
+            f"set FREND_TN_CORPUS_DIR or pass --corpus-dir"
         )
     return files
 
@@ -198,7 +198,7 @@ def _tally(
 ) -> tuple[dict[str, dict[str, int]], dict[str, dict[str, int]]]:
     """Sum ``counts[shape(written)][class]`` over a stream of corpus pairs."""
     _ensure_repo_importable()  # workers may not inherit the parent's sys.path
-    from irn.shape import shape  # noqa: PLC0415 -- avoid import cost when only --check diffs
+    from frend.shape import shape  # noqa: PLC0415 -- avoid import cost when only --check diffs
 
     counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     letters: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
