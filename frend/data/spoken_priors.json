@@ -77,12 +77,12 @@
       }
     },
     "date": {
-      "matched": 1946,
+      "matched": 1949,
       "source_matched": {
         "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
-        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 93,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 94,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
-        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 347,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
         "icu-rbnf:%spellout-numbering-year": 922,
         "icu-rbnf:%spellout-numbering-year+lexical:en_US": 19,
         "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 546
@@ -152,18 +152,6 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "december ninth twenty fourteen",
-          "written_forms": {
-            "Dec. 9, 2014": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
             "no_alternative_matched": 1,
             "unrecognized": 0,
             "unverbalized": 0
@@ -183,18 +171,6 @@
           "spoken": "eighteen o two",
           "written_forms": {
             "1802": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "february sixth two thousand eight",
-          "written_forms": {
-            "Feb. 6, 2008": 1
           }
         },
         {
@@ -284,18 +260,6 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "november nineteen forty two",
-          "written_forms": {
-            "Nov. 1942": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
             "no_alternative_matched": 1,
             "unrecognized": 0,
             "unverbalized": 0
@@ -328,13 +292,49 @@
           "written_forms": {
             "1708": 1
           }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "sunday the twenty ninth of september nineteen twelve",
+          "written_forms": {
+            "Sun. 29 September 1912": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "the eighteenth of september",
+          "written_forms": {
+            "18 September,": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "the eleventh of may",
+          "written_forms": {
+            "11 May ": 1
+          }
         }
       ],
       "total": 2000,
-      "unmatched": 54,
+      "unmatched": 51,
       "unmatched_by_reason": {
-        "no_alternative_matched": 24,
-        "unrecognized": 30,
+        "no_alternative_matched": 45,
+        "unrecognized": 6,
         "unverbalized": 0
       }
     },

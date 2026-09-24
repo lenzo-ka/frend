@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+- Remeasured the spoken-priors table against icukit #97, which reads dates without a
+  year ("1 July"), dotted months ("Oct. 2006") and era years ("500 BC"), measures by
+  wide names and ASCII marks, mixed measures, and "percent". DATE matched rises from
+  1946 to 1949 of 2000; unrecognized DATE rows fall from 30 to 6 and those with no
+  matching alternative rise from 24 to 45, dates frend does not yet say. No other kind
+  changed: frend measures no MEASURE kind yet, and the mixed-measure detector is not in
+  its profile.
 - Remeasured the spoken-priors table against icukit #95, which reads time zones after a
   time, "." between hour and minute, and Roman ordinals ("V.", "XIVth"). TIME matched
   rises from 1485 to 1547 of 2000 sampled rows and ORDINAL from 1971 to 1976; no other
