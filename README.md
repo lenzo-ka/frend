@@ -43,7 +43,9 @@ pytest
 ruff check . && ruff format --check .
 ```
 
-The sibling repos (tiergraph, icukit, ipakit) are installed editable during development.
+The sibling repos (tiergraph, icukit, ipakit) are installed editable during development. CI tests
+against the released icukit and, in a second job, against icukit's `main`, so frend can
+use icukit changes before they are released; a frend release needs the first job green.
 
 ### Reproducing the data tables
 
