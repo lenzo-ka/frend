@@ -77,10 +77,10 @@
       }
     },
     "date": {
-      "matched": 1996,
+      "matched": 1997,
       "source_matched": {
         "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
-        "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 2,
+        "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 3,
         "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 95,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
@@ -112,18 +112,6 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "sunday the twenty ninth of september nineteen twelve",
-          "written_forms": {
-            "Sun. 29 September 1912": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
           "spoken": "the second of october",
           "written_forms": {
             "2, October ": 1
@@ -132,8 +120,8 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "the twenty fourth of april three fifty",
@@ -143,10 +131,10 @@
         }
       ],
       "total": 2000,
-      "unmatched": 4,
+      "unmatched": 3,
       "unmatched_by_reason": {
-        "no_alternative_matched": 1,
-        "unrecognized": 3,
+        "no_alternative_matched": 2,
+        "unrecognized": 1,
         "unverbalized": 0
       }
     },
@@ -3005,17 +2993,17 @@
       }
     },
     "money": {
-      "matched": 1911,
+      "matched": 1916,
       "source_matched": {
         "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 1,
-        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 442,
+        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 443,
         "icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 160,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 28,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 4,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 3,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 1,
-        "icu-rbnf:%spellout-numbering+lexical:en_US": 1233,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 1237,
         "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 37
       },
       "sub_keys": {},
@@ -3159,18 +3147,6 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "fifty rupees",
-          "written_forms": {
-            "Rs 50": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
           "spoken": "five hundred forty rupees",
           "written_forms": {
             "RS 540": 1
@@ -3259,13 +3235,25 @@
           "written_forms": {
             "DM-19": 1
           }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "minus one saint helena pounds",
+          "written_forms": {
+            "SHP-1": 1
+          }
         }
       ],
       "total": 2000,
-      "unmatched": 89,
+      "unmatched": 84,
       "unmatched_by_reason": {
         "no_alternative_matched": 4,
-        "unrecognized": 85,
+        "unrecognized": 80,
         "unverbalized": 0
       }
     },

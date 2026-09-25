@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Remeasured the spoken-priors table on icukit `a365345` (#111 to #114, after 0.6.0,
+  unreleased): three-digit years and dotted weekdays raise DATE matched from 1996 to
+  1997 of 2000, and "Rs" read as rupees raises MONEY from 1911 to 1916. No other kind
+  changed. frend does not yet speak relative dates, so #114's relative weekdays stay as
+  written.
 - Raised the icukit floor to `icukit>=0.6`, the first release carrying what frend now
   uses from icukit #99 to #109: numeric durations, units written with no amount
   (`UnitValue`), CLDR's era variants and wide eras, and curated unit spellings. Against
