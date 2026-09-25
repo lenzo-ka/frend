@@ -75,3 +75,13 @@ stored. The shared attribution above applies.
 In `spoken_priors.json`, ELECTRONIC is measured like the other kinds, with the corpus's
 per-letter spoken notation ("b_letter o_letter") joined into words first. It records no
 `top_unmatched` examples, which would copy URLs from the corpus.
+
+## `acronym_priors.json`
+
+Whether an acronym is spelled or said as a word, measured from the corpus by
+`tools/build_acronym_priors.py` (`--check` repeats the sample and compares byte for
+byte): an all-capitals token of two or more letters counts as spelled when the corpus
+files it as LETTERS ("FBI" "f b i") and as a word when it files it as PLAIN ("NASA").
+Counts are kept by the token's shape (`letter_key`: case, length, whether a vowel letter
+occurs), with `*` pooling all; no corpus text is stored. The shared attribution above
+applies.

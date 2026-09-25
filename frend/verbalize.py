@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -19,12 +20,13 @@ from frend.electronic import (
     ElectronicValue,
     digit_forms,
     digit_probabilities,
+    letter_key,
     letter_probabilities,
     separator_names,
     tld_positions,
 )
 from frend.lattice import ReadingEdge, ReadingLattice
-from frend.spoken_priors import measurement_sub_key, source_prior
+from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.written_forms import DigitsValue
 
 __all__ = [
@@ -824,6 +826,47 @@ def _spoken_ordinal(
 _ABBREVIATION_SOURCES = {"expansion": "icukit-abbreviation", "spell-out": "icukit-spell-out"}
 
 
+@cache
+def _acronym_priors() -> dict[str, dict[str, int]]:
+    from importlib.resources import files
+
+    data = files("frend").joinpath("data/acronym_priors.json").read_text(encoding="utf-8")
+    return json.loads(data)["keys"]
+
+
+def _with_acronym_readings(
+    surface: str, alternatives: tuple[SpokenAlternative, ...]
+) -> tuple[SpokenAlternative, ...]:
+    """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
+
+    kal ruled that frend says both: the share the corpus spells an all-capitals token of
+    this shape (``letter_key``: length, vowel) weights "f b i", the rest weights "fbi"
+    (``data/acronym_priors.json``, ``tools/build_acronym_priors.py``). icukit's long forms
+    follow. A spelled form icukit already gives ("M D") takes the weight, not a copy.
+    """
+    letters = "".join(ch for ch in surface if ch.isalpha())
+    if len(letters) < 2 or not letters.isupper():
+        return alternatives
+    table = _acronym_priors()
+    overall = table["*"]
+    shaped = table.get(letter_key(letters), {})
+    total = sum(shaped.values()) + 5
+    share = (
+        Decimal(shaped.get("spelled", 0)) + 5 * Decimal(overall["spelled"]) / sum(overall.values())
+    ) / total
+    spelled = SpokenAlternative(" ".join(letters.lower()), "measured:acronym-spelled", share)
+    word = SpokenAlternative(letters.lower(), "measured:acronym-word", 1 - share)
+    measured = {normalize_spoken(form.text): form for form in (spelled, word)}
+    kept = []
+    for item in alternatives:
+        form = measured.pop(normalize_spoken(item.text), None)
+        # A form icukit already gives ("M D") keeps its text and source, with the weight.
+        kept.append(
+            item if form is None else SpokenAlternative(item.text, item.provenance, form.weight)
+        )
+    return (*measured.values(), *kept)
+
+
 def _spoken_abbreviation(value: AbbreviationValue) -> tuple[SpokenAlternative, ...]:
     """Every lexicon expansion is an alternative; ambiguity is kept, never resolved here.
 
@@ -1517,7 +1560,7 @@ def verbalize_edge(
             key_value = value.decimal
             path = "number"
         elif isinstance(value, AbbreviationValue):
-            alternatives = _spoken_abbreviation(value)
+            alternatives = _with_acronym_readings(value.surface, _spoken_abbreviation(value))
             key_value = value.surface
             path = "abbreviation"
         elif isinstance(value, DateTimeValue) and type_.startswith("date:"):

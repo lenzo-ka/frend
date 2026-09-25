@@ -1687,3 +1687,50 @@ def test_relative_date_speaks_icus_wide_style(written, offset, unit, direction, 
     unit_reading = _relative_unit(written, offset, unit, direction, captures)
     assert [normalize_spoken(a.text) for a in unit_reading.alternatives] == [spoken]
     assert unit_reading.unspoken == ()
+
+
+def _abbreviation_unit(surface, expansions):
+    from icukit import AbbreviationExpansion, AbbreviationValue
+    from icukit.detectors import Capture
+
+    detection = {
+        "text": surface,
+        "start": 0,
+        "end": len(surface),
+        "type": "abbreviation",
+        "value": AbbreviationValue(
+            surface, tuple(AbbreviationExpansion(*expansion) for expansion in expansions)
+        ),
+        "captures": (Capture("surface", 0, len(surface), surface, surface, None),),
+    }
+    lattice = resolve_lattice([detection], source_text=surface)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    return verbalize_edge(edge, source_text=surface)
+
+
+def test_acronym_reads_spelled_and_as_a_word_weighted_as_measured_then_expanded():
+    """kal ruled frend says both; the corpus decides the order by the acronym's shape."""
+    unit = _abbreviation_unit("FBI", [("Federal Bureau of Investigation", "organization")])
+    texts = [a.text for a in unit.alternatives]
+    assert texts[:2] == ["f b i", "fbi"] or texts[:2] == ["fbi", "f b i"]
+    assert texts[2] == "Federal Bureau of Investigation"
+    assert sum(a.weight for a in unit.alternatives[:2]) == 1
+
+
+def test_acronym_without_a_vowel_is_spelled_first():
+    unit = _abbreviation_unit("BBC", [("British Broadcasting Corporation", "organization")])
+    assert unit.alternatives[0].text == "b b c"
+
+
+def test_icukits_own_spelled_form_takes_the_weight_rather_than_a_copy():
+    unit = _abbreviation_unit(
+        "MD", [("M D", "title", "follows-name", "spell-out"), ("Maryland", "region", "address")]
+    )
+    texts = [normalize_spoken(a.text) for a in unit.alternatives]
+    assert texts.count("m d") == 1
+    assert unit.alternatives[0].text == "M D" and unit.alternatives[0].weight is not None
+
+
+def test_non_acronym_abbreviation_is_unchanged():
+    unit = _abbreviation_unit("Dr.", [("Doctor", "title", "precedes-name")])
+    assert [a.text for a in unit.alternatives] == ["Doctor"]
