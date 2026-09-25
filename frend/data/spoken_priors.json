@@ -91,7 +91,35 @@
         "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 546,
         "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": 1
       },
-      "sub_keys": {},
+      "sub_keys": {
+        "day-first": {
+          "matched": 549,
+          "source_matched": {
+            "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 3,
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL": 21,
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 524,
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": 1
+          }
+        },
+        "month-first": {
+          "matched": 392,
+          "source_matched": {
+            "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
+            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
+            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
+            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 22
+          }
+        },
+        "other": {
+          "matched": 1056,
+          "source_matched": {
+            "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 95,
+            "icu-rbnf:%spellout-numbering-year": 922,
+            "icu-rbnf:%spellout-numbering-year+lexical:en_US": 39
+          }
+        }
+      },
       "top_unmatched": [
         {
           "count": 1,
@@ -3836,7 +3864,7 @@
     "source_measurement": "The verbalizer deduplicates equal text in rule-set order, so a matched row is credited to the first retained source that produces its text and to the sub-key of that same reading. Source priors are disabled while measuring so the table is not measured through the ranking it drives. Shares are raw matched-source counts divided by matched rows in the selected scope, with no smoothing, confidence threshold, or other small-sample correction; each source record retains its matched count.",
     "sub_key_rules": {
       "cardinal": null,
-      "date": null,
+      "date": "the written order of month and day: month-first, day-first, or other",
       "decimal": null,
       "electronic": null,
       "fraction": "the decimal integer value of the reading's denominator capture",

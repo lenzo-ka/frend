@@ -694,7 +694,10 @@ def _spoken_time(
             zone = str(getattr(capture, "value", "") or "")
             if expansions and "/" in zone:
                 # icukit 0.7 captures the zone's IANA ID ("IST" read as Asia/Kolkata and
-                # as Europe/Dublin): keep the names ICU gives that zone.
+                # as Europe/Dublin): keep the names ICU gives that zone. Where none of the
+                # listed names matches ICU's display names literally (CLDR's metazone
+                # "Saint-Pierre-et-Miquelon Daylight Time" against the zone's "St. Pierre
+                # & Miquelon Daylight Time"), every listed name is kept rather than none.
                 named = _zone_display_names(zone, locale)
                 expansions = tuple(item for item in expansions if item.text in named) or expansions
             tail.append((spelled, *expansions))
@@ -857,24 +860,32 @@ def _with_acronym_readings(
 ) -> tuple[SpokenAlternative, ...]:
     """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
 
-    kal ruled that frend says both: the share the corpus spells an all-capitals token of
-    this shape (``letter_key``: length, vowel) weights "f b i", the rest weights "fbi"
-    (``data/acronym_priors.json``, ``tools/build_acronym_priors.py``). icukit's long forms
+    kal ruled that frend says both: the share the corpus spells an all-capitals token
+    weights "f b i", the rest weights "fbi" (``data/acronym_priors.json``,
+    ``tools/build_acronym_priors.py``), by the acronym's own counts where icukit's lexicon
+    lists it, blended toward its shape (``letter_key``: length, vowel). icukit's long forms
     follow. A spelled form icukit already gives ("M D") takes the weight, not a copy.
     """
     letters = "".join(ch for ch in surface if ch.isalpha())
     if len(letters) < 2 or not letters.isupper():
         return alternatives
     table = _acronym_priors()
+
+    def blend(counts: dict[str, int], parent: Decimal) -> Decimal:
+        return (Decimal(counts.get("spelled", 0)) + 5 * parent) / (sum(counts.values()) + 5)
+
     overall = table["*"]
-    shaped = table.get(letter_key(letters), {})
-    total = sum(shaped.values()) + 5
-    share = (
-        Decimal(shaped.get("spelled", 0)) + 5 * Decimal(overall["spelled"]) / sum(overall.values())
-    ) / total
-    spelled = SpokenAlternative(" ".join(letters.lower()), "measured:acronym-spelled", share)
-    word = SpokenAlternative(letters.lower(), "measured:acronym-word", 1 - share)
-    measured = {normalize_spoken(form.text): form for form in (spelled, word)}
+    share = blend(
+        table.get(letter_key(letters), {}), Decimal(overall["spelled"]) / sum(overall.values())
+    )
+    if f"surface:{letters}" in table:
+        # The acronym's own evidence ("NASA" is a word 2118 times to 4) over its shape's.
+        share = blend(table[f"surface:{letters}"], share)
+    forms = [SpokenAlternative(" ".join(letters.lower()), "measured:acronym-spelled", share)]
+    if letters == surface:
+        # A dotted surface ("U.S.") is spelled or expanded, never read as a word ("us").
+        forms.append(SpokenAlternative(letters.lower(), "measured:acronym-word", 1 - share))
+    measured = {normalize_spoken(form.text): form for form in forms}
     kept = []
     for item in alternatives:
         form = measured.pop(normalize_spoken(item.text), None)
@@ -1085,7 +1096,13 @@ def _spoken_date_parts(
                 )
             )
         else:
-            dates = _spoken_date(DateTimeValue(ymd, value.calendar), detection, locale)
+            # The date part ranks by its own measured shares, as a plain date does; the
+            # other parts carry no weight, so the combination keeps that order.
+            dates = _rank_final(
+                _spoken_date(DateTimeValue(ymd, value.calendar), detection, locale),
+                "date",
+                measurement_sub_key("date", detection),
+            )
             first = min(
                 (
                     capture.start
@@ -1105,13 +1122,23 @@ def _spoken_date_parts(
         times = _spoken_time(time_value, detection, locale)
         if glue:
             times = tuple(
-                SpokenAlternative(f"{glue} {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
+                SpokenAlternative(f"{glue} {item.text}", f"surface:words+{item.provenance}")
                 for item in times
             )
         pieces.append((start("H", 10**6), times))
     if not pieces:
         raise NotImplementedError(f"no speakable date part in {value.fields!r}")
-    ordered = [alternatives for _, alternatives in sorted(pieces, key=lambda piece: piece[0])]
+    ordered = [
+        tuple(
+            item
+            if item.weight is not None
+            else SpokenAlternative(item.text, item.provenance, Decimal(0))
+            for item in alternatives
+        )
+        if any(item.weight is not None for part in pieces for item in part[1])
+        else alternatives
+        for _, alternatives in sorted(pieces, key=lambda piece: piece[0])
+    ]
     return _compose(ordered, " ".join("{}" for _ in ordered))
 
 

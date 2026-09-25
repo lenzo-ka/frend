@@ -1,6 +1,19 @@
 # Changelog
 
 ## Unreleased
+- Fixed what an independent review (Codex, at kal's request) found in #19 to #24:
+  - A case citation is read only where a page follows ("339 U.S. 629"), so "The 339
+    U.S. troops" is no longer a citation that drops "U.S.".
+  - An era written "BC." or "AD." is left to icukit: the period ends the sentence.
+    Dotted letters ("500 B.C.") are still read.
+  - An acronym ranks by its own corpus evidence where icukit's lexicon lists it
+    ("NASA" is said as a word 2118 times to 4, "FBI" always spelled), blended toward
+    its shape; a dotted acronym ("U.S.") gets no word reading ("us").
+  - A date ranks by its written order, measured: the spoken-priors table conditions
+    DATE on it (month-first, day-first, other), so "March 5, 2024" leads with "March
+    fifth" and "5 March 2024" with "the fifth of March" (349 to 22 and 524 to 21 in the
+    corpus sample), with or without an era or a time.
+  - The written "at" in a date and time is labeled as written words, not lexical.
 - Raised the icukit floor to `icukit>=0.7`, the release carrying what frend now uses from
   icukit #111 to #132: dates with times, eras and quarters, relative dates, the curated
   acronyms, and zone captures by IANA ID. Verified from the PyPI wheel: 465 passed.

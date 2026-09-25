@@ -5,11 +5,12 @@ not read them. Each is read into a value frend already speaks where one fits, so
 speech stays ICU's (numbers, era names) or the corpus's:
 
 - a clock time with a space after the colon ("2: 13"), as ``time:spaced-colon``;
-- a case citation ("339 U.S."), the volume as ``number:cardinal:citation`` with the
-  reporter as a capture;
+- a case citation's volume ("339 U.S. 629"; a page must follow), as
+  ``number:cardinal:citation`` with the reporter as a capture;
 - spaced single digits ("6 3"), as ``number:digits``, said digit by digit;
-- an era written with periods, attached to the year, or before it ("500 B.C.",
-  "4AD", "A.D. 1066"), as ``date:era``.
+- an era written with dotted letters, attached to the year, or before it ("500
+  B.C.", "4AD", "A.D. 1066"), as ``date:era``; "500 BC." is ICU's "500 BC" and a
+  sentence-final period, left to icukit.
 
 The shapes are icukit's census families (``coverage/gap_families.py``).
 """
@@ -24,9 +25,11 @@ from icukit.detectors import Capture, DateTimeValue, NumberValue
 __all__ = ["DigitsValue", "WrittenFormsDetector"]
 
 _SPACED_COLON = re.compile(r"(?<![\w:.])(\d{1,2}): (\d{2})(?![\w:])")
-_CITATION = re.compile(r"(?<![\w.,])(\d+) (U\. ?S\.?)(?!\w)")
+# A citation names its page too ("339 U.S. 629"); without one, "339 U.S. troops" is prose.
+_CITATION = re.compile(r"(?<![\w.,])(\d+) (U\. ?S\.)(?= \d)")
 _SPACED_DIGITS = re.compile(r"(?<![\w.,:/-])\d(?: \d)+(?![\w.,:/-])")
-_ERA_WRITTEN = r"B\.C\.E\.|B\.C\.|A\.D\.|C\.E\.|BC\.|AD\.|BCE\.|CE\."
+# Dotted letters only: a period after "BC" or "AD" ends the sentence, not the era.
+_ERA_WRITTEN = r"B\.C\.E\.|B\.C\.|A\.D\.|C\.E\."
 _ERA_AFTER = re.compile(rf"(?<![\w.])(\d{{1,4}})( ?)({_ERA_WRITTEN}|AD|BC)(?!\w)")
 _ERA_BEFORE = re.compile(r"(?<![\w.])(A\.D\.|AD)( ?)(\d{1,4})(?![\w.])")
 _BEFORE_ERA = ("B",)

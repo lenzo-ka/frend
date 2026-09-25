@@ -4,7 +4,9 @@ An all-capitals token of two or more letters is spelled when the corpus files it
 LETTERS ("FBI" "f b i") and said as written when it files it as PLAIN ("NASA"). The
 sampled shards are the spoken priors' (every tenth). Counts are kept by the token's
 shape (``frend.electronic.letter_key``: case, length, whether a vowel letter occurs),
-with ``*`` pooling all; no corpus text is stored.
+and for an acronym icukit's lexicon lists, by its own surface ("NASA" is a word, "FBI"
+spelled; the surfaces are icukit's, not the corpus's); ``*`` pools all. Only counts are
+stored.
 
 ``--check`` repeats the sample and compares the JSON byte for byte.
 """
@@ -25,12 +27,26 @@ from build_spoken_priors import _default_corpus_dir, _files  # noqa: E402
 
 from frend.electronic import letter_key  # noqa: E402
 
+
+def _lexicon_acronyms() -> frozenset[str]:
+    """The all-capitals acronyms icukit's en_US lexicon lists (its surfaces, not corpus text)."""
+    from icukit.abbreviation_compile import compile_lexicon
+
+    compiled = compile_lexicon("en_US")
+    return frozenset(
+        entry.surface
+        for entry in compiled.lexicon.entries
+        if len(entry.surface) >= 2 and entry.surface.isalpha() and entry.surface.isupper()
+    )
+
+
 _OUT = _REPO / "frend" / "data" / "acronym_priors.json"
 _LABELS = {"LETTERS": "spelled", "PLAIN": "word"}
 
 
 def build_document(corpus_dir: Path) -> dict:
     counts: dict[str, Counter] = defaultdict(Counter)
+    acronyms = _lexicon_acronyms()
     files = _files(corpus_dir)
     for path in files:
         with path.open(encoding="utf-8") as handle:
@@ -44,6 +60,8 @@ def build_document(corpus_dir: Path) -> dict:
                 label = _LABELS[parts[0]]
                 counts[letter_key(written)][label] += 1
                 counts["*"][label] += 1
+                if written in acronyms:
+                    counts[f"surface:{written}"][label] += 1
     return {
         "provenance": {
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
@@ -52,7 +70,10 @@ def build_document(corpus_dir: Path) -> dict:
             "rule": (
                 "all-capitals letter tokens of two or more letters: LETTERS spelled, PLAIN word"
             ),
-            "keys": "letter_key(token); * pools all",
+            "keys": (
+                "letter_key(token); surface:<acronym> for an acronym icukit's en_US lexicon "
+                "lists; * pools all"
+            ),
         },
         "keys": {key: dict(sorted(labels.items())) for key, labels in sorted(counts.items())},
     }
