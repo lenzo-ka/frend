@@ -20,6 +20,7 @@ from icukit.recognize import (
     FlexibleMeasureDetector,
     FlexibleMixedMeasureDetector,
     FlexibleNumberDetector,
+    FlexibleNumericDurationDetector,
     FlexibleOrdinalDetector,
     FlexiblePercentDetector,
     FlexibleTextDateDetector,
@@ -1021,6 +1022,8 @@ _COVERAGE = [
     "boston.com",
     "jane.doe@example.org",
     "http://www.ucc.ie/celt/trotula.html",
+    "1:47.22",
+    "1:02:03",
     "/km²",
 ]
 
@@ -1151,6 +1154,7 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
         FlexibleMeasureDetector("en_US", "square-kilometer"),
         FlexibleMixedMeasureDetector("en_US", "foot-and-inch"),
         ElectronicDetector("en_US"),
+        FlexibleNumericDurationDetector("en_US"),
         *all_detectors("en_US", ("yMd", "Md", "y", "yMMMMEEEEd", "yMMMMd")).detectors,
     ]
     unspoken = {
@@ -1311,6 +1315,44 @@ def test_percent_reads_its_written_fraction_digits():
     unit, forms = _measure_forms("79.20%", FlexiblePercentDetector("en_US"), "number:percent")
     assert "seventy nine point two o percent" in forms
     assert unit.unspoken == ()
+
+
+def _duration_forms(written):
+    detections = [
+        d
+        for d in FlexibleNumericDurationDetector("en_US").detect(written)
+        if d["start"] == 0 and d["end"] == len(written)
+    ]
+    units = {}
+    for detection in detections:
+        lattice = resolve_lattice([detection], source_text=written)
+        edge = next(e for e in lattice.edges if e.kind == "reading")
+        unit = verbalize_edge(edge, source_text=written)
+        units[detection["value"].unit] = unit
+    return units
+
+
+def test_race_time_speaks_the_corpus_form_with_milliseconds():
+    """The corpus reads "31:18.85" as minutes, seconds "and eighty five milliseconds"."""
+    unit = _duration_forms("31:18.85")["second"]
+    forms = [normalize_spoken(a.text) for a in unit.alternatives]
+    assert "thirty one minutes eighteen seconds and eighty five milliseconds" in forms
+    assert "thirty one minutes eighteen point eight five seconds" in forms
+    assert unit.unspoken == ()
+
+
+def test_clock_like_duration_reads_both_ways_and_minutes_take_no_milliseconds():
+    """ "2:30" is hours and minutes or minutes and seconds; a fraction of a minute is a
+    decimal, never milliseconds."""
+    units = _duration_forms("2:30")
+    assert "two hours thirty minutes" in [
+        normalize_spoken(a.text) for a in units["minute"].alternatives
+    ]
+    assert "two minutes thirty seconds" in [
+        normalize_spoken(a.text) for a in units["second"].alternatives
+    ]
+    minutes = [normalize_spoken(a.text) for a in _duration_forms("1:47.22")["minute"].alternatives]
+    assert not any("milliseconds" in form for form in minutes)
 
 
 def _era_unit(written, era, year, era_text, form):

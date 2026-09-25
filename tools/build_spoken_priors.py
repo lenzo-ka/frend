@@ -145,6 +145,7 @@ def _detectors():
         FlexibleMeasureDetector,
         FlexibleMixedMeasureDetector,
         FlexibleNumberDetector,
+        FlexibleNumericDurationDetector,
         FlexibleOrdinalDetector,
         FlexiblePercentDetector,
         FlexibleTextDateDetector,
@@ -175,7 +176,7 @@ def _detectors():
         "date": dates.detectors,
         "fraction": (FlexibleFractionDetector("en_US"),),
         "ordinal": (FlexibleOrdinalDetector("en_US"), FlexibleNumberDetector("en_US"), runs),
-        "time": (FlexibleTimeDetector("en_US"), runs),
+        "time": (FlexibleTimeDetector("en_US"), FlexibleNumericDurationDetector("en_US"), runs),
         "electronic": (ElectronicDetector("en_US"),),
         "measure": (
             FlexiblePercentDetector("en_US"),
