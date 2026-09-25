@@ -32,6 +32,7 @@ if str(_REPO) not in sys.path:
 
 from frend.electronic import ElectronicDetector, decode_letter_notation  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
+from frend.written_forms import WrittenFormsDetector  # noqa: E402
 
 CLASS_TO_KIND = {
     "CARDINAL": "cardinal",
@@ -45,8 +46,8 @@ CLASS_TO_KIND = {
     "TIME": "time",
 }
 OUTSIDE_CLASSES = {
+    "DIGIT": "digit strings read digit by digit; not a measured kind",
     "ADDRESS": "no verbalized value family",
-    "DIGIT": "no verbalized value family",
     "LETTERS": "no verbalized value family",
     "PLAIN": "not a structured value",
     "PUNCT": "not a structured value",
@@ -158,6 +159,9 @@ def _detectors():
     # A letter-digit token read as its runs competes inside the classes it occurs in
     # (TIME "5pm", ORDINAL "4th", DATE "1830s"); it has no corpus class of its own.
     runs = AlphanumericRunsDetector("en_US")
+    # Forms ICU writes nowhere, read by frend itself (kal's ruling): "2: 13", "339 U.S.",
+    # "6 3", "500 B.C.".
+    written = WrittenFormsDetector("en_US")
     dates = date_detectors("en_US", _DATE_SKELETONS).with_(
         FlexibleDateDetector("en_US"),
         FlexibleTextDateDetector("en_US"),
@@ -171,12 +175,17 @@ def _detectors():
     )
     cardinals = numbers + (LetterNameDetector("en_US"), SingleLetterWordDetector("en_US"))
     return {
-        "cardinal": cardinals,
+        "cardinal": (*cardinals, written),
         "decimal": numbers,
-        "date": dates.detectors,
+        "date": (*dates.detectors, written),
         "fraction": (FlexibleFractionDetector("en_US"),),
         "ordinal": (FlexibleOrdinalDetector("en_US"), FlexibleNumberDetector("en_US"), runs),
-        "time": (FlexibleTimeDetector("en_US"), FlexibleNumericDurationDetector("en_US"), runs),
+        "time": (
+            FlexibleTimeDetector("en_US"),
+            FlexibleNumericDurationDetector("en_US"),
+            runs,
+            written,
+        ),
         "electronic": (ElectronicDetector("en_US"),),
         "measure": (
             FlexiblePercentDetector("en_US"),

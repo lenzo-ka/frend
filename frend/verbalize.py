@@ -25,6 +25,7 @@ from frend.electronic import (
 )
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.spoken_priors import measurement_sub_key, source_prior
+from frend.written_forms import DigitsValue
 
 __all__ = [
     "SpokenAlternative",
@@ -585,6 +586,7 @@ _SPOKEN_CAPTURES = {
             "currency",
             "compact",
             "whole",
+            "reporter",
             "numerator",
             "denominator",
         }
@@ -595,6 +597,7 @@ _SPOKEN_CAPTURES = {
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
+    "digits": frozenset({"digits"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
     "mixed-measure": frozenset({"integer", "unit"}),
@@ -926,7 +929,12 @@ def _spoken_era_year(
     fields = dict(value.fields)
     year = Decimal(fields["y"])
     years = _ranked([*_number_leaf(year, "cardinal", locale), *_number_leaf(year, "year", locale)])
-    return _compose([years, _era_names(fields["G"], detection, locale)], "{} {}")
+    eras = _era_names(fields["G"], detection, locale)
+    era, written_year = _capture(detection, "era"), _capture(detection, "y")
+    if era is not None and written_year is not None and era.start < written_year.start:
+        # Written era first ("A.D. 1066"): said in the written order.
+        return _compose([eras, years], "{} {}")
+    return _compose([years, eras], "{} {}")
 
 
 def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
@@ -1034,6 +1042,23 @@ def _spoken_number(
             SpokenAlternative(f"{item.text} {suffix}", item.provenance, item.weight)
             for item in _spoken_decimal(amount, locale)
         )
+    if type_ == "number:cardinal:citation":
+        # A case citation's volume ("339 U.S."): the corpus says the number alone; the
+        # reporter's letters are also offered, for the ranking to weigh.
+        base = _number_leaf(decimal, "cardinal", locale)
+        reporter = _capture(detection, "reporter")
+        letters = "".join(ch for ch in str(getattr(reporter, "text", "")) if ch.isalpha()).lower()
+        spelled = (
+            tuple(
+                SpokenAlternative(
+                    f"{item.text} {' '.join(letters)}", f"{item.provenance}+surface:letters"
+                )
+                for item in base
+            )
+            if letters
+            else ()
+        )
+        return _ranked([*base, *spelled])
     if type_.startswith(("number:cardinal", "number:int", "number:decimal")):
         return _number_leaf(decimal, "cardinal", locale)
     raise NotImplementedError(f"unsupported NumberValue reading class {type_!r}")
@@ -1280,6 +1305,17 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
     )
 
 
+def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Say spaced digits one by one by ICU's cardinal ("6 3" -> "six three"); a zero is
+    also "o", which ICU has no rule for, so that form is lexical."""
+    words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in value.digits]
+    forms = [SpokenAlternative(" ".join(words), "icu-rbnf:%spellout-cardinal")]
+    if "0" in value.digits:
+        spoken = " ".join("o" if d == "0" else w for d, w in zip(value.digits, words, strict=True))
+        forms.append(SpokenAlternative(spoken, f"icu-rbnf:%spellout-cardinal+{LEXICAL_SOURCE}"))
+    return _ranked(forms)
+
+
 def verbalize_edge(
     edge: ReadingEdge,
     *,
@@ -1346,6 +1382,10 @@ def verbalize_edge(
             alternatives = _spoken_mixed_measure(detection, locale)
             key_value = (value.decimal, value.unit)
             path = "mixed-measure"
+        elif isinstance(value, DigitsValue):
+            alternatives = _spoken_digits(value, locale)
+            key_value = value.digits
+            path = "digits"
         elif type(value).__name__ == "UnitValue":
             alternatives = _spoken_unit(value, locale)
             key_value = value.unit
