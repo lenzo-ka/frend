@@ -1,0 +1,72 @@
+{
+  "keys": {
+    "*": {
+      "spelled": 853152,
+      "word": 321069
+    },
+    "upper:2:nv": {
+      "spelled": 177899,
+      "word": 7983
+    },
+    "upper:2:v": {
+      "spelled": 100250,
+      "word": 54367
+    },
+    "upper:3:nv": {
+      "spelled": 223250,
+      "word": 762
+    },
+    "upper:3:v": {
+      "spelled": 156195,
+      "word": 87800
+    },
+    "upper:4:nv": {
+      "spelled": 31536,
+      "word": 19
+    },
+    "upper:4:v": {
+      "spelled": 118394,
+      "word": 64514
+    },
+    "upper:5:nv": {
+      "spelled": 2939
+    },
+    "upper:5:v": {
+      "spelled": 24518,
+      "word": 38001
+    },
+    "upper:6:nv": {
+      "spelled": 263,
+      "word": 4
+    },
+    "upper:6:v": {
+      "spelled": 7580,
+      "word": 24559
+    },
+    "upper:7:nv": {
+      "spelled": 61
+    },
+    "upper:7:v": {
+      "spelled": 10267,
+      "word": 43060
+    }
+  },
+  "provenance": {
+    "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "keys": "letter_key(token); * pools all",
+    "license": "CC BY-SA 4.0",
+    "rule": "all-capitals letter tokens of two or more letters: LETTERS spelled, PLAIN word",
+    "shards": [
+      "output-00000-of-00100",
+      "output-00010-of-00100",
+      "output-00020-of-00100",
+      "output-00030-of-00100",
+      "output-00040-of-00100",
+      "output-00050-of-00100",
+      "output-00060-of-00100",
+      "output-00070-of-00100",
+      "output-00080-of-00100",
+      "output-00090-of-00100"
+    ]
+  }
+}

@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+- Read an acronym spelled and as a word, weighted as the corpus measures its shape, before
+  icukit's long forms (kal's ruling, split by source): "FBI" gives "f b i", "fbi" and
+  "Federal Bureau of Investigation"; "BBC", which has no vowel, is spelled first. The
+  weights come from a new table, `data/acronym_priors.json`
+  (`tools/build_acronym_priors.py`), which counts how often the corpus spells an
+  all-capitals token (LETTERS) or leaves it as a word (PLAIN) by length and vowel. A
+  spelled form icukit already gives ("M D") takes the weight rather than being repeated.
 - Spoke relative dates (icukit's `date:relative`) as ICU's wide style says them. A named
   phrase reads as ICU's wide phrase for its direction and unit ("last Fri." "last
   Friday", "last mo." "last month", "yesterday"); a numeric one as ICU's wide numeric
