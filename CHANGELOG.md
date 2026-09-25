@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- Raised the icukit floor to `icukit>=0.6`, the first release carrying what frend now
+  uses from icukit #99 to #109: numeric durations, units written with no amount
+  (`UnitValue`), CLDR's era variants and wide eras, and curated unit spellings. Against
+  0.5.0 the tests failed to import `FlexibleNumericDurationDetector`.
 - Remeasured the spoken-priors table on icukit `e91dd58` (#107 to #109, unreleased):
   composed units and the curated unit spellings ICU does not write ("lbs", "sq km",
   "per km²") raise MEASURE matched from 1944 to 1954 of 2000. No other kind changed.
