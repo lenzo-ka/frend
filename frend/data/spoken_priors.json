@@ -3341,8 +3341,10 @@
       }
     },
     "time": {
-      "matched": 1700,
+      "matched": 1856,
       "source_matched": {
+        "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units": 86,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US": 70,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 646,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 256,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 50,
@@ -3444,18 +3446,6 @@
           "count": 2,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 0,
-            "unverbalized": 2
-          },
-          "spoken": "one hour eight minutes and fifty two seconds",
-          "written_forms": {
-            "1:08:52": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
             "unrecognized": 2,
             "unverbalized": 0
           },
@@ -3540,8 +3530,8 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "no_alternative_matched": 2,
+            "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "twenty four hundred",
@@ -3589,21 +3579,33 @@
           "count": 1,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 0,
-            "unverbalized": 1
+            "unrecognized": 1,
+            "unverbalized": 0
           },
-          "spoken": "eight hours twenty four minutes and zero seconds",
+          "spoken": "eight thirty two",
           "written_forms": {
-            "08:24:00": 1
+            "8: 32": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eight twenty one",
+          "written_forms": {
+            "8: 21": 1
           }
         }
       ],
       "total": 2000,
-      "unmatched": 300,
+      "unmatched": 144,
       "unmatched_by_reason": {
-        "no_alternative_matched": 7,
-        "unrecognized": 199,
-        "unverbalized": 94
+        "no_alternative_matched": 10,
+        "unrecognized": 124,
+        "unverbalized": 10
       }
     }
   },
@@ -3768,6 +3770,7 @@
         ],
         "time": [
           "FlexibleTimeDetector",
+          "FlexibleNumericDurationDetector",
           "AlphanumericRunsDetector"
         ]
       },

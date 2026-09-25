@@ -168,6 +168,8 @@ def _measured_kind(type_: str, value: object) -> str | None:
         return "date"
     if type_.startswith("time:"):
         return "time"
+    if type_.startswith("measure:duration"):
+        return "time"
     if type_.startswith("measure:") or type_ == "number:percent":
         return "measure"
     if type_.startswith("ordinal:"):
@@ -596,6 +598,7 @@ _SPOKEN_CAPTURES = {
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
     "mixed-measure": frozenset({"integer", "unit"}),
+    "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
     "roman": frozenset({"integer", "apostrophe", "suffix"}),
 }
 _MINUS_SIGNS = frozenset({"-", "−"})
@@ -1019,6 +1022,86 @@ def _spoken_measure(value: MeasureValue, locale: str) -> tuple[SpokenAlternative
     )
 
 
+_DURATION_UNITS = {"h": "hour", "m": "minute", "s": "second"}
+
+
+def _unit_joiners(locale: str) -> tuple[icu.ListFormatter, ...]:
+    """ICU's list patterns that join unit phrases: narrow units ("one minute nineteen
+    seconds") and wide "and" ("one minute and nineteen seconds")."""
+    return tuple(
+        icu.ListFormatter.createInstance(icu.Locale(locale), kind, width)
+        for kind, width in (
+            (icu.UListFormatterType.UNITS, icu.UListFormatterWidth.NARROW),
+            (icu.UListFormatterType.AND, icu.UListFormatterWidth.WIDE),
+        )
+    )
+
+
+def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Speak a numeric duration ("1:47.22") component by component in ICU's wide units.
+
+    icukit captures each field ("m" 1, "s" 47); each reads as a cardinal in ICU's wide
+    unit form, and ICU's list patterns for units join them. A written fraction of the
+    last field reads two ways: as ICU's decimal ("forty seven point two two seconds"),
+    and as the corpus reads a race time, the fraction's digits as a count of
+    milliseconds after "and" ("... seconds and twenty two milliseconds"); that reading
+    is the corpus's, so it is lexical over ICU's unit forms.
+    """
+    fields = [
+        (Decimal(str(capture.value)), _DURATION_UNITS[capture.name])
+        for capture in detection.get("captures", ())  # type: ignore[union-attr]
+        if capture.name in _DURATION_UNITS
+    ]
+    if not fields:
+        raise NotImplementedError("duration without a captured field")
+    fraction = _capture(detection, "fraction")
+
+    def phrase(amount: Decimal, unit: str, reader) -> list[tuple[str, str]]:
+        template = _measure_template(amount, unit, locale)
+        return [
+            (template.format(item.text), f"{item.provenance}+icu-measure:wide")
+            for item in reader(amount)
+        ]
+
+    def cardinal(amount: Decimal) -> tuple[SpokenAlternative, ...]:
+        return _number_leaf(amount, "cardinal", locale)
+
+    def decimal(amount: Decimal) -> tuple[SpokenAlternative, ...]:
+        return _spoken_decimal(amount, locale)
+
+    head = [phrase(amount, unit, cardinal) for amount, unit in fields[:-1]]
+    last_amount, last_unit = fields[-1]
+    readings: list[tuple[list[list[tuple[str, str]]], str]] = []
+    if fraction is None:
+        readings.append(([*head, phrase(last_amount, last_unit, cardinal)], ""))
+    else:
+        exact = Decimal(f"{last_amount}.{fraction.text}")
+        readings.append(([*head, phrase(exact, last_unit, decimal)], ""))
+        if last_unit == "second":
+            count = Decimal(str(fraction.text))
+            milliseconds = phrase(count, "millisecond", cardinal)
+            readings.append(
+                ([*head, phrase(last_amount, last_unit, cardinal), milliseconds], "and")
+            )
+    forms = []
+    for groups, tail in readings:
+        for combination in product(*groups):
+            texts = [text for text, _ in combination]
+            source = "+".join(provenance for _, provenance in combination)
+            if tail:
+                # The corpus's race-time reading: "and" before the milliseconds only.
+                body = _unit_joiners(locale)[0].format(texts[:-1])
+                forms.append(
+                    SpokenAlternative(
+                        f"{body} and {texts[-1]}", f"{source}+icu-list:units+{LEXICAL_SOURCE}"
+                    )
+                )
+                continue
+            for joiner in _unit_joiners(locale):
+                forms.append(SpokenAlternative(joiner.format(texts), f"{source}+icu-list:units"))
+    return _ranked(forms)
+
+
 def _spoken_mixed_measure(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
     """Speak each component of a mixed measure in its own unit, joined as ICU joins units.
 
@@ -1183,6 +1266,10 @@ def verbalize_edge(
             alternatives = _spoken_time(value, detection, locale)
             key_value = tuple(value.fields)
             path = "time"
+        elif isinstance(value, MeasureValue) and type_.startswith("measure:duration"):
+            alternatives = _spoken_duration(detection, locale)
+            key_value = (value.decimal, value.unit)
+            path = "duration"
         elif isinstance(value, MeasureValue) and "-and-" in type_:
             alternatives = _spoken_mixed_measure(detection, locale)
             key_value = (value.decimal, value.unit)

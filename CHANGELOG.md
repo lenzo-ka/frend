@@ -1,6 +1,14 @@
 # Changelog
 
 ## Unreleased
+- Spoke icukit #99's numeric durations ("1:47.22", "2:30") as TIME, where the corpus
+  files them. Each field reads as a cardinal in ICU's wide unit form, joined by ICU's
+  list patterns for units ("one minute nineteen seconds"). A written fraction of the
+  seconds reads as ICU's decimal and, as the corpus reads a race time, as its digits in
+  milliseconds after "and" ("... eighteen seconds and eighty five milliseconds",
+  lexical). TIME matched rises from 1700 to 1856 of 2000 sampled rows; rows left
+  unverbalized, mostly times with seconds, fall from 94 to 10. The tests and the table
+  builder need an icukit release carrying #99 (`FlexibleNumericDurationDetector`).
 - Recognized and spoke URLs, email addresses and bare domains, which ICU and icukit leave
   to frend (`frend.electronic.ElectronicDetector`). A span is a scheme URL, a "www."
   address, an email address, or a domain whose last label is in IANA's top-level-domain
