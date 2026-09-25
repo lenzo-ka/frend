@@ -30,12 +30,14 @@ _DATE_SKELETONS = ("yMd", "Md", "y")
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from frend.electronic import ElectronicDetector, decode_letter_notation  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
 
 CLASS_TO_KIND = {
     "CARDINAL": "cardinal",
     "DATE": "date",
     "DECIMAL": "decimal",
+    "ELECTRONIC": "electronic",
     "FRACTION": "fraction",
     "MEASURE": "measure",
     "MONEY": "money",
@@ -45,7 +47,6 @@ CLASS_TO_KIND = {
 OUTSIDE_CLASSES = {
     "ADDRESS": "no verbalized value family",
     "DIGIT": "no verbalized value family",
-    "ELECTRONIC": "no verbalized value family",
     "LETTERS": "no verbalized value family",
     "PLAIN": "not a structured value",
     "PUNCT": "not a structured value",
@@ -175,6 +176,7 @@ def _detectors():
         "fraction": (FlexibleFractionDetector("en_US"),),
         "ordinal": (FlexibleOrdinalDetector("en_US"), FlexibleNumberDetector("en_US"), runs),
         "time": (FlexibleTimeDetector("en_US"), runs),
+        "electronic": (ElectronicDetector("en_US"),),
         "measure": (
             FlexiblePercentDetector("en_US"),
             *(FlexibleMeasureDetector("en_US", unit) for unit in _MEASURE_UNITS),
@@ -269,6 +271,8 @@ def build_document(corpus_dir: Path) -> dict:
                 kind = CLASS_TO_KIND[corpus_class]
                 aggregate = aggregates[kind]
                 aggregate["total"] += 1
+                if corpus_class == "ELECTRONIC":
+                    spoken = decode_letter_notation(spoken)
                 target = normalize_spoken(spoken)
                 recognition_written = written.rstrip(" ,")
                 recognized, alternatives = _alternatives(recognition_written, kind, detectors)
@@ -321,7 +325,10 @@ def build_document(corpus_dir: Path) -> dict:
                 )
             },
             "unmatched_by_reason": dict(sorted(aggregate["unmatched_by_reason"].items())),
-            "top_unmatched": [
+            # No unmatched examples for electronic rows: they would copy URLs from the corpus.
+            "top_unmatched": []
+            if kind == "electronic"
+            else [
                 {
                     "spoken": spoken,
                     "count": detail["count"],

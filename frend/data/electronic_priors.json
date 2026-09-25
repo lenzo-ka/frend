@@ -1,0 +1,1083 @@
+{
+  "digits": {
+    "*": {
+      "cardinal": 5388,
+      "digits": 1621,
+      "digits_o": 3899,
+      "year": 1188
+    },
+    "1:n": {
+      "cardinal": 2972,
+      "digits_o": 238
+    },
+    "2:n": {
+      "cardinal": 2416,
+      "digits": 11,
+      "digits_o": 5
+    },
+    "2:z": {
+      "digits_o": 1071
+    },
+    "3:n": {
+      "digits": 584,
+      "digits_o": 307
+    },
+    "3:z": {
+      "digits_o": 164
+    },
+    "4:n": {
+      "digits": 380,
+      "digits_o": 764,
+      "year": 1188
+    },
+    "4:z": {
+      "digits_o": 110
+    },
+    "5:n": {
+      "digits": 646,
+      "digits_o": 986
+    },
+    "5:z": {
+      "digits_o": 254
+    }
+  },
+  "letters": {
+    "*": {
+      "spelled": 34846,
+      "word": 120672
+    },
+    "lower:1:nv": {
+      "word": 967
+    },
+    "lower:1:v": {
+      "word": 585
+    },
+    "lower:2:nv": {
+      "spelled": 1180
+    },
+    "lower:2:v": {
+      "spelled": 111,
+      "word": 4293
+    },
+    "lower:3:nv": {
+      "spelled": 9622
+    },
+    "lower:3:v": {
+      "spelled": 871,
+      "word": 5765
+    },
+    "lower:4:nv": {
+      "spelled": 6591
+    },
+    "lower:4:v": {
+      "spelled": 804,
+      "word": 4806
+    },
+    "lower:5:nv": {
+      "spelled": 446
+    },
+    "lower:5:v": {
+      "spelled": 148,
+      "word": 5399
+    },
+    "lower:6:nv": {
+      "spelled": 16
+    },
+    "lower:6:v": {
+      "spelled": 53,
+      "word": 4871
+    },
+    "lower:7:nv": {
+      "spelled": 283
+    },
+    "lower:7:v": {
+      "spelled": 269,
+      "word": 23615
+    },
+    "mixed:2:nv": {
+      "spelled": 3
+    },
+    "mixed:2:v": {
+      "word": 4
+    },
+    "mixed:3:nv": {
+      "spelled": 21
+    },
+    "mixed:3:v": {
+      "word": 25
+    },
+    "mixed:4:nv": {
+      "spelled": 41
+    },
+    "mixed:4:v": {
+      "spelled": 127,
+      "word": 145
+    },
+    "mixed:5:nv": {
+      "spelled": 20
+    },
+    "mixed:5:v": {
+      "spelled": 28,
+      "word": 241
+    },
+    "mixed:6:nv": {
+      "spelled": 9
+    },
+    "mixed:6:v": {
+      "spelled": 10,
+      "word": 1024
+    },
+    "mixed:7:nv": {
+      "spelled": 10
+    },
+    "mixed:7:v": {
+      "spelled": 3,
+      "word": 10482
+    },
+    "title:2:nv": {
+      "spelled": 89
+    },
+    "title:2:v": {
+      "spelled": 15,
+      "word": 142
+    },
+    "title:3:nv": {
+      "spelled": 88
+    },
+    "title:3:v": {
+      "spelled": 79,
+      "word": 794
+    },
+    "title:4:nv": {
+      "spelled": 25
+    },
+    "title:4:v": {
+      "spelled": 65,
+      "word": 1528
+    },
+    "title:5:nv": {
+      "spelled": 8
+    },
+    "title:5:v": {
+      "spelled": 18,
+      "word": 2711
+    },
+    "title:6:nv": {
+      "spelled": 2
+    },
+    "title:6:v": {
+      "spelled": 8,
+      "word": 4731
+    },
+    "title:7:nv": {
+      "spelled": 1
+    },
+    "title:7:v": {
+      "spelled": 2,
+      "word": 12108
+    },
+    "tld:aaa": {
+      "word": 3
+    },
+    "tld:abc": {
+      "word": 3
+    },
+    "tld:ac": {
+      "spelled": 4
+    },
+    "tld:ad": {
+      "spelled": 1
+    },
+    "tld:ae": {
+      "spelled": 5
+    },
+    "tld:aero": {
+      "word": 1
+    },
+    "tld:af": {
+      "spelled": 2
+    },
+    "tld:africa": {
+      "word": 1
+    },
+    "tld:ag": {
+      "spelled": 2
+    },
+    "tld:ai": {
+      "spelled": 1
+    },
+    "tld:al": {
+      "spelled": 26,
+      "word": 2
+    },
+    "tld:am": {
+      "spelled": 114
+    },
+    "tld:app": {
+      "word": 7
+    },
+    "tld:ar": {
+      "spelled": 15
+    },
+    "tld:army": {
+      "word": 1
+    },
+    "tld:arpa": {
+      "word": 1
+    },
+    "tld:art": {
+      "word": 14
+    },
+    "tld:as": {
+      "spelled": 3
+    },
+    "tld:asia": {
+      "word": 2
+    },
+    "tld:at": {
+      "spelled": 125,
+      "word": 1
+    },
+    "tld:au": {
+      "spelled": 497,
+      "word": 32
+    },
+    "tld:az": {
+      "spelled": 19
+    },
+    "tld:ba": {
+      "spelled": 17
+    },
+    "tld:baseball": {
+      "word": 2
+    },
+    "tld:bb": {
+      "spelled": 1
+    },
+    "tld:bbc": {
+      "spelled": 6
+    },
+    "tld:bd": {
+      "spelled": 1
+    },
+    "tld:be": {
+      "spelled": 91,
+      "word": 1
+    },
+    "tld:bf": {
+      "spelled": 11
+    },
+    "tld:bg": {
+      "spelled": 20
+    },
+    "tld:bi": {
+      "spelled": 2
+    },
+    "tld:biz": {
+      "word": 51
+    },
+    "tld:bm": {
+      "spelled": 1
+    },
+    "tld:bo": {
+      "word": 1
+    },
+    "tld:bom": {
+      "word": 1
+    },
+    "tld:br": {
+      "spelled": 58
+    },
+    "tld:by": {
+      "spelled": 10
+    },
+    "tld:bz": {
+      "spelled": 1
+    },
+    "tld:ca": {
+      "spelled": 544,
+      "word": 20
+    },
+    "tld:cal": {
+      "word": 1
+    },
+    "tld:car": {
+      "word": 1
+    },
+    "tld:care": {
+      "word": 1
+    },
+    "tld:cat": {
+      "word": 8
+    },
+    "tld:cc": {
+      "spelled": 18
+    },
+    "tld:cd": {
+      "spelled": 3
+    },
+    "tld:cf": {
+      "spelled": 3
+    },
+    "tld:ch": {
+      "spelled": 250
+    },
+    "tld:ci": {
+      "spelled": 3
+    },
+    "tld:ck": {
+      "spelled": 1
+    },
+    "tld:cl": {
+      "spelled": 23
+    },
+    "tld:cm": {
+      "spelled": 1
+    },
+    "tld:cn": {
+      "spelled": 79
+    },
+    "tld:co": {
+      "spelled": 46,
+      "word": 1
+    },
+    "tld:com": {
+      "word": 25673
+    },
+    "tld:company": {
+      "word": 1
+    },
+    "tld:coop": {
+      "word": 3
+    },
+    "tld:country": {
+      "word": 1
+    },
+    "tld:cu": {
+      "spelled": 6
+    },
+    "tld:cx": {
+      "spelled": 8
+    },
+    "tld:cy": {
+      "spelled": 4
+    },
+    "tld:cymru": {
+      "word": 1
+    },
+    "tld:cz": {
+      "spelled": 872
+    },
+    "tld:day": {
+      "word": 1
+    },
+    "tld:de": {
+      "spelled": 734,
+      "word": 10
+    },
+    "tld:degree": {
+      "word": 1
+    },
+    "tld:delta": {
+      "word": 1
+    },
+    "tld:dk": {
+      "spelled": 163
+    },
+    "tld:do": {
+      "spelled": 4,
+      "word": 12
+    },
+    "tld:ec": {
+      "spelled": 2
+    },
+    "tld:edu": {
+      "spelled": 620
+    },
+    "tld:ee": {
+      "spelled": 26
+    },
+    "tld:eg": {
+      "spelled": 2
+    },
+    "tld:email": {
+      "word": 1
+    },
+    "tld:er": {
+      "spelled": 1
+    },
+    "tld:es": {
+      "spelled": 76,
+      "word": 3
+    },
+    "tld:et": {
+      "spelled": 2
+    },
+    "tld:eu": {
+      "spelled": 87,
+      "word": 6
+    },
+    "tld:fi": {
+      "spelled": 248
+    },
+    "tld:fit": {
+      "word": 1
+    },
+    "tld:fj": {
+      "spelled": 2
+    },
+    "tld:fm": {
+      "spelled": 72
+    },
+    "tld:fo": {
+      "spelled": 9
+    },
+    "tld:fr": {
+      "spelled": 236
+    },
+    "tld:gal": {
+      "word": 1
+    },
+    "tld:games": {
+      "word": 3
+    },
+    "tld:gay": {
+      "word": 1
+    },
+    "tld:gb": {
+      "spelled": 1
+    },
+    "tld:gd": {
+      "spelled": 1
+    },
+    "tld:ge": {
+      "spelled": 7
+    },
+    "tld:gg": {
+      "spelled": 1
+    },
+    "tld:gh": {
+      "spelled": 3
+    },
+    "tld:gl": {
+      "spelled": 1
+    },
+    "tld:gm": {
+      "spelled": 1
+    },
+    "tld:gov": {
+      "word": 615
+    },
+    "tld:gr": {
+      "spelled": 60
+    },
+    "tld:gt": {
+      "spelled": 4
+    },
+    "tld:gu": {
+      "spelled": 1
+    },
+    "tld:hiv": {
+      "word": 1
+    },
+    "tld:hk": {
+      "spelled": 23
+    },
+    "tld:hn": {
+      "spelled": 14
+    },
+    "tld:hr": {
+      "spelled": 119
+    },
+    "tld:ht": {
+      "spelled": 1
+    },
+    "tld:hu": {
+      "spelled": 39,
+      "word": 3
+    },
+    "tld:id": {
+      "spelled": 58
+    },
+    "tld:ie": {
+      "spelled": 180,
+      "word": 4
+    },
+    "tld:il": {
+      "spelled": 44,
+      "word": 1
+    },
+    "tld:im": {
+      "spelled": 4
+    },
+    "tld:in": {
+      "spelled": 202,
+      "word": 20
+    },
+    "tld:inc": {
+      "word": 1
+    },
+    "tld:info": {
+      "word": 165
+    },
+    "tld:ing": {
+      "word": 7
+    },
+    "tld:ink": {
+      "word": 1
+    },
+    "tld:int": {
+      "word": 34
+    },
+    "tld:io": {
+      "spelled": 30
+    },
+    "tld:iq": {
+      "spelled": 4
+    },
+    "tld:ir": {
+      "spelled": 9,
+      "word": 3
+    },
+    "tld:is": {
+      "spelled": 37
+    },
+    "tld:it": {
+      "spelled": 313,
+      "word": 5
+    },
+    "tld:jm": {
+      "spelled": 1
+    },
+    "tld:jo": {
+      "spelled": 2,
+      "word": 1
+    },
+    "tld:jp": {
+      "spelled": 159
+    },
+    "tld:ke": {
+      "spelled": 8
+    },
+    "tld:kg": {
+      "spelled": 2
+    },
+    "tld:km": {
+      "spelled": 4
+    },
+    "tld:kr": {
+      "spelled": 25
+    },
+    "tld:krd": {
+      "spelled": 3
+    },
+    "tld:ky": {
+      "spelled": 2
+    },
+    "tld:kz": {
+      "spelled": 12
+    },
+    "tld:la": {
+      "spelled": 4
+    },
+    "tld:lat": {
+      "word": 2
+    },
+    "tld:lb": {
+      "spelled": 3
+    },
+    "tld:lc": {
+      "spelled": 3
+    },
+    "tld:li": {
+      "spelled": 1,
+      "word": 1
+    },
+    "tld:lk": {
+      "spelled": 16
+    },
+    "tld:lol": {
+      "word": 1
+    },
+    "tld:london": {
+      "word": 1
+    },
+    "tld:ls": {
+      "spelled": 1
+    },
+    "tld:lt": {
+      "spelled": 16
+    },
+    "tld:lu": {
+      "spelled": 3
+    },
+    "tld:lv": {
+      "spelled": 19
+    },
+    "tld:ly": {
+      "spelled": 18,
+      "word": 1
+    },
+    "tld:ma": {
+      "spelled": 3
+    },
+    "tld:man": {
+      "word": 3
+    },
+    "tld:management": {
+      "word": 1
+    },
+    "tld:map": {
+      "word": 1
+    },
+    "tld:md": {
+      "spelled": 10
+    },
+    "tld:me": {
+      "spelled": 17
+    },
+    "tld:med": {
+      "word": 22
+    },
+    "tld:mil": {
+      "word": 78
+    },
+    "tld:mk": {
+      "spelled": 5
+    },
+    "tld:ml": {
+      "spelled": 1
+    },
+    "tld:mm": {
+      "spelled": 2
+    },
+    "tld:mn": {
+      "spelled": 4
+    },
+    "tld:mo": {
+      "spelled": 5
+    },
+    "tld:mobi": {
+      "word": 1
+    },
+    "tld:moe": {
+      "word": 1
+    },
+    "tld:mov": {
+      "word": 6
+    },
+    "tld:mp": {
+      "spelled": 1
+    },
+    "tld:ms": {
+      "spelled": 1
+    },
+    "tld:mtn": {
+      "spelled": 1
+    },
+    "tld:mu": {
+      "spelled": 2
+    },
+    "tld:music": {
+      "word": 1
+    },
+    "tld:mx": {
+      "spelled": 24
+    },
+    "tld:my": {
+      "spelled": 10,
+      "word": 2
+    },
+    "tld:na": {
+      "spelled": 5
+    },
+    "tld:name": {
+      "word": 2
+    },
+    "tld:nc": {
+      "spelled": 1
+    },
+    "tld:ne": {
+      "spelled": 3
+    },
+    "tld:net": {
+      "word": 2274
+    },
+    "tld:network": {
+      "word": 1
+    },
+    "tld:news": {
+      "word": 4
+    },
+    "tld:next": {
+      "word": 2
+    },
+    "tld:ng": {
+      "spelled": 7
+    },
+    "tld:ni": {
+      "spelled": 5
+    },
+    "tld:nl": {
+      "spelled": 270
+    },
+    "tld:no": {
+      "spelled": 218,
+      "word": 2
+    },
+    "tld:now": {
+      "word": 3
+    },
+    "tld:nr": {
+      "spelled": 5
+    },
+    "tld:nu": {
+      "spelled": 22
+    },
+    "tld:nz": {
+      "spelled": 171
+    },
+    "tld:one": {
+      "word": 1
+    },
+    "tld:org": {
+      "word": 4859
+    },
+    "tld:pa": {
+      "spelled": 1
+    },
+    "tld:page": {
+      "word": 4
+    },
+    "tld:pe": {
+      "spelled": 9
+    },
+    "tld:pg": {
+      "spelled": 5
+    },
+    "tld:ph": {
+      "spelled": 73
+    },
+    "tld:phone": {
+      "word": 1
+    },
+    "tld:pk": {
+      "spelled": 30
+    },
+    "tld:pl": {
+      "spelled": 163
+    },
+    "tld:play": {
+      "word": 1
+    },
+    "tld:pm": {
+      "spelled": 2
+    },
+    "tld:pn": {
+      "spelled": 1
+    },
+    "tld:poker": {
+      "word": 1
+    },
+    "tld:pr": {
+      "spelled": 2
+    },
+    "tld:press": {
+      "word": 3
+    },
+    "tld:pro": {
+      "word": 1
+    },
+    "tld:pt": {
+      "spelled": 21
+    },
+    "tld:pub": {
+      "word": 5
+    },
+    "tld:py": {
+      "spelled": 1
+    },
+    "tld:qa": {
+      "spelled": 1
+    },
+    "tld:re": {
+      "spelled": 1
+    },
+    "tld:ro": {
+      "spelled": 58,
+      "word": 1
+    },
+    "tld:room": {
+      "word": 1
+    },
+    "tld:rs": {
+      "spelled": 29
+    },
+    "tld:ru": {
+      "spelled": 278,
+      "word": 3
+    },
+    "tld:sa": {
+      "spelled": 2,
+      "word": 1
+    },
+    "tld:sc": {
+      "spelled": 3
+    },
+    "tld:scot": {
+      "word": 2
+    },
+    "tld:se": {
+      "spelled": 159,
+      "word": 4
+    },
+    "tld:sg": {
+      "spelled": 16
+    },
+    "tld:sh": {
+      "spelled": 2
+    },
+    "tld:si": {
+      "spelled": 26
+    },
+    "tld:sk": {
+      "spelled": 43
+    },
+    "tld:sl": {
+      "spelled": 2
+    },
+    "tld:sm": {
+      "spelled": 1
+    },
+    "tld:sn": {
+      "spelled": 1
+    },
+    "tld:so": {
+      "spelled": 2
+    },
+    "tld:soccer": {
+      "word": 2
+    },
+    "tld:solar": {
+      "word": 1
+    },
+    "tld:ss": {
+      "spelled": 1
+    },
+    "tld:st": {
+      "spelled": 7
+    },
+    "tld:su": {
+      "spelled": 3,
+      "word": 1
+    },
+    "tld:sv": {
+      "spelled": 3
+    },
+    "tld:sy": {
+      "spelled": 5
+    },
+    "tld:tab": {
+      "word": 5
+    },
+    "tld:th": {
+      "spelled": 2
+    },
+    "tld:tk": {
+      "spelled": 1
+    },
+    "tld:tl": {
+      "spelled": 1
+    },
+    "tld:tm": {
+      "spelled": 1
+    },
+    "tld:to": {
+      "spelled": 13
+    },
+    "tld:today": {
+      "word": 2
+    },
+    "tld:top": {
+      "word": 3
+    },
+    "tld:tr": {
+      "spelled": 21
+    },
+    "tld:tv": {
+      "spelled": 191
+    },
+    "tld:tw": {
+      "spelled": 11
+    },
+    "tld:ua": {
+      "spelled": 24
+    },
+    "tld:ug": {
+      "spelled": 10
+    },
+    "tld:uk": {
+      "spelled": 1847,
+      "word": 60
+    },
+    "tld:university": {
+      "word": 1
+    },
+    "tld:us": {
+      "spelled": 115,
+      "word": 4
+    },
+    "tld:uy": {
+      "spelled": 6
+    },
+    "tld:uz": {
+      "spelled": 5
+    },
+    "tld:va": {
+      "spelled": 7
+    },
+    "tld:ve": {
+      "spelled": 3
+    },
+    "tld:vet": {
+      "word": 1
+    },
+    "tld:vi": {
+      "spelled": 3
+    },
+    "tld:vn": {
+      "spelled": 7
+    },
+    "tld:web": {
+      "word": 7
+    },
+    "tld:ws": {
+      "spelled": 9
+    },
+    "tld:xxx": {
+      "spelled": 3
+    },
+    "tld:xyz": {
+      "word": 4
+    },
+    "tld:za": {
+      "spelled": 56,
+      "word": 1
+    },
+    "tld:zip": {
+      "word": 4
+    },
+    "tld:zw": {
+      "spelled": 1
+    },
+    "upper:1:nv": {
+      "word": 684
+    },
+    "upper:1:v": {
+      "word": 217
+    },
+    "upper:2:nv": {
+      "spelled": 519
+    },
+    "upper:2:v": {
+      "spelled": 93,
+      "word": 304
+    },
+    "upper:3:nv": {
+      "spelled": 1206
+    },
+    "upper:3:v": {
+      "spelled": 366,
+      "word": 357
+    },
+    "upper:4:nv": {
+      "spelled": 146
+    },
+    "upper:4:v": {
+      "spelled": 582,
+      "word": 390
+    },
+    "upper:5:nv": {
+      "spelled": 82
+    },
+    "upper:5:v": {
+      "spelled": 57,
+      "word": 123
+    },
+    "upper:6:v": {
+      "spelled": 10,
+      "word": 81
+    },
+    "upper:7:v": {
+      "spelled": 1,
+      "word": 149
+    }
+  },
+  "provenance": {
+    "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "keys": {
+      "digits": "digit_key(run); * pools all",
+      "letters": "letter_key(run), or tld:<domain> for a top-level domain; * pools all",
+      "separators": "the written character"
+    },
+    "license": "CC BY-SA 4.0",
+    "rows": 53257,
+    "rows_aligned": 49001,
+    "shards": [
+      "output-00000-of-00100",
+      "output-00010-of-00100",
+      "output-00020-of-00100",
+      "output-00030-of-00100",
+      "output-00040-of-00100",
+      "output-00050-of-00100",
+      "output-00060-of-00100",
+      "output-00070-of-00100",
+      "output-00080-of-00100",
+      "output-00090-of-00100"
+    ],
+    "tld_list": "Version 2026092400, Last Updated Thu Sep 24 07:07:01 2026 UTC"
+  },
+  "separators": {
+    "#": {
+      "hash": 302
+    },
+    "$": {
+      "dollar": 8
+    },
+    "%": {
+      "percent": 382
+    },
+    "&": {
+      "and": 7
+    },
+    "+": {
+      "plus": 1
+    },
+    ",": {
+      "comma": 153
+    },
+    "-": {
+      "dash": 15107,
+      "sil": 11
+    },
+    ".": {
+      "dot": 69258
+    },
+    "/": {
+      "slash": 33980
+    },
+    ":": {
+      "colon": 6503,
+      "sil": 29
+    },
+    ";": {
+      "semicolon": 84
+    },
+    "_": {
+      "underscore": 2688
+    },
+    "~": {
+      "tilde": 90
+    }
+  }
+}

@@ -1,6 +1,17 @@
 # Changelog
 
 ## Unreleased
+- Recognized and spoke URLs, email addresses and bare domains, which ICU and icukit leave
+  to frend (`frend.electronic.ElectronicDetector`). A span is a scheme URL, a "www."
+  address, an email address, or a domain whose last label is in IANA's top-level-domain
+  list (vendored); every host must pass ICU's IDNA (UTS #46) and only maximal spans are
+  read, so icukit's readings inside a URL lose to it in the 1-best. Each run is said as
+  the corpus is measured to say it (`data/electronic_priors.json`, from 49,001 aligned
+  rows): a letter run as a word or spelled by its shape, a top-level domain by its own
+  evidence ("com" a word, "edu" spelled), a digit run as ICU's cardinal or year or digit
+  by digit, a separator by its measured name ("dot", "slash", "dash"). Only "@" is
+  lexical ("at"): the corpus holds no email address. ELECTRONIC is a new measured kind
+  in the spoken priors: 1605 of 2000 sampled rows match.
 - Stated in the README that frend reads plain text: Markdown, HTML, XML (including
   SSML) and rich text must be handled before the string reaches frend and icukit, and
   frend has no markup modes yet.

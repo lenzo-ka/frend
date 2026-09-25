@@ -266,6 +266,21 @@
         "unverbalized": 0
       }
     },
+    "electronic": {
+      "matched": 1605,
+      "source_matched": {
+        "measured:electronic": 1605
+      },
+      "sub_keys": {},
+      "top_unmatched": [],
+      "total": 2000,
+      "unmatched": 395,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 128,
+        "unrecognized": 263,
+        "unverbalized": 4
+      }
+    },
     "fraction": {
       "matched": 1961,
       "source_matched": {
@@ -2440,10 +2455,10 @@
       }
     },
     "measure": {
-      "matched": 1924,
+      "matched": 1933,
       "source_matched": {
         "icu-rbnf:%spellout-numbering": 535,
-        "icu-rbnf:%spellout-numbering+icu-measure:wide": 665,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide": 674,
         "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 284,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 135,
@@ -2520,9 +2535,9 @@
           }
         },
         "hour": {
-          "matched": 1,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
           }
         },
         "inch": {
@@ -2644,9 +2659,9 @@
           }
         },
         "milliliter": {
-          "matched": 2,
+          "matched": 9,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 8,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
         },
@@ -2782,18 +2797,6 @@
           }
         },
         {
-          "count": 3,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
-            "unverbalized": 0
-          },
-          "spoken": "five hundred milliliters",
-          "written_forms": {
-            "500 ml": 3
-          }
-        },
-        {
           "count": 2,
           "reasons": {
             "no_alternative_matched": 0,
@@ -2920,18 +2923,6 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "four hundred forty milliliters",
-          "written_forms": {
-            "440ml": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
           "spoken": "four hundred twenty three chains",
           "written_forms": {
             "423 ch": 1
@@ -2996,13 +2987,37 @@
           "written_forms": {
             "100 p.c.": 1
           }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred twenty five c c",
+          "written_forms": {
+            "125cc": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred twenty one pounds",
+          "written_forms": {
+            "121 lbs": 1
+          }
         }
       ],
       "total": 2000,
-      "unmatched": 76,
+      "unmatched": 67,
       "unmatched_by_reason": {
         "no_alternative_matched": 2,
-        "unrecognized": 74,
+        "unrecognized": 65,
         "unverbalized": 0
       }
     },
@@ -3598,6 +3613,7 @@
       "CARDINAL": "cardinal",
       "DATE": "date",
       "DECIMAL": "decimal",
+      "ELECTRONIC": "electronic",
       "FRACTION": "fraction",
       "MEASURE": "measure",
       "MONEY": "money",
@@ -3610,7 +3626,6 @@
     "outside_classes": {
       "ADDRESS": "no verbalized value family",
       "DIGIT": "no verbalized value family",
-      "ELECTRONIC": "no verbalized value family",
       "LETTERS": "no verbalized value family",
       "PLAIN": "not a structured value",
       "PUNCT": "not a structured value",
@@ -3662,6 +3677,9 @@
           "FlexibleNumberDetector",
           "FlexibleCompactDetector",
           "FlexibleCompactDetector"
+        ],
+        "electronic": [
+          "ElectronicDetector"
         ],
         "fraction": [
           "FlexibleFractionDetector"
@@ -3814,6 +3832,7 @@
       "CARDINAL": 2000,
       "DATE": 2000,
       "DECIMAL": 2000,
+      "ELECTRONIC": 2000,
       "FRACTION": 2000,
       "MEASURE": 2000,
       "MONEY": 2000,
@@ -3835,13 +3854,14 @@
         "output-00090-of-00100"
       ]
     },
-    "skipped_sentinel_rows": 196,
+    "skipped_sentinel_rows": 2393,
     "source": "google-tn-en_with_types",
     "source_measurement": "The verbalizer deduplicates equal text in rule-set order, so a matched row is credited to the first retained source that produces its text and to the sub-key of that same reading. Source priors are disabled while measuring so the table is not measured through the ranking it drives. Shares are raw matched-source counts divided by matched rows in the selected scope, with no smoothing, confidence threshold, or other small-sample correction; each source record retains its matched count.",
     "sub_key_rules": {
       "cardinal": null,
       "date": null,
       "decimal": null,
+      "electronic": null,
       "fraction": "the decimal integer value of the reading's denominator capture",
       "measure": "the reading's ICU unit identifier; percent for a percent",
       "money": null,

@@ -50,3 +50,28 @@ Before recognition, the builder removes trailing spaces and commas from corpus w
 The shared attribution above applies to this table. The corpus is not shipped here.
 
 `tools/build_spoken_priors.py --check` repeats the declared sample and compares the canonical JSON byte-for-byte. A corpus path argument selects a fixture or another Google-TN-format shard directory.
+
+## `tlds-alpha-by-domain.txt`
+
+IANA's list of top-level domains, vendored unchanged from
+https://data.iana.org/TLD/tlds-alpha-by-domain.txt; its first line carries IANA's version
+(`tld_version()`). frend's electronic detector reads a bare domain ("boston.com") only
+when its last label is in this list, so "e.g." and "report.pdf" are not domains. Refresh
+it by fetching the same URL; the electronic priors record the version they were built
+with.
+
+## `electronic_priors.json`
+
+How the runs of a URL, email address or domain are said, measured from the corpus's
+ELECTRONIC class by `tools/build_electronic_priors.py` (`--check` repeats the sample and
+compares byte for byte). Each row of the sampled shards is split into runs as frend's
+detector splits it and aligned with its spoken form, run by run; rows that do not align
+are counted and left out. The table holds integer counts only: letter runs said as a
+word or spelled, keyed by shape (case, length, whether a vowel letter occurs) and, for a
+top-level domain, by the domain; digit runs read as ICU's cardinal or year or digit by
+digit, keyed by length; and each separator character's spoken words. No corpus text is
+stored. The shared attribution above applies.
+
+In `spoken_priors.json`, ELECTRONIC is measured like the other kinds, with the corpus's
+per-letter spoken notation ("b_letter o_letter") joined into words first. It records no
+`top_unmatched` examples, which would copy URLs from the corpus.

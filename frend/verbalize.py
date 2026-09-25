@@ -15,6 +15,14 @@ from icukit import AbbreviationValue, DateTimeFormatter
 from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
 from icukit.measure import WIDTH_WIDE, format_measure
 
+from frend.electronic import (
+    ElectronicValue,
+    digit_forms,
+    digit_probabilities,
+    letter_probabilities,
+    separator_names,
+    tld_positions,
+)
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.spoken_priors import measurement_sub_key, source_prior
 
@@ -585,6 +593,7 @@ _SPOKEN_CAPTURES = {
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
+    "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
     "mixed-measure": frozenset({"integer", "unit"}),
     "roman": frozenset({"integer", "apostrophe", "suffix"}),
@@ -1051,6 +1060,71 @@ def _spoken_mixed_measure(detection: object, locale: str) -> tuple[SpokenAlterna
     )
 
 
+# How many ranked readings of a URL or email address are kept: its runs multiply.
+ELECTRONIC_BEAM = 8
+ELECTRONIC_SOURCE = "measured:electronic"
+# The corpus holds no email address, so "@" has no measured name, and locale data has
+# no spoken name for it (ICU's character name is COMMERCIAL AT). "at" is lexical.
+_UNMEASURED_SEPARATORS = {"@": "at"}
+
+
+def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Speak a URL, email address or domain run by run, as the corpus is measured to.
+
+    Each letter run reads as a word or spelled, each digit run as one of its readings
+    (ICU's cardinal or year, or digit by digit), each separator by its spoken name, all
+    with probabilities from ``data/electronic_priors.json``. The runs multiply, so the
+    best readings by their product are kept (``ELECTRONIC_BEAM``), each weighted by it.
+    A separator the corpus never names is not verbalized, except "@" (see
+    ``_UNMEASURED_SEPARATORS``).
+    """
+    tlds = tld_positions(value.parts)
+    unmeasured = False
+    choices: list[dict[str, Decimal]] = []
+    for index, (kind, text) in enumerate(value.parts):
+        options: dict[str, Decimal] = {}
+        if kind == "letters":
+            lower = text.lower()
+            probabilities = letter_probabilities(text, tld=index in tlds)
+            if len(lower) == 1:
+                options[lower] = Decimal(1)
+            else:
+                options[lower] = probabilities.get("word", Decimal(0))
+                spelled = " ".join(lower)
+                options[spelled] = options.get(spelled, Decimal(0)) + probabilities.get(
+                    "spelled", Decimal(0)
+                )
+        elif kind == "digits":
+            probabilities = digit_probabilities(text)
+            for form, readings in digit_forms(text, locale).items():
+                spoken = readings[0][0]
+                options[spoken] = options.get(spoken, Decimal(0)) + probabilities.get(
+                    form, Decimal(0)
+                )
+        else:
+            names = {name: share for name, share in separator_names(text).items() if name != "sil"}
+            if not names and text in _UNMEASURED_SEPARATORS:
+                names = {_UNMEASURED_SEPARATORS[text]: Decimal(1)}
+                unmeasured = True
+            if not names:
+                raise NotImplementedError(f"no measured spoken name for {text!r}")
+            options.update(names)
+        choices.append(options)
+    beam: list[tuple[Decimal, tuple[str, ...]]] = [(Decimal(1), ())]
+    for options in choices:
+        extended = [
+            (probability * share, words + (spoken,))
+            for probability, words in beam
+            for spoken, share in options.items()
+        ]
+        extended.sort(key=lambda item: -item[0])
+        beam = extended[:ELECTRONIC_BEAM]
+    source = f"{ELECTRONIC_SOURCE}+{LEXICAL_SOURCE}" if unmeasured else ELECTRONIC_SOURCE
+    return tuple(
+        SpokenAlternative(" ".join(words), source, probability) for probability, words in beam
+    )
+
+
 def verbalize_edge(
     edge: ReadingEdge,
     *,
@@ -1117,6 +1191,10 @@ def verbalize_edge(
             alternatives = _spoken_measure(value, locale)
             key_value = (value.decimal, value.unit)
             path = "measure"
+        elif isinstance(value, ElectronicValue):
+            alternatives = _spoken_electronic(value, locale)
+            key_value = value.parts
+            path = "electronic"
         elif type(value).__name__ == "AlphanumericRunsValue":
             alternatives = _spoken_runs(value, locale)
             key_value = value.runs
