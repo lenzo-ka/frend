@@ -612,6 +612,7 @@ _SPOKEN_CAPTURES = {
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
+    "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
@@ -1418,6 +1419,57 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
     return _ranked(forms)
 
 
+_RELATIVE_DIRECTIONS = {-2: "LAST_2", -1: "LAST", 0: "THIS", 1: "NEXT", 2: "NEXT_2"}
+
+
+@cache
+def _relative_formatter(locale: str) -> icu.RelativeDateTimeFormatter:
+    """ICU's relative-date formatter at its wide (LONG) style, built as icukit builds it."""
+    icu_locale = icu.Locale(locale)
+    return icu.RelativeDateTimeFormatter(
+        icu_locale,
+        icu.NumberFormat.createInstance(icu_locale),
+        icu.UDateRelativeDateTimeFormatterStyle.LONG,
+        icu.UDisplayContext.CAPITALIZATION_NONE,
+    )
+
+
+def _spoken_relative(
+    value: object, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak a relative date (icukit's ``date:relative``) as ICU's wide style says it.
+
+    A named phrase ("yesterday", "next Tue.", "last mo.") reads as ICU's wide phrase for
+    its direction and unit ("yesterday", "next Tuesday", "last month"). A numeric one ("1
+    hr. ago", "in 2h") reads as ICU's wide numeric form with ICU's number cut out and
+    frend's number spoken in its place ("one hour ago", "in two hours").
+    """
+    offset = int(value.offset)
+    unit = str(value.unit).upper()
+    formatter = _relative_formatter(locale)
+    if _capture(detection, "integer") is None:
+        direction = getattr(icu.UDateDirection, _RELATIVE_DIRECTIONS.get(offset, ""), None)
+        absolute = getattr(icu.UDateAbsoluteUnit, unit, None)
+        if unit == "NOW":
+            direction = icu.UDateDirection.PLAIN
+        phrase = formatter.format(direction, absolute) if direction and absolute else ""
+        if not phrase:
+            raise NotImplementedError(f"ICU names no relative phrase for {offset} {unit}")
+        return (SpokenAlternative(phrase, "icu-relative:long"),)
+    numeric_unit = getattr(icu.URelativeDateTimeUnit, unit, None)
+    if numeric_unit is None:
+        raise NotImplementedError(f"ICU has no relative unit {unit}")
+    formatted = formatter.formatNumeric(offset, numeric_unit)
+    written = icu.NumberFormat.createInstance(icu.Locale(locale)).format(abs(offset))
+    if formatted.count(written) != 1:
+        raise NotImplementedError(f"cannot locate the amount in {formatted!r}")
+    template = formatted.replace(written, "{}", 1)
+    return tuple(
+        SpokenAlternative(template.format(item.text), f"{item.provenance}+icu-relative:long")
+        for item in _number_leaf(Decimal(abs(offset)), "cardinal", locale)
+    )
+
+
 def verbalize_edge(
     edge: ReadingEdge,
     *,
@@ -1488,6 +1540,10 @@ def verbalize_edge(
             alternatives = _spoken_digits(value, locale)
             key_value = value.digits
             path = "digits"
+        elif type(value).__name__ == "RelativeDateValue":
+            alternatives = _spoken_relative(value, detection, locale)
+            key_value = (value.offset, value.unit)
+            path = "relative"
         elif type(value).__name__ == "UnitValue":
             alternatives = _spoken_unit(value, locale)
             key_value = value.unit

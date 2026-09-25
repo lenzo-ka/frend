@@ -1624,3 +1624,66 @@ def test_quarter_also_reads_as_its_short_name_spelled():
         [("quarter", "Q1", 1, "short"), ("y", "2024", 2024, "numeric")],
     )
     assert "q one twenty twenty four" in [normalize_spoken(a.text) for a in unit.alternatives]
+
+
+def _relative_unit(written, offset, unit, direction, captures):
+    from icukit.detectors import Capture, RelativeDateValue
+
+    spans = []
+    for name, text_part, value, form in captures:
+        start = written.index(text_part)
+        spans.append(Capture(name, start, start + len(text_part), text_part, value, form))
+    detection = {
+        "text": written,
+        "start": 0,
+        "end": len(written),
+        "type": "date:relative",
+        "value": RelativeDateValue(offset, unit, direction),
+        "captures": tuple(spans),
+    }
+    lattice = resolve_lattice([detection], source_text=written)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    return verbalize_edge(edge, source_text=written)
+
+
+@pytest.mark.parametrize(
+    ("written", "offset", "unit", "direction", "captures", "spoken"),
+    [
+        ("yesterday", -1, "day", "past", [("relative", "yesterday", -1, "wide")], "yesterday"),
+        ("last mo.", -1, "month", "past", [("relative", "last mo.", -1, "short")], "last month"),
+        (
+            "next Tuesday",
+            1,
+            "tuesday",
+            "future",
+            [("relative", "next Tuesday", 1, "wide")],
+            "next tuesday",
+        ),
+        (
+            "1 hr. ago",
+            -1,
+            "hour",
+            "past",
+            [("integer", "1", "1", "numeric"), ("relative-marker", " hr. ago", None, "symbol")],
+            "one hour ago",
+        ),
+        (
+            "in 2h",
+            2,
+            "hour",
+            "future",
+            [
+                ("relative-marker", "in ", None, "symbol"),
+                ("integer", "2", "2", "numeric"),
+                ("relative-marker", "h", None, "symbol"),
+            ],
+            "in two hours",
+        ),
+    ],
+)
+def test_relative_date_speaks_icus_wide_style(written, offset, unit, direction, captures, spoken):
+    """A named phrase reads as ICU's wide phrase ("last mo." "last month"); a numeric one as
+    ICU's wide numeric form with frend's number ("in 2h" "in two hours")."""
+    unit_reading = _relative_unit(written, offset, unit, direction, captures)
+    assert [normalize_spoken(a.text) for a in unit_reading.alternatives] == [spoken]
+    assert unit_reading.unspoken == ()
