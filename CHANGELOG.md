@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Spoke a unit written with no amount ("/km²", "per second"), which icukit #102 reads as
+  a `UnitValue`: ICU's wide form of the unit for one, with ICU's number cut out ("per
+  square kilometer"), the corpus's own form. MEASURE matched rises from 1933 to 1944 of
+  2000; no MEASURE row is left unverbalized. frend matches the value by name, so it still
+  runs on icukit 0.5.0.
 - Said a written era as it is written, following icukit #103's capture form. A wide
   name ("300 Before Christ", "5 Common Era") is said as its words rather than spelled;
   an abbreviation is still spelled ("b c e"), and its wide alternative is now the name
