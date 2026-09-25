@@ -77,10 +77,11 @@
       }
     },
     "date": {
-      "matched": 1993,
+      "matched": 1996,
       "source_matched": {
         "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
-        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 94,
+        "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 2,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 95,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
@@ -102,18 +103,6 @@
           "spoken": "november seventeenth o nine",
           "written_forms": {
             "11/17/09": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "september twenty ten",
-          "written_forms": {
-            "Sept 2010": 1
           }
         },
         {
@@ -151,37 +140,13 @@
           "written_forms": {
             "24 April 350": 1
           }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "thursday the fourth of june two thousand nine",
-          "written_forms": {
-            "Thursday, 4 June 2009": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "thursday the seventeenth of february twenty eleven",
-          "written_forms": {
-            "Thursday 17 February 2011": 1
-          }
         }
       ],
       "total": 2000,
-      "unmatched": 7,
+      "unmatched": 4,
       "unmatched_by_reason": {
         "no_alternative_matched": 1,
-        "unrecognized": 6,
+        "unrecognized": 3,
         "unverbalized": 0
       }
     },
@@ -2773,8 +2738,8 @@
           "count": 9,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 9,
-            "unverbalized": 0
+            "unrecognized": 6,
+            "unverbalized": 3
           },
           "spoken": "per square kilometer",
           "written_forms": {
@@ -2788,8 +2753,8 @@
           "count": 4,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 4,
-            "unverbalized": 0
+            "unrecognized": 0,
+            "unverbalized": 4
           },
           "spoken": "per second",
           "written_forms": {
@@ -2800,8 +2765,8 @@
           "count": 2,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
+            "unrecognized": 0,
+            "unverbalized": 2
           },
           "spoken": "per gram",
           "written_forms": {
@@ -3017,8 +2982,8 @@
       "unmatched": 67,
       "unmatched_by_reason": {
         "no_alternative_matched": 2,
-        "unrecognized": 65,
-        "unverbalized": 0
+        "unrecognized": 54,
+        "unverbalized": 11
       }
     },
     "money": {
