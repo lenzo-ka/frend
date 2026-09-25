@@ -29,3 +29,22 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[dev]"
       - run: pytest -q
+
+  # frend develops against icukit's main between icukit releases. This job installs icukit
+  # from main over the released one; the job above keeps showing whether frend works with
+  # what users can install, and must pass before frend itself is released.
+  test-icukit-main:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e ".[dev]"
+      - run: pip install --force-reinstall --no-deps "icukit @ git+https://github.com/lenzo-ka/icukit@main"
+      - run: python -c "import icukit; print('icukit', icukit.__version__, icukit.__file__)"
+      - run: pytest -q
