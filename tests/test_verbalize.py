@@ -1424,3 +1424,65 @@ def test_unit_without_an_amount_speaks_icus_wide_form_for_one(written, unit, spo
     )
     assert [normalize_spoken(a.text) for a in unit_reading.alternatives] == [spoken]
     assert unit_reading.unspoken == ()
+
+
+def _time_unit(written, fields, captures):
+    from icukit.detectors import Capture, DateTimeValue
+
+    detection = {
+        "text": written,
+        "start": 0,
+        "end": len(written),
+        "type": "time:flexible",
+        "value": DateTimeValue(fields, "gregorian"),
+        "captures": tuple(Capture(*capture) for capture in captures),
+    }
+    lattice = resolve_lattice([detection], source_text=written)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    return verbalize_edge(edge, source_text=written)
+
+
+@pytest.mark.parametrize(
+    ("written", "fields", "captures", "spoken"),
+    [
+        (
+            "10 PM Eastern Standard Time",
+            (("H", 22),),
+            [
+                ("H", 0, 2, "10", 10, "numeric"),
+                ("day-period", 2, 5, " PM", None, "symbol"),
+                ("time-zone", 5, 27, " Eastern Standard Time", "Eastern Standard Time", None),
+            ],
+            "ten p m eastern standard time",
+        ),
+        (
+            "2 in the afternoon",
+            (("H", 14),),
+            [
+                ("H", 0, 1, "2", 2, "numeric"),
+                ("day-period", 1, 18, " in the afternoon", None, "flexible"),
+            ],
+            "two in the afternoon",
+        ),
+        (
+            "5 pm ET",
+            (("H", 17),),
+            [
+                ("H", 0, 1, "5", 5, "numeric"),
+                ("day-period", 1, 4, " pm", None, "symbol"),
+                ("time-zone", 4, 7, " ET", "ET", None),
+            ],
+            "five p m e t",
+        ),
+    ],
+)
+def test_worded_zone_or_day_period_is_said_as_words_an_abbreviation_by_letters(
+    written, fields, captures, spoken
+):
+    """icukit #116 reads long zone names and worded day periods; they are said, not spelled."""
+    unit = _time_unit(written, fields, captures)
+    forms = [normalize_spoken(a.text) for a in unit.alternatives]
+    assert spoken in forms
+    # Nothing written in words is spelled out letter by letter.
+    assert not any("e a s t e r n" in form or "t h e" in form for form in forms)
+    assert unit.unspoken == ()

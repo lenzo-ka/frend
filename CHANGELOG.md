@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- Said a time zone or day period written in words as those words. icukit #116 reads long
+  zone names ("10 PM Eastern Standard Time", "7 PM New York Time") and worded day
+  periods ("2 in the afternoon"), which frend had spelled letter by letter ("e a s t e r
+  n ..."); an abbreviation ("ET", "PM", "Z") is still spelled, as the corpus reads it.
 - Remeasured the spoken-priors table on icukit `a365345` (#111 to #114, after 0.6.0,
   unreleased): three-digit years and dotted weekdays raise DATE matched from 1996 to
   1997 of 2000, and "Rs" read as rupees raises MONEY from 1911 to 1916. No other kind
