@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Remeasured the spoken-priors table on icukit `59172f9` (#130: two- and three-digit
+  trailing years read only under their own opt-in type). DATE matched is unchanged at
+  1997 of 2000; one row moves from "no alternative matched" to "unrecognized".
 - Read an acronym spelled and as a word, weighted as the corpus measures its shape, before
   icukit's long forms (kal's ruling, split by source): "FBI" gives "f b i", "fbi" and
   "Federal Bureau of Investigation"; "BBC", which has no vowel, is spelled first. The
