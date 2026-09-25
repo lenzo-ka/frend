@@ -17,6 +17,8 @@ from icukit.recognize import (
     FlexibleCurrencyNameDetector,
     FlexibleDateDetector,
     FlexibleFractionDetector,
+    FlexibleMeasureDetector,
+    FlexibleMixedMeasureDetector,
     FlexibleNumberDetector,
     FlexibleOrdinalDetector,
     FlexiblePercentDetector,
@@ -26,6 +28,7 @@ from icukit.recognize import (
 )
 
 from frend import compose_choices, resolve, resolve_choices, resolve_lattice
+from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
     _weekday_name,
@@ -1009,6 +1012,10 @@ _COVERAGE = [
     "500 BC",
     "1 July",
     "18 September",
+    "60 km",
+    "578.3/km2",
+    "5'10\"",
+    "79.20%",
 ]
 
 
@@ -1134,6 +1141,9 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
         FlexibleTimeDetector("en_US"),
         PluralNumeralDetector("en_US"),
         AlphanumericRunsDetector("en_US"),
+        FlexibleMeasureDetector("en_US", "kilometer"),
+        FlexibleMeasureDetector("en_US", "square-kilometer"),
+        FlexibleMixedMeasureDetector("en_US", "foot-and-inch"),
         *all_detectors("en_US", ("yMd", "Md", "y", "yMMMMEEEEd", "yMMMMd")).detectors,
     ]
     unspoken = {
@@ -1235,3 +1245,62 @@ def test_roman_numeral_reads_as_cardinal_or_ordinal_and_keeps_a_possessive():
     assert {"two", "second", "the second"} <= {a.text for a in plain.alternatives}
     assert {"two's", "the second's"} <= {a.text for a in possessive.alternatives}
     assert possessive.unspoken == ()
+
+
+def _measure_forms(written, detector, type_):
+    unit = _full_span_forms(written, [detector], type_)
+    return unit, [normalize_spoken(item.text) for item in unit.alternatives]
+
+
+@pytest.mark.parametrize(
+    ("written", "unit", "spoken"),
+    [
+        ("60 km", "kilometer", "sixty kilometers"),
+        ("1 km", "kilometer", "one kilometer"),
+        ("1GB", "gigabyte", "one gigabyte"),
+        ("26.7 mi", "mile", "twenty six point seven miles"),
+        ("60 km/h", "kilometer-per-hour", "sixty kilometers per hour"),
+        (
+            "578.3/km2",
+            "square-kilometer",
+            "five hundred seventy eight point three per square kilometers",
+        ),
+    ],
+)
+def test_measure_speaks_the_amount_and_icus_wide_unit(written, unit, spoken):
+    """icukit #97 reads measures; ICU names the unit in the plural the amount selects."""
+    detection_unit, forms = _measure_forms(
+        written, FlexibleMeasureDetector("en_US", unit), f"measure:{unit}"
+    )
+    assert spoken in forms
+    assert detection_unit.unspoken == ()
+
+
+def test_measured_rate_ranks_the_corpus_plural_after_per_first():
+    """The unit sub-key lets a rate learn "per square kilometers" without every unit taking it."""
+    rate, rate_forms = _measure_forms(
+        "578.3/km2",
+        FlexibleMeasureDetector("en_US", "square-kilometer"),
+        "measure:square-kilometer",
+    )
+    plain, plain_forms = _measure_forms(
+        "60 km", FlexibleMeasureDetector("en_US", "kilometer"), "measure:kilometer"
+    )
+    assert rate_forms[0].endswith("per square kilometers")
+    assert rate.alternatives[0].weight is not None
+    assert plain_forms == ["sixty kilometers"]
+
+
+def test_mixed_measure_speaks_each_component_joined_as_icu_joins_units():
+    unit, forms = _measure_forms(
+        "5'10\"", FlexibleMixedMeasureDetector("en_US", "foot-and-inch"), "measure:foot-and-inch"
+    )
+    assert forms == ["five feet ten inches"]
+    assert unit.unspoken == ()
+
+
+def test_percent_reads_its_written_fraction_digits():
+    """The value 0.792 has lost the written zero of "79.20%"; the captures keep it."""
+    unit, forms = _measure_forms("79.20%", FlexiblePercentDetector("en_US"), "number:percent")
+    assert "seventy nine point two o percent" in forms
+    assert unit.unspoken == ()

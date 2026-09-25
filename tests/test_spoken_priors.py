@@ -44,6 +44,7 @@ def test_shipped_table_shape_and_denominators():
         "date": None,
         "decimal": None,
         "fraction": "the decimal integer value of the reading's denominator capture",
+        "measure": "the reading's ICU unit identifier; percent for a percent",
         "money": None,
         "ordinal": None,
         "time": None,
