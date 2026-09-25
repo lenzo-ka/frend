@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Spoke relative dates (icukit's `date:relative`) as ICU's wide style says them. A named
+  phrase reads as ICU's wide phrase for its direction and unit ("last Fri." "last
+  Friday", "last mo." "last month", "yesterday"); a numeric one as ICU's wide numeric
+  form with frend's number in place of ICU's ("1 hr. ago" "one hour ago", "in 2h" "in
+  two hours"). The formatter is built as icukit builds it.
 - Spoke a date that carries a time, an era or a quarter (icukit #115, #118, #121, #123),
   part by part in written order through frend's own date and time speech: "March 5,
   2024 at 2:07 PM" "March fifth, twenty twenty-four at two oh seven p m" ("at" said
