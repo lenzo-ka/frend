@@ -599,6 +599,7 @@ _SPOKEN_CAPTURES = {
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
     "mixed-measure": frozenset({"integer", "unit"}),
     "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
+    "unit": frozenset({"unit"}),
     "roman": frozenset({"integer", "apostrophe", "suffix"}),
 }
 _MINUS_SIGNS = frozenset({"-", "−"})
@@ -1133,6 +1134,20 @@ def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative,
     return _ranked(forms)
 
 
+def _spoken_unit(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Speak a unit written with no amount ("/km²", "per second"): ICU's wide form of the
+    unit for one, with ICU's number cut out ("per square kilometer").
+
+    icukit reads such a rate as a ``UnitValue`` (icukit #102); it is matched by name so
+    frend still runs on an icukit release without it.
+    """
+    unit = str(getattr(value, "unit", ""))
+    phrase = _measure_template(Decimal(1), unit, locale).replace("{}", "").strip()
+    if not phrase:
+        raise NotImplementedError(f"no ICU form for unit {unit!r}")
+    return (SpokenAlternative(phrase, "icu-measure:wide"),)
+
+
 def _spoken_mixed_measure(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
     """Speak each component of a mixed measure in its own unit, joined as ICU joins units.
 
@@ -1305,6 +1320,10 @@ def verbalize_edge(
             alternatives = _spoken_mixed_measure(detection, locale)
             key_value = (value.decimal, value.unit)
             path = "mixed-measure"
+        elif type(value).__name__ == "UnitValue":
+            alternatives = _spoken_unit(value, locale)
+            key_value = value.unit
+            path = "unit"
         elif isinstance(value, MeasureValue):
             alternatives = _spoken_measure(value, locale)
             key_value = (value.decimal, value.unit)

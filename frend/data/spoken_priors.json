@@ -2420,8 +2420,9 @@
       }
     },
     "measure": {
-      "matched": 1933,
+      "matched": 1944,
       "source_matched": {
+        "icu-measure:wide": 11,
         "icu-rbnf:%spellout-numbering": 535,
         "icu-rbnf:%spellout-numbering+icu-measure:wide": 674,
         "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
@@ -2644,9 +2645,28 @@
             "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
           }
         },
-        "per-square-kilometer": {
-          "matched": 115,
+        "per-gram": {
+          "matched": 2,
           "source_matched": {
+            "icu-measure:wide": 2
+          }
+        },
+        "per-hour": {
+          "matched": 1,
+          "source_matched": {
+            "icu-measure:wide": 1
+          }
+        },
+        "per-second": {
+          "matched": 4,
+          "source_matched": {
+            "icu-measure:wide": 4
+          }
+        },
+        "per-square-kilometer": {
+          "matched": 118,
+          "source_matched": {
+            "icu-measure:wide": 3,
             "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
             "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 108,
@@ -2654,8 +2674,9 @@
           }
         },
         "per-square-mile": {
-          "matched": 2,
+          "matched": 3,
           "source_matched": {
+            "icu-measure:wide": 1,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 2
           }
         },
@@ -2735,42 +2756,16 @@
       },
       "top_unmatched": [
         {
-          "count": 9,
+          "count": 6,
           "reasons": {
             "no_alternative_matched": 0,
             "unrecognized": 6,
-            "unverbalized": 3
+            "unverbalized": 0
           },
           "spoken": "per square kilometer",
           "written_forms": {
-            "/km2": 1,
-            "/km²": 2,
             "per km2": 2,
             "per km²": 4
-          }
-        },
-        {
-          "count": 4,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 0,
-            "unverbalized": 4
-          },
-          "spoken": "per second",
-          "written_forms": {
-            "/s": 4
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 0,
-            "unverbalized": 2
-          },
-          "spoken": "per gram",
-          "written_forms": {
-            "/g": 2
           }
         },
         {
@@ -2976,14 +2971,38 @@
           "written_forms": {
             "121 lbs": 1
           }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred two chains",
+          "written_forms": {
+            "102 ch": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one over one of a stone",
+          "written_forms": {
+            "1/1st": 1
+          }
         }
       ],
       "total": 2000,
-      "unmatched": 67,
+      "unmatched": 56,
       "unmatched_by_reason": {
         "no_alternative_matched": 2,
         "unrecognized": 54,
-        "unverbalized": 11
+        "unverbalized": 0
       }
     },
     "money": {
