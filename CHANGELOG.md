@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Read a time-zone abbreviation both spelled and as its long name (kal: "EST should have
+  two reads"): "5:30 pm EST" gives "... e s t" and "... Eastern Standard Time". The names
+  come from icukit's list of ICU's abbreviations (`icu_abbreviations`, icukit 0.6.0); an
+  ambiguous abbreviation keeps every name ("IST": India and Irish Standard Time), and
+  one ICU does not name ("Z") stays spelled. The ranking is the corpus's.
 - Said a time zone or day period written in words as those words. icukit #116 reads long
   zone names ("10 PM Eastern Standard Time", "7 PM New York Time") and worded day
   periods ("2 in the afternoon"), which frend had spelled letter by letter ("e a s t e r

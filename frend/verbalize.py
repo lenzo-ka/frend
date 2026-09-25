@@ -610,6 +610,20 @@ _OCLOCK = SpokenAlternative("o'clock", LEXICAL_SOURCE)
 _HUNDRED = SpokenAlternative("hundred", LEXICAL_SOURCE)
 
 
+@cache
+def _zone_expansions(locale: str) -> dict[str, tuple[SpokenAlternative, ...]]:
+    """ICU's long names for each zone abbreviation, as icukit lists them."""
+    from icukit import icu_abbreviations
+
+    names: dict[str, list[SpokenAlternative]] = {}
+    for row in icu_abbreviations(locale, kinds=["time-zone"]):
+        for expansion in row.expansions:
+            alternative = SpokenAlternative(expansion, "icukit-abbreviation:time-zone")
+            if alternative not in names.setdefault(row.surface, []):
+                names[row.surface].append(alternative)
+    return {surface: tuple(items) for surface, items in names.items()}
+
+
 def _spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
@@ -619,7 +633,9 @@ def _spoken_time(
     ("12am" is "twelve a m"). A zero-led minute reads "oh five" or "o five"; a bare
     or on-the-hour time also reads with "o'clock". A written time zone follows as
     its letters, as the corpus reads it ("10 PM ET" "ten p m e t", "18:00 UTC"
-    "eighteen hundred u t c"). A day period or zone written in words ("in the
+    "eighteen hundred u t c"), and also by each long name icukit lists for it from ICU
+    ("EST" also "Eastern Standard Time"; "IST" both India and Irish). A day period or
+    zone written in words ("in the
     afternoon", "Eastern Standard Time", icukit #116) is said as those words, never
     spelled. Seconds are not verbalized.
     """
@@ -638,7 +654,11 @@ def _spoken_time(
             continue
         letters = "".join(ch for ch in "".join(words) if ch.isalpha()).lower()
         if letters:
-            tail.append((SpokenAlternative(" ".join(letters), "surface:letters"),))
+            spelled = SpokenAlternative(" ".join(letters), "surface:letters")
+            expansions = (
+                _zone_expansions(locale).get("".join(words), ()) if capture is not period else ()
+            )
+            tail.append((spelled, *expansions))
     minute = fields.get("m")
     forms: list[SpokenAlternative] = []
     if minute:
