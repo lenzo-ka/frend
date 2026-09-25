@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Offered only a zone's own long names where icukit captures the zone's IANA ID (icukit
+  #132, 0.7): "9 AM IST", read once as Asia/Kolkata and once as Europe/Dublin, now gives
+  "India Standard Time" on the first reading and "Irish Standard Time" on the second,
+  each from ICU's display names for that zone. Where the capture holds no IANA ID
+  (icukit 0.6), every listed name is still offered.
 - Remeasured the spoken-priors table on icukit `59172f9` (#130: two- and three-digit
   trailing years read only under their own opt-in type). DATE matched is unchanged at
   1997 of 2000; one row moves from "no alternative matched" to "unrecognized".

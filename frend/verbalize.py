@@ -632,6 +632,18 @@ _HUNDRED = SpokenAlternative("hundred", LEXICAL_SOURCE)
 
 
 @cache
+def _zone_display_names(zone: str, locale: str) -> frozenset[str]:
+    """ICU's long names for an IANA zone: standard, daylight and generic."""
+    timezone = icu.TimeZone.createTimeZone(zone)
+    icu_locale = icu.Locale(locale)
+    return frozenset(
+        timezone.getDisplayName(daylight, style, icu_locale)
+        for daylight in (False, True)
+        for style in (icu.TimeZone.LONG, icu.TimeZone.LONG_GENERIC)
+    )
+
+
+@cache
 def _zone_expansions(locale: str) -> dict[str, tuple[SpokenAlternative, ...]]:
     """ICU's long names for each zone abbreviation, as icukit lists them."""
     from icukit import icu_abbreviations
@@ -679,6 +691,12 @@ def _spoken_time(
             expansions = (
                 _zone_expansions(locale).get("".join(words), ()) if capture is not period else ()
             )
+            zone = str(getattr(capture, "value", "") or "")
+            if expansions and "/" in zone:
+                # icukit 0.7 captures the zone's IANA ID ("IST" read as Asia/Kolkata and
+                # as Europe/Dublin): keep the names ICU gives that zone.
+                named = _zone_display_names(zone, locale)
+                expansions = tuple(item for item in expansions if item.text in named) or expansions
             tail.append((spelled, *expansions))
     minute = fields.get("m")
     forms: list[SpokenAlternative] = []

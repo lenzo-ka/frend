@@ -1525,10 +1525,38 @@ def test_worded_zone_or_day_period_is_said_as_words_an_abbreviation_by_letters(
 )
 def test_zone_abbreviation_reads_spelled_and_as_icus_long_names(written, expected):
     """kal: "EST should have two reads", spelled and "Eastern Standard Time"; the long names
-    come from icukit's list of ICU's abbreviations, and an ambiguous one keeps every name."""
-    unit = _full_span_forms(written, [FlexibleTimeDetector("en_US")], "time:flexible")
-    assert expected <= {normalize_spoken(a.text) for a in unit.alternatives}
-    assert unit.unspoken == ()
+    come from icukit's list of ICU's abbreviations, and an ambiguous one keeps every name
+    (in one reading, or, where icukit reads one per zone, across its readings)."""
+    lattice = resolve_choices(
+        list(detect(written, [FlexibleTimeDetector("en_US")])), source_text=written
+    )
+    graph = compose_choices(lattice)
+    edges = {edge.id: edge for edge in lattice.edges}
+    units = [
+        u
+        for u in graph.units
+        if edges[u.edge_id].kind == "reading"
+        and (edges[u.edge_id].start, edges[u.edge_id].end) == (0, len(written))
+    ]
+    assert expected <= {normalize_spoken(a.text) for u in units for a in u.alternatives}
+    assert all(u.unspoken == () for u in units)
+
+
+def test_a_zone_read_by_its_iana_id_keeps_only_that_zones_names():
+    """icukit 0.7 reads "IST" once as Asia/Kolkata and once as Europe/Dublin; each reading
+    offers the long name ICU gives its own zone, not the other's."""
+    unit = _time_unit(
+        "9 AM IST",
+        (("H", 9),),
+        [
+            ("H", 0, 1, "9", 9, "numeric"),
+            ("day-period", 1, 4, " AM", None, "symbol"),
+            ("time-zone", 4, 8, " IST", "Europe/Dublin", None),
+        ],
+    )
+    forms = {normalize_spoken(a.text) for a in unit.alternatives}
+    assert "nine a m irish standard time" in forms
+    assert not any("india" in form for form in forms)
 
 
 def test_zone_without_a_listed_name_stays_spelled():
