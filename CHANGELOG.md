@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Said a written era as it is written, following icukit #103's capture form. A wide
+  name ("300 Before Christ", "5 Common Era") is said as its words rather than spelled;
+  an abbreviation is still spelled ("b c e"), and its wide alternative is now the name
+  of its own CLDR family, read from ICU's data ("2000 CE" also "two thousand Common
+  Era", not "Anno Domini").
 - Recognized and spoke URLs, email addresses and bare domains, which ICU and icukit leave
   to frend (`frend.electronic.ElectronicDetector`). A span is a scheme URL, a "www."
   address, an email address, or a domain whose last label is in IANA's top-level-domain
