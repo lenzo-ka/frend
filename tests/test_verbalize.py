@@ -1021,6 +1021,7 @@ _COVERAGE = [
     "boston.com",
     "jane.doe@example.org",
     "http://www.ucc.ie/celt/trotula.html",
+    "/km²",
 ]
 
 
@@ -1360,3 +1361,24 @@ def test_era_reads_as_written_a_name_as_words_an_abbreviation_by_letters(
     assert forms[: len(expected)] == expected or set(expected) <= set(forms)
     assert not any("b e f o r e" in f or "c o m m o n" in f for f in forms)
     assert unit.unspoken == ()
+
+
+@pytest.mark.skipif(
+    not hasattr(__import__("icukit"), "UnitValue"),
+    reason="icukit before #102 reads no amount-less unit",
+)
+@pytest.mark.parametrize(
+    ("written", "unit", "spoken"),
+    [
+        ("/km²", "square-kilometer", "per square kilometer"),
+        ("/s", "second", "per second"),
+        ("per second", "second", "per second"),
+    ],
+)
+def test_unit_without_an_amount_speaks_icus_wide_form_for_one(written, unit, spoken):
+    """icukit #102 reads "/km²" as a UnitValue; the corpus says "per square kilometer"."""
+    unit_reading = _full_span_forms(
+        written, [FlexibleMeasureDetector("en_US", unit)], f"measure:{unit}"
+    )
+    assert [normalize_spoken(a.text) for a in unit_reading.alternatives] == [spoken]
+    assert unit_reading.unspoken == ()
