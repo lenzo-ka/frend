@@ -28,6 +28,7 @@ from icukit.recognize import (
 )
 
 from frend import compose_choices, resolve, resolve_choices, resolve_lattice
+from frend.electronic import ElectronicDetector
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
@@ -1016,6 +1017,9 @@ _COVERAGE = [
     "578.3/km2",
     "5'10\"",
     "79.20%",
+    "boston.com",
+    "jane.doe@example.org",
+    "http://www.ucc.ie/celt/trotula.html",
 ]
 
 
@@ -1144,6 +1148,7 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
         FlexibleMeasureDetector("en_US", "kilometer"),
         FlexibleMeasureDetector("en_US", "square-kilometer"),
         FlexibleMixedMeasureDetector("en_US", "foot-and-inch"),
+        ElectronicDetector("en_US"),
         *all_detectors("en_US", ("yMd", "Md", "y", "yMMMMEEEEd", "yMMMMd")).detectors,
     ]
     unspoken = {

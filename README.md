@@ -25,6 +25,10 @@ removed, or turned into the text it stands for. Otherwise its syntax is read as 
 are recognized like any other characters). frend has no markup modes today; reading
 through a markup layer, keeping its structure and offsets, may come later.
 
+URLs, email addresses and bare domains are recognized by frend itself (ICU has no link
+recognition, and icukit leaves them to frend), and spoken as the corpus is measured to
+say them.
+
 Status: recognize, resolve and verbalize are built, including a keep-all mode that
 carries every reading and its spoken forms instead of one best cover. A word-level
 alignment graph built from that output exports as finite-state grammar and acceptor text
