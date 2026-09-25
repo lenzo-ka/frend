@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Stated in the README that frend reads plain text: Markdown, HTML, XML (including
+  SSML) and rich text must be handled before the string reaches frend and icukit, and
+  frend has no markup modes yet.
 - Spoke icukit #95's time zones and Roman ordinals. A written time zone follows the
   time as its letters ("10 PM ET" "ten p m e t", "18:00 UTC" "eighteen hundred u t c"),
   as the corpus reads it, so it is no longer left unspoken. A Roman ordinal also reads

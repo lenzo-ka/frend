@@ -17,6 +17,14 @@ frend is a *composition* over three sibling projects:
 
 Pipeline shape: `text -> recognize (icukit) -> resolve (tiergraph.fold) -> verbalize -> phonetize (ipakit)`.
 
+**Input is plain text.** frend and icukit read a text string: the characters a reader
+would see, with nothing else in them. Markup of any kind -- Markdown, HTML or XML
+(including SSML), rich-text formats -- must be handled before the string reaches frend:
+removed, or turned into the text it stands for. Otherwise its syntax is read as text
+("**5**" is not the number 5 to a reader of plain text, and a tag's attribute values
+are recognized like any other characters). frend has no markup modes today; reading
+through a markup layer, keeping its structure and offsets, may come later.
+
 Status: recognize, resolve and verbalize are built, including a keep-all mode that
 carries every reading and its spoken forms instead of one best cover. A word-level
 alignment graph built from that output exports as finite-state grammar and acceptor text
