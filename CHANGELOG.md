@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Stated in the README that frend reads plain text: Markdown, HTML, XML (including
+  SSML) and rich text must be handled before the string reaches frend and icukit, and
+  frend has no markup modes yet.
 - Spoke and measured measures. A measure (icukit #97) reads its amount as frend reads
   any number and its unit as ICU names it: icukit formats the value in the unit's wide
   form and frend cuts ICU's own number out, leaving the unit in the plural and order
