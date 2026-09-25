@@ -838,23 +838,54 @@ def _weekday_name(capture: object, calendar: str, locale: str) -> SpokenAlternat
     raise ValueError(f"invalid weekday capture value {value!r}")
 
 
+@cache
+def _era_variants(locale: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """CLDR's variant era names from ICU's data: abbreviated ("BCE", "CE") and wide
+    ("Before Common Era", "Common Era"), empty where the locale has none."""
+    try:
+        table = (
+            icu.ResourceBundle("", icu.Locale(locale))
+            .getWithFallback("calendar")
+            .getWithFallback("gregorian")
+            .getWithFallback("eras")
+        )
+    except icu.ICUError:
+        return (), ()
+    found = []
+    for key in ("abbreviated%variant", "wide%variant"):
+        try:
+            forms = table.getWithFallback(key)
+        except icu.ICUError:
+            found.append(())
+            continue
+        found.append(tuple(forms.get(index).getString() for index in range(forms.getSize())))
+    return found[0], found[1]
+
+
 def _era_names(era: int, detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
-    """An era reads as the letters of its written abbreviation or as ICU's wide era name.
+    """An era reads as it is written: an abbreviation letter by letter, a name as words.
 
     The corpus reads "500 BC" as "five hundred b c" and "300 BCE" as "three hundred b c e":
-    the written abbreviation, letter by letter. The wide name ("Before Christ") comes from
-    ICU's date symbols and is kept as an alternative for the ranking to weigh.
+    the written abbreviation, letter by letter. A written wide name ("Before Christ",
+    "Common Era"; icukit's capture form ``wide``) is said as its words. An abbreviation
+    also reads as the wide name of its own family from ICU's CLDR data: "BC" as "Before
+    Christ", the variant "BCE" as "Before Common Era".
     """
     symbols = icu.DateFormatSymbols(icu.Locale(locale))
     names = symbols.getEraNames()
     if not 0 <= era < len(names):
         raise ValueError(f"invalid era {era!r}")
-    abbreviation = str(getattr(_capture(detection, "era"), "text", "")) or symbols.getEras()[era]
-    letters = "".join(ch for ch in abbreviation if ch.isalpha()).lower()
-    return (
-        SpokenAlternative(" ".join(letters), "surface:letters"),
-        SpokenAlternative(names[era], "icu-datetime:GGGG"),
-    )
+    written = _capture(detection, "era")
+    text = str(getattr(written, "text", "")) or symbols.getEras()[era]
+    if getattr(written, "form", None) == "wide":
+        return (SpokenAlternative(" ".join(text.split()), "surface:words"),)
+    letters = "".join(ch for ch in text if ch.isalpha()).lower()
+    variant_short, variant_wide = _era_variants(locale)
+    wide = SpokenAlternative(names[era], "icu-datetime:GGGG")
+    if era < len(variant_short) and era < len(variant_wide):
+        if text.casefold() == variant_short[era].casefold():
+            wide = SpokenAlternative(variant_wide[era], "icu-datetime:GGGG%variant")
+    return (SpokenAlternative(" ".join(letters), "surface:letters"), wide)
 
 
 def _spoken_era_year(

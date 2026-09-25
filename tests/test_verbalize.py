@@ -1352,3 +1352,53 @@ def test_clock_like_duration_reads_both_ways_and_minutes_take_no_milliseconds():
     ]
     minutes = [normalize_spoken(a.text) for a in _duration_forms("1:47.22")["minute"].alternatives]
     assert not any("milliseconds" in form for form in minutes)
+
+
+def _era_unit(written, era, year, era_text, form):
+    from icukit.detectors import Capture, DateTimeValue
+
+    start = written.index(era_text)
+    detection = {
+        "text": written,
+        "start": 0,
+        "end": len(written),
+        "type": "date:text-flexible",
+        "value": DateTimeValue((("G", era), ("y", year)), "gregorian"),
+        "captures": (
+            Capture("y", 0, len(str(year)), str(year), year, "numeric"),
+            Capture("era", start, start + len(era_text), era_text, None, form),
+        ),
+    }
+    lattice = resolve_lattice([detection], source_text=written)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    return verbalize_edge(edge, source_text=written)
+
+
+@pytest.mark.parametrize(
+    ("written", "era", "year", "era_text", "form", "expected"),
+    [
+        ("300 Before Christ", 0, 300, "Before Christ", "wide", ["three hundred before christ"]),
+        ("5 Common Era", 1, 5, "Common Era", "wide", ["five common era"]),
+        (
+            "300 BCE",
+            0,
+            300,
+            "BCE",
+            "short",
+            ["three hundred b c e", "three hundred before common era"],
+        ),
+        ("2000 CE", 1, 2000, "CE", "short", ["two thousand c e", "two thousand common era"]),
+        ("500 BC", 0, 500, "BC", "short", ["five hundred b c", "five hundred before christ"]),
+    ],
+)
+def test_era_reads_as_written_a_name_as_words_an_abbreviation_by_letters(
+    written, era, year, era_text, form, expected
+):
+    """icukit #103 marks a written wide era ("Before Christ") with form ``wide``: it is said
+    as its words, never spelled; an abbreviation's wide alternative is its own CLDR family
+    ("CE" is "Common Era", not "Anno Domini")."""
+    unit = _era_unit(written, era, year, era_text, form)
+    forms = [normalize_spoken(a.text) for a in unit.alternatives]
+    assert forms[: len(expected)] == expected or set(expected) <= set(forms)
+    assert not any("b e f o r e" in f or "c o m m o n" in f for f in forms)
+    assert unit.unspoken == ()
