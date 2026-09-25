@@ -1190,9 +1190,30 @@ def _full_span_forms(text, detectors, type_):
         ("10:05", {"ten oh five", "ten o five"}),
         ("20:00", {"twenty", "twenty o'clock", "twenty hundred"}),
         ("14:30", {"fourteen thirty"}),
-        ("10 PM ET", {"ten p m e t", "ten o'clock p m e t"}),
-        ("4:44pm EST", {"four forty-four p m e s t"}),
-        ("18:00 UTC", {"eighteen u t c", "eighteen o'clock u t c", "eighteen hundred u t c"}),
+        (
+            "10 PM ET",
+            {
+                "ten p m e t",
+                "ten o'clock p m e t",
+                "ten p m Eastern Time",
+                "ten o'clock p m Eastern Time",
+            },
+        ),
+        (
+            "4:44pm EST",
+            {"four forty-four p m e s t", "four forty-four p m Eastern Standard Time"},
+        ),
+        (
+            "18:00 UTC",
+            {
+                "eighteen u t c",
+                "eighteen o'clock u t c",
+                "eighteen hundred u t c",
+                "eighteen Coordinated Universal Time",
+                "eighteen o'clock Coordinated Universal Time",
+                "eighteen hundred Coordinated Universal Time",
+            },
+        ),
     ],
 )
 def test_time_speaks_the_written_hour_minutes_and_period(written, expected):
