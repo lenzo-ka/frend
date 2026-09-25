@@ -155,6 +155,51 @@ def test_date_alternatives_are_never_cut_to_a_prefix(monkeypatch):
     ],
 )
 def test_real_dates_include_corpus_day_first_forms(written, spoken):
+    _assert_corpus_date_form(written, spoken)
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("18 September", "the eighteenth of september"),
+        ("1 July", "the first of july"),
+        ("July 1", "july first"),
+        ("500 BC", "five hundred b c"),
+        ("2000 AD", "two thousand a d"),
+        ("April 4, 1904", "april fourth nineteen o four"),
+    ],
+)
+def test_year_less_era_and_zero_led_year_dates_speak_the_corpus_form(written, spoken):
+    """icukit #97 reads day-month dates and era years; the corpus says them this way."""
+    detection = next(
+        item
+        for item in FlexibleTextDateDetector("en_US").detect(written)
+        if item["start"] == 0 and item["end"] == len(written)
+    )
+    unit = verbalize_lattice(resolve_lattice([detection], source_text=written)).best_path.units[0]
+    assert spoken in {
+        item.text.lower().replace(",", "").replace("-", " ") for item in unit.alternatives
+    }
+    assert unit.unspoken == ()
+
+
+def test_era_also_reads_as_the_icu_wide_name_and_a_year_without_oh_gains_no_o():
+    detection = next(
+        item
+        for item in FlexibleTextDateDetector("en_US").detect("500 BC")
+        if item["start"] == 0 and item["end"] == len("500 BC")
+    )
+    unit = verbalize_lattice(resolve_lattice([detection], source_text="500 BC")).best_path.units[0]
+    assert ("five hundred Before Christ", "icu-rbnf:%spellout-numbering+icu-datetime:GGGG") in {
+        (item.text, item.provenance) for item in unit.alternatives
+    }
+    plain = _full_span_forms(
+        "March 2, 2014", [FlexibleTextDateDetector("en_US")], "date:text-flexible"
+    )
+    assert not any(" o " in f" {item.text} " for item in plain.alternatives)
+
+
+def _assert_corpus_date_form(written, spoken):
     detection = next(
         item
         for item in FlexibleTextDateDetector("en_US").detect(written)
@@ -961,6 +1006,9 @@ _COVERAGE = [
     "18:00 UTC",
     "V.",
     "XIVth",
+    "500 BC",
+    "1 July",
+    "18 September",
 ]
 
 

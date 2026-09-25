@@ -575,7 +575,7 @@ _SPOKEN_CAPTURES = {
             "denominator",
         }
     ),
-    "date": frozenset({"y", "M", "d", "month", "weekday"}),
+    "date": frozenset({"y", "M", "d", "month", "weekday", "era"}),
     "ordinal": frozenset({"integer", "ordinal-affix"}),
     "abbreviation": frozenset({"surface"}),
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
@@ -820,20 +820,73 @@ def _weekday_name(capture: object, calendar: str, locale: str) -> SpokenAlternat
     raise ValueError(f"invalid weekday capture value {value!r}")
 
 
-def _spoken_date(value: DateTimeValue, locale: str) -> tuple[SpokenAlternative, ...]:
+def _era_names(era: int, detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
+    """An era reads as the letters of its written abbreviation or as ICU's wide era name.
+
+    The corpus reads "500 BC" as "five hundred b c" and "300 BCE" as "three hundred b c e":
+    the written abbreviation, letter by letter. The wide name ("Before Christ") comes from
+    ICU's date symbols and is kept as an alternative for the ranking to weigh.
+    """
+    symbols = icu.DateFormatSymbols(icu.Locale(locale))
+    names = symbols.getEraNames()
+    if not 0 <= era < len(names):
+        raise ValueError(f"invalid era {era!r}")
+    abbreviation = str(getattr(_capture(detection, "era"), "text", "")) or symbols.getEras()[era]
+    letters = "".join(ch for ch in abbreviation if ch.isalpha()).lower()
+    return (
+        SpokenAlternative(" ".join(letters), "surface:letters"),
+        SpokenAlternative(names[era], "icu-datetime:GGGG"),
+    )
+
+
+def _spoken_era_year(
+    value: DateTimeValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak a year with its era ("500 BC" -> "five hundred b c"), year first as written.
+
+    The corpus reads the year of an era date as a cardinal ("two thousand a d"); the
+    year-style reading is kept as an alternative for the ranking to weigh.
+    """
+    fields = dict(value.fields)
+    year = Decimal(fields["y"])
+    years = _ranked([*_number_leaf(year, "cardinal", locale), *_number_leaf(year, "year", locale)])
+    return _compose([years, _era_names(fields["G"], detection, locale)], "{} {}")
+
+
+def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
+    """ICU's year readings, plus "o" where ICU says "oh" ("1908": "nineteen o eight").
+
+    ICU's year rule set says a zero-led second half "oh" ("nineteen oh-eight"); the
+    corpus reads it "o" as often. No locale data spells "o", so that form is lexical
+    over ICU's, as a zero-led minute already is.
+    """
+    forms = list(_number_leaf(value, "year", locale))
+    for item in tuple(forms):
+        words = item.text.replace("-", " ").split(" ")
+        if "oh" in words:
+            text = " ".join("o" if word == "oh" else word for word in words)
+            forms.append(SpokenAlternative(text, f"{item.provenance}+{LEXICAL_SOURCE}"))
+    return _ranked(forms)
+
+
+def _spoken_date(
+    value: DateTimeValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
     """Emit month-first and day-first alternatives because value alone hides written order."""
     fields = dict(value.fields)
-    if len(fields) != len(value.fields) or not fields or not set(fields) <= {"y", "M", "d"}:
-        raise NotImplementedError("v1 date assembly supports unique y/M/d fields only")
     if any(isinstance(item, bool) or not isinstance(item, int) for item in fields.values()):
         raise ValueError(f"date fields must be integers: {value.fields!r}")
+    if set(fields) == {"G", "y"} and len(value.fields) == 2:
+        return _spoken_era_year(value, detection, locale)
+    if len(fields) != len(value.fields) or not fields or not set(fields) <= {"y", "M", "d"}:
+        raise NotImplementedError("v1 date assembly supports unique y/M/d fields only")
     parts: list[tuple[SpokenAlternative, ...]] = []
     if "M" in fields:
         parts.append((_month_name(fields["M"], value.calendar, locale),))
     if "d" in fields:
         parts.append(_number_leaf(Decimal(fields["d"]), "ordinal", locale))
     if "y" in fields:
-        parts.append(_number_leaf(Decimal(fields["y"]), "year", locale))
+        parts.append(_year_leaf(Decimal(fields["y"]), locale))
     if set(fields) == {"M", "d", "y"}:
         template = "{} {}, {}"
     elif set(fields) == {"M", "d"}:
@@ -841,20 +894,18 @@ def _spoken_date(value: DateTimeValue, locale: str) -> tuple[SpokenAlternative, 
     else:
         template = " ".join("{}" for _ in parts)
     month_first = _compose(parts, template)
-    if set(fields) != {"M", "d", "y"}:
+    if not {"M", "d"} <= set(fields):
         return month_first
+    # The corpus reads a day-first date as "the eighteenth of September", with or
+    # without a year; no locale pattern says it, so the frame is lexical.
     day_words = tuple(
         SpokenAlternative(item.text.replace("-", " "), item.provenance)
         for item in _number_leaf(Decimal(fields["d"]), "ordinal", locale)
     )
-    day_first = _compose(
-        [
-            day_words,
-            (_month_name(fields["M"], value.calendar, locale),),
-            _number_leaf(Decimal(fields["y"]), "year", locale),
-        ],
-        "the {} of {} {}",
-    )
+    day_parts = [day_words, (_month_name(fields["M"], value.calendar, locale),)]
+    if "y" in fields:
+        day_parts.append(_year_leaf(Decimal(fields["y"]), locale))
+    day_first = _compose(day_parts, "the {} of " + " ".join("{}" for _ in day_parts[1:]))
     return _ranked([*month_first, *day_first])
 
 
@@ -958,7 +1009,7 @@ def verbalize_edge(
             key_value = value.surface
             path = "abbreviation"
         elif isinstance(value, DateTimeValue) and type_.startswith("date:"):
-            alternatives = _spoken_date(value, locale)
+            alternatives = _spoken_date(value, detection, locale)
             key_value = tuple(value.fields)
             path = "date"
         elif isinstance(value, DateTimeValue) and type_.startswith("time:"):
