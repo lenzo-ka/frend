@@ -120,8 +120,8 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
             "unverbalized": 0
           },
           "spoken": "the twenty fourth of april three fifty",
@@ -133,8 +133,8 @@
       "total": 2000,
       "unmatched": 3,
       "unmatched_by_reason": {
-        "no_alternative_matched": 2,
-        "unrecognized": 1,
+        "no_alternative_matched": 1,
+        "unrecognized": 2,
         "unverbalized": 0
       }
     },
