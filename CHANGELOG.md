@@ -8,6 +8,9 @@
   does not. A dot-separated time ("3.14" as a time) loses to the decimal on captures
   and on the corpus prior for its shape, and a test pins both. TIME matched rises from
   1547 to 1700 of 2000 sampled rows and ORDINAL from 1976 to 1994.
+- Raised the icukit floor to `icukit>=0.5`, the first release carrying the readings
+  frend now speaks (#90 through #97: letter-digit runs, day-period and zoned times,
+  decades, Roman ordinals). Against 0.4.0 frend failed to import.
 - Remeasured the spoken-priors table against icukit #97, which reads dates without a
   year ("1 July"), dotted months ("Oct. 2006") and era years ("500 BC"), measures by
   wide names and ASCII marks, mixed measures, and "percent". DATE matched rises from
