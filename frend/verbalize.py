@@ -619,7 +619,9 @@ def _spoken_time(
     ("12am" is "twelve a m"). A zero-led minute reads "oh five" or "o five"; a bare
     or on-the-hour time also reads with "o'clock". A written time zone follows as
     its letters, as the corpus reads it ("10 PM ET" "ten p m e t", "18:00 UTC"
-    "eighteen hundred u t c"). Seconds are not verbalized.
+    "eighteen hundred u t c"). A day period or zone written in words ("in the
+    afternoon", "Eastern Standard Time", icukit #116) is said as those words, never
+    spelled. Seconds are not verbalized.
     """
     fields = dict(value.fields)
     if "H" not in fields or not set(fields) <= {"H", "m"}:
@@ -630,7 +632,11 @@ def _spoken_time(
     hours = _number_leaf(hour, "cardinal", locale)
     tail = []
     for capture in (period, _capture(detection, "time-zone")):
-        letters = "".join(ch for ch in str(getattr(capture, "text", "")) if ch.isalpha()).lower()
+        words = str(getattr(capture, "text", "")).split()
+        if len(words) > 1:
+            tail.append((SpokenAlternative(" ".join(words), "surface:words"),))
+            continue
+        letters = "".join(ch for ch in "".join(words) if ch.isalpha()).lower()
         if letters:
             tail.append((SpokenAlternative(" ".join(letters), "surface:letters"),))
     minute = fields.get("m")
