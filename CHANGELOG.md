@@ -1,6 +1,15 @@
 # Changelog
 
 ## Unreleased
+- Read and spoke written forms ICU writes nowhere, which icukit leaves to frend (kal's
+  ruling; `frend.written_forms.WrittenFormsDetector`): a time with a space after the
+  colon ("7: 31" "seven thirty one"), a case citation ("339 U.S.", the corpus's
+  "three hundred thirty nine", also with "u s"), spaced digits ("6 3" "six three"), and
+  an era written with periods, attached, or first ("500 B.C.", "4AD", "A.D. 1066"),
+  spoken through frend's existing time, number and era speech. TIME matched rises from
+  1856 to 1971 of 2000. The corpus's DIGIT class turned out to be plain digit strings
+  read digit by digit ("2013" "two o one three"), not spaced digits; it stays outside
+  the measured kinds.
 - Read a time-zone abbreviation both spelled and as its long name (kal: "EST should have
   two reads"): "5:30 pm EST" gives "... e s t" and "... Eastern Standard Time". The names
   come from icukit's list of ICU's abbreviations (`icu_abbreviations`, icukit 0.6.0); an

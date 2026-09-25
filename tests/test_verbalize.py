@@ -38,6 +38,7 @@ from frend.verbalize import (
     verbalize_edge,
     verbalize_lattice,
 )
+from frend.written_forms import WrittenFormsDetector
 
 DETECTORS = all_detectors("en_US", ("yMd", "Md", "y"))
 
@@ -1025,6 +1026,11 @@ _COVERAGE = [
     "1:47.22",
     "1:02:03",
     "/km²",
+    "7: 31",
+    "339 U.S.",
+    "6 3",
+    "500 B.C.",
+    "A.D. 1066",
 ]
 
 
@@ -1154,6 +1160,7 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
         FlexibleMeasureDetector("en_US", "square-kilometer"),
         FlexibleMixedMeasureDetector("en_US", "foot-and-inch"),
         ElectronicDetector("en_US"),
+        WrittenFormsDetector("en_US"),
         FlexibleNumericDurationDetector("en_US"),
         *all_detectors("en_US", ("yMd", "Md", "y", "yMMMMEEEEd", "yMMMMd")).detectors,
     ]

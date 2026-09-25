@@ -292,6 +292,7 @@ def test_recognition_profile_includes_compacts_currency_names_and_xcd():
         "FlexibleCompactDetector",
         "LetterNameDetector",
         "SingleLetterWordDetector",
+        "WrittenFormsDetector",
     ]
     assert sum(
         type(detector).__name__ == "FlexibleCurrencyNameDetector" for detector in detectors["money"]

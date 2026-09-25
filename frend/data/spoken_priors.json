@@ -3312,11 +3312,11 @@
       }
     },
     "time": {
-      "matched": 1856,
+      "matched": 1971,
       "source_matched": {
         "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units": 86,
         "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US": 70,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 646,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 761,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 256,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 50,
         "icu-rbnf:%spellout-numbering+lexical:en_US": 143,
@@ -3342,30 +3342,6 @@
           }
         },
         {
-          "count": 3,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
-            "unverbalized": 0
-          },
-          "spoken": "two thirteen",
-          "written_forms": {
-            "2: 13": 3
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "eight forty six",
-          "written_forms": {
-            "8: 46": 2
-          }
-        },
-        {
           "count": 2,
           "reasons": {
             "no_alternative_matched": 0,
@@ -3380,78 +3356,6 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen twenty one",
-          "written_forms": {
-            "19: 21": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "one eleven",
-          "written_forms": {
-            "1: 11": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "one forty four",
-          "written_forms": {
-            "1: 44": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "seven sixteen",
-          "written_forms": {
-            "7: 16": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "six ten",
-          "written_forms": {
-            "6: 10": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "six twenty four",
-          "written_forms": {
-            "6: 24": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
             "no_alternative_matched": 2,
             "unrecognized": 0,
             "unverbalized": 0
@@ -3459,30 +3363,6 @@
           "spoken": "three a m",
           "written_forms": {
             "AM3": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "three eighteen",
-          "written_forms": {
-            "3: 18": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 2,
-            "unverbalized": 0
-          },
-          "spoken": "three eleven",
-          "written_forms": {
-            "3: 11": 2
           }
         },
         {
@@ -3511,15 +3391,75 @@
           }
         },
         {
-          "count": 2,
+          "count": 1,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 2,
+            "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "twenty twenty one",
+          "spoken": "eleven forty one p m",
           "written_forms": {
-            "20: 21": 2
+            "23:41pm": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "eleven hours fifty six minutes and forty nine seconds u t c",
+          "written_forms": {
+            "11:56:49 UTC": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "eleven hours zero minutes and zero seconds i s t",
+          "written_forms": {
+            "11:00:00 IST": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "fifteen hours forty two minutes and forty four seconds u t c",
+          "written_forms": {
+            "15:42:44 UTC": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "fifteen hours two minutes and zero seconds g m t",
+          "written_forms": {
+            "15:02:00 GMT": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "fourteen hours fifty seven minutes and zero seconds g m t",
+          "written_forms": {
+            "14:57:00 GMT": 1
           }
         },
         {
@@ -3529,9 +3469,21 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "eight fifty two",
+          "spoken": "nine forty p m",
           "written_forms": {
-            "8: 52": 1
+            "21:40 pm": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "one a m",
+          "written_forms": {
+            "AM1": 1
           }
         },
         {
@@ -3541,9 +3493,9 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "eight forty nine",
+          "spoken": "one twenty p m",
           "written_forms": {
-            "8: 49": 1
+            "13:20 pm": 1
           }
         },
         {
@@ -3553,9 +3505,21 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "eight thirty two",
+          "spoken": "six p m l i n t",
           "written_forms": {
-            "8: 32": 1
+            "6 pm LINT": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "thirteen hours forty one minutes and fifty five seconds g m t",
+          "written_forms": {
+            "13:41:55 GMT": 1
           }
         },
         {
@@ -3565,17 +3529,53 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "eight twenty one",
+          "spoken": "twenty four fifty seven",
           "written_forms": {
-            "8: 21": 1
+            "24: 57": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "twenty four thirteen",
+          "written_forms": {
+            "24: 13": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "twenty four twelve",
+          "written_forms": {
+            "24:12": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "twenty four twenty two",
+          "written_forms": {
+            "24: 22": 1
           }
         }
       ],
       "total": 2000,
-      "unmatched": 144,
+      "unmatched": 29,
       "unmatched_by_reason": {
         "no_alternative_matched": 10,
-        "unrecognized": 124,
+        "unrecognized": 9,
         "unverbalized": 10
       }
     }
@@ -3598,7 +3598,7 @@
     "normalization": "Written tokens: remove trailing spaces and commas before recognition. Spoken forms and alternatives: split at characters whose Unicode general category starts with P and at whitespace recognized by str.split(), then lowercase each token independently.",
     "outside_classes": {
       "ADDRESS": "no verbalized value family",
-      "DIGIT": "no verbalized value family",
+      "DIGIT": "digit strings read digit by digit; not a measured kind",
       "LETTERS": "no verbalized value family",
       "PLAIN": "not a structured value",
       "PUNCT": "not a structured value",
@@ -3635,7 +3635,8 @@
           "FlexibleCompactDetector",
           "FlexibleCompactDetector",
           "LetterNameDetector",
-          "SingleLetterWordDetector"
+          "SingleLetterWordDetector",
+          "WrittenFormsDetector"
         ],
         "date": [
           "DateDetector",
@@ -3644,7 +3645,8 @@
           "FlexibleDateDetector",
           "FlexibleTextDateDetector",
           "PluralNumeralDetector",
-          "AlphanumericRunsDetector"
+          "AlphanumericRunsDetector",
+          "WrittenFormsDetector"
         ],
         "decimal": [
           "FlexibleNumberDetector",
@@ -3742,7 +3744,8 @@
         "time": [
           "FlexibleTimeDetector",
           "FlexibleNumericDurationDetector",
-          "AlphanumericRunsDetector"
+          "AlphanumericRunsDetector",
+          "WrittenFormsDetector"
         ]
       },
       "full_span_only": true,
