@@ -1,6 +1,17 @@
 # Changelog
 
 ## Unreleased
+- Spoke and measured measures. A measure (icukit #97) reads its amount as frend reads
+  any number and its unit as ICU names it: icukit formats the value in the unit's wide
+  form and frend cuts ICU's own number out, leaving the unit in the plural and order
+  CLDR gives ("60 km" "sixty kilometers", "60 km/h" "sixty kilometers per hour"). A
+  rate also reads with the unit's plural after "per", as the corpus does ("578.3/km2"
+  "... per square kilometers"). A mixed measure speaks each component and joins them
+  with ICU's list pattern for units ("5'10\"" "five feet, ten inches"). A percent now
+  reads its written fraction digits ("79.20%" "seventy nine point two o percent").
+  MEASURE is a new measured kind: 1924 of 2000 sampled rows match. Its shares are
+  conditioned on the reading's ICU unit, so a rate learns the corpus's plural after
+  "per" (0.902) without every unit taking it; percent is its own sub-key.
 - Spoke icukit #97's era years and year-less dates, from ICU where locale data says
   it. An era year reads as a cardinal and the letters of its written era, as the
   corpus reads it ("500 BC" "five hundred b c"), with ICU's wide era name ("five

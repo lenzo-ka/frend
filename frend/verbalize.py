@@ -12,7 +12,8 @@ from itertools import product
 
 import icu
 from icukit import AbbreviationValue, DateTimeFormatter
-from icukit.detectors import DateTimeValue, NumberValue
+from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
+from icukit.measure import WIDTH_WIDE, format_measure
 
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.spoken_priors import measurement_sub_key, source_prior
@@ -148,7 +149,8 @@ def _measured_kind(type_: str, value: object) -> str | None:
     """Map date, time, ordinal, fraction, money, decimal, and cardinal reading families.
 
     ``date:*`` and ``number:plural*`` (decades, filed as DATE by the corpus) map to
-    date; ``time:*`` to time; ``ordinal:*`` to ordinal; ``fraction:*`` and
+    date; ``time:*`` to time; ``measure:*`` and ``number:percent`` (the corpus files
+    percent under MEASURE) to measure; ``ordinal:*`` to ordinal; ``fraction:*`` and
     ``number:fraction*`` to fraction;
     ``money:*``, ``number:currency*``, or a number carrying currency to money;
     ``number:decimal*`` to decimal; and ``number:cardinal*`` or ``number:int*``
@@ -158,6 +160,8 @@ def _measured_kind(type_: str, value: object) -> str | None:
         return "date"
     if type_.startswith("time:"):
         return "time"
+    if type_.startswith("measure:") or type_ == "number:percent":
+        return "measure"
     if type_.startswith("ordinal:"):
         return "ordinal"
     if type_.startswith(("fraction:", "number:fraction")):
@@ -581,6 +585,8 @@ _SPOKEN_CAPTURES = {
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
+    "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
+    "mixed-measure": frozenset({"integer", "unit"}),
     "roman": frozenset({"integer", "apostrophe", "suffix"}),
 }
 _MINUS_SIGNS = frozenset({"-", "−"})
@@ -943,18 +949,105 @@ def _spoken_number(
                 [*alternatives, *_spoken_decimal(decimal, locale, omit_zero_integer=True)]
             )
         return alternatives
-    alternatives = _number_leaf(
-        decimal * 100 if type_ == "number:percent" else decimal, "cardinal", locale
-    )
     if type_ == "number:percent":
+        # The amount is read as any written number is. The value is a fraction of one
+        # and has dropped trailing zeros, so a written fraction is read from its
+        # captures ("79.20%" is "seventy nine point two o percent").
+        fraction = _capture(detection, "fraction")
+        integer = _capture(detection, "integer")
+        amount = decimal.scaleb(2)
+        if fraction is not None and integer is not None:
+            digits = "".join(ch for ch in str(integer.text) if ch.isdigit())
+            amount = Decimal(f"{'-' if decimal < 0 else ''}{digits or '0'}.{fraction.text}")
         suffix = _percent_name(locale)
-    elif type_.startswith(("number:cardinal", "number:int", "number:decimal")):
-        return alternatives
-    else:
-        raise NotImplementedError(f"unsupported NumberValue reading class {type_!r}")
-    return tuple(
-        SpokenAlternative(f"{item.text} {suffix}", item.provenance, item.weight)
-        for item in alternatives
+        return tuple(
+            SpokenAlternative(f"{item.text} {suffix}", item.provenance, item.weight)
+            for item in _spoken_decimal(amount, locale)
+        )
+    if type_.startswith(("number:cardinal", "number:int", "number:decimal")):
+        return _number_leaf(decimal, "cardinal", locale)
+    raise NotImplementedError(f"unsupported NumberValue reading class {type_!r}")
+
+
+def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
+    """ICU's wide measure form for an amount, with ICU's own formatted number cut out.
+
+    Formatting 60 kilometers in the locale and removing ICU's "60" leaves "{} kilometers":
+    the unit's wide name in the plural the amount selects, in the locale's order, as CLDR
+    states it. Nothing about the unit is written here.
+    """
+    number = float(amount)
+    formatted = format_measure(number, unit, locale, WIDTH_WIDE)
+    written = icu.NumberFormat.createInstance(icu.Locale(locale)).format(number)
+    if formatted.count(written) != 1:
+        raise NotImplementedError(f"cannot locate the amount in {formatted!r}")
+    return formatted.replace(written, "{}", 1)
+
+
+def _spoken_measure(value: MeasureValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Speak a measure: the amount as frend reads any number, the unit as ICU names it.
+
+    A rate ("578.3/km²", unit ``per-square-kilometer``) is ICU's "per square kilometer";
+    it also reads with the unit's plural after "per", as the corpus does ("per square
+    kilometers"). Both unit forms are ICU's; putting the plural there is the corpus's
+    choice, so that form is lexical over them.
+    """
+    amount = Decimal(value.decimal)
+    head = _measure_template(amount, value.unit, locale)
+    templates = [(head, "icu-measure:wide")]
+    if value.unit.startswith("per-"):
+        base = value.unit.removeprefix("per-")
+        singular = _measure_template(Decimal(1), base, locale).replace("{}", "").strip()
+        plural = _measure_template(amount, base, locale).replace("{}", "").strip()
+        if singular != plural and head.count(singular) == 1:
+            templates.append((head.replace(singular, plural), f"icu-measure:wide+{LEXICAL_SOURCE}"))
+    return _ranked(
+        [
+            SpokenAlternative(template.format(item.text), f"{item.provenance}+{source}")
+            for template, source in templates
+            for item in _spoken_decimal(amount, locale)
+        ]
+    )
+
+
+def _spoken_mixed_measure(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Speak each component of a mixed measure in its own unit, joined as ICU joins units.
+
+    icukit captures each component's integer and unit ("5'10\\"": 5 foot, 10 inch); each
+    reads as a cardinal in ICU's wide unit form, and ICU's list pattern for units joins
+    them ("five feet, ten inches").
+    """
+    pairs: list[tuple[Decimal, str]] = []
+    amount = None
+    for capture in detection.get("captures", ()):  # type: ignore[union-attr]
+        if capture.name == "integer":
+            amount = Decimal(str(capture.value))
+        elif capture.name == "unit" and amount is not None and capture.value:
+            pairs.append((amount, str(capture.value)))
+            amount = None
+    if len(pairs) < 2:
+        raise NotImplementedError("mixed measure without two components")
+    joiner = icu.ListFormatter.createInstance(
+        icu.Locale(locale), icu.UListFormatterType.UNITS, icu.UListFormatterWidth.WIDE
+    )
+    components = [
+        [
+            SpokenAlternative(
+                _measure_template(number, unit, locale).format(item.text),
+                f"{item.provenance}+icu-measure:wide",
+            )
+            for item in _number_leaf(number, "cardinal", locale)
+        ]
+        for number, unit in pairs
+    ]
+    return _ranked(
+        [
+            SpokenAlternative(
+                joiner.format([item.text for item in combination]),
+                "+".join(item.provenance for item in combination) + "+icu-list:units",
+            )
+            for combination in product(*components)
+        ]
     )
 
 
@@ -1016,6 +1109,14 @@ def verbalize_edge(
             alternatives = _spoken_time(value, detection, locale)
             key_value = tuple(value.fields)
             path = "time"
+        elif isinstance(value, MeasureValue) and "-and-" in type_:
+            alternatives = _spoken_mixed_measure(detection, locale)
+            key_value = (value.decimal, value.unit)
+            path = "mixed-measure"
+        elif isinstance(value, MeasureValue):
+            alternatives = _spoken_measure(value, locale)
+            key_value = (value.decimal, value.unit)
+            path = "measure"
         elif type(value).__name__ == "AlphanumericRunsValue":
             alternatives = _spoken_runs(value, locale)
             key_value = value.runs

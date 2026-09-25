@@ -1,9 +1,10 @@
 """Build or verify sampled spoken-alternative source measurements.
 
 The table measures every supported kind at kind level. Fractions additionally
-declare and measure the captured denominator as a sub-key; no other kind has a
-declared sub-key. Each matched row is credited to the source and sub-key of the
-specific reading that produced its spoken text. Ranking selects a sub-key row
+declare and measure the captured denominator as a sub-key, and measures the
+reading's ICU unit identifier; no other kind has a declared sub-key. Each matched
+row is credited to the source and sub-key of the specific reading that produced
+its spoken text. Ranking selects a sub-key row
 for every alternative on an edge when available, or the kind row for every
 alternative otherwise, so a comparison never mixes conditioning levels.
 """
@@ -36,6 +37,7 @@ CLASS_TO_KIND = {
     "DATE": "date",
     "DECIMAL": "decimal",
     "FRACTION": "fraction",
+    "MEASURE": "measure",
     "MONEY": "money",
     "ORDINAL": "ordinal",
     "TIME": "time",
@@ -45,7 +47,6 @@ OUTSIDE_CLASSES = {
     "DIGIT": "no verbalized value family",
     "ELECTRONIC": "no verbalized value family",
     "LETTERS": "no verbalized value family",
-    "MEASURE": "measure values are not verbalized",
     "PLAIN": "not a structured value",
     "PUNCT": "not a structured value",
     "TELEPHONE": "no verbalized value family",
@@ -64,6 +65,60 @@ _CURRENCIES = (
     "RUB",
     "XCD",
 )
+
+# The measure units the profile recognizes: the corpus's most frequent MEASURE units,
+# as ICU unit identifiers. icukit derives every written form of each from ICU.
+_MEASURE_UNITS = (
+    "kilometer",
+    "meter",
+    "millimeter",
+    "centimeter",
+    "micrometer",
+    "nanometer",
+    "foot",
+    "inch",
+    "mile",
+    "yard",
+    "kilometer-per-hour",
+    "mile-per-hour",
+    "kilogram",
+    "gram",
+    "milligram",
+    "pound",
+    "ounce",
+    "ton",
+    "hectare",
+    "acre",
+    "square-kilometer",
+    "square-mile",
+    "square-meter",
+    "kilowatt",
+    "megawatt",
+    "watt",
+    "horsepower",
+    "volt",
+    "hertz",
+    "kilohertz",
+    "megahertz",
+    "gigahertz",
+    "kilobyte",
+    "megabyte",
+    "gigabyte",
+    "terabyte",
+    "liter",
+    "milliliter",
+    "celsius",
+    "fahrenheit",
+    "second",
+    "minute",
+    "hour",
+    "gigawatt",
+    "meter-per-second",
+    "square-foot",
+    "millibar",
+    "cubic-meter",
+)
+_MIXED_MEASURES = ("foot-and-inch", "pound-and-ounce")
 
 
 def _default_corpus_dir() -> Path:
@@ -86,8 +141,11 @@ def _detectors():
         FlexibleCurrencyNameDetector,
         FlexibleDateDetector,
         FlexibleFractionDetector,
+        FlexibleMeasureDetector,
+        FlexibleMixedMeasureDetector,
         FlexibleNumberDetector,
         FlexibleOrdinalDetector,
+        FlexiblePercentDetector,
         FlexibleTextDateDetector,
         FlexibleTimeDetector,
         LetterNameDetector,
@@ -117,6 +175,11 @@ def _detectors():
         "fraction": (FlexibleFractionDetector("en_US"),),
         "ordinal": (FlexibleOrdinalDetector("en_US"), FlexibleNumberDetector("en_US"), runs),
         "time": (FlexibleTimeDetector("en_US"), runs),
+        "measure": (
+            FlexiblePercentDetector("en_US"),
+            *(FlexibleMeasureDetector("en_US", unit) for unit in _MEASURE_UNITS),
+            *(FlexibleMixedMeasureDetector("en_US", mixed) for mixed in _MIXED_MEASURES),
+        ),
         "money": tuple(
             detector
             for code in _CURRENCIES
@@ -251,7 +314,10 @@ def build_document(corpus_dir: Path) -> dict:
                     "source_matched": dict(sorted(sources.items())),
                 }
                 for sub_key, sources in sorted(
-                    aggregate["sub_keys"].items(), key=lambda item: int(item[0])
+                    aggregate["sub_keys"].items(),
+                    key=lambda item: (
+                        (0, int(item[0]), "") if item[0].isdigit() else (1, 0, item[0])
+                    ),
                 )
             },
             "unmatched_by_reason": dict(sorted(aggregate["unmatched_by_reason"].items())),
@@ -285,11 +351,10 @@ def build_document(corpus_dir: Path) -> dict:
             ),
             "class_to_kind": CLASS_TO_KIND,
             "sub_key_rules": {
-                kind: (
-                    "the decimal integer value of the reading's denominator capture"
-                    if kind == "fraction"
-                    else None
-                )
+                kind: {
+                    "fraction": "the decimal integer value of the reading's denominator capture",
+                    "measure": "the reading's ICU unit identifier; percent for a percent",
+                }.get(kind)
                 for kind in sorted(aggregates)
             },
             "outside_classes": OUTSIDE_CLASSES,
@@ -302,6 +367,8 @@ def build_document(corpus_dir: Path) -> dict:
                 "date_skeletons": list(_DATE_SKELETONS),
                 "compact_styles": ["long", "short"],
                 "currency_codes": list(_CURRENCIES),
+                "measure_units": list(_MEASURE_UNITS),
+                "mixed_measures": list(_MIXED_MEASURES),
                 "full_span_only": True,
                 "detection_handling": "resolve and verbalize each detection separately",
             },
