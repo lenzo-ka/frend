@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Remeasured the spoken-priors table on icukit `e91dd58` (#107 to #109, unreleased):
+  composed units and the curated unit spellings ICU does not write ("lbs", "sq km",
+  "per km²") raise MEASURE matched from 1944 to 1954 of 2000. No other kind changed.
 - Spoke icukit #99's numeric durations ("1:47.22", "2:30") as TIME, where the corpus
   files them. Each field reads as a cardinal in ICU's wide unit form, joined by ICU's
   list patterns for units ("one minute nineteen seconds"). A written fraction of the
