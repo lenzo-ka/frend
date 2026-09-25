@@ -28,10 +28,8 @@ def _forms(text):
     ("text", "type_", "spoken"),
     [
         ("7: 31", "time:spaced-colon", "seven thirty one"),
-        ("339 U.S.", "number:cardinal:citation", "three hundred thirty nine"),
         ("6 3", "number:digits", "six three"),
         ("500 B.C.", "date:era", "five hundred b c"),
-        ("2000 BC.", "date:era", "two thousand b c"),
         ("4AD", "date:era", "four a d"),
     ],
 )
@@ -40,8 +38,20 @@ def test_form_icu_writes_nowhere_reads_as_the_corpus_says_it(text, type_, spoken
     assert spoken in _forms(text)
 
 
-def test_citation_also_offers_the_reporter_and_zero_also_reads_o():
-    assert "three hundred thirty nine u s" in _forms("339 U.S.")
+def test_citation_reads_its_volume_only_where_a_page_follows():
+    """ "339 U.S. 629" is a citation (the corpus says the volume alone; "u s" also offered);
+    "The 339 U.S. troops" is prose, and no citation is read there."""
+    text = "see 339 U.S. 629"
+    (detection,) = WrittenFormsDetector().detect(text)
+    assert detection["text"] == "339 U.S."
+    lattice = resolve_lattice([detection], source_text=text)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    forms = [normalize_spoken(a.text) for a in verbalize_edge(edge, source_text=text).alternatives]
+    assert {"three hundred thirty nine", "three hundred thirty nine u s"} <= set(forms)
+    assert _spans("The 339 U.S. troops returned.") == []
+
+
+def test_zero_digit_also_reads_o():
     assert {"one zero two", "one o two"} <= set(_forms("1 0 2"))
 
 
@@ -50,7 +60,10 @@ def test_era_written_first_is_said_first():
     assert _forms("500 B.C.")[0].endswith(" b c")
 
 
-@pytest.mark.parametrize("text", ["500 BC", "3.14", "10: 75", "25: 00", "12:30", "U.S. 339"])
+@pytest.mark.parametrize(
+    "text", ["500 BC", "500 BC. Next", "3.14", "10: 75", "25: 00", "12:30", "U.S. 339"]
+)
 def test_leaves_icus_own_forms_and_non_matches_alone(text):
-    """ "500 BC" is ICU's own form, icukit reads it; the rest are not these forms."""
+    """ "500 BC" is ICU's own form, icukit reads it (its period ends the sentence); the rest
+    are not these forms."""
     assert _spans(text) == []

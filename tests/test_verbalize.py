@@ -1740,7 +1740,7 @@ def test_acronym_reads_spelled_and_as_a_word_weighted_as_measured_then_expanded(
     """kal ruled frend says both; the corpus decides the order by the acronym's shape."""
     unit = _abbreviation_unit("FBI", [("Federal Bureau of Investigation", "organization")])
     texts = [a.text for a in unit.alternatives]
-    assert texts[:2] == ["f b i", "fbi"] or texts[:2] == ["fbi", "f b i"]
+    assert texts[:2] == ["f b i", "fbi"]
     assert texts[2] == "Federal Bureau of Investigation"
     assert sum(a.weight for a in unit.alternatives[:2]) == 1
 
@@ -1762,3 +1762,65 @@ def test_icukits_own_spelled_form_takes_the_weight_rather_than_a_copy():
 def test_non_acronym_abbreviation_is_unchanged():
     unit = _abbreviation_unit("Dr.", [("Doctor", "title", "precedes-name")])
     assert [a.text for a in unit.alternatives] == ["Doctor"]
+
+
+def test_acronym_ranks_by_its_own_corpus_evidence():
+    """ "NASA" is left as a word 2118 times to 4 spelled, "FBI" always spelled: the acronym's
+    own counts, not its shape's, set the order."""
+    nasa = _abbreviation_unit(
+        "NASA", [("National Aeronautics and Space Administration", "organization")]
+    )
+    fbi = _abbreviation_unit("FBI", [("Federal Bureau of Investigation", "organization")])
+    assert nasa.alternatives[0].text == "nasa"
+    assert fbi.alternatives[0].text == "f b i"
+
+
+def test_dotted_acronym_has_no_word_reading():
+    unit = _abbreviation_unit("U.S.", [("United States", "region")])
+    texts = [normalize_spoken(a.text) for a in unit.alternatives]
+    assert "u s" in texts and "united states" in texts
+    assert "us" not in texts
+
+
+@pytest.mark.parametrize(
+    ("written", "first"),
+    [
+        ("March 5, 2024", "march fifth twenty twenty four"),
+        ("5 March 2024", "the fifth of march twenty twenty four"),
+        ("March 5, 2024 AD", "march fifth twenty twenty four a d"),
+        ("5 March 2024 AD", "the fifth of march twenty twenty four a d"),
+    ],
+)
+def test_date_ranks_by_its_written_order(written, first):
+    """The corpus says a month-first date month first and a day-first one day first; the
+    date sub-key keeps the two apart, with or without an era."""
+    unit = _full_span_forms(written, [FlexibleTextDateDetector("en_US")], "date:text-flexible")
+    assert normalize_spoken(unit.alternatives[0].text) == first
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("March 5, 2024 at 2:07 PM", "march fifth twenty twenty four at two oh seven p m"),
+        ("Tue 2:07 PM", "tuesday two oh seven p m"),
+        ("Q1 2024", "first quarter twenty twenty four"),
+    ],
+)
+def test_real_datetime_and_quarter_readings_speak(written, spoken):
+    """Through icukit's own readers (icukit 0.7), not constructed readings."""
+    from icukit.recognize import FlexibleDateTimeDetector
+
+    detections = [
+        d
+        for detector in (FlexibleDateTimeDetector("en_US"), FlexibleTextDateDetector("en_US"))
+        for d in detector.detect(written)
+        if d["start"] == 0 and d["end"] == len(written)
+    ]
+    forms = set()
+    for detection in detections:
+        lattice = resolve_lattice([detection], source_text=written)
+        edge = next(e for e in lattice.edges if e.kind == "reading")
+        forms |= {
+            normalize_spoken(a.text) for a in verbalize_edge(edge, source_text=written).alternatives
+        }
+    assert spoken in forms

@@ -4,6 +4,323 @@
       "spelled": 853152,
       "word": 321069
     },
+    "surface:ABC": {
+      "spelled": 4283
+    },
+    "surface:AFL": {
+      "spelled": 2785
+    },
+    "surface:AK": {
+      "spelled": 469
+    },
+    "surface:AL": {
+      "spelled": 22,
+      "word": 928
+    },
+    "surface:AR": {
+      "spelled": 62,
+      "word": 731
+    },
+    "surface:AS": {
+      "spelled": 57,
+      "word": 1061
+    },
+    "surface:AZ": {
+      "spelled": 359
+    },
+    "surface:BBC": {
+      "spelled": 13263
+    },
+    "surface:CA": {
+      "spelled": 2684
+    },
+    "surface:CBC": {
+      "spelled": 1293
+    },
+    "surface:CD": {
+      "spelled": 7196
+    },
+    "surface:CDP": {
+      "spelled": 2901
+    },
+    "surface:CEO": {
+      "spelled": 3767
+    },
+    "surface:CIA": {
+      "spelled": 1238
+    },
+    "surface:CNN": {
+      "spelled": 1289
+    },
+    "surface:CO": {
+      "spelled": 839
+    },
+    "surface:CT": {
+      "spelled": 996
+    },
+    "surface:DC": {
+      "spelled": 4803
+    },
+    "surface:DE": {
+      "spelled": 60,
+      "word": 1130
+    },
+    "surface:DJ": {
+      "spelled": 2556
+    },
+    "surface:DNA": {
+      "spelled": 3938
+    },
+    "surface:DVD": {
+      "spelled": 6735
+    },
+    "surface:EP": {
+      "spelled": 4096
+    },
+    "surface:FBI": {
+      "spelled": 1159
+    },
+    "surface:FC": {
+      "spelled": 7070
+    },
+    "surface:FCC": {
+      "spelled": 1115
+    },
+    "surface:FL": {
+      "spelled": 660
+    },
+    "surface:FM": {
+      "spelled": 5638
+    },
+    "surface:GA": {
+      "spelled": 27,
+      "word": 491
+    },
+    "surface:GU": {
+      "spelled": 14,
+      "word": 28
+    },
+    "surface:HD": {
+      "spelled": 1722
+    },
+    "surface:HI": {
+      "spelled": 3,
+      "word": 140
+    },
+    "surface:HIV": {
+      "spelled": 1161
+    },
+    "surface:HMS": {
+      "spelled": 1845
+    },
+    "surface:IA": {
+      "spelled": 11,
+      "word": 354
+    },
+    "surface:IATA": {
+      "spelled": 1804
+    },
+    "surface:IBM": {
+      "spelled": 1419
+    },
+    "surface:ID": {
+      "spelled": 950
+    },
+    "surface:IL": {
+      "spelled": 70,
+      "word": 1285
+    },
+    "surface:IN": {
+      "spelled": 10,
+      "word": 1887
+    },
+    "surface:ISBN": {
+      "spelled": 32916
+    },
+    "surface:IUCN": {
+      "spelled": 5750
+    },
+    "surface:KS": {
+      "spelled": 59,
+      "word": 384
+    },
+    "surface:KY": {
+      "spelled": 342
+    },
+    "surface:LA": {
+      "spelled": 1913
+    },
+    "surface:LLC": {
+      "spelled": 5042
+    },
+    "surface:LP": {
+      "spelled": 2220
+    },
+    "surface:MA": {
+      "spelled": 2345
+    },
+    "surface:MD": {
+      "spelled": 2430
+    },
+    "surface:ME": {
+      "spelled": 24,
+      "word": 668
+    },
+    "surface:MI": {
+      "spelled": 212,
+      "word": 677
+    },
+    "surface:MLB": {
+      "spelled": 1074
+    },
+    "surface:MN": {
+      "spelled": 486
+    },
+    "surface:MO": {
+      "spelled": 15,
+      "word": 397
+    },
+    "surface:MP": {
+      "spelled": 3957
+    },
+    "surface:MS": {
+      "spelled": 1228
+    },
+    "surface:MT": {
+      "spelled": 73,
+      "word": 403
+    },
+    "surface:MTV": {
+      "spelled": 2178
+    },
+    "surface:NASA": {
+      "spelled": 4,
+      "word": 2118
+    },
+    "surface:NBA": {
+      "spelled": 2859
+    },
+    "surface:NBC": {
+      "spelled": 2445
+    },
+    "surface:NC": {
+      "spelled": 1244
+    },
+    "surface:ND": {
+      "spelled": 226
+    },
+    "surface:NE": {
+      "spelled": 65,
+      "word": 441
+    },
+    "surface:NFL": {
+      "spelled": 4390
+    },
+    "surface:NH": {
+      "spelled": 731
+    },
+    "surface:NHL": {
+      "spelled": 2222
+    },
+    "surface:NJ": {
+      "spelled": 1991
+    },
+    "surface:NM": {
+      "spelled": 255
+    },
+    "surface:NSW": {
+      "spelled": 2294
+    },
+    "surface:NV": {
+      "spelled": 190
+    },
+    "surface:NY": {
+      "spelled": 3698
+    },
+    "surface:OCLC": {
+      "spelled": 1272
+    },
+    "surface:OH": {
+      "spelled": 26,
+      "word": 468
+    },
+    "surface:OK": {
+      "spelled": 3,
+      "word": 633
+    },
+    "surface:OR": {
+      "spelled": 535
+    },
+    "surface:PA": {
+      "spelled": 2788
+    },
+    "surface:PC": {
+      "spelled": 2819
+    },
+    "surface:PDF": {
+      "spelled": 61393
+    },
+    "surface:PR": {
+      "spelled": 794
+    },
+    "surface:RI": {
+      "spelled": 2,
+      "word": 219
+    },
+    "surface:RNA": {
+      "spelled": 1281
+    },
+    "surface:SC": {
+      "spelled": 1808
+    },
+    "surface:SD": {
+      "spelled": 659
+    },
+    "surface:TN": {
+      "spelled": 260
+    },
+    "surface:TV": {
+      "spelled": 22913
+    },
+    "surface:TX": {
+      "spelled": 601
+    },
+    "surface:UCLA": {
+      "spelled": 1104
+    },
+    "surface:UFC": {
+      "spelled": 2481
+    },
+    "surface:UT": {
+      "spelled": 12,
+      "word": 358
+    },
+    "surface:VA": {
+      "spelled": 599
+    },
+    "surface:VI": {
+      "spelled": 5,
+      "word": 977
+    },
+    "surface:VT": {
+      "spelled": 312
+    },
+    "surface:WA": {
+      "spelled": 34,
+      "word": 900
+    },
+    "surface:WI": {
+      "word": 390
+    },
+    "surface:WV": {
+      "spelled": 187
+    },
+    "surface:WWE": {
+      "spelled": 2144
+    },
+    "surface:WY": {
+      "word": 85
+    },
     "upper:2:nv": {
       "spelled": 177899,
       "word": 7983
@@ -53,7 +370,7 @@
   },
   "provenance": {
     "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
-    "keys": "letter_key(token); * pools all",
+    "keys": "letter_key(token); surface:<acronym> for an acronym icukit's en_US lexicon lists; * pools all",
     "license": "CC BY-SA 4.0",
     "rule": "all-capitals letter tokens of two or more letters: LETTERS spelled, PLAIN word",
     "shards": [

@@ -371,6 +371,7 @@ def build_document(corpus_dir: Path) -> dict:
                 kind: {
                     "fraction": "the decimal integer value of the reading's denominator capture",
                     "measure": "the reading's ICU unit identifier; percent for a percent",
+                    "date": "the written order of month and day: month-first, day-first, or other",
                 }.get(kind)
                 for kind in sorted(aggregates)
             },

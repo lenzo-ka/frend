@@ -169,9 +169,21 @@ def measurement_sub_key(kind: str | None, detection: object) -> str | None:
     Fraction measurements use the captured denominator's decimal value, and
     measure measurements the reading's ICU unit identifier (``per-square-kilometer``,
     ``kilometer``; ``percent`` for a percent), so a rate can learn the corpus's plural
-    after "per" without every unit taking it. No other kind declares a sub-key, so
-    those kinds retain kind-level shares.
+    after "per" without every unit taking it, and date measurements the written order of
+    month and day (``month-first``, ``day-first``, else ``other``). No other kind
+    declares a sub-key, so those kinds retain kind-level shares.
     """
+    if kind == "date":
+        # A date with a month and a day ranks by its written order: the corpus says
+        # "March 5, 2024" and "5 March 2024" differently, and the pooled shares cannot.
+        starts = {}
+        for capture in detection.get("captures", ()):  # type: ignore[union-attr]
+            name = getattr(capture, "name", None)
+            if name in ("month", "M", "d") and name not in starts:
+                starts["d" if name == "d" else "M"] = capture.start
+        if "M" in starts and "d" in starts:
+            return "month-first" if starts["M"] < starts["d"] else "day-first"
+        return "other"
     if kind == "measure":
         if str(detection.get("type", "")) == "number:percent":  # type: ignore[union-attr]
             return "percent"
