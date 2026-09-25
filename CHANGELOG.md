@@ -1,6 +1,14 @@
 # Changelog
 
 ## Unreleased
+- Spoke a date that carries a time, an era or a quarter (icukit #115, #118, #121, #123),
+  part by part in written order through frend's own date and time speech: "March 5,
+  2024 at 2:07 PM" "March fifth, twenty twenty-four at two oh seven p m" ("at" said
+  where it is written, as in ICU's long date-time pattern; nothing for a comma), "Tue
+  2:07 PM" "Tuesday, two oh seven p m", "Mar 5, 2024 AD" "... a d" or "... Anno
+  Domini", and a quarter as ICU names it ("Q1 2024" "first quarter twenty twenty-four",
+  also "q one ..."). The corpus holds none of these as one token, so the table is
+  unchanged.
 - Read and spoke written forms ICU writes nowhere, which icukit leaves to frend (kal's
   ruling; `frend.written_forms.WrittenFormsDetector`): a time with a space after the
   colon ("7: 31" "seven thirty one"), a case citation ("339 U.S.", the corpus's

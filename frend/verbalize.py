@@ -591,7 +591,22 @@ _SPOKEN_CAPTURES = {
             "denominator",
         }
     ),
-    "date": frozenset({"y", "M", "d", "month", "weekday", "era"}),
+    "date": frozenset(
+        {
+            "y",
+            "M",
+            "d",
+            "month",
+            "weekday",
+            "era",
+            "quarter",
+            "H",
+            "m",
+            "day-period",
+            "time-zone",
+            "datetime-glue",
+        }
+    ),
     "ordinal": frozenset({"integer", "ordinal-affix"}),
     "abbreviation": frozenset({"surface"}),
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
@@ -953,6 +968,91 @@ def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
     return _ranked(forms)
 
 
+def _quarter_names(quarter: int, calendar: str, locale: str) -> tuple[SpokenAlternative, ...]:
+    """A quarter as ICU names it: the wide name with its ordinal said ("1st quarter" ->
+    "first quarter"), and the short name spelled ("Q1" -> "q one")."""
+    if not 1 <= quarter <= 4:
+        raise ValueError(f"invalid quarter {quarter!r}")
+    formatter = DateTimeFormatter(locale, calendar=calendar)
+    day = date(2000, 3 * quarter - 2, 1)
+    wide = formatter.format(day, pattern="QQQQ")
+    short = formatter.format(day, pattern="QQQ")
+    number = _number_leaf(Decimal(quarter), "ordinal", locale)[0].text
+    wide_spoken = re.sub(r"^\d+\S*", number, wide)
+    letters = " ".join(ch.lower() for ch in short if ch.isalpha())
+    digit = _number_leaf(Decimal(quarter), "cardinal", locale)[0].text
+    return (
+        SpokenAlternative(wide_spoken, "icu-datetime:QQQQ+icu-rbnf:%spellout-ordinal"),
+        SpokenAlternative(f"{letters} {digit}", "icu-datetime:QQQ+surface:letters"),
+    )
+
+
+def _spoken_date_parts(
+    value: DateTimeValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak a date that carries an era, a quarter, a weekday or a time (icukit #115,
+    #118, #121, #123) part by part in written order, each part by frend's own speech.
+
+    The date's y/M/d read as any date; an era after them as its letters or name; a
+    quarter as ICU names it; a time as any time, joined by "at" where "at" is written
+    (ICU's long date-time pattern) and by nothing where a comma is. A weekday field is
+    not spoken here: its capture leads every form, as for any date.
+    """
+    fields = dict(value.fields)
+    ymd = tuple((key, item) for key, item in value.fields if key in ("y", "M", "d"))
+    pieces: list[tuple[int, tuple[SpokenAlternative, ...]]] = []
+
+    def start(name: str, default: int) -> int:
+        capture = _capture(detection, name)
+        return capture.start if capture is not None else default
+
+    if "Q" in fields:
+        pieces.append((start("quarter", 0), _quarter_names(fields["Q"], value.calendar, locale)))
+        if "y" in fields:
+            pieces.append((start("y", 1), _year_leaf(Decimal(fields["y"]), locale)))
+    elif ymd:
+        if set(dict(ymd)) == {"y"} and "G" in fields:
+            pieces.append(
+                (
+                    start("y", 0),
+                    _spoken_era_year(
+                        DateTimeValue((("G", fields["G"]), ("y", fields["y"])), value.calendar),
+                        detection,
+                        locale,
+                    ),
+                )
+            )
+        else:
+            dates = _spoken_date(DateTimeValue(ymd, value.calendar), detection, locale)
+            first = min(
+                (
+                    capture.start
+                    for name in ("y", "month", "M", "d")
+                    if (capture := _capture(detection, name))
+                ),
+                default=0,
+            )
+            pieces.append((first, dates))
+            if "G" in fields:
+                pieces.append((start("era", first + 1), _era_names(fields["G"], detection, locale)))
+    if "H" in fields:
+        time_value = DateTimeValue(
+            tuple((key, item) for key, item in value.fields if key in ("H", "m")), value.calendar
+        )
+        glue = str(getattr(_capture(detection, "datetime-glue"), "text", "")).strip(" ,")
+        times = _spoken_time(time_value, detection, locale)
+        if glue:
+            times = tuple(
+                SpokenAlternative(f"{glue} {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
+                for item in times
+            )
+        pieces.append((start("H", 10**6), times))
+    if not pieces:
+        raise NotImplementedError(f"no speakable date part in {value.fields!r}")
+    ordered = [alternatives for _, alternatives in sorted(pieces, key=lambda piece: piece[0])]
+    return _compose(ordered, " ".join("{}" for _ in ordered))
+
+
 def _spoken_date(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
@@ -962,6 +1062,8 @@ def _spoken_date(
         raise ValueError(f"date fields must be integers: {value.fields!r}")
     if set(fields) == {"G", "y"} and len(value.fields) == 2:
         return _spoken_era_year(value, detection, locale)
+    if set(fields) & {"G", "Q", "H", "E"} and len(fields) == len(value.fields):
+        return _spoken_date_parts(value, detection, locale)
     if len(fields) != len(value.fields) or not fields or not set(fields) <= {"y", "M", "d"}:
         raise NotImplementedError("v1 date assembly supports unique y/M/d fields only")
     parts: list[tuple[SpokenAlternative, ...]] = []

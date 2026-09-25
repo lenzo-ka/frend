@@ -1534,3 +1534,93 @@ def test_zone_abbreviation_reads_spelled_and_as_icus_long_names(written, expecte
 def test_zone_without_a_listed_name_stays_spelled():
     unit = _full_span_forms("18:00Z", [FlexibleTimeDetector("en_US")], "time:flexible")
     assert all(normalize_spoken(a.text).endswith(" z") for a in unit.alternatives)
+
+
+def _date_unit(written, type_, fields, captures):
+    from icukit.detectors import Capture, DateTimeValue
+
+    spans = []
+    for name, text_part, value, form in captures:
+        start = written.index(text_part)
+        spans.append(Capture(name, start, start + len(text_part), text_part, value, form))
+    detection = {
+        "text": written,
+        "start": 0,
+        "end": len(written),
+        "type": type_,
+        "value": DateTimeValue(fields, "gregorian"),
+        "captures": tuple(spans),
+    }
+    lattice = resolve_lattice([detection], source_text=written)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    return verbalize_edge(edge, source_text=written)
+
+
+_DATETIME = (("y", 2024), ("M", 3), ("d", 5), ("H", 14), ("m", 7))
+_DATETIME_CAPTURES = [
+    ("month", "March", 3, "wide"),
+    ("d", "5", 5, "numeric"),
+    ("y", "2024", 2024, "numeric"),
+    ("H", "2", 2, "numeric"),
+    ("m", "07", 7, "numeric"),
+    ("day-period", " PM", None, "symbol"),
+]
+
+
+@pytest.mark.parametrize(
+    ("written", "type_", "fields", "captures", "spoken"),
+    [
+        (
+            "March 5, 2024 at 2:07 PM",
+            "date:datetime-flexible",
+            _DATETIME,
+            [*_DATETIME_CAPTURES, ("datetime-glue", " at ", None, None)],
+            "march fifth twenty twenty four at two oh seven p m",
+        ),
+        (
+            "March 5, 2024, 2:07 PM",
+            "date:datetime-flexible",
+            _DATETIME,
+            [*_DATETIME_CAPTURES, ("datetime-glue", ", ", None, None)],
+            "march fifth twenty twenty four two oh seven p m",
+        ),
+        (
+            "Mar 5, 2024 AD",
+            "date:text-flexible",
+            (("G", 1), ("y", 2024), ("M", 3), ("d", 5)),
+            [
+                ("month", "Mar", 3, "short"),
+                ("d", "5", 5, "numeric"),
+                ("y", "2024", 2024, "numeric"),
+                ("era", "AD", 1, "short"),
+            ],
+            "march fifth twenty twenty four a d",
+        ),
+        (
+            "Q1 2024",
+            "date:text-flexible",
+            (("y", 2024), ("Q", 1)),
+            [("quarter", "Q1", 1, "short"), ("y", "2024", 2024, "numeric")],
+            "first quarter twenty twenty four",
+        ),
+    ],
+)
+def test_date_with_a_time_an_era_or_a_quarter_speaks_each_part_in_order(
+    written, type_, fields, captures, spoken
+):
+    """icukit #115, #118 and #123 read these; each part speaks as frend speaks it alone,
+    joined in written order, with "at" said where it is written."""
+    unit = _date_unit(written, type_, fields, captures)
+    forms = [normalize_spoken(a.text) for a in unit.alternatives]
+    assert spoken in forms
+    assert unit.unspoken == ()
+
+
+def test_quarter_also_reads_as_its_short_name_spelled():
+    unit = _date_unit(
+        "Q1 2024",
+        "date:text-flexible",
+        (("y", 2024), ("Q", 1)),
+        [("quarter", "Q1", 1, "short"), ("y", "2024", 2024, "numeric")],
+    )
+    assert "q one twenty twenty four" in [normalize_spoken(a.text) for a in unit.alternatives]
