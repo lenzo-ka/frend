@@ -1190,9 +1190,30 @@ def _full_span_forms(text, detectors, type_):
         ("10:05", {"ten oh five", "ten o five"}),
         ("20:00", {"twenty", "twenty o'clock", "twenty hundred"}),
         ("14:30", {"fourteen thirty"}),
-        ("10 PM ET", {"ten p m e t", "ten o'clock p m e t"}),
-        ("4:44pm EST", {"four forty-four p m e s t"}),
-        ("18:00 UTC", {"eighteen u t c", "eighteen o'clock u t c", "eighteen hundred u t c"}),
+        (
+            "10 PM ET",
+            {
+                "ten p m e t",
+                "ten o'clock p m e t",
+                "ten p m Eastern Time",
+                "ten o'clock p m Eastern Time",
+            },
+        ),
+        (
+            "4:44pm EST",
+            {"four forty-four p m e s t", "four forty-four p m Eastern Standard Time"},
+        ),
+        (
+            "18:00 UTC",
+            {
+                "eighteen u t c",
+                "eighteen o'clock u t c",
+                "eighteen hundred u t c",
+                "eighteen Coordinated Universal Time",
+                "eighteen o'clock Coordinated Universal Time",
+                "eighteen hundred Coordinated Universal Time",
+            },
+        ),
     ],
 )
 def test_time_speaks_the_written_hour_minutes_and_period(written, expected):
@@ -1486,3 +1507,23 @@ def test_worded_zone_or_day_period_is_said_as_words_an_abbreviation_by_letters(
     # Nothing written in words is spelled out letter by letter.
     assert not any("e a s t e r n" in form or "t h e" in form for form in forms)
     assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("written", "expected"),
+    [
+        ("5:30 pm EST", {"five thirty p m e s t", "five thirty p m eastern standard time"}),
+        ("9 AM IST", {"nine a m india standard time", "nine a m irish standard time"}),
+    ],
+)
+def test_zone_abbreviation_reads_spelled_and_as_icus_long_names(written, expected):
+    """kal: "EST should have two reads", spelled and "Eastern Standard Time"; the long names
+    come from icukit's list of ICU's abbreviations, and an ambiguous one keeps every name."""
+    unit = _full_span_forms(written, [FlexibleTimeDetector("en_US")], "time:flexible")
+    assert expected <= {normalize_spoken(a.text) for a in unit.alternatives}
+    assert unit.unspoken == ()
+
+
+def test_zone_without_a_listed_name_stays_spelled():
+    unit = _full_span_forms("18:00Z", [FlexibleTimeDetector("en_US")], "time:flexible")
+    assert all(normalize_spoken(a.text).endswith(" z") for a in unit.alternatives)
