@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Raised the icukit floor to `icukit>=0.7`, the release carrying what frend now uses from
+  icukit #111 to #132: dates with times, eras and quarters, relative dates, the curated
+  acronyms, and zone captures by IANA ID. Verified from the PyPI wheel: 465 passed.
 - Offered only a zone's own long names where icukit captures the zone's IANA ID (icukit
   #132, 0.7): "9 AM IST", read once as Asia/Kolkata and once as Europe/Dublin, now gives
   "India Standard Time" on the first reading and "Irish Standard Time" on the second,

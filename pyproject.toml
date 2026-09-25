@@ -25,9 +25,9 @@ classifiers = [
 ]
 # Floors only, deliberately uncapped: a sibling release that breaks frend should break
 # frend's tests where it can be seen, not be held back silently by a cap.
-# icukit 0.6.0 is the floor because it is the release frend is verified against.
+# icukit 0.7.0 is the floor because it is the release frend is verified against.
 # OutputPlan first appears in tiergraph 0.2.3.
-dependencies = ["icukit>=0.6", "tiergraph>=0.2.3"]
+dependencies = ["icukit>=0.7", "tiergraph>=0.2.3"]
 
 [project.urls]
 Homepage = "https://github.com/lenzo-ka/frend"
