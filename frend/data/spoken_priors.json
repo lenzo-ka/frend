@@ -77,186 +77,21 @@
       }
     },
     "date": {
-      "matched": 1949,
+      "matched": 1993,
       "source_matched": {
         "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
         "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 94,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
         "icu-rbnf:%spellout-numbering-year": 922,
-        "icu-rbnf:%spellout-numbering-year+lexical:en_US": 19,
-        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 546
+        "icu-rbnf:%spellout-numbering-year+lexical:en_US": 39,
+        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL": 21,
+        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 546,
+        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": 1
       },
       "sub_keys": {},
       "top_unmatched": [
-        {
-          "count": 4,
-          "reasons": {
-            "no_alternative_matched": 4,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o five",
-          "written_forms": {
-            "1905": 4
-          }
-        },
-        {
-          "count": 3,
-          "reasons": {
-            "no_alternative_matched": 3,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o two",
-          "written_forms": {
-            "1902": 3
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 2,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o eight",
-          "written_forms": {
-            "1908": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 2,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o six",
-          "written_forms": {
-            "1906": 2
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "april fourth nineteen o four",
-          "written_forms": {
-            "April 4, 1904": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "eighteen o seven",
-          "written_forms": {
-            "1807": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "eighteen o two",
-          "written_forms": {
-            "1802": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "fifteen o five",
-          "written_forms": {
-            "1505": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o four",
-          "written_forms": {
-            "1904": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o nine",
-          "written_forms": {
-            "1909": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o one",
-          "written_forms": {
-            "1901": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o seven",
-          "written_forms": {
-            "1907": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "nineteen o three",
-          "written_forms": {
-            "1903": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "november first nineteen o six",
-          "written_forms": {
-            "November 1, 1906": 1
-          }
-        },
         {
           "count": 1,
           "reasons": {
@@ -284,18 +119,6 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "seventeen o eight",
-          "written_forms": {
-            "1708": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
             "no_alternative_matched": 0,
             "unrecognized": 1,
             "unverbalized": 0
@@ -308,32 +131,56 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "the eighteenth of september",
+          "spoken": "the second of october",
           "written_forms": {
-            "18 September,": 1
+            "2, October ": 1
           }
         },
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 1,
-            "unrecognized": 0,
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "the eleventh of may",
+          "spoken": "the twenty fourth of april three fifty",
           "written_forms": {
-            "11 May ": 1
+            "24 April 350": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "thursday the fourth of june two thousand nine",
+          "written_forms": {
+            "Thursday, 4 June 2009": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "thursday the seventeenth of february twenty eleven",
+          "written_forms": {
+            "Thursday 17 February 2011": 1
           }
         }
       ],
       "total": 2000,
-      "unmatched": 51,
+      "unmatched": 7,
       "unmatched_by_reason": {
-        "no_alternative_matched": 45,
+        "no_alternative_matched": 1,
         "unrecognized": 6,
         "unverbalized": 0
       }
@@ -2592,6 +2439,573 @@
         "unverbalized": 0
       }
     },
+    "measure": {
+      "matched": 1924,
+      "source_matched": {
+        "icu-rbnf:%spellout-numbering": 535,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide": 665,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 284,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 135,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 110,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 85,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 47,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 16,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 10,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-measure:wide": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 11,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 6,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1
+      },
+      "sub_keys": {
+        "centimeter": {
+          "matched": 46,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 36,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 10
+          }
+        },
+        "cubic-meter": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "foot": {
+          "matched": 63,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 59,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 4
+          }
+        },
+        "gigabyte": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 5
+          }
+        },
+        "gigawatt": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "gram": {
+          "matched": 6,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+          }
+        },
+        "hectare": {
+          "matched": 20,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 14,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1
+          }
+        },
+        "horsepower": {
+          "matched": 23,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 23
+          }
+        },
+        "hour": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "inch": {
+          "matched": 16,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 16
+          }
+        },
+        "kilogram": {
+          "matched": 24,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 22,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+          }
+        },
+        "kilohertz": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 5
+          }
+        },
+        "kilometer": {
+          "matched": 184,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 138,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 36,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 6,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1
+          }
+        },
+        "kilometer-per-hour": {
+          "matched": 23,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 20,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-measure:wide": 1
+          }
+        },
+        "kilowatt": {
+          "matched": 17,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 17
+          }
+        },
+        "megabyte": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "megahertz": {
+          "matched": 5,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 3,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "megawatt": {
+          "matched": 4,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 4
+          }
+        },
+        "meter": {
+          "matched": 121,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 88,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 26,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+          }
+        },
+        "meter-per-second": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "micrometer": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
+          }
+        },
+        "mile": {
+          "matched": 55,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 34,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 19,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "mile-per-hour": {
+          "matched": 30,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 20,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 7,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "millibar": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "milligram": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
+          }
+        },
+        "milliliter": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "millimeter": {
+          "matched": 95,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 84,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 9,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+          }
+        },
+        "nanometer": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
+          }
+        },
+        "per-square-kilometer": {
+          "matched": 115,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 108,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 1
+          }
+        },
+        "per-square-mile": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 2
+          }
+        },
+        "percent": {
+          "matched": 930,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering": 535,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 284,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 85,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 10,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 11,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 3,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1
+          }
+        },
+        "pound": {
+          "matched": 10,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 8,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "square-foot": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "square-kilometer": {
+          "matched": 65,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 24,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 12,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 20,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 3
+          }
+        },
+        "square-meter": {
+          "matched": 9,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 8,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "square-mile": {
+          "matched": 25,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 10,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 10,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
+          }
+        },
+        "terabyte": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+          }
+        },
+        "volt": {
+          "matched": 2,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+          }
+        },
+        "yard": {
+          "matched": 3,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
+          }
+        }
+      },
+      "top_unmatched": [
+        {
+          "count": 9,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 9,
+            "unverbalized": 0
+          },
+          "spoken": "per square kilometer",
+          "written_forms": {
+            "/km2": 1,
+            "/km²": 2,
+            "per km2": 2,
+            "per km²": 4
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 4,
+            "unverbalized": 0
+          },
+          "spoken": "per second",
+          "written_forms": {
+            "/s": 4
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "five hundred milliliters",
+          "written_forms": {
+            "500 ml": 3
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "per gram",
+          "written_forms": {
+            "/g": 2
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eight hundred fifty four cubic meters per second",
+          "written_forms": {
+            "854 m³/s": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eighty chains",
+          "written_forms": {
+            "80 ch": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "eleven pounds",
+          "written_forms": {
+            "11 lbs": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty point two square",
+          "written_forms": {
+            "50.2 sq": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty three chains",
+          "written_forms": {
+            "53 ch": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "fifty two thousand three hundred forty seven kilograms force",
+          "written_forms": {
+            "52,347 kgf": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "five hundred thirteen point three o o kilonewtons",
+          "written_forms": {
+            "513.300 kN": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "five mega joules per kilogram",
+          "written_forms": {
+            "5 MJ/kg": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "foot per second",
+          "written_forms": {
+            "ft/s": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four hundred forty milliliters",
+          "written_forms": {
+            "440ml": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "four hundred twenty three chains",
+          "written_forms": {
+            "423 ch": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "ninety nine point nine milli hertz",
+          "written_forms": {
+            "99.9 mHz": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred forty chains",
+          "written_forms": {
+            "140 ch": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred fourteen pounds",
+          "written_forms": {
+            "114 lbs": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred ninety five chains",
+          "written_forms": {
+            "195 ch": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "one hundred percent",
+          "written_forms": {
+            "100 p.c.": 1
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 76,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 2,
+        "unrecognized": 74,
+        "unverbalized": 0
+      }
+    },
     "money": {
       "matched": 1911,
       "source_matched": {
@@ -3185,6 +3599,7 @@
       "DATE": "date",
       "DECIMAL": "decimal",
       "FRACTION": "fraction",
+      "MEASURE": "measure",
       "MONEY": "money",
       "ORDINAL": "ordinal",
       "TIME": "time"
@@ -3197,7 +3612,6 @@
       "DIGIT": "no verbalized value family",
       "ELECTRONIC": "no verbalized value family",
       "LETTERS": "no verbalized value family",
-      "MEASURE": "measure values are not verbalized",
       "PLAIN": "not a structured value",
       "PUNCT": "not a structured value",
       "TELEPHONE": "no verbalized value family",
@@ -3252,6 +3666,59 @@
         "fraction": [
           "FlexibleFractionDetector"
         ],
+        "measure": [
+          "FlexiblePercentDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMixedMeasureDetector",
+          "FlexibleMixedMeasureDetector"
+        ],
         "money": [
           "FlexibleCurrencyDetector",
           "FlexibleCurrencyNameDetector",
@@ -3287,13 +3754,68 @@
         ]
       },
       "full_span_only": true,
-      "locale": "en_US"
+      "locale": "en_US",
+      "measure_units": [
+        "kilometer",
+        "meter",
+        "millimeter",
+        "centimeter",
+        "micrometer",
+        "nanometer",
+        "foot",
+        "inch",
+        "mile",
+        "yard",
+        "kilometer-per-hour",
+        "mile-per-hour",
+        "kilogram",
+        "gram",
+        "milligram",
+        "pound",
+        "ounce",
+        "ton",
+        "hectare",
+        "acre",
+        "square-kilometer",
+        "square-mile",
+        "square-meter",
+        "kilowatt",
+        "megawatt",
+        "watt",
+        "horsepower",
+        "volt",
+        "hertz",
+        "kilohertz",
+        "megahertz",
+        "gigahertz",
+        "kilobyte",
+        "megabyte",
+        "gigabyte",
+        "terabyte",
+        "liter",
+        "milliliter",
+        "celsius",
+        "fahrenheit",
+        "second",
+        "minute",
+        "hour",
+        "gigawatt",
+        "meter-per-second",
+        "square-foot",
+        "millibar",
+        "cubic-meter"
+      ],
+      "mixed_measures": [
+        "foot-and-inch",
+        "pound-and-ounce"
+      ]
     },
     "row_counts": {
       "CARDINAL": 2000,
       "DATE": 2000,
       "DECIMAL": 2000,
       "FRACTION": 2000,
+      "MEASURE": 2000,
       "MONEY": 2000,
       "ORDINAL": 2000,
       "TIME": 2000
@@ -3313,7 +3835,7 @@
         "output-00090-of-00100"
       ]
     },
-    "skipped_sentinel_rows": 19,
+    "skipped_sentinel_rows": 196,
     "source": "google-tn-en_with_types",
     "source_measurement": "The verbalizer deduplicates equal text in rule-set order, so a matched row is credited to the first retained source that produces its text and to the sub-key of that same reading. Source priors are disabled while measuring so the table is not measured through the ranking it drives. Shares are raw matched-source counts divided by matched rows in the selected scope, with no smoothing, confidence threshold, or other small-sample correction; each source record retains its matched count.",
     "sub_key_rules": {
@@ -3321,6 +3843,7 @@
       "date": null,
       "decimal": null,
       "fraction": "the decimal integer value of the reading's denominator capture",
+      "measure": "the reading's ICU unit identifier; percent for a percent",
       "money": null,
       "ordinal": null,
       "time": null

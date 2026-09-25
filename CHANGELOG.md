@@ -4,6 +4,26 @@
 - Stated in the README that frend reads plain text: Markdown, HTML, XML (including
   SSML) and rich text must be handled before the string reaches frend and icukit, and
   frend has no markup modes yet.
+- Spoke and measured measures. A measure (icukit #97) reads its amount as frend reads
+  any number and its unit as ICU names it: icukit formats the value in the unit's wide
+  form and frend cuts ICU's own number out, leaving the unit in the plural and order
+  CLDR gives ("60 km" "sixty kilometers", "60 km/h" "sixty kilometers per hour"). A
+  rate also reads with the unit's plural after "per", as the corpus does ("578.3/km2"
+  "... per square kilometers"). A mixed measure speaks each component and joins them
+  with ICU's list pattern for units ("5'10\"" "five feet, ten inches"). A percent now
+  reads its written fraction digits ("79.20%" "seventy nine point two o percent").
+  MEASURE is a new measured kind: 1924 of 2000 sampled rows match. Its shares are
+  conditioned on the reading's ICU unit, so a rate learns the corpus's plural after
+  "per" (0.902) without every unit taking it; percent is its own sub-key.
+- Spoke icukit #97's era years and year-less dates, from ICU where locale data says
+  it. An era year reads as a cardinal and the letters of its written era, as the
+  corpus reads it ("500 BC" "five hundred b c"), with ICU's wide era name ("five
+  hundred Before Christ") as an alternative. A day-month date also reads day first
+  ("18 September" "the eighteenth of september"), as a full date already did. A year
+  whose ICU reading says "oh" also reads "o" ("1908" "nineteen o eight"). DATE matched
+  rises from 1949 to 1993 of 2000 sampled rows; rows with no matching alternative
+  fall from 45 to 1. Percent by name ("12 percent", "5 per cent") was already spoken
+  through ICU's percent name; the corpus files it under MEASURE, measured next.
 - Spoke icukit #95's time zones and Roman ordinals. A written time zone follows the
   time as its letters ("10 PM ET" "ten p m e t", "18:00 UTC" "eighteen hundred u t c"),
   as the corpus reads it, so it is no longer left unspoken. A Roman ordinal also reads

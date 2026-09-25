@@ -17,6 +17,8 @@ from icukit.recognize import (
     FlexibleCurrencyNameDetector,
     FlexibleDateDetector,
     FlexibleFractionDetector,
+    FlexibleMeasureDetector,
+    FlexibleMixedMeasureDetector,
     FlexibleNumberDetector,
     FlexibleOrdinalDetector,
     FlexiblePercentDetector,
@@ -26,6 +28,7 @@ from icukit.recognize import (
 )
 
 from frend import compose_choices, resolve, resolve_choices, resolve_lattice
+from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
     _weekday_name,
@@ -155,6 +158,51 @@ def test_date_alternatives_are_never_cut_to_a_prefix(monkeypatch):
     ],
 )
 def test_real_dates_include_corpus_day_first_forms(written, spoken):
+    _assert_corpus_date_form(written, spoken)
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("18 September", "the eighteenth of september"),
+        ("1 July", "the first of july"),
+        ("July 1", "july first"),
+        ("500 BC", "five hundred b c"),
+        ("2000 AD", "two thousand a d"),
+        ("April 4, 1904", "april fourth nineteen o four"),
+    ],
+)
+def test_year_less_era_and_zero_led_year_dates_speak_the_corpus_form(written, spoken):
+    """icukit #97 reads day-month dates and era years; the corpus says them this way."""
+    detection = next(
+        item
+        for item in FlexibleTextDateDetector("en_US").detect(written)
+        if item["start"] == 0 and item["end"] == len(written)
+    )
+    unit = verbalize_lattice(resolve_lattice([detection], source_text=written)).best_path.units[0]
+    assert spoken in {
+        item.text.lower().replace(",", "").replace("-", " ") for item in unit.alternatives
+    }
+    assert unit.unspoken == ()
+
+
+def test_era_also_reads_as_the_icu_wide_name_and_a_year_without_oh_gains_no_o():
+    detection = next(
+        item
+        for item in FlexibleTextDateDetector("en_US").detect("500 BC")
+        if item["start"] == 0 and item["end"] == len("500 BC")
+    )
+    unit = verbalize_lattice(resolve_lattice([detection], source_text="500 BC")).best_path.units[0]
+    assert ("five hundred Before Christ", "icu-rbnf:%spellout-numbering+icu-datetime:GGGG") in {
+        (item.text, item.provenance) for item in unit.alternatives
+    }
+    plain = _full_span_forms(
+        "March 2, 2014", [FlexibleTextDateDetector("en_US")], "date:text-flexible"
+    )
+    assert not any(" o " in f" {item.text} " for item in plain.alternatives)
+
+
+def _assert_corpus_date_form(written, spoken):
     detection = next(
         item
         for item in FlexibleTextDateDetector("en_US").detect(written)
@@ -961,6 +1009,13 @@ _COVERAGE = [
     "18:00 UTC",
     "V.",
     "XIVth",
+    "500 BC",
+    "1 July",
+    "18 September",
+    "60 km",
+    "578.3/km2",
+    "5'10\"",
+    "79.20%",
 ]
 
 
@@ -1086,6 +1141,9 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
         FlexibleTimeDetector("en_US"),
         PluralNumeralDetector("en_US"),
         AlphanumericRunsDetector("en_US"),
+        FlexibleMeasureDetector("en_US", "kilometer"),
+        FlexibleMeasureDetector("en_US", "square-kilometer"),
+        FlexibleMixedMeasureDetector("en_US", "foot-and-inch"),
         *all_detectors("en_US", ("yMd", "Md", "y", "yMMMMEEEEd", "yMMMMd")).detectors,
     ]
     unspoken = {
@@ -1187,3 +1245,62 @@ def test_roman_numeral_reads_as_cardinal_or_ordinal_and_keeps_a_possessive():
     assert {"two", "second", "the second"} <= {a.text for a in plain.alternatives}
     assert {"two's", "the second's"} <= {a.text for a in possessive.alternatives}
     assert possessive.unspoken == ()
+
+
+def _measure_forms(written, detector, type_):
+    unit = _full_span_forms(written, [detector], type_)
+    return unit, [normalize_spoken(item.text) for item in unit.alternatives]
+
+
+@pytest.mark.parametrize(
+    ("written", "unit", "spoken"),
+    [
+        ("60 km", "kilometer", "sixty kilometers"),
+        ("1 km", "kilometer", "one kilometer"),
+        ("1GB", "gigabyte", "one gigabyte"),
+        ("26.7 mi", "mile", "twenty six point seven miles"),
+        ("60 km/h", "kilometer-per-hour", "sixty kilometers per hour"),
+        (
+            "578.3/km2",
+            "square-kilometer",
+            "five hundred seventy eight point three per square kilometers",
+        ),
+    ],
+)
+def test_measure_speaks_the_amount_and_icus_wide_unit(written, unit, spoken):
+    """icukit #97 reads measures; ICU names the unit in the plural the amount selects."""
+    detection_unit, forms = _measure_forms(
+        written, FlexibleMeasureDetector("en_US", unit), f"measure:{unit}"
+    )
+    assert spoken in forms
+    assert detection_unit.unspoken == ()
+
+
+def test_measured_rate_ranks_the_corpus_plural_after_per_first():
+    """The unit sub-key lets a rate learn "per square kilometers" without every unit taking it."""
+    rate, rate_forms = _measure_forms(
+        "578.3/km2",
+        FlexibleMeasureDetector("en_US", "square-kilometer"),
+        "measure:square-kilometer",
+    )
+    plain, plain_forms = _measure_forms(
+        "60 km", FlexibleMeasureDetector("en_US", "kilometer"), "measure:kilometer"
+    )
+    assert rate_forms[0].endswith("per square kilometers")
+    assert rate.alternatives[0].weight is not None
+    assert plain_forms == ["sixty kilometers"]
+
+
+def test_mixed_measure_speaks_each_component_joined_as_icu_joins_units():
+    unit, forms = _measure_forms(
+        "5'10\"", FlexibleMixedMeasureDetector("en_US", "foot-and-inch"), "measure:foot-and-inch"
+    )
+    assert forms == ["five feet ten inches"]
+    assert unit.unspoken == ()
+
+
+def test_percent_reads_its_written_fraction_digits():
+    """The value 0.792 has lost the written zero of "79.20%"; the captures keep it."""
+    unit, forms = _measure_forms("79.20%", FlexiblePercentDetector("en_US"), "number:percent")
+    assert "seventy nine point two o percent" in forms
+    assert unit.unspoken == ()

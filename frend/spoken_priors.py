@@ -166,9 +166,17 @@ class SpokenPriorTable:
 def measurement_sub_key(kind: str | None, detection: object) -> str | None:
     """Derive the declared measurement sub-key shared by building and ranking.
 
-    Fraction measurements use the captured denominator's decimal value. No
-    other kind declares a sub-key, so those kinds retain kind-level shares.
+    Fraction measurements use the captured denominator's decimal value, and
+    measure measurements the reading's ICU unit identifier (``per-square-kilometer``,
+    ``kilometer``; ``percent`` for a percent), so a rate can learn the corpus's plural
+    after "per" without every unit taking it. No other kind declares a sub-key, so
+    those kinds retain kind-level shares.
     """
+    if kind == "measure":
+        if str(detection.get("type", "")) == "number:percent":  # type: ignore[union-attr]
+            return "percent"
+        unit = getattr(detection.get("value"), "unit", None)  # type: ignore[union-attr]
+        return None if unit is None else str(unit)
     if kind != "fraction":
         return None
     for capture in detection.get("captures", ()):  # type: ignore[union-attr]
