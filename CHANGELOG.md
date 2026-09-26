@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+- Read a number written as plain digits digit by digit as well, as spelled-out letters
+  are (kal: "it's like spell out"): "2013" also "two zero one three" and the corpus's
+  "two o one three", "068" also "o six eight" (the zero its value drops). Only the
+  number reading gets it: a year read as a date is never spelled digit by digit (kal:
+  "I wouldn't read a year like that if I knew it was a year"). A single digit, a grouped
+  ("1,000"), signed or fractional number does not. The corpus's DIGIT class is now a
+  measured kind: 1779 of 2000 sampled rows match.
 - Fixed what an independent review (Codex, at kal's request) found in #19 to #24:
   - A case citation is read only where a page follows ("339 U.S. 629"), so "The 339
     U.S. troops" is no longer a citation that drops "U.S.".
