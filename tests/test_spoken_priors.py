@@ -49,6 +49,7 @@ def test_shipped_table_shape_and_denominators():
         "measure": "the reading's ICU unit identifier; percent for a percent",
         "money": None,
         "ordinal": None,
+        "symbol": "the code point of a symbol, the script of a letter",
         "time": None,
     }
     for kind, record in document["kinds"].items():

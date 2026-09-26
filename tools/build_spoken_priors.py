@@ -32,6 +32,7 @@ if str(_REPO) not in sys.path:
 
 from frend.electronic import ElectronicDetector, decode_letter_notation  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
+from frend.symbols import SymbolDetector  # noqa: E402
 from frend.written_forms import WrittenFormsDetector  # noqa: E402
 
 CLASS_TO_KIND = {
@@ -43,16 +44,16 @@ CLASS_TO_KIND = {
     "FRACTION": "fraction",
     "MEASURE": "measure",
     "MONEY": "money",
+    "PUNCT": "symbol",
     "ORDINAL": "ordinal",
     "TIME": "time",
+    "VERBATIM": "symbol",
 }
 OUTSIDE_CLASSES = {
     "ADDRESS": "no verbalized value family",
     "LETTERS": "no verbalized value family",
     "PLAIN": "not a structured value",
-    "PUNCT": "not a structured value",
     "TELEPHONE": "no verbalized value family",
-    "VERBATIM": "not a structured value",
 }
 _CURRENCIES = (
     "USD",
@@ -177,6 +178,7 @@ def _detectors():
     return {
         "cardinal": (*cardinals, written),
         "digit": (FlexibleNumberDetector("en_US"), written),
+        "symbol": (SymbolDetector("en_US"),),
         "decimal": numbers,
         "date": (*dates.detectors, written),
         "fraction": (FlexibleFractionDetector("en_US"),),
@@ -272,7 +274,7 @@ def build_document(corpus_dir: Path) -> dict:
                 if len(parts) < 3 or parts[0] not in CLASS_TO_KIND:
                     continue
                 corpus_class, written, spoken = parts[:3]
-                if spoken in {"<self>", "sil"}:
+                if spoken in {"<self>", "sil"} and CLASS_TO_KIND[corpus_class] != "symbol":
                     skipped_sentinels += 1
                     continue
                 if per_class[corpus_class] >= _ROWS_PER_CLASS_PER_SHARD:
@@ -284,8 +286,11 @@ def build_document(corpus_dir: Path) -> dict:
                 aggregate["total"] += 1
                 if corpus_class == "ELECTRONIC":
                     spoken = decode_letter_notation(spoken)
+                if CLASS_TO_KIND[corpus_class] == "symbol":
+                    # A symbol said as nothing is a real target, not a row to skip.
+                    spoken = "" if spoken == "sil" else written if spoken == "<self>" else spoken
                 target = normalize_spoken(spoken)
-                recognition_written = written.rstrip(" ,")
+                recognition_written = written if kind == "symbol" else written.rstrip(" ,")
                 recognized, alternatives = _alternatives(recognition_written, kind, detectors)
                 matched = next(
                     (
@@ -373,6 +378,7 @@ def build_document(corpus_dir: Path) -> dict:
                     "fraction": "the decimal integer value of the reading's denominator capture",
                     "measure": "the reading's ICU unit identifier; percent for a percent",
                     "date": "the written order of month and day: month-first, day-first, or other",
+                    "symbol": "the code point of a symbol, the script of a letter",
                 }.get(kind)
                 for kind in sorted(aggregates)
             },

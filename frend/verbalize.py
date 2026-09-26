@@ -27,6 +27,7 @@ from frend.electronic import (
 )
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
+from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
 
 __all__ = [
@@ -173,6 +174,8 @@ def _measured_kind(type_: str, value: object) -> str | None:
         return "time"
     if type_.startswith("measure:duration"):
         return "time"
+    if type_.startswith("symbol:"):
+        return "symbol"
     if type_.startswith("measure:") or type_ == "number:percent":
         return "measure"
     if type_.startswith("ordinal:"):
@@ -616,6 +619,7 @@ _SPOKEN_CAPTURES = {
     "runs": frozenset({"digits", "letters", "separator"}),
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
+    "symbol": frozenset({"symbol"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
     "mixed-measure": frozenset({"integer", "unit"}),
@@ -1635,6 +1639,15 @@ def verbalize_edge(
             alternatives = _spoken_mixed_measure(detection, locale)
             key_value = (value.decimal, value.unit)
             path = "mixed-measure"
+        elif isinstance(value, SymbolValue):
+            # A standalone character reads by its names or as nothing; the corpus says
+            # most punctuation, a lone dash and "風" as nothing, "&" as "and".
+            alternatives = (
+                *(SpokenAlternative(name, source) for name, source in value.names),
+                SpokenAlternative("", "surface:silence"),
+            )
+            key_value = value.char
+            path = "symbol"
         elif isinstance(value, DigitsValue):
             alternatives = _spoken_digits(value, locale)
             key_value = value.digits
