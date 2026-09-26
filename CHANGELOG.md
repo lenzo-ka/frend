@@ -1,6 +1,21 @@
 # Changelog
 
 ## Unreleased
+- Say a zero as the corpus does (kal, reconsidering the earlier "oh"): readings that
+  differ only in a zero's word ("three point zero five" / "three point o five";
+  ICU's "nineteen oh-five" / "nineteen o five") share their weight by a measured
+  per-zero table, `data/zero_priors.json` (`tools/build_zero_priors.py`). The corpus
+  never says "oh": a date's zero is "o", a digit run's always "o", a decimal's
+  fractional zero "o" 74% of the time, a measure's 54%, a time's 68%; an integer part
+  stays "zero". On the published test set DATE rises from 95.7% to 97.1% first choice,
+  DECIMAL from 89.1% to 93.5%, MEASURE from 90.8% to 93.7%, and all tokens from 98.92%
+  to 98.97%.
+- Spell out a run of capitals or an initial (`frend.letters`): "ATM" "a t m", "UFOs"
+  "u f o's", "S." "s" (over icukit's "South"), each also said as a word, ranked by the
+  acronym measure. `data/acronym_priors.json` gains a consonant-vowel pattern key
+  ("GUS" is mostly said, "GWR" spelled) and per-surface counts for runs icukit reads as
+  Roman numerals, so "II" stays "two" and "CD" is spelled. On the published test set
+  LETTERS rises from 41.1% to 86.1% first choice and all tokens from 98.31% to 98.92%.
 - Read a standalone symbol or letter of another script by name (`frend.symbols`), from
   icukit's CLDR symbol names (icukit #136, `icu_abbreviations(kinds=["symbol"])`) and
   ICU's formal character names, with silence always offered: the corpus picks "and" for
