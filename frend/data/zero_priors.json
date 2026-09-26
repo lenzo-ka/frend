@@ -1,0 +1,46 @@
+{
+  "kinds": {
+    "date": {
+      "o": 47752,
+      "zero": 3
+    },
+    "decimal": {
+      "o": 15568,
+      "zero": 5451
+    },
+    "digit": {
+      "o": 33028
+    },
+    "electronic": {
+      "o": 135
+    },
+    "measure": {
+      "o": 3753,
+      "zero": 3173
+    },
+    "money": {
+      "o": 114
+    },
+    "time": {
+      "o": 877,
+      "zero": 411
+    }
+  },
+  "provenance": {
+    "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "license": "CC BY-SA 4.0",
+    "rule": "zero words (o, oh, zero) in the spoken form of a token written with 0: after 'point' for DECIMAL, MEASURE, MONEY; anywhere for DATE, TIME, DIGIT, ELECTRONIC",
+    "shards": [
+      "output-00000-of-00100",
+      "output-00010-of-00100",
+      "output-00020-of-00100",
+      "output-00030-of-00100",
+      "output-00040-of-00100",
+      "output-00050-of-00100",
+      "output-00060-of-00100",
+      "output-00070-of-00100",
+      "output-00080-of-00100",
+      "output-00090-of-00100"
+    ]
+  }
+}
