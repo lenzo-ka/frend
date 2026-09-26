@@ -4,6 +4,1302 @@
       "spelled": 853152,
       "word": 321069
     },
+    "cv:cc": {
+      "spelled": 177899,
+      "word": 7983
+    },
+    "cv:ccc": {
+      "spelled": 223250,
+      "word": 762
+    },
+    "cv:cccc": {
+      "spelled": 31536,
+      "word": 19
+    },
+    "cv:ccccc": {
+      "spelled": 2939
+    },
+    "cv:cccccc": {
+      "spelled": 263,
+      "word": 4
+    },
+    "cv:ccccccc": {
+      "spelled": 42
+    },
+    "cv:ccccccv": {
+      "spelled": 12
+    },
+    "cv:cccccv": {
+      "spelled": 109
+    },
+    "cv:cccccvc": {
+      "spelled": 35
+    },
+    "cv:cccccvv": {
+      "spelled": 13
+    },
+    "cv:ccccv": {
+      "spelled": 1075
+    },
+    "cv:ccccvc": {
+      "spelled": 176,
+      "word": 3
+    },
+    "cv:ccccvcc": {
+      "spelled": 34,
+      "word": 8
+    },
+    "cv:ccccvcv": {
+      "spelled": 16,
+      "word": 1
+    },
+    "cv:ccccvv": {
+      "spelled": 119,
+      "word": 2
+    },
+    "cv:ccccvvc": {
+      "spelled": 6,
+      "word": 2
+    },
+    "cv:ccccvvv": {
+      "spelled": 19
+    },
+    "cv:cccv": {
+      "spelled": 12309,
+      "word": 133
+    },
+    "cv:cccvc": {
+      "spelled": 1850,
+      "word": 84
+    },
+    "cv:cccvcc": {
+      "spelled": 165,
+      "word": 123
+    },
+    "cv:cccvccc": {
+      "spelled": 15,
+      "word": 25
+    },
+    "cv:cccvccv": {
+      "spelled": 7,
+      "word": 13
+    },
+    "cv:cccvcv": {
+      "spelled": 117,
+      "word": 72
+    },
+    "cv:cccvcvc": {
+      "spelled": 28,
+      "word": 39
+    },
+    "cv:cccvcvv": {
+      "spelled": 6,
+      "word": 1
+    },
+    "cv:cccvv": {
+      "spelled": 511,
+      "word": 92
+    },
+    "cv:cccvvc": {
+      "spelled": 50,
+      "word": 339
+    },
+    "cv:cccvvcc": {
+      "spelled": 10,
+      "word": 144
+    },
+    "cv:cccvvcv": {
+      "spelled": 6,
+      "word": 1
+    },
+    "cv:cccvvv": {
+      "spelled": 108,
+      "word": 1
+    },
+    "cv:cccvvvc": {
+      "spelled": 1,
+      "word": 2
+    },
+    "cv:ccv": {
+      "spelled": 51193,
+      "word": 8711
+    },
+    "cv:ccvc": {
+      "spelled": 11954,
+      "word": 6142
+    },
+    "cv:ccvcc": {
+      "spelled": 1485,
+      "word": 3112
+    },
+    "cv:ccvccc": {
+      "spelled": 337,
+      "word": 1036
+    },
+    "cv:ccvcccc": {
+      "spelled": 21,
+      "word": 24
+    },
+    "cv:ccvcccv": {
+      "spelled": 28,
+      "word": 138
+    },
+    "cv:ccvccv": {
+      "spelled": 165,
+      "word": 569
+    },
+    "cv:ccvccvc": {
+      "spelled": 152,
+      "word": 976
+    },
+    "cv:ccvccvv": {
+      "spelled": 42,
+      "word": 95
+    },
+    "cv:ccvcv": {
+      "spelled": 897,
+      "word": 2311
+    },
+    "cv:ccvcvc": {
+      "spelled": 346,
+      "word": 1224
+    },
+    "cv:ccvcvcc": {
+      "spelled": 83,
+      "word": 481
+    },
+    "cv:ccvcvcv": {
+      "spelled": 79,
+      "word": 490
+    },
+    "cv:ccvcvv": {
+      "spelled": 57,
+      "word": 170
+    },
+    "cv:ccvcvvc": {
+      "spelled": 18,
+      "word": 404
+    },
+    "cv:ccvcvvv": {
+      "spelled": 8,
+      "word": 6
+    },
+    "cv:ccvv": {
+      "spelled": 2274,
+      "word": 1097
+    },
+    "cv:ccvvc": {
+      "spelled": 538,
+      "word": 1325
+    },
+    "cv:ccvvcc": {
+      "spelled": 119,
+      "word": 313
+    },
+    "cv:ccvvccc": {
+      "spelled": 4,
+      "word": 53
+    },
+    "cv:ccvvccv": {
+      "spelled": 11,
+      "word": 69
+    },
+    "cv:ccvvcv": {
+      "spelled": 39,
+      "word": 207
+    },
+    "cv:ccvvcvc": {
+      "spelled": 18,
+      "word": 269
+    },
+    "cv:ccvvcvv": {
+      "spelled": 5,
+      "word": 24
+    },
+    "cv:ccvvv": {
+      "spelled": 157,
+      "word": 6
+    },
+    "cv:ccvvvc": {
+      "spelled": 33,
+      "word": 86
+    },
+    "cv:ccvvvcc": {
+      "spelled": 4,
+      "word": 54
+    },
+    "cv:ccvvvcv": {
+      "spelled": 2,
+      "word": 4
+    },
+    "cv:ccvvvv": {
+      "spelled": 7,
+      "word": 1
+    },
+    "cv:ccvvvvv": {
+      "spelled": 2
+    },
+    "cv:cv": {
+      "spelled": 22839,
+      "word": 24651
+    },
+    "cv:cvc": {
+      "spelled": 15462,
+      "word": 45865
+    },
+    "cv:cvcc": {
+      "spelled": 9469,
+      "word": 14192
+    },
+    "cv:cvccc": {
+      "spelled": 1543,
+      "word": 2473
+    },
+    "cv:cvcccc": {
+      "spelled": 151,
+      "word": 87
+    },
+    "cv:cvccccc": {
+      "spelled": 15
+    },
+    "cv:cvccccv": {
+      "spelled": 18,
+      "word": 19
+    },
+    "cv:cvcccv": {
+      "spelled": 213,
+      "word": 508
+    },
+    "cv:cvcccvc": {
+      "spelled": 224,
+      "word": 718
+    },
+    "cv:cvcccvv": {
+      "spelled": 33,
+      "word": 116
+    },
+    "cv:cvccv": {
+      "spelled": 1356,
+      "word": 4143
+    },
+    "cv:cvccvc": {
+      "spelled": 1264,
+      "word": 6470
+    },
+    "cv:cvccvcc": {
+      "spelled": 234,
+      "word": 2228
+    },
+    "cv:cvccvcv": {
+      "spelled": 280,
+      "word": 1772
+    },
+    "cv:cvccvv": {
+      "spelled": 118,
+      "word": 801
+    },
+    "cv:cvccvvc": {
+      "spelled": 72,
+      "word": 874
+    },
+    "cv:cvccvvv": {
+      "spelled": 15,
+      "word": 21
+    },
+    "cv:cvcv": {
+      "spelled": 2538,
+      "word": 22876
+    },
+    "cv:cvcvc": {
+      "spelled": 5685,
+      "word": 6818
+    },
+    "cv:cvcvcc": {
+      "spelled": 490,
+      "word": 2137
+    },
+    "cv:cvcvccc": {
+      "spelled": 35,
+      "word": 562
+    },
+    "cv:cvcvccv": {
+      "spelled": 231,
+      "word": 593
+    },
+    "cv:cvcvcv": {
+      "spelled": 639,
+      "word": 1862
+    },
+    "cv:cvcvcvc": {
+      "spelled": 512,
+      "word": 1335
+    },
+    "cv:cvcvcvv": {
+      "spelled": 105,
+      "word": 243
+    },
+    "cv:cvcvv": {
+      "spelled": 368,
+      "word": 1444
+    },
+    "cv:cvcvvc": {
+      "spelled": 195,
+      "word": 1471
+    },
+    "cv:cvcvvcc": {
+      "spelled": 17,
+      "word": 289
+    },
+    "cv:cvcvvcv": {
+      "spelled": 49,
+      "word": 276
+    },
+    "cv:cvcvvv": {
+      "spelled": 33,
+      "word": 28
+    },
+    "cv:cvcvvvc": {
+      "spelled": 12,
+      "word": 23
+    },
+    "cv:cvcvvvv": {
+      "spelled": 2,
+      "word": 3
+    },
+    "cv:cvv": {
+      "spelled": 10304,
+      "word": 6350
+    },
+    "cv:cvvc": {
+      "spelled": 3088,
+      "word": 5224
+    },
+    "cv:cvvcc": {
+      "spelled": 1045,
+      "word": 1686
+    },
+    "cv:cvvccc": {
+      "spelled": 49,
+      "word": 336
+    },
+    "cv:cvvcccc": {
+      "spelled": 3,
+      "word": 9
+    },
+    "cv:cvvcccv": {
+      "spelled": 24,
+      "word": 77
+    },
+    "cv:cvvccv": {
+      "spelled": 85,
+      "word": 577
+    },
+    "cv:cvvccvc": {
+      "spelled": 87,
+      "word": 504
+    },
+    "cv:cvvccvv": {
+      "spelled": 6,
+      "word": 106
+    },
+    "cv:cvvcv": {
+      "spelled": 292,
+      "word": 935
+    },
+    "cv:cvvcvc": {
+      "spelled": 213,
+      "word": 633
+    },
+    "cv:cvvcvcc": {
+      "spelled": 38,
+      "word": 492
+    },
+    "cv:cvvcvcv": {
+      "spelled": 86,
+      "word": 186
+    },
+    "cv:cvvcvv": {
+      "spelled": 30,
+      "word": 187
+    },
+    "cv:cvvcvvc": {
+      "spelled": 15,
+      "word": 80
+    },
+    "cv:cvvcvvv": {
+      "spelled": 3,
+      "word": 2
+    },
+    "cv:cvvv": {
+      "spelled": 1863,
+      "word": 245
+    },
+    "cv:cvvvc": {
+      "spelled": 109,
+      "word": 201
+    },
+    "cv:cvvvcc": {
+      "spelled": 42,
+      "word": 57
+    },
+    "cv:cvvvccc": {
+      "spelled": 1
+    },
+    "cv:cvvvccv": {
+      "spelled": 7,
+      "word": 11
+    },
+    "cv:cvvvcv": {
+      "spelled": 20,
+      "word": 49
+    },
+    "cv:cvvvcvc": {
+      "spelled": 3,
+      "word": 14
+    },
+    "cv:cvvvcvv": {
+      "spelled": 2
+    },
+    "cv:cvvvv": {
+      "spelled": 25,
+      "word": 4
+    },
+    "cv:cvvvvc": {
+      "spelled": 13,
+      "word": 9
+    },
+    "cv:cvvvvcc": {
+      "spelled": 3,
+      "word": 2
+    },
+    "cv:cvvvvcv": {
+      "spelled": 1,
+      "word": 1
+    },
+    "cv:cvvvvv": {
+      "spelled": 2
+    },
+    "cv:cvvvvvc": {
+      "word": 1
+    },
+    "cv:cvvvvvv": {
+      "spelled": 2
+    },
+    "cv:vc": {
+      "spelled": 73070,
+      "word": 25669
+    },
+    "cv:vcc": {
+      "spelled": 51053,
+      "word": 12596
+    },
+    "cv:vccc": {
+      "spelled": 49003,
+      "word": 392
+    },
+    "cv:vcccc": {
+      "spelled": 1438,
+      "word": 5
+    },
+    "cv:vccccc": {
+      "spelled": 144
+    },
+    "cv:vcccccc": {
+      "spelled": 9
+    },
+    "cv:vcccccv": {
+      "spelled": 8
+    },
+    "cv:vccccv": {
+      "spelled": 70,
+      "word": 7
+    },
+    "cv:vccccvc": {
+      "spelled": 29,
+      "word": 8
+    },
+    "cv:vccccvv": {
+      "spelled": 2,
+      "word": 1
+    },
+    "cv:vcccv": {
+      "spelled": 941,
+      "word": 360
+    },
+    "cv:vcccvc": {
+      "spelled": 233,
+      "word": 248
+    },
+    "cv:vcccvcc": {
+      "spelled": 40,
+      "word": 229
+    },
+    "cv:vcccvcv": {
+      "spelled": 25,
+      "word": 108
+    },
+    "cv:vcccvv": {
+      "spelled": 26,
+      "word": 46
+    },
+    "cv:vcccvvc": {
+      "spelled": 12,
+      "word": 45
+    },
+    "cv:vcccvvv": {
+      "spelled": 2,
+      "word": 1
+    },
+    "cv:vccv": {
+      "spelled": 7398,
+      "word": 3467
+    },
+    "cv:vccvc": {
+      "spelled": 1353,
+      "word": 9602
+    },
+    "cv:vccvcc": {
+      "spelled": 199,
+      "word": 704
+    },
+    "cv:vccvccc": {
+      "spelled": 12,
+      "word": 132
+    },
+    "cv:vccvccv": {
+      "spelled": 48,
+      "word": 148
+    },
+    "cv:vccvcv": {
+      "spelled": 142,
+      "word": 816
+    },
+    "cv:vccvcvc": {
+      "spelled": 151,
+      "word": 495
+    },
+    "cv:vccvcvv": {
+      "spelled": 22,
+      "word": 63
+    },
+    "cv:vccvv": {
+      "spelled": 419,
+      "word": 443
+    },
+    "cv:vccvvc": {
+      "spelled": 91,
+      "word": 361
+    },
+    "cv:vccvvcc": {
+      "spelled": 21,
+      "word": 154
+    },
+    "cv:vccvvcv": {
+      "spelled": 18,
+      "word": 79
+    },
+    "cv:vccvvv": {
+      "spelled": 7,
+      "word": 1
+    },
+    "cv:vccvvvc": {
+      "spelled": 2,
+      "word": 2
+    },
+    "cv:vccvvvv": {
+      "spelled": 1
+    },
+    "cv:vcv": {
+      "spelled": 17632,
+      "word": 11607
+    },
+    "cv:vcvc": {
+      "spelled": 4593,
+      "word": 4618
+    },
+    "cv:vcvcc": {
+      "spelled": 870,
+      "word": 537
+    },
+    "cv:vcvccc": {
+      "spelled": 98,
+      "word": 253
+    },
+    "cv:vcvcccc": {
+      "spelled": 9,
+      "word": 1
+    },
+    "cv:vcvcccv": {
+      "spelled": 15,
+      "word": 18
+    },
+    "cv:vcvccv": {
+      "spelled": 142,
+      "word": 1360
+    },
+    "cv:vcvccvc": {
+      "spelled": 89,
+      "word": 138
+    },
+    "cv:vcvccvv": {
+      "spelled": 16,
+      "word": 15
+    },
+    "cv:vcvcv": {
+      "spelled": 589,
+      "word": 1048
+    },
+    "cv:vcvcvc": {
+      "spelled": 396,
+      "word": 938
+    },
+    "cv:vcvcvcc": {
+      "spelled": 32,
+      "word": 178
+    },
+    "cv:vcvcvcv": {
+      "spelled": 80,
+      "word": 247
+    },
+    "cv:vcvcvv": {
+      "spelled": 56,
+      "word": 76
+    },
+    "cv:vcvcvvc": {
+      "spelled": 29,
+      "word": 156
+    },
+    "cv:vcvcvvv": {
+      "spelled": 4,
+      "word": 8
+    },
+    "cv:vcvv": {
+      "spelled": 1113,
+      "word": 2050
+    },
+    "cv:vcvvc": {
+      "spelled": 526,
+      "word": 661
+    },
+    "cv:vcvvcc": {
+      "spelled": 16,
+      "word": 74
+    },
+    "cv:vcvvccc": {
+      "spelled": 1,
+      "word": 39
+    },
+    "cv:vcvvccv": {
+      "spelled": 3,
+      "word": 6
+    },
+    "cv:vcvvcv": {
+      "spelled": 31,
+      "word": 28
+    },
+    "cv:vcvvcvc": {
+      "spelled": 20,
+      "word": 23
+    },
+    "cv:vcvvcvv": {
+      "spelled": 4,
+      "word": 3
+    },
+    "cv:vcvvv": {
+      "spelled": 63,
+      "word": 8
+    },
+    "cv:vcvvvc": {
+      "spelled": 10
+    },
+    "cv:vcvvvcc": {
+      "spelled": 2,
+      "word": 2
+    },
+    "cv:vcvvvcv": {
+      "spelled": 3,
+      "word": 1
+    },
+    "cv:vcvvvv": {
+      "spelled": 5
+    },
+    "cv:vv": {
+      "spelled": 4341,
+      "word": 4047
+    },
+    "cv:vvc": {
+      "spelled": 7851,
+      "word": 2116
+    },
+    "cv:vvcc": {
+      "spelled": 8593,
+      "word": 1757
+    },
+    "cv:vvccc": {
+      "spelled": 335,
+      "word": 173
+    },
+    "cv:vvcccc": {
+      "spelled": 52,
+      "word": 6
+    },
+    "cv:vvccccc": {
+      "spelled": 5
+    },
+    "cv:vvcccv": {
+      "spelled": 49,
+      "word": 2
+    },
+    "cv:vvcccvc": {
+      "spelled": 11,
+      "word": 8
+    },
+    "cv:vvcccvv": {
+      "spelled": 3,
+      "word": 13
+    },
+    "cv:vvccv": {
+      "spelled": 360,
+      "word": 112
+    },
+    "cv:vvccvc": {
+      "spelled": 133,
+      "word": 103
+    },
+    "cv:vvccvcc": {
+      "spelled": 10,
+      "word": 72
+    },
+    "cv:vvccvcv": {
+      "spelled": 18,
+      "word": 16
+    },
+    "cv:vvccvv": {
+      "spelled": 11,
+      "word": 12
+    },
+    "cv:vvccvvc": {
+      "spelled": 1,
+      "word": 28
+    },
+    "cv:vvccvvv": {
+      "spelled": 1
+    },
+    "cv:vvcv": {
+      "spelled": 2583,
+      "word": 2013
+    },
+    "cv:vvcvc": {
+      "spelled": 390,
+      "word": 240
+    },
+    "cv:vvcvcc": {
+      "spelled": 22,
+      "word": 36
+    },
+    "cv:vvcvccv": {
+      "spelled": 12,
+      "word": 14
+    },
+    "cv:vvcvcv": {
+      "spelled": 53,
+      "word": 109
+    },
+    "cv:vvcvcvc": {
+      "spelled": 41,
+      "word": 11
+    },
+    "cv:vvcvcvv": {
+      "spelled": 9,
+      "word": 6
+    },
+    "cv:vvcvv": {
+      "spelled": 82,
+      "word": 25
+    },
+    "cv:vvcvvc": {
+      "spelled": 7,
+      "word": 8
+    },
+    "cv:vvcvvcc": {
+      "spelled": 7,
+      "word": 1
+    },
+    "cv:vvcvvv": {
+      "spelled": 2
+    },
+    "cv:vvcvvvc": {
+      "spelled": 2,
+      "word": 1
+    },
+    "cv:vvv": {
+      "spelled": 2700,
+      "word": 555
+    },
+    "cv:vvvc": {
+      "spelled": 1267,
+      "word": 291
+    },
+    "cv:vvvcc": {
+      "spelled": 105,
+      "word": 146
+    },
+    "cv:vvvccc": {
+      "spelled": 39,
+      "word": 1
+    },
+    "cv:vvvccv": {
+      "spelled": 4,
+      "word": 4
+    },
+    "cv:vvvccvc": {
+      "spelled": 7
+    },
+    "cv:vvvccvv": {
+      "spelled": 3
+    },
+    "cv:vvvcv": {
+      "spelled": 57,
+      "word": 6
+    },
+    "cv:vvvcvc": {
+      "spelled": 26,
+      "word": 7
+    },
+    "cv:vvvcvcc": {
+      "spelled": 4
+    },
+    "cv:vvvcvcv": {
+      "spelled": 3,
+      "word": 7
+    },
+    "cv:vvvcvv": {
+      "spelled": 3,
+      "word": 1
+    },
+    "cv:vvvcvvc": {
+      "spelled": 1
+    },
+    "cv:vvvcvvv": {
+      "spelled": 1
+    },
+    "cv:vvvv": {
+      "spelled": 349,
+      "word": 17
+    },
+    "cv:vvvvc": {
+      "spelled": 17,
+      "word": 1
+    },
+    "cv:vvvvcc": {
+      "spelled": 2
+    },
+    "cv:vvvvccc": {
+      "spelled": 2
+    },
+    "cv:vvvvccv": {
+      "spelled": 1
+    },
+    "cv:vvvvcv": {
+      "spelled": 3
+    },
+    "cv:vvvvcvc": {
+      "spelled": 3
+    },
+    "cv:vvvvv": {
+      "spelled": 37
+    },
+    "cv:vvvvvv": {
+      "spelled": 4
+    },
+    "roman:*": {
+      "numeral": 48011,
+      "spelled": 27595,
+      "word": 3680
+    },
+    "roman:CC": {
+      "numeral": 9,
+      "spelled": 577
+    },
+    "roman:CCC": {
+      "spelled": 204
+    },
+    "roman:CCI": {
+      "spelled": 86
+    },
+    "roman:CCL": {
+      "spelled": 84
+    },
+    "roman:CD": {
+      "numeral": 13,
+      "spelled": 7196
+    },
+    "roman:CDI": {
+      "spelled": 49
+    },
+    "roman:CI": {
+      "numeral": 4,
+      "spelled": 141
+    },
+    "roman:CII": {
+      "numeral": 1,
+      "spelled": 37
+    },
+    "roman:CIV": {
+      "numeral": 1,
+      "word": 19
+    },
+    "roman:CL": {
+      "numeral": 5,
+      "spelled": 390
+    },
+    "roman:CLI": {
+      "spelled": 27
+    },
+    "roman:CM": {
+      "numeral": 5,
+      "spelled": 742
+    },
+    "roman:CMI": {
+      "spelled": 47
+    },
+    "roman:CML": {
+      "numeral": 1,
+      "spelled": 20
+    },
+    "roman:CMV": {
+      "spelled": 26
+    },
+    "roman:CV": {
+      "numeral": 3,
+      "spelled": 484
+    },
+    "roman:CX": {
+      "numeral": 1,
+      "spelled": 99
+    },
+    "roman:DC": {
+      "numeral": 14,
+      "spelled": 4803
+    },
+    "roman:DCC": {
+      "spelled": 57
+    },
+    "roman:DCI": {
+      "numeral": 4,
+      "spelled": 84
+    },
+    "roman:DCL": {
+      "spelled": 28
+    },
+    "roman:DI": {
+      "spelled": 2,
+      "word": 208
+    },
+    "roman:DL": {
+      "numeral": 7,
+      "spelled": 614
+    },
+    "roman:DLX": {
+      "spelled": 22
+    },
+    "roman:DV": {
+      "spelled": 168
+    },
+    "roman:DVI": {
+      "spelled": 20
+    },
+    "roman:DX": {
+      "numeral": 1,
+      "spelled": 156
+    },
+    "roman:II": {
+      "numeral": 25983,
+      "spelled": 56,
+      "word": 97
+    },
+    "roman:III": {
+      "numeral": 8718,
+      "spelled": 33
+    },
+    "roman:IV": {
+      "numeral": 1939,
+      "spelled": 2502
+    },
+    "roman:IX": {
+      "numeral": 355,
+      "spelled": 7,
+      "word": 566
+    },
+    "roman:LI": {
+      "numeral": 14,
+      "spelled": 108
+    },
+    "roman:LII": {
+      "numeral": 7,
+      "word": 24
+    },
+    "roman:LIII": {
+      "numeral": 7,
+      "spelled": 20
+    },
+    "roman:LIV": {
+      "numeral": 2,
+      "spelled": 1,
+      "word": 21
+    },
+    "roman:LIX": {
+      "numeral": 3,
+      "word": 60
+    },
+    "roman:LV": {
+      "numeral": 3,
+      "spelled": 135
+    },
+    "roman:LVI": {
+      "numeral": 3,
+      "spelled": 33
+    },
+    "roman:LVII": {
+      "numeral": 8,
+      "spelled": 19
+    },
+    "roman:LVIII": {
+      "numeral": 3,
+      "spelled": 36
+    },
+    "roman:LX": {
+      "numeral": 10,
+      "spelled": 157
+    },
+    "roman:LXI": {
+      "numeral": 3,
+      "spelled": 75
+    },
+    "roman:LXII": {
+      "numeral": 4,
+      "spelled": 91
+    },
+    "roman:LXV": {
+      "numeral": 5,
+      "spelled": 15
+    },
+    "roman:MC": {
+      "numeral": 10,
+      "spelled": 1055
+    },
+    "roman:MCC": {
+      "spelled": 302
+    },
+    "roman:MCD": {
+      "spelled": 50
+    },
+    "roman:MCI": {
+      "spelled": 72
+    },
+    "roman:MCL": {
+      "spelled": 34
+    },
+    "roman:MCM": {
+      "spelled": 105
+    },
+    "roman:MD": {
+      "numeral": 8,
+      "spelled": 2430
+    },
+    "roman:MDC": {
+      "spelled": 83
+    },
+    "roman:MI": {
+      "numeral": 3,
+      "spelled": 212,
+      "word": 677
+    },
+    "roman:MIX": {
+      "spelled": 6,
+      "word": 38
+    },
+    "roman:ML": {
+      "numeral": 3,
+      "spelled": 505
+    },
+    "roman:MM": {
+      "numeral": 3,
+      "spelled": 492
+    },
+    "roman:MMC": {
+      "spelled": 112
+    },
+    "roman:MMI": {
+      "spelled": 25
+    },
+    "roman:MMM": {
+      "spelled": 42
+    },
+    "roman:MV": {
+      "numeral": 1,
+      "spelled": 481
+    },
+    "roman:MX": {
+      "spelled": 221
+    },
+    "roman:VI": {
+      "numeral": 1078,
+      "spelled": 5,
+      "word": 977
+    },
+    "roman:VII": {
+      "numeral": 1495,
+      "spelled": 1,
+      "word": 17
+    },
+    "roman:VIII": {
+      "numeral": 1250,
+      "spelled": 3
+    },
+    "roman:XC": {
+      "numeral": 3,
+      "spelled": 77
+    },
+    "roman:XI": {
+      "numeral": 366,
+      "spelled": 7,
+      "word": 955
+    },
+    "roman:XII": {
+      "numeral": 851,
+      "spelled": 2
+    },
+    "roman:XIII": {
+      "numeral": 798,
+      "spelled": 1
+    },
+    "roman:XIV": {
+      "numeral": 669,
+      "spelled": 1
+    },
+    "roman:XIX": {
+      "numeral": 277
+    },
+    "roman:XL": {
+      "numeral": 26,
+      "spelled": 269
+    },
+    "roman:XLI": {
+      "numeral": 22,
+      "spelled": 27
+    },
+    "roman:XLII": {
+      "numeral": 26,
+      "spelled": 14
+    },
+    "roman:XLIII": {
+      "numeral": 28,
+      "spelled": 10
+    },
+    "roman:XLIV": {
+      "numeral": 16,
+      "spelled": 19
+    },
+    "roman:XLIX": {
+      "numeral": 19,
+      "spelled": 11
+    },
+    "roman:XLV": {
+      "numeral": 20,
+      "spelled": 16
+    },
+    "roman:XLVI": {
+      "numeral": 26,
+      "spelled": 23
+    },
+    "roman:XLVII": {
+      "numeral": 13,
+      "spelled": 11
+    },
+    "roman:XLVIII": {
+      "numeral": 23,
+      "spelled": 10
+    },
+    "roman:XV": {
+      "numeral": 704,
+      "spelled": 19
+    },
+    "roman:XVI": {
+      "numeral": 613
+    },
+    "roman:XVII": {
+      "numeral": 270
+    },
+    "roman:XVIII": {
+      "numeral": 302
+    },
+    "roman:XX": {
+      "numeral": 82,
+      "spelled": 424
+    },
+    "roman:XXI": {
+      "numeral": 281,
+      "spelled": 1
+    },
+    "roman:XXII": {
+      "numeral": 178,
+      "spelled": 1
+    },
+    "roman:XXIII": {
+      "numeral": 200
+    },
+    "roman:XXIV": {
+      "numeral": 128
+    },
+    "roman:XXIX": {
+      "numeral": 117
+    },
+    "roman:XXV": {
+      "numeral": 114
+    },
+    "roman:XXVI": {
+      "numeral": 87,
+      "spelled": 1
+    },
+    "roman:XXVII": {
+      "numeral": 80
+    },
+    "roman:XXVIII": {
+      "numeral": 70
+    },
+    "roman:XXX": {
+      "numeral": 57,
+      "spelled": 137
+    },
+    "roman:XXXI": {
+      "numeral": 71
+    },
+    "roman:XXXII": {
+      "numeral": 61
+    },
+    "roman:XXXIII": {
+      "numeral": 46
+    },
+    "roman:XXXIV": {
+      "numeral": 68,
+      "spelled": 1
+    },
+    "roman:XXXIX": {
+      "numeral": 42
+    },
+    "roman:XXXV": {
+      "numeral": 45
+    },
+    "roman:XXXVI": {
+      "numeral": 40
+    },
+    "roman:XXXVII": {
+      "numeral": 39
+    },
+    "roman:XXXVIII": {
+      "numeral": 35
+    },
     "surface:ABC": {
       "spelled": 4283
     },
@@ -370,7 +1666,7 @@
   },
   "provenance": {
     "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
-    "keys": "letter_key(token); surface:<acronym> for an acronym icukit's en_US lexicon lists; * pools all",
+    "keys": "letter_key(token); cv:<consonant-vowel pattern> up to seven letters; surface:<acronym> for an acronym icukit's en_US lexicon lists; roman:<numeral> for a Roman numeral icukit reads, seen at least 20 times, numeral counting CARDINAL and ORDINAL; roman:* pools the numerals; * pools all",
     "license": "CC BY-SA 4.0",
     "rule": "all-capitals letter tokens of two or more letters: LETTERS spelled, PLAIN word",
     "shards": [

@@ -124,7 +124,7 @@ def corpus_classes(type_: str) -> tuple[str, ...]:
 
 def _classify(type_: str) -> tuple[str, ...]:
     head, _, tail = type_.partition(":")
-    if type_ == "letter:name":
+    if type_ == "letter:name" or head == "letters":
         return ("letters",)
     if type_ == "word:single-letter":
         return ("plain",)

@@ -48,6 +48,8 @@ def _detectors():
         from build_spoken_priors import _detectors as profile
         from icukit.abbreviation_recognize import AbbreviationDetector
 
+        from frend.letters import LettersDetector
+
         seen, detectors = set(), []
         for group in profile().values():
             for detector in group:
@@ -55,6 +57,7 @@ def _detectors():
                     seen.add(id(detector))
                     detectors.append(detector)
         detectors.append(AbbreviationDetector("en_US"))
+        detectors.append(LettersDetector("en_US"))
         _DETECTORS = detectors
     return _DETECTORS
 

@@ -26,6 +26,7 @@ from frend.electronic import (
     tld_positions,
 )
 from frend.lattice import ReadingEdge, ReadingLattice
+from frend.letters import LettersValue, cv_pattern
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
@@ -620,6 +621,7 @@ _SPOKEN_CAPTURES = {
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
     "symbol": frozenset({"symbol"}),
+    "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
     "mixed-measure": frozenset({"integer", "unit"}),
@@ -847,6 +849,24 @@ def _spoken_ordinal(
 
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
+def _spoken_letters(value: LettersValue) -> tuple[SpokenAlternative, ...]:
+    """A run of capitals spelled or read as a word, weighted as an acronym is; a plural
+    or possessive rides on the last letter ("UFOs" -> "u f o's", "ufos"). An initial
+    ("S.") is its letter."""
+    if len(value.letters) < 2:
+        return (SpokenAlternative(value.letters.lower(), "surface:letter"),)
+    suffix = "'s" if value.suffix else ""
+    word = value.surface.lower()
+    return tuple(
+        SpokenAlternative(
+            f"{form.text}{suffix}" if form.provenance.endswith("spelled") else word,
+            form.provenance,
+            form.weight,
+        )
+        for form in _with_acronym_readings(value.letters, ())
+    )
+
+
 # The source says which, so a consumer can tell spelled letters from a written long form.
 _ABBREVIATION_SOURCES = {"expansion": "icukit-abbreviation", "spell-out": "icukit-spell-out"}
 
@@ -867,7 +887,8 @@ def _with_acronym_readings(
     kal ruled that frend says both: the share the corpus spells an all-capitals token
     weights "f b i", the rest weights "fbi" (``data/acronym_priors.json``,
     ``tools/build_acronym_priors.py``), by the acronym's own counts where icukit's lexicon
-    lists it, blended toward its shape (``letter_key``: length, vowel). icukit's long forms
+    lists it or icukit reads it as a Roman numeral, blended toward its consonant-vowel
+    pattern and then its shape (``letter_key``: length, vowel). icukit's long forms
     follow. A spelled form icukit already gives ("M D") takes the weight, not a copy.
     """
     letters = "".join(ch for ch in surface if ch.isalpha())
@@ -882,9 +903,15 @@ def _with_acronym_readings(
     share = blend(
         table.get(letter_key(letters), {}), Decimal(overall["spelled"]) / sum(overall.values())
     )
-    if f"surface:{letters}" in table:
-        # The acronym's own evidence ("NASA" is a word 2118 times to 4) over its shape's.
-        share = blend(table[f"surface:{letters}"], share)
+    if (pattern := cv_pattern(letters)) is not None and f"cv:{pattern}" in table:
+        # Its consonant-vowel pattern ("GUS" is mostly said, "GWR" spelled) over its shape.
+        share = blend(table[f"cv:{pattern}"], share)
+    for key in (f"surface:{letters}", f"roman:{letters}"):
+        if key in table:
+            # The run's own evidence ("NASA" is a word 2118 times to 4, "XI" 955 to 7)
+            # over its shape's; a Roman numeral's number readings are not counted here.
+            own = {label: table[key].get(label, 0) for label in ("spelled", "word")}
+            share = blend(own, share)
     forms = [SpokenAlternative(" ".join(letters.lower()), "measured:acronym-spelled", share)]
     if letters == surface:
         # A dotted surface ("U.S.") is spelled or expanded, never read as a word ("us").
@@ -1648,6 +1675,10 @@ def verbalize_edge(
             )
             key_value = value.char
             path = "symbol"
+        elif isinstance(value, LettersValue):
+            alternatives = _spoken_letters(value)
+            key_value = value.surface
+            path = "letters"
         elif isinstance(value, DigitsValue):
             alternatives = _spoken_digits(value, locale)
             key_value = value.digits
