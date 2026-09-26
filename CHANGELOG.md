@@ -1,6 +1,13 @@
 # Changelog
 
 ## Unreleased
+- Added `tools/evaluate_google_tn.py`, which scores frend's first choice on the published
+  Google text-normalization test set (the first 100,000 lines of `output-00099-of-00100`,
+  as Sproat & Jaitly 2016 and Bakhturina et al. 2022 use), per class, overall and per
+  sentence, beside whether any reading frend offers matches. The corpus's own token
+  boundaries are used, so tokenization is not scored; frend reads each token alone,
+  where the published models see its sentence. First result: 97.44% of tokens first
+  choice (97.64% any reading), 82.40% of sentences.
 - Read a number written as plain digits digit by digit as well, as spelled-out letters
   are (kal: "it's like spell out"): "2013" also "two zero one three" and the corpus's
   "two o one three", "068" also "o six eight" (the zero its value drops). Only the
