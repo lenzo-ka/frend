@@ -3597,6 +3597,449 @@
         "unverbalized": 0
       }
     },
+    "symbol": {
+      "matched": 3286,
+      "source_matched": {
+        "cldr-symbol:and": 237,
+        "cldr-symbol:dollar": 3,
+        "cldr-symbol:hash": 1,
+        "cldr-symbol:number": 35,
+        "cldr-symbol:tilde": 2,
+        "icu-name:letter": 318,
+        "surface:silence": 2690
+      },
+      "sub_keys": {
+        "Arab": {
+          "matched": 52,
+          "source_matched": {
+            "surface:silence": 52
+          }
+        },
+        "Cyrl": {
+          "matched": 597,
+          "source_matched": {
+            "surface:silence": 597
+          }
+        },
+        "Grek": {
+          "matched": 319,
+          "source_matched": {
+            "icu-name:letter": 318,
+            "surface:silence": 1
+          }
+        },
+        "Hang": {
+          "matched": 19,
+          "source_matched": {
+            "surface:silence": 19
+          }
+        },
+        "Hani": {
+          "matched": 75,
+          "source_matched": {
+            "surface:silence": 75
+          }
+        },
+        "Hebr": {
+          "matched": 64,
+          "source_matched": {
+            "surface:silence": 64
+          }
+        },
+        "Hira": {
+          "matched": 13,
+          "source_matched": {
+            "surface:silence": 13
+          }
+        },
+        "Kana": {
+          "matched": 26,
+          "source_matched": {
+            "surface:silence": 26
+          }
+        },
+        "Thai": {
+          "matched": 7,
+          "source_matched": {
+            "surface:silence": 7
+          }
+        },
+        "U+0021": {
+          "matched": 4,
+          "source_matched": {
+            "surface:silence": 4
+          }
+        },
+        "U+0023": {
+          "matched": 36,
+          "source_matched": {
+            "cldr-symbol:hash": 1,
+            "cldr-symbol:number": 35
+          }
+        },
+        "U+0024": {
+          "matched": 3,
+          "source_matched": {
+            "cldr-symbol:dollar": 3
+          }
+        },
+        "U+0026": {
+          "matched": 237,
+          "source_matched": {
+            "cldr-symbol:and": 237
+          }
+        },
+        "U+0027": {
+          "matched": 19,
+          "source_matched": {
+            "surface:silence": 19
+          }
+        },
+        "U+0029": {
+          "matched": 126,
+          "source_matched": {
+            "surface:silence": 126
+          }
+        },
+        "U+002C": {
+          "matched": 462,
+          "source_matched": {
+            "surface:silence": 462
+          }
+        },
+        "U+002D": {
+          "matched": 259,
+          "source_matched": {
+            "surface:silence": 259
+          }
+        },
+        "U+002E": {
+          "matched": 841,
+          "source_matched": {
+            "surface:silence": 841
+          }
+        },
+        "U+002F": {
+          "matched": 6,
+          "source_matched": {
+            "surface:silence": 6
+          }
+        },
+        "U+003A": {
+          "matched": 78,
+          "source_matched": {
+            "surface:silence": 78
+          }
+        },
+        "U+003B": {
+          "matched": 23,
+          "source_matched": {
+            "surface:silence": 23
+          }
+        },
+        "U+003F": {
+          "matched": 7,
+          "source_matched": {
+            "surface:silence": 7
+          }
+        },
+        "U+007E": {
+          "matched": 2,
+          "source_matched": {
+            "cldr-symbol:tilde": 2
+          }
+        },
+        "U+00BB": {
+          "matched": 1,
+          "source_matched": {
+            "surface:silence": 1
+          }
+        },
+        "U+00BF": {
+          "matched": 1,
+          "source_matched": {
+            "surface:silence": 1
+          }
+        },
+        "U+2014": {
+          "matched": 9,
+          "source_matched": {
+            "surface:silence": 9
+          }
+        }
+      },
+      "top_unmatched": [
+        {
+          "count": 443,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 443,
+            "unverbalized": 0
+          },
+          "spoken": "",
+          "written_forms": {
+            "\"": 289,
+            "(": 134,
+            "Ī": 1,
+            "Ś": 1,
+            "ǀ": 1,
+            "ʻ": 4,
+            "ʼ": 2,
+            "Ḳ": 1,
+            "ầ": 2,
+            "ẫ": 1,
+            "ễ": 1,
+            "ợ": 2,
+            "ứ": 3,
+            "ー": 1
+          }
+        },
+        {
+          "count": 77,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 77,
+            "unverbalized": 0
+          },
+          "spoken": "p p",
+          "written_forms": {
+            "pp": 77
+          }
+        },
+        {
+          "count": 26,
+          "reasons": {
+            "no_alternative_matched": 26,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "lambda",
+          "written_forms": {
+            "Λ": 1,
+            "λ": 25
+          }
+        },
+        {
+          "count": 14,
+          "reasons": {
+            "no_alternative_matched": 14,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "sigma",
+          "written_forms": {
+            "ς": 14
+          }
+        },
+        {
+          "count": 12,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 12,
+            "unverbalized": 0
+          },
+          "spoken": "p g",
+          "written_forms": {
+            "Pg": 1,
+            "pg": 11
+          }
+        },
+        {
+          "count": 9,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 9,
+            "unverbalized": 0
+          },
+          "spoken": "t h",
+          "written_forms": {
+            "Th": 2,
+            "th": 7
+          }
+        },
+        {
+          "count": 8,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 8,
+            "unverbalized": 0
+          },
+          "spoken": "p b",
+          "written_forms": {
+            "Pb": 8
+          }
+        },
+        {
+          "count": 8,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 8,
+            "unverbalized": 0
+          },
+          "spoken": "p d f",
+          "written_forms": {
+            "pdf": 8
+          }
+        },
+        {
+          "count": 8,
+          "reasons": {
+            "no_alternative_matched": 8,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "underscore",
+          "written_forms": {
+            "_": 8
+          }
+        },
+        {
+          "count": 6,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 6,
+            "unverbalized": 0
+          },
+          "spoken": "p t",
+          "written_forms": {
+            "Pt": 4,
+            "pt": 2
+          }
+        },
+        {
+          "count": 5,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 5,
+            "unverbalized": 0
+          },
+          "spoken": "p h",
+          "written_forms": {
+            "Ph": 4,
+            "pH": 1
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 4,
+            "unverbalized": 0
+          },
+          "spoken": "c f",
+          "written_forms": {
+            "cf": 4
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 4,
+            "unverbalized": 0
+          },
+          "spoken": "t r",
+          "written_forms": {
+            "Tr": 3,
+            "tr": 1
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "f f",
+          "written_forms": {
+            "ff": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "f r",
+          "written_forms": {
+            "Fr": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "feet",
+          "written_forms": {
+            "feet": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "l t",
+          "written_forms": {
+            "Lt": 2,
+            "lt": 1
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "p h d",
+          "written_forms": {
+            "PhD": 2,
+            "Phd": 1
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "w h",
+          "written_forms": {
+            "Wh": 1,
+            "wh": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "b c l",
+          "written_forms": {
+            "Bcl": 2
+          }
+        }
+      ],
+      "total": 4000,
+      "unmatched": 714,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 48,
+        "unrecognized": 666,
+        "unverbalized": 0
+      }
+    },
     "time": {
       "matched": 1971,
       "source_matched": {
@@ -3878,7 +4321,9 @@
       "MEASURE": "measure",
       "MONEY": "money",
       "ORDINAL": "ordinal",
-      "TIME": "time"
+      "PUNCT": "symbol",
+      "TIME": "time",
+      "VERBATIM": "symbol"
     },
     "generated": "2026-09-24",
     "license": "CC BY-SA 4.0",
@@ -3887,9 +4332,7 @@
       "ADDRESS": "no verbalized value family",
       "LETTERS": "no verbalized value family",
       "PLAIN": "not a structured value",
-      "PUNCT": "not a structured value",
-      "TELEPHONE": "no verbalized value family",
-      "VERBATIM": "not a structured value"
+      "TELEPHONE": "no verbalized value family"
     },
     "recognition_profile": {
       "compact_styles": [
@@ -4031,6 +4474,9 @@
           "FlexibleNumberDetector",
           "AlphanumericRunsDetector"
         ],
+        "symbol": [
+          "SymbolDetector"
+        ],
         "time": [
           "FlexibleTimeDetector",
           "FlexibleNumericDurationDetector",
@@ -4105,7 +4551,9 @@
       "MEASURE": 2000,
       "MONEY": 2000,
       "ORDINAL": 2000,
-      "TIME": 2000
+      "PUNCT": 2000,
+      "TIME": 2000,
+      "VERBATIM": 2000
     },
     "sample_rule": {
       "first_eligible_rows_per_class_per_shard": 200,
@@ -4135,6 +4583,7 @@
       "measure": "the reading's ICU unit identifier; percent for a percent",
       "money": null,
       "ordinal": null,
+      "symbol": "the code point of a symbol, the script of a letter",
       "time": null
     }
   }

@@ -1,6 +1,16 @@
 # Changelog
 
 ## Unreleased
+- Read a standalone symbol or letter of another script by name (`frend.symbols`), from
+  icukit's CLDR symbol names (icukit #136, `icu_abbreviations(kinds=["symbol"])`) and
+  ICU's formal character names, with silence always offered: the corpus picks "and" for
+  "&", "number" for "#", a Greek letter's name ("alpha"), and nothing for "." "," "-"
+  and a character of a script it does not read ("風"). A character inside a word ("R&D")
+  is left alone. SYMBOL is a new measured kind over the corpus's VERBATIM and PUNCT rows
+  (silence counts as a target there), ranked per code point for a symbol and per script
+  for a letter: 3286 of 4000 match. On the published test set VERBATIM rises from 9.2%
+  to 89.6% first choice, PUNCT stays at 100%, and all tokens from 97.44% to 98.31%.
+  Where the installed icukit lists no symbols (0.7.1), frend reads none.
 - Added `tools/evaluate_google_tn.py`, which scores frend's first choice on the published
   Google text-normalization test set (the first 100,000 lines of `output-00099-of-00100`,
   as Sproat & Jaitly 2016 and Bakhturina et al. 2022 use), per class, overall and per

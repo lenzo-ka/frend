@@ -173,6 +173,15 @@ def measurement_sub_key(kind: str | None, detection: object) -> str | None:
     month and day (``month-first``, ``day-first``, else ``other``). No other kind
     declares a sub-key, so those kinds retain kind-level shares.
     """
+    if kind == "symbol":
+        # A symbol ranks by its own evidence ("&" is "and", "." is nothing); a letter of
+        # another script by its script's ("Grek" by name, "Hani" as nothing).
+        value = detection.get("value")  # type: ignore[union-attr]
+        script = str(getattr(value, "script", ""))
+        char = str(getattr(value, "char", ""))
+        if script in ("Zyyy", "Zinh", "Latn") and char:
+            return f"U+{ord(char):04X}"
+        return script or None
     if kind == "date":
         # A date with a month and a day ranks by its written order: the corpus says
         # "March 5, 2024" and "5 March 2024" differently, and the pooled shares cannot.

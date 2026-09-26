@@ -85,3 +85,8 @@ files it as LETTERS ("FBI" "f b i") and as a word when it files it as PLAIN ("NA
 Counts are kept by the token's shape (`letter_key`: case, length, whether a vowel letter
 occurs), with `*` pooling all; no corpus text is stored. The shared attribution above
 applies.
+
+SYMBOL (`spoken_priors.json`) measures the corpus's VERBATIM and PUNCT rows with frend's
+symbol reader; unlike the other kinds, a spoken `sil` is a target (silence), not a
+skipped row, and the written token is not trimmed. Its sub-key is a symbol's code point
+(`U+0026`) or a letter's script (`Grek`).
