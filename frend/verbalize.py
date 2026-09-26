@@ -230,8 +230,61 @@ def _rank_final(
             ranked.append((1, -measurement.share, index, weighted))
             continue
         ranked.append((_source_tier(alternative.provenance), Decimal(0), index, alternative))
+    ranked = _zero_shares(ranked, kind)
     ranked.sort(key=lambda item: item[:3])
     return tuple(item[3] for item in ranked)
+
+
+@cache
+def _zero_priors() -> dict[str, dict[str, int]]:
+    from importlib.resources import files
+
+    data = files("frend").joinpath("data/zero_priors.json").read_text(encoding="utf-8")
+    return json.loads(data)["kinds"]
+
+
+_ZERO_WORDS = frozenset({"o", "oh", "zero"})
+
+
+def _zero_key(text: str) -> tuple[str, ...]:
+    return tuple("0" if word in _ZERO_WORDS else word for word in text.replace("-", " ").split())
+
+
+def _zero_shares(
+    ranked: list[tuple[int, Decimal, int, SpokenAlternative]], kind: str | None
+) -> list[tuple[int, Decimal, int, SpokenAlternative]]:
+    """Readings that differ only in how a zero is said ("point zero five", "point o
+    five"; ICU's "oh-five", "o five") share their weight by how the corpus says a zero
+    in this kind of reading (``data/zero_priors.json``, ``tools/build_zero_priors.py``),
+    each zero counted once, add-one: a date's zero is "o", a decimal's mostly "o"."""
+    counts = _zero_priors().get(kind or "")
+    if not counts:
+        return ranked
+    total = sum(counts.get(word, 0) + 1 for word in _ZERO_WORDS)
+    groups: dict[tuple[str, ...], list[int]] = {}
+    for position, (_, _, _, alternative) in enumerate(ranked):
+        if _ZERO_WORDS & set(alternative.text.replace("-", " ").split()):
+            groups.setdefault(_zero_key(alternative.text), []).append(position)
+    out = list(ranked)
+    for members in groups.values():
+        weights = [ranked[at][3].weight for at in members]
+        if len(members) < 2 or not any(weights):
+            continue
+        pooled = sum((weight or Decimal(0) for weight in weights), Decimal(0))
+        scores = []
+        for at in members:
+            score = Decimal(1)
+            for word in ranked[at][3].text.replace("-", " ").split():
+                if word in _ZERO_WORDS:
+                    score *= Decimal(counts.get(word, 0) + 1) / total
+            scores.append(score)
+        tier = min(ranked[at][0] for at in members)
+        for at, score in zip(members, scores, strict=True):
+            _, _, index, alternative = ranked[at]
+            weight = pooled * score / sum(scores)
+            shared = SpokenAlternative(alternative.text, alternative.provenance, weight)
+            out[at] = (tier, -weight, index, shared)
+    return out
 
 
 def _with_curated(
@@ -1060,7 +1113,8 @@ def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
     """ICU's year readings, plus "o" where ICU says "oh" ("1908": "nineteen o eight").
 
     ICU's year rule set says a zero-led second half "oh" ("nineteen oh-eight"); the
-    corpus reads it "o" as often. No locale data spells "o", so that form is lexical
+    corpus says "o" (a date's zero is "o" 47,752 times, "oh" never), and
+    ``_zero_shares`` ranks it so. No locale data spells "o", so that form is lexical
     over ICU's, as a zero-led minute already is.
     """
     forms = list(_number_leaf(value, "year", locale))

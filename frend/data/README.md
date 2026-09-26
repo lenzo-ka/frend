@@ -83,8 +83,19 @@ Whether an acronym is spelled or said as a word, measured from the corpus by
 byte): an all-capitals token of two or more letters counts as spelled when the corpus
 files it as LETTERS ("FBI" "f b i") and as a word when it files it as PLAIN ("NASA").
 Counts are kept by the token's shape (`letter_key`: case, length, whether a vowel letter
-occurs), with `*` pooling all; no corpus text is stored. The shared attribution above
+occurs), by its consonant-vowel pattern up to seven letters (`cv:cvc`), by the surface
+for an acronym icukit's lexicon lists (`surface:NASA`) and for a Roman numeral icukit
+reads (`roman:II`, which also counts the corpus's CARDINAL and ORDINAL readings as
+`numeral`), with `*` pooling all; no corpus text is stored. The shared attribution above
 applies.
+
+## `zero_priors.json`
+
+How the corpus says a zero digit, "o", "oh" or "zero", per reading kind, measured by
+`tools/build_zero_priors.py` (`--check` as above): the zero words in the spoken form of
+each token written with a 0, after "point" for DECIMAL, MEASURE and MONEY and anywhere
+for DATE, TIME, DIGIT and ELECTRONIC. Readings that differ only in a zero's word share
+their weight by these counts. Only counts are stored; the shared attribution applies.
 
 SYMBOL (`spoken_priors.json`) measures the corpus's VERBATIM and PUNCT rows with frend's
 symbol reader; unlike the other kinds, a spoken `sil` is a target (silence), not a

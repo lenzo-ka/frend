@@ -54,6 +54,7 @@ frend = [
     "data/icu_shape_backfill.json",
     "data/electronic_priors.json",
     "data/acronym_priors.json",
+    "data/zero_priors.json",
     "data/tlds-alpha-by-domain.txt",
     "data/exceptions/*.json",
     "data/README.md",
