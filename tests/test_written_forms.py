@@ -67,3 +67,23 @@ def test_leaves_icus_own_forms_and_non_matches_alone(text):
     """ "500 BC" is ICU's own form, icukit reads it (its period ends the sentence); the rest
     are not these forms."""
     assert _spans(text) == []
+
+
+@pytest.mark.parametrize("text", ["2,026", "in 2,026", "March 5, 2,026", "2,026 BC"])
+def test_a_grouped_number_is_never_a_year(text):
+    """kal: "Dates won't have commas in like 2,026": no reader frend measures with reads a
+    grouped number as a date, and its number reading gets no digit-by-digit form."""
+    from icukit.detectors import detect
+
+    from tests.test_spoken_priors import _load_builder
+
+    profile = _load_builder()._detectors()
+    detectors = [d for kind in ("date", "time", "cardinal", "digit") for d in profile[kind]]
+    found = [d for d in detect(text, detectors) if "2,026" in text[d["start"] : d["end"]]]
+    assert found and all(not d["type"].startswith(("date:", "time:")) for d in found)
+    number = next(d for d in found if d["type"].startswith("number:"))
+    lattice = resolve_lattice([number], source_text=text)
+    edge = next(e for e in lattice.edges if e.kind == "reading")
+    forms = [normalize_spoken(a.text) for a in verbalize_edge(edge, source_text=text).alternatives]
+    assert "two thousand twenty six" in forms
+    assert not any(form.startswith("two zero") or form.startswith("two o ") for form in forms)

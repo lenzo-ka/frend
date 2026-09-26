@@ -247,6 +247,264 @@
         "unverbalized": 0
       }
     },
+    "digit": {
+      "matched": 1779,
+      "source_matched": {
+        "icu-rbnf:%spellout-cardinal": 535,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US": 823,
+        "icu-rbnf:%spellout-numbering": 421
+      },
+      "sub_keys": {},
+      "top_unmatched": [
+        {
+          "count": 14,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 14,
+            "unverbalized": 0
+          },
+          "spoken": "two",
+          "written_forms": {
+            "2-": 14
+          }
+        },
+        {
+          "count": 13,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 13,
+            "unverbalized": 0
+          },
+          "spoken": "one",
+          "written_forms": {
+            "1-": 13
+          }
+        },
+        {
+          "count": 13,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 13,
+            "unverbalized": 0
+          },
+          "spoken": "three",
+          "written_forms": {
+            "3-": 13
+          }
+        },
+        {
+          "count": 11,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 11,
+            "unverbalized": 0
+          },
+          "spoken": "five",
+          "written_forms": {
+            "5-": 11
+          }
+        },
+        {
+          "count": 10,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 10,
+            "unverbalized": 0
+          },
+          "spoken": "one o",
+          "written_forms": {
+            "10-": 10
+          }
+        },
+        {
+          "count": 9,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 9,
+            "unverbalized": 0
+          },
+          "spoken": "four",
+          "written_forms": {
+            "4-": 9
+          }
+        },
+        {
+          "count": 7,
+          "reasons": {
+            "no_alternative_matched": 7,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "o",
+          "written_forms": {
+            "0": 7
+          }
+        },
+        {
+          "count": 6,
+          "reasons": {
+            "no_alternative_matched": 6,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "double o seven",
+          "written_forms": {
+            "007": 6
+          }
+        },
+        {
+          "count": 5,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 5,
+            "unverbalized": 0
+          },
+          "spoken": "o one o two eight",
+          "written_forms": {
+            "01028-": 5
+          }
+        },
+        {
+          "count": 5,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 5,
+            "unverbalized": 0
+          },
+          "spoken": "one one",
+          "written_forms": {
+            "11-": 5
+          }
+        },
+        {
+          "count": 5,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 5,
+            "unverbalized": 0
+          },
+          "spoken": "one seven three",
+          "written_forms": {
+            "173-": 5
+          }
+        },
+        {
+          "count": 5,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 5,
+            "unverbalized": 0
+          },
+          "spoken": "six",
+          "written_forms": {
+            "6-": 5
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 4,
+            "unverbalized": 0
+          },
+          "spoken": "eight",
+          "written_forms": {
+            "8-": 4
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 4,
+            "unverbalized": 0
+          },
+          "spoken": "seven",
+          "written_forms": {
+            "7-": 4
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "five six three five o",
+          "written_forms": {
+            "56350-": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "one six",
+          "written_forms": {
+            "16-": 3
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "four five",
+          "written_forms": {
+            "45-": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "four three five",
+          "written_forms": {
+            "435-": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "one five",
+          "written_forms": {
+            "15-": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "one o o",
+          "written_forms": {
+            "100-": 2
+          }
+        }
+      ],
+      "total": 2000,
+      "unmatched": 221,
+      "unmatched_by_reason": {
+        "no_alternative_matched": 13,
+        "unrecognized": 208,
+        "unverbalized": 0
+      }
+    },
     "electronic": {
       "matched": 1605,
       "source_matched": {
@@ -3614,6 +3872,7 @@
       "CARDINAL": "cardinal",
       "DATE": "date",
       "DECIMAL": "decimal",
+      "DIGIT": "digit",
       "ELECTRONIC": "electronic",
       "FRACTION": "fraction",
       "MEASURE": "measure",
@@ -3626,7 +3885,6 @@
     "normalization": "Written tokens: remove trailing spaces and commas before recognition. Spoken forms and alternatives: split at characters whose Unicode general category starts with P and at whitespace recognized by str.split(), then lowercase each token independently.",
     "outside_classes": {
       "ADDRESS": "no verbalized value family",
-      "DIGIT": "digit strings read digit by digit; not a measured kind",
       "LETTERS": "no verbalized value family",
       "PLAIN": "not a structured value",
       "PUNCT": "not a structured value",
@@ -3680,6 +3938,10 @@
           "FlexibleNumberDetector",
           "FlexibleCompactDetector",
           "FlexibleCompactDetector"
+        ],
+        "digit": [
+          "FlexibleNumberDetector",
+          "WrittenFormsDetector"
         ],
         "electronic": [
           "ElectronicDetector"
@@ -3837,6 +4099,7 @@
       "CARDINAL": 2000,
       "DATE": 2000,
       "DECIMAL": 2000,
+      "DIGIT": 2000,
       "ELECTRONIC": 2000,
       "FRACTION": 2000,
       "MEASURE": 2000,
@@ -3866,6 +4129,7 @@
       "cardinal": null,
       "date": "the written order of month and day: month-first, day-first, or other",
       "decimal": null,
+      "digit": null,
       "electronic": null,
       "fraction": "the decimal integer value of the reading's denominator capture",
       "measure": "the reading's ICU unit identifier; percent for a percent",

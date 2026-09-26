@@ -38,6 +38,7 @@ CLASS_TO_KIND = {
     "CARDINAL": "cardinal",
     "DATE": "date",
     "DECIMAL": "decimal",
+    "DIGIT": "digit",
     "ELECTRONIC": "electronic",
     "FRACTION": "fraction",
     "MEASURE": "measure",
@@ -46,7 +47,6 @@ CLASS_TO_KIND = {
     "TIME": "time",
 }
 OUTSIDE_CLASSES = {
-    "DIGIT": "digit strings read digit by digit; not a measured kind",
     "ADDRESS": "no verbalized value family",
     "LETTERS": "no verbalized value family",
     "PLAIN": "not a structured value",
@@ -176,6 +176,7 @@ def _detectors():
     cardinals = numbers + (LetterNameDetector("en_US"), SingleLetterWordDetector("en_US"))
     return {
         "cardinal": (*cardinals, written),
+        "digit": (FlexibleNumberDetector("en_US"), written),
         "decimal": numbers,
         "date": (*dates.detectors, written),
         "fraction": (FlexibleFractionDetector("en_US"),),

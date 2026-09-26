@@ -1824,3 +1824,43 @@ def test_real_datetime_and_quarter_readings_speak(written, spoken):
             normalize_spoken(a.text) for a in verbalize_edge(edge, source_text=written).alternatives
         }
     assert spoken in forms
+
+
+@pytest.mark.parametrize(
+    ("written", "digits"),
+    [
+        ("2013", {"two zero one three", "two o one three"}),
+        ("068", {"zero six eight", "o six eight"}),
+    ],
+)
+def test_digit_string_also_reads_digit_by_digit(written, digits):
+    """kal: digit by digit "is like spell out": a number written as plain digits also reads
+    one digit at a time, beside its cardinal ("068" keeps the zero its value drops)."""
+    unit = _full_span_forms(written, [FlexibleNumberDetector("en_US")], "number:decimal")
+    assert digits <= {normalize_spoken(a.text) for a in unit.alternatives}
+
+
+@pytest.mark.parametrize("written", ["7", "1,000", "-42", "3.14"])
+def test_single_grouped_signed_or_fractional_numbers_get_no_digit_reading(written):
+    unit = _full_span_forms(written, [FlexibleNumberDetector("en_US")], "number:decimal")
+    assert all("spellout-cardinal" not in a.provenance or "." in written for a in unit.alternatives)
+    assert len({normalize_spoken(a.text) for a in unit.alternatives}) == len(unit.alternatives)
+
+
+def test_a_year_is_never_read_digit_by_digit():
+    """kal: "I wouldn't read a year like that if I knew it was a year": the digit reading
+    belongs to the number reading only, never to a date."""
+    detections = [
+        d
+        for d in detect("2013", list(all_detectors("en_US", ("y",)).detectors))
+        if d["type"].startswith("date:")
+    ]
+    assert detections
+    for detection in detections:
+        lattice = resolve_lattice([detection], source_text="2013")
+        edge = next(e for e in lattice.edges if e.kind == "reading")
+        forms = {
+            normalize_spoken(a.text) for a in verbalize_edge(edge, source_text="2013").alternatives
+        }
+        assert "twenty thirteen" in forms
+        assert not forms & {"two zero one three", "two o one three"}

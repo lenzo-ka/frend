@@ -1251,7 +1251,18 @@ def _spoken_number(
         )
         return _ranked([*base, *spelled])
     if type_.startswith(("number:cardinal", "number:int", "number:decimal")):
-        return _number_leaf(decimal, "cardinal", locale)
+        cardinals = _number_leaf(decimal, "cardinal", locale)
+        written = str(getattr(_capture(detection, "integer"), "text", ""))
+        if (
+            len(written) >= 2
+            and written.isdigit()
+            and _capture(detection, "sign") is None
+            and _capture(detection, "fraction") is None
+        ):
+            # A digit string also reads digit by digit, as spelled-out letters do ("2013"
+            # "two zero one three", "068" "o six eight"); the ranking is the corpus's.
+            return _ranked([*cardinals, *_spoken_digits(DigitsValue(written), locale)])
+        return cardinals
     raise NotImplementedError(f"unsupported NumberValue reading class {type_!r}")
 
 

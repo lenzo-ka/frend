@@ -43,6 +43,7 @@ def test_shipped_table_shape_and_denominators():
         "cardinal": None,
         "date": "the written order of month and day: month-first, day-first, or other",
         "decimal": None,
+        "digit": None,
         "electronic": None,
         "fraction": "the decimal integer value of the reading's denominator capture",
         "measure": "the reading's ICU unit identifier; percent for a percent",
