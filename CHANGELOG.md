@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Require icukit 0.8.0, the first release with CLDR symbol names, so the symbol
+  reading below reaches every install; the guards for older icukit are gone.
 - Say a zero as the corpus does (kal, reconsidering the earlier "oh"): readings that
   differ only in a zero's word ("three point zero five" / "three point o five";
   ICU's "nineteen oh-five" / "nineteen o five") share their weight by a measured
@@ -25,7 +27,6 @@
   (silence counts as a target there), ranked per code point for a symbol and per script
   for a letter: 3286 of 4000 match. On the published test set VERBATIM rises from 9.2%
   to 89.6% first choice, PUNCT stays at 100%, and all tokens from 97.44% to 98.31%.
-  Where the installed icukit lists no symbols (0.7.1), frend reads none.
 - Added `tools/evaluate_google_tn.py`, which scores frend's first choice on the published
   Google text-normalization test set (the first 100,000 lines of `output-00099-of-00100`,
   as Sproat & Jaitly 2016 and Bakhturina et al. 2022 use), per class, overall and per

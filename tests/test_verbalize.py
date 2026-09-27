@@ -1433,10 +1433,6 @@ def test_era_reads_as_written_a_name_as_words_an_abbreviation_by_letters(
     assert unit.unspoken == ()
 
 
-@pytest.mark.skipif(
-    not hasattr(__import__("icukit"), "UnitValue"),
-    reason="icukit before #102 reads no amount-less unit",
-)
 @pytest.mark.parametrize(
     ("written", "unit", "spoken"),
     [

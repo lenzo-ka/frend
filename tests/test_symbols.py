@@ -6,12 +6,8 @@ import pytest
 
 from frend import resolve_lattice
 from frend.spoken_priors import normalize_spoken
-from frend.symbols import SymbolDetector, _cldr_names
+from frend.symbols import SymbolDetector
 from frend.verbalize import verbalize_edge
-
-pytestmark = pytest.mark.skipif(
-    not _cldr_names("en_US"), reason="icukit before #136 lists no symbol names"
-)
 
 
 def _forms(text):
