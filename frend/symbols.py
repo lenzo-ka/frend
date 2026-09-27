@@ -38,14 +38,10 @@ def _script(char: str) -> str:
 
 @cache
 def _cldr_names(locale: str) -> dict[str, tuple[str, ...]]:
-    """CLDR's names per symbol, or none where the installed icukit does not list symbols
-    (before icukit #136): frend then reads no symbol, rather than failing."""
+    """CLDR's names per symbol, from icukit's symbol rows."""
     from icukit import icu_abbreviations
 
-    try:
-        rows = icu_abbreviations(locale, kinds=["symbol"], locales=())
-    except (TypeError, ValueError, KeyError):
-        return {}
+    rows = icu_abbreviations(locale, kinds=["symbol"], locales=())
     names: dict[str, list[str]] = {}
     for row in rows:
         for expansion in row.expansions:
@@ -56,10 +52,8 @@ def _cldr_names(locale: str) -> dict[str, tuple[str, ...]]:
 
 def _letter_name(char: str) -> str | None:
     """The letter's own name from ICU's formal name ("GREEK SMALL LETTER ALPHA" -> "alpha")."""
-    try:
-        from icukit import get_char_name
-    except ImportError:  # before icukit #136
-        return None
+    from icukit import get_char_name
+
     name = get_char_name(char) or ""
     if " LETTER " not in name:
         return None
