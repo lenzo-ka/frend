@@ -1,25 +1,25 @@
 {
   "counts": {
     "(N) N": {
-      "telephone": 6324
+      "telephone": 5854
     },
     "(N) N ": {
-      "telephone": 11
+      "telephone": 10
     },
     "(N) N - A": {
       "telephone": 1
     },
     "(N) N - N": {
-      "telephone": 41
+      "telephone": 38
     },
     "(N) N A": {
-      "telephone": 77
+      "telephone": 72
     },
     "(N) N A ": {
-      "telephone": 5
+      "telephone": 4
     },
     "(N) N A N": {
-      "telephone": 326
+      "telephone": 305
     },
     "(N) N A N,": {
       "telephone": 1
@@ -34,10 +34,10 @@
       "telephone": 1
     },
     "(N) N A.A. ": {
-      "telephone": 11
+      "telephone": 10
     },
     "(N) N N": {
-      "telephone": 27
+      "telephone": 22
     },
     "(N) N N N": {
       "telephone": 3
@@ -49,19 +49,16 @@
       "telephone": 1
     },
     "(N) N N-N": {
-      "telephone": 15
+      "telephone": 14
     },
     "(N) N- N": {
       "telephone": 2
     },
     "(N) N-A": {
-      "telephone": 5
+      "telephone": 4
     },
     "(N) N-N": {
-      "telephone": 1061
-    },
-    "(N) N-N ": {
-      "telephone": 2
+      "telephone": 973
     },
     "(N) N-N, A N": {
       "telephone": 1
@@ -85,7 +82,7 @@
       "telephone": 1
     },
     "(N)-N": {
-      "telephone": 54
+      "telephone": 51
     },
     "(N)-N A": {
       "telephone": 2
@@ -94,7 +91,7 @@
       "telephone": 7
     },
     "(N)N": {
-      "telephone": 3584
+      "telephone": 3309
     },
     "(N)N ": {
       "telephone": 1
@@ -103,7 +100,7 @@
       "telephone": 1
     },
     "(N)N A": {
-      "telephone": 21
+      "telephone": 20
     },
     "(N)N A A": {
       "telephone": 1
@@ -118,7 +115,7 @@
       "telephone": 1
     },
     "(N)N A.A. ": {
-      "telephone": 22
+      "telephone": 21
     },
     "(N)N N": {
       "telephone": 1
@@ -127,13 +124,13 @@
       "telephone": 1
     },
     "(N)N N-N": {
-      "telephone": 2
+      "telephone": 1
     },
     "(N)N-A": {
       "telephone": 1
     },
     "(N)N-N": {
-      "telephone": 101
+      "telephone": 93
     },
     "(N)N-N A N": {
       "telephone": 1
@@ -145,38 +142,35 @@
       "telephone": 2
     },
     "(N)NAN": {
-      "telephone": 5
+      "telephone": 4
     },
     "-.N": {
-      "decimal": 26
+      "decimal": 22
     },
     "-N": {
-      "cardinal": 86663
+      "cardinal": 79600
     },
     "-N ": {
-      "cardinal": 41
-    },
-    "-N \"": {
-      "measure": 1
+      "cardinal": 38
     },
     "-N / N": {
-      "fraction": 28
+      "fraction": 27
     },
     "-N /N": {
-      "fraction": 5
+      "fraction": 4
     },
     "-N A": {
       "cardinal": 1,
-      "decimal": 111,
-      "measure": 755,
-      "money": 8
+      "decimal": 102,
+      "measure": 699,
+      "money": 6
     },
     "-N A / A": {
       "measure": 1
     },
     "-N A A": {
-      "measure": 8,
-      "money": 32
+      "measure": 6,
+      "money": 31
     },
     "-N A A¤": {
       "money": 1
@@ -188,13 +182,13 @@
       "cardinal": 1
     },
     "-N A/A": {
-      "measure": 8
+      "measure": 7
     },
     "-N A¤": {
       "money": 1
     },
     "-N N": {
-      "cardinal": 15
+      "cardinal": 13
     },
     "-N N A": {
       "measure": 3
@@ -215,37 +209,34 @@
       "money": 1
     },
     "-N\"": {
-      "measure": 49
+      "measure": 47
     },
     "-N%": {
-      "measure": 161
-    },
-    "-N,": {
-      "cardinal": 1
+      "measure": 147
     },
     "-N, ": {
-      "cardinal": 13
+      "cardinal": 10
     },
     "-N, N": {
       "cardinal": 1
     },
     "-N,N": {
-      "cardinal": 2089
+      "cardinal": 1912
     },
     "-N,N A": {
       "cardinal": 1,
       "decimal": 6,
       "measure": 1,
-      "money": 11
+      "money": 9
     },
     "-N,N ¤": {
       "money": 1
     },
     "-N,N,N": {
-      "cardinal": 49
+      "cardinal": 44
     },
     "-N,N,N,N": {
-      "cardinal": 3
+      "cardinal": 2
     },
     "-N,N,N,N,N": {
       "cardinal": 1
@@ -254,20 +245,20 @@
       "cardinal": 1
     },
     "-N,N.N": {
-      "decimal": 2
+      "decimal": 1
     },
     "-N,N/A": {
       "measure": 1
     },
     "-N.N": {
-      "decimal": 1484
+      "decimal": 1365
     },
     "-N.N %": {
-      "measure": 10
+      "measure": 9
     },
     "-N.N A": {
-      "decimal": 17,
-      "measure": 105
+      "decimal": 16,
+      "measure": 94
     },
     "-N.N A A": {
       "measure": 2,
@@ -286,13 +277,13 @@
       "measure": 1
     },
     "-N.N%": {
-      "measure": 1159
+      "measure": 1061
     },
     "-N.N/A": {
       "measure": 2
     },
     "-N.NA": {
-      "measure": 25
+      "measure": 21
     },
     "-N/ N": {
       "fraction": 2
@@ -301,13 +292,10 @@
       "measure": 1
     },
     "-N/N": {
-      "fraction": 3106
+      "fraction": 2862
     },
     "-N/N A": {
       "measure": 1
-    },
-    "-N/N N": {
-      "fraction": 1
     },
     "-N/N N A": {
       "measure": 1
@@ -319,11 +307,11 @@
       "fraction": 3
     },
     "-NA": {
-      "measure": 751,
-      "money": 96
+      "measure": 681,
+      "money": 90
     },
     "-NA ": {
-      "money": 6
+      "money": 5
     },
     "-NA.": {
       "money": 14
@@ -347,7 +335,7 @@
       "fraction": 2
     },
     ".N": {
-      "decimal": 204592
+      "decimal": 188016
     },
     ".N ": {
       "decimal": 6
@@ -359,16 +347,16 @@
       "measure": 1
     },
     ".N A": {
-      "decimal": 24,
-      "measure": 648,
-      "money": 16
+      "decimal": 23,
+      "measure": 591,
+      "money": 15
     },
     ".N A ": {
       "money": 1
     },
     ".N A A": {
-      "measure": 3,
-      "money": 4
+      "measure": 2,
+      "money": 3
     },
     ".N A A¤": {
       "money": 9
@@ -383,7 +371,7 @@
       "measure": 1
     },
     ".N AN": {
-      "measure": 16
+      "measure": 15
     },
     ".N A²": {
       "measure": 8
@@ -395,13 +383,13 @@
       "measure": 2
     },
     ".N%": {
-      "measure": 775
+      "measure": 711
     },
     ".N'": {
       "measure": 2
     },
     ".N/A": {
-      "measure": 14
+      "measure": 13
     },
     ".N/AN": {
       "measure": 4
@@ -410,14 +398,13 @@
       "measure": 6
     },
     ".NA": {
-      "measure": 340,
-      "money": 24
+      "measure": 315,
+      "money": 22
     },
     ".NA ": {
       "money": 1
     },
     ".NA A": {
-      "measure": 1,
       "money": 1
     },
     ".NA-N": {
@@ -440,14 +427,14 @@
       "measure": 2
     },
     "/AN": {
-      "measure": 599
+      "measure": 549
     },
     "<Lu>": {
-      "cardinal": 58865,
-      "letters": 560169,
-      "ordinal": 33483,
-      "plain": 3191070,
-      "verbatim": 362580
+      "cardinal": 54127,
+      "letters": 514135,
+      "ordinal": 30816,
+      "plain": 2930665,
+      "verbatim": 332964
     },
     "A - N - N": {
       "date": 2
@@ -458,14 +445,11 @@
     "A -N,N,N": {
       "money": 1
     },
-    "A -N.N A": {
-      "money": 1
-    },
     "A A AN": {
       "measure": 1
     },
     "A A N": {
-      "date": 1354
+      "date": 1233
     },
     "A A N ": {
       "date": 1
@@ -474,65 +458,65 @@
       "date": 5
     },
     "A A N A N": {
-      "date": 16
+      "date": 14
     },
     "A A N N": {
-      "date": 164
+      "date": 151
     },
     "A A N, N": {
-      "date": 7601
+      "date": 6986
     },
     "A A N, N ": {
-      "date": 12
+      "date": 11
     },
     "A A N, N A": {
       "date": 1
     },
     "A A NA": {
-      "date": 124
+      "date": 116
     },
     "A A NA ": {
       "date": 4
     },
     "A A NA A": {
-      "date": 5
+      "date": 4
     },
     "A A NA A N": {
-      "date": 6
+      "date": 5
     },
     "A A NA A, N": {
       "date": 2
     },
     "A A NA N": {
-      "date": 54
+      "date": 52
     },
     "A A NA, N": {
-      "date": 186
+      "date": 172
     },
     "A A- N- N": {
       "date": 1
     },
     "A A. N": {
-      "date": 13
+      "date": 12
     },
     "A A. N, N": {
-      "date": 32
+      "date": 29
     },
     "A A. NA": {
       "date": 4
     },
     "A AN": {
-      "measure": 2294,
-      "time": 3
+      "measure": 2108,
+      "time": 2
     },
     "A N": {
-      "address": 6389,
-      "date": 1905825,
-      "money": 2565
+      "address": 5886,
+      "date": 1749273,
+      "money": 2372
     },
     "A N ": {
-      "address": 80,
-      "date": 395,
+      "address": 76,
+      "date": 363,
       "money": 2
     },
     "A N , N": {
@@ -540,11 +524,11 @@
     },
     "A N A": {
       "address": 2,
-      "date": 4390,
-      "money": 3288
+      "date": 3999,
+      "money": 3052
     },
     "A N A ": {
-      "date": 482
+      "date": 435
     },
     "A N A A": {
       "date": 1
@@ -556,7 +540,7 @@
       "date": 1
     },
     "A N A N": {
-      "date": 16103
+      "date": 14832
     },
     "A N A N ": {
       "date": 8
@@ -574,14 +558,14 @@
       "date": 1
     },
     "A N A N,": {
-      "date": 141
+      "date": 125
     },
     "A N A,": {
-      "date": 159,
-      "money": 7
+      "date": 152,
+      "money": 6
     },
     "A N A, N": {
-      "date": 77
+      "date": 67
     },
     "A N A, N ": {
       "date": 1
@@ -594,24 +578,24 @@
       "date": 2
     },
     "A N A.": {
-      "date": 187
+      "date": 175
     },
     "A N A. N": {
-      "date": 21
+      "date": 20
     },
     "A N A.A.": {
-      "date": 7
+      "date": 5
     },
     "A N N": {
-      "date": 5972,
-      "money": 25
+      "date": 5493,
+      "money": 23
     },
     "A N N ": {
       "date": 5
     },
     "A N N A": {
-      "date": 3,
-      "money": 7
+      "date": 2,
+      "money": 6
     },
     "A N N A.": {
       "date": 3
@@ -623,40 +607,40 @@
       "date": 4
     },
     "A N,": {
-      "address": 35,
-      "date": 439,
+      "address": 32,
+      "date": 406,
       "money": 2
     },
     "A N, ": {
-      "address": 52,
-      "date": 554,
+      "address": 47,
+      "date": 510,
       "money": 2
     },
     "A N, N": {
-      "date": 6408277,
-      "money": 4
+      "date": 5883621,
+      "money": 2
     },
     "A N, N ": {
-      "date": 156
+      "date": 148
     },
     "A N, N A": {
-      "date": 107,
+      "date": 102,
       "money": 1
     },
     "A N, N A,": {
-      "date": 5
+      "date": 3
     },
     "A N, N A-": {
       "date": 1
     },
     "A N, N A.": {
-      "date": 84
+      "date": 77
     },
     "A N, N A.A": {
-      "date": 2
+      "date": 1
     },
     "A N, N A.A.": {
-      "date": 15
+      "date": 14
     },
     "A N, N A.A.A": {
       "date": 1
@@ -665,7 +649,7 @@
       "date": 21
     },
     "A N, N, ": {
-      "date": 186
+      "date": 167
     },
     "A N, NA": {
       "date": 2
@@ -680,19 +664,19 @@
       "money": 3
     },
     "A N,N": {
-      "money": 1285
+      "money": 1171
     },
     "A N,N A": {
-      "money": 396
+      "money": 355
     },
     "A N,N,N": {
-      "money": 152
+      "money": 137
     },
     "A N,N,N A": {
       "money": 3
     },
     "A N,N,N,N": {
-      "money": 13
+      "money": 12
     },
     "A N,N,N,N,N": {
       "money": 1
@@ -704,70 +688,67 @@
       "money": 3
     },
     "A N,N.N": {
-      "money": 25
+      "money": 22
     },
     "A N,N.N A": {
-      "money": 15
+      "money": 12
     },
     "A N,NA": {
-      "money": 20
+      "money": 19
     },
     "A N-A-N": {
       "date": 33
     },
     "A N-N-N": {
-      "date": 94
-    },
-    "A N.A.N": {
-      "date": 1
+      "date": 82
     },
     "A N.N": {
-      "money": 343
+      "money": 308
     },
     "A N.N A": {
-      "money": 1416
+      "money": 1306
     },
     "A N.N.N": {
-      "date": 83
+      "date": 76
     },
     "A N.NA": {
-      "money": 67
+      "money": 53
     },
     "A N/N/N": {
-      "date": 220
+      "date": 207
     },
     "A NA": {
-      "address": 45,
-      "date": 7534,
-      "money": 241
+      "address": 42,
+      "date": 6936,
+      "money": 220
     },
     "A NA ": {
       "address": 2,
       "date": 2
     },
     "A NA A": {
-      "date": 497
+      "date": 458
     },
     "A NA A ": {
       "date": 1
     },
     "A NA A N": {
-      "date": 1208
+      "date": 1096
     },
     "A NA A NA": {
       "date": 1
     },
     "A NA A, N": {
-      "date": 197
+      "date": 180
     },
     "A NA A.": {
       "date": 15
     },
     "A NA A. N": {
-      "date": 9
+      "date": 8
     },
     "A NA N": {
-      "date": 3908
+      "date": 3566
     },
     "A NA N ": {
       "date": 1
@@ -783,19 +764,16 @@
       "date": 1
     },
     "A NA, N": {
-      "date": 9055
+      "date": 8291
     },
     "A NA, N ": {
       "date": 2
-    },
-    "A NA, N A.A.": {
-      "date": 1
     },
     "A NA, N, ": {
       "date": 2
     },
     "A, A N": {
-      "date": 4581
+      "date": 4184
     },
     "A, A N ": {
       "date": 3
@@ -804,19 +782,19 @@
       "date": 2
     },
     "A, A N N": {
-      "date": 217
+      "date": 204
     },
     "A, A N, ": {
-      "date": 3
+      "date": 1
     },
     "A, A N, N": {
-      "date": 20007
+      "date": 18380
     },
     "A, A N, N ": {
-      "date": 4
+      "date": 3
     },
     "A, A N, N A": {
-      "date": 2
+      "date": 1
     },
     "A, A N, N A.": {
       "date": 1
@@ -825,10 +803,10 @@
       "date": 1
     },
     "A, A N, N, ": {
-      "date": 8
+      "date": 7
     },
     "A, A NA": {
-      "date": 256
+      "date": 240
     },
     "A, A NA A": {
       "date": 2
@@ -837,70 +815,67 @@
       "date": 2
     },
     "A, A NA N": {
-      "date": 183
+      "date": 166
     },
     "A, A NA, N": {
-      "date": 301
+      "date": 280
     },
     "A, A NA, N ": {
       "date": 1
     },
     "A, A. N": {
-      "date": 240
+      "date": 213
     },
     "A, A. N ": {
       "date": 1
     },
     "A, A. N N": {
-      "date": 7
-    },
-    "A, A. N, N": {
-      "date": 412
-    },
-    "A, A. N, N,": {
-      "date": 1
-    },
-    "A, A. NA": {
       "date": 6
     },
-    "A, A. NA N": {
+    "A, A. N, N": {
+      "date": 377
+    },
+    "A, A. NA": {
       "date": 5
     },
+    "A, A. NA N": {
+      "date": 4
+    },
     "A, A. NA, N": {
-      "date": 2
+      "date": 1
     },
     "A, N A": {
-      "date": 1056
+      "date": 973
     },
     "A, N A ": {
-      "date": 187
+      "date": 168
     },
     "A, N A N": {
-      "date": 12394
+      "date": 11419
     },
     "A, N A N A.A": {
       "date": 1
     },
     "A, N A N,": {
-      "date": 73
+      "date": 70
     },
     "A, N A N, ": {
       "date": 5
     },
     "A, N A,": {
-      "date": 50
+      "date": 45
     },
     "A, N A, N": {
-      "date": 85
+      "date": 75
     },
     "A, N A, N,": {
       "date": 1
     },
     "A, N A.": {
-      "date": 50
+      "date": 49
     },
     "A, N A. N": {
-      "date": 35
+      "date": 33
     },
     "A, N,": {
       "date": 3
@@ -909,28 +884,28 @@
       "date": 1
     },
     "A, N-A-N": {
-      "date": 35
+      "date": 34
     },
     "A, N-N- N": {
       "date": 1
     },
     "A, N-N-N": {
-      "date": 51
+      "date": 43
     },
     "A, N.N.N": {
       "date": 17
     },
     "A, N/N/N": {
-      "date": 137
+      "date": 130
     },
     "A, NA A": {
-      "date": 14
+      "date": 12
     },
     "A, NA A N": {
-      "date": 140
+      "date": 125
     },
     "A, NA A, N": {
-      "date": 73
+      "date": 68
     },
     "A, NA A.": {
       "date": 1
@@ -941,14 +916,11 @@
     "A,A N, N": {
       "date": 10
     },
-    "A,A NA, N": {
-      "date": 1
-    },
     "A,N A": {
       "date": 1
     },
     "A,N A N": {
-      "date": 15
+      "date": 12
     },
     "A,N A, N": {
       "date": 1
@@ -960,11 +932,11 @@
       "date": 1
     },
     "A-N": {
-      "address": 2825,
-      "money": 1613
+      "address": 2568,
+      "money": 1491
     },
     "A-N ": {
-      "address": 10
+      "address": 9
     },
     "A-N A": {
       "address": 2
@@ -973,26 +945,26 @@
       "address": 1
     },
     "A-N,N": {
-      "money": 6
+      "money": 5
     },
     "A-N-N": {
-      "date": 110
+      "date": 98
     },
     "A-N.N": {
       "money": 1
     },
     "A-NA": {
-      "address": 47,
-      "money": 48
+      "address": 45,
+      "money": 46
     },
     "A. A N": {
-      "date": 38
+      "date": 37
     },
     "A. A N N": {
       "date": 4
     },
     "A. A N, N": {
-      "date": 3148
+      "date": 2883
     },
     "A. A NA": {
       "date": 2
@@ -1001,7 +973,7 @@
       "date": 2
     },
     "A. A. N": {
-      "date": 27
+      "date": 24
     },
     "A. A. N N": {
       "date": 2
@@ -1010,16 +982,16 @@
       "date": 17
     },
     "A. N": {
-      "date": 17833
+      "date": 16362
     },
     "A. N ": {
-      "date": 10
+      "date": 9
     },
     "A. N A": {
-      "date": 10
+      "date": 9
     },
     "A. N A N": {
-      "date": 3003
+      "date": 2748
     },
     "A. N A N,": {
       "date": 1
@@ -1034,19 +1006,19 @@
       "date": 1
     },
     "A. N A. N": {
-      "date": 11
+      "date": 10
     },
     "A. N N": {
-      "date": 408
+      "date": 367
     },
     "A. N, ": {
-      "date": 7
+      "date": 6
     },
     "A. N, N": {
-      "date": 21606
+      "date": 19869
     },
     "A. N, N ": {
-      "date": 2
+      "date": 1
     },
     "A. N, N A": {
       "date": 3
@@ -1061,31 +1033,28 @@
       "date": 1
     },
     "A. N-N-N": {
-      "date": 1284
+      "date": 1185
     },
     "A. N.N": {
-      "date": 7
+      "date": 6
     },
     "A. N.N.N": {
       "date": 2
     },
-    "A. N/N/N": {
-      "date": 1
-    },
     "A. NA": {
-      "date": 194
+      "date": 179
     },
     "A. NA A": {
-      "date": 3
+      "date": 2
     },
     "A. NA N": {
-      "date": 79
+      "date": 77
     },
     "A. NA, N": {
-      "date": 205
+      "date": 191
     },
     "A., A N": {
-      "date": 9
+      "date": 7
     },
     "A., A N N": {
       "date": 2
@@ -1103,10 +1072,10 @@
       "date": 17
     },
     "A., A. N N": {
-      "date": 5
+      "date": 4
     },
     "A., A. N, N": {
-      "date": 13
+      "date": 11
     },
     "A., A. NA": {
       "date": 1
@@ -1117,23 +1086,20 @@
     "A., N A N": {
       "date": 2
     },
-    "A., N A.": {
-      "date": 1
-    },
     "A., N.N.N": {
       "date": 1
     },
     "A.A. N": {
-      "address": 582
+      "address": 546
     },
     "A.A. N ": {
-      "address": 17
+      "address": 16
     },
     "A.A. N,": {
       "address": 3
     },
     "A.A. N, ": {
-      "address": 48
+      "address": 47
     },
     "A.A. NA": {
       "address": 1
@@ -1142,29 +1108,26 @@
       "address": 1
     },
     "A.A.N": {
-      "address": 6,
-      "time": 3
+      "address": 5,
+      "time": 2
     },
     "A.N": {
-      "money": 304
+      "money": 277
     },
     "A.N A": {
-      "money": 319
+      "money": 295
     },
     "A.N A N": {
       "date": 3
     },
     "A.N,N": {
-      "money": 123
+      "money": 112
     },
     "A.N,N A": {
-      "money": 34
+      "money": 29
     },
     "A.N,N,N": {
       "money": 7
-    },
-    "A.N,N.N": {
-      "money": 1
     },
     "A.N,N.N A": {
       "money": 4
@@ -1176,17 +1139,17 @@
       "date": 1
     },
     "A.N.N": {
-      "date": 23,
-      "money": 20
+      "date": 19,
+      "money": 18
     },
     "A.N.N A": {
-      "money": 156
+      "money": 136
     },
     "A.N.NA": {
       "money": 2
     },
     "A.NA": {
-      "money": 7
+      "money": 6
     },
     "A/ N / N": {
       "date": 1
@@ -1198,41 +1161,41 @@
       "money": 1
     },
     "A/AN": {
-      "measure": 68
+      "measure": 59
     },
     "A/N/N": {
-      "date": 26
+      "date": 25
     },
     "AN": {
-      "address": 28358,
-      "money": 1338,
-      "time": 562
+      "address": 26092,
+      "money": 1240,
+      "time": 513
     },
     "AN ": {
-      "address": 7873,
-      "money": 2
+      "address": 7224,
+      "money": 1
     },
     "AN A": {
-      "address": 10,
-      "money": 290
+      "address": 8,
+      "money": 276
     },
     "AN A N": {
       "date": 2
     },
     "AN,": {
-      "address": 23
+      "address": 21
     },
     "AN, N": {
       "money": 1
     },
     "AN,N": {
-      "money": 243
+      "money": 224
     },
     "AN,N A": {
-      "money": 8
+      "money": 4
     },
     "AN,N,N": {
-      "money": 32
+      "money": 31
     },
     "AN,N,N A": {
       "money": 1
@@ -1241,7 +1204,7 @@
       "money": 2
     },
     "AN,N,N.N": {
-      "money": 3
+      "money": 2
     },
     "AN,N.N": {
       "money": 1
@@ -1256,16 +1219,16 @@
       "money": 3
     },
     "AN.N": {
-      "money": 61
+      "money": 53
     },
     "AN.N A": {
-      "money": 175
+      "money": 152
     },
     "AN.NA": {
-      "money": 25
+      "money": 19
     },
     "AN/A": {
-      "measure": 9
+      "measure": 8
     },
     "AN/AN": {
       "measure": 2
@@ -1277,17 +1240,17 @@
       "time": 2
     },
     "ANA": {
-      "address": 14,
-      "money": 100
+      "address": 12,
+      "money": 94
     },
     "ANAN": {
-      "money": 44
+      "money": 40
     },
     "A¤ N": {
-      "money": 286
+      "money": 268
     },
     "A¤ N A": {
-      "money": 297
+      "money": 275
     },
     "A¤ N A,": {
       "money": 1
@@ -1296,19 +1259,19 @@
       "money": 4
     },
     "A¤ N,N": {
-      "money": 139
+      "money": 129
     },
     "A¤ N,N A": {
-      "money": 4
+      "money": 3
     },
     "A¤ N,N,N": {
-      "money": 78
+      "money": 68
     },
     "A¤ N,N,N,N": {
       "money": 3
     },
     "A¤ N,N,N.N": {
-      "money": 5
+      "money": 4
     },
     "A¤ N,N.N": {
       "money": 8
@@ -1317,16 +1280,16 @@
       "money": 1
     },
     "A¤ N.N": {
-      "money": 43
+      "money": 42
     },
     "A¤ N.N A": {
-      "money": 196
+      "money": 183
     },
     "A¤ N.NA": {
-      "money": 4
+      "money": 3
     },
     "A¤ NA": {
-      "money": 31
+      "money": 30
     },
     "A¤.N": {
       "money": 1
@@ -1335,52 +1298,52 @@
       "money": 1
     },
     "A¤A N": {
-      "money": 8
+      "money": 7
     },
     "A¤AN": {
       "money": 4
     },
     "A¤N": {
-      "money": 2733
+      "money": 2503
     },
     "A¤N A": {
-      "money": 8314
+      "money": 7624
     },
     "A¤N N": {
-      "money": 13
+      "money": 11
     },
     "A¤N N N": {
-      "money": 2
+      "money": 1
     },
     "A¤N, N": {
-      "money": 3
+      "money": 2
     },
     "A¤N,N": {
-      "money": 6012
+      "money": 5544
     },
     "A¤N,N A": {
-      "money": 50
+      "money": 49
     },
     "A¤N,N,N": {
-      "money": 1185
+      "money": 1093
     },
     "A¤N,N,N A": {
       "money": 3
     },
     "A¤N,N,N,N": {
-      "money": 46
+      "money": 44
     },
     "A¤N,N,N,N.N": {
       "money": 1
     },
     "A¤N,N,N.N": {
-      "money": 38
+      "money": 35
     },
     "A¤N,N.N": {
-      "money": 93
+      "money": 80
     },
     "A¤N,N.N A": {
-      "money": 6
+      "money": 4
     },
     "A¤N,N.NA": {
       "money": 1
@@ -1389,45 +1352,45 @@
       "money": 13
     },
     "A¤N.N": {
-      "money": 1098
+      "money": 984
     },
     "A¤N.N A": {
-      "money": 4964
+      "money": 4564
     },
     "A¤N.NA": {
-      "money": 290
+      "money": 272
     },
     "A¤NA": {
-      "money": 630
+      "money": 586
     },
     "N": {
-      "cardinal": 11781440,
-      "date": 15222846,
-      "decimal": 20139,
-      "digit": 462953,
-      "telephone": 24478
+      "cardinal": 10820898,
+      "date": 13980425,
+      "decimal": 18481,
+      "digit": 424967,
+      "telephone": 22417
     },
     "N ": {
-      "cardinal": 141049,
-      "date": 4280,
+      "cardinal": 129402,
+      "date": 3914,
       "decimal": 2,
-      "digit": 10880,
+      "digit": 9967,
       "telephone": 1
     },
     "N \"": {
-      "measure": 10
+      "measure": 9
     },
     "N %": {
-      "measure": 544
+      "measure": 504
     },
     "N '": {
       "measure": 5
     },
     "N (N) N": {
-      "telephone": 1047
+      "telephone": 962
     },
     "N (N) N - N": {
-      "telephone": 40
+      "telephone": 37
     },
     "N (N) N -N": {
       "telephone": 1
@@ -1445,10 +1408,10 @@
       "telephone": 4
     },
     "N (N) N--N": {
-      "telephone": 5
+      "telephone": 4
     },
     "N (N) N-N": {
-      "telephone": 1475
+      "telephone": 1366
     },
     "N (N) N-N ": {
       "telephone": 2
@@ -1472,22 +1435,22 @@
       "telephone": 1
     },
     "N (N)-N": {
-      "telephone": 14
+      "telephone": 13
     },
     "N (N)N": {
-      "telephone": 391
+      "telephone": 351
     },
     "N (N)N A": {
-      "telephone": 6
+      "telephone": 5
     },
     "N (N)N A.A. ": {
-      "telephone": 14
+      "telephone": 13
     },
     "N (N)N N": {
       "telephone": 1
     },
     "N (N)N-N": {
-      "telephone": 30
+      "telephone": 25
     },
     "N (N)N-N N": {
       "telephone": 1
@@ -1499,13 +1462,13 @@
       "cardinal": 1
     },
     "N -": {
-      "cardinal": 62
+      "cardinal": 56
     },
     "N - A": {
-      "telephone": 152
+      "telephone": 139
     },
     "N - A - N": {
-      "date": 11
+      "date": 10
     },
     "N - A A": {
       "telephone": 10
@@ -1514,7 +1477,7 @@
       "telephone": 1
     },
     "N - A A A": {
-      "telephone": 7
+      "telephone": 6
     },
     "N - A A A A": {
       "telephone": 10
@@ -1529,16 +1492,16 @@
       "telephone": 1
     },
     "N - A A A A N A N A A A A A": {
-      "telephone": 2
+      "telephone": 1
     },
     "N - A A A N": {
       "telephone": 1
     },
     "N - A A N": {
-      "telephone": 3
+      "telephone": 1
     },
     "N - A N": {
-      "telephone": 7
+      "telephone": 5
     },
     "N - A N - A": {
       "telephone": 2
@@ -1547,13 +1510,13 @@
       "date": 1
     },
     "N - N": {
-      "telephone": 1864
+      "telephone": 1697
     },
     "N - N ": {
       "telephone": 1
     },
     "N - N - A": {
-      "telephone": 49
+      "telephone": 43
     },
     "N - N - A A": {
       "telephone": 3
@@ -1565,8 +1528,8 @@
       "telephone": 1
     },
     "N - N - N": {
-      "date": 73,
-      "telephone": 105
+      "date": 67,
+      "telephone": 97
     },
     "N - N - N ": {
       "date": 1
@@ -1575,7 +1538,7 @@
       "telephone": 9
     },
     "N - N - N - N - N": {
-      "telephone": 4
+      "telephone": 2
     },
     "N - N - N - N - N - N": {
       "telephone": 1
@@ -1590,16 +1553,16 @@
       "telephone": 1
     },
     "N - N A": {
-      "telephone": 329
+      "telephone": 307
     },
     "N - N A ": {
       "telephone": 5
     },
     "N - N A A": {
-      "telephone": 22
+      "telephone": 20
     },
     "N - N A A A": {
-      "telephone": 8
+      "telephone": 7
     },
     "N - N A A A A": {
       "telephone": 10
@@ -1620,15 +1583,12 @@
       "telephone": 1
     },
     "N - N A N": {
-      "telephone": 26
+      "telephone": 25
     },
     "N - N A N - N": {
       "telephone": 1
     },
     "N - N A N N": {
-      "telephone": 1
-    },
-    "N - N A N-N-N": {
       "telephone": 1
     },
     "N - N A N-N-N-N": {
@@ -1644,7 +1604,7 @@
       "telephone": 3
     },
     "N - N N": {
-      "telephone": 86
+      "telephone": 77
     },
     "N - N N - N": {
       "telephone": 1
@@ -1665,14 +1625,14 @@
       "telephone": 4
     },
     "N - N-N": {
-      "date": 13,
-      "telephone": 108
+      "date": 12,
+      "telephone": 99
     },
     "N - N-N A A A": {
       "telephone": 1
     },
     "N - N-N-N": {
-      "telephone": 25
+      "telephone": 24
     },
     "N - N-N-N - A": {
       "telephone": 1
@@ -1687,7 +1647,7 @@
       "telephone": 1
     },
     "N -- N": {
-      "telephone": 37
+      "telephone": 33
     },
     "N -- N A": {
       "telephone": 1
@@ -1708,13 +1668,13 @@
       "telephone": 1
     },
     "N --- N-N": {
-      "telephone": 4
+      "telephone": 2
     },
     "N -A": {
-      "telephone": 44
+      "telephone": 42
     },
     "N -N": {
-      "telephone": 41
+      "telephone": 40
     },
     "N -N - A": {
       "telephone": 1
@@ -1724,7 +1684,7 @@
       "telephone": 2
     },
     "N -N A": {
-      "telephone": 34
+      "telephone": 33
     },
     "N -N A N-N-N-N-N": {
       "telephone": 1
@@ -1743,14 +1703,14 @@
       "telephone": 1
     },
     "N -N-N": {
-      "date": 7,
+      "date": 6,
       "telephone": 7
     },
     "N -N-N-N": {
       "telephone": 5
     },
     "N -N-N-N-N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N -NA.N": {
       "telephone": 1
@@ -1768,16 +1728,16 @@
       "measure": 1
     },
     "N / N": {
-      "fraction": 828
+      "fraction": 782
     },
     "N / N ": {
       "fraction": 8
     },
     "N / N / N": {
-      "date": 9
+      "date": 8
     },
     "N / N A": {
-      "measure": 41
+      "measure": 39
     },
     "N / N N": {
       "fraction": 1
@@ -1795,10 +1755,10 @@
       "measure": 8
     },
     "N /N": {
-      "fraction": 60
+      "fraction": 56
     },
     "N /N /N": {
-      "date": 6
+      "date": 4
     },
     "N /N A": {
       "measure": 1
@@ -1816,7 +1776,7 @@
       "measure": 1
     },
     "N : N": {
-      "time": 67
+      "time": 64
     },
     "N :N": {
       "time": 15
@@ -1825,21 +1785,21 @@
       "time": 6
     },
     "N A": {
-      "cardinal": 797,
-      "date": 204516,
-      "decimal": 44912,
-      "digit": 45,
-      "measure": 419069,
-      "money": 6031,
-      "ordinal": 448,
-      "telephone": 1331,
-      "time": 6425
+      "cardinal": 725,
+      "date": 187829,
+      "decimal": 41283,
+      "digit": 42,
+      "measure": 384792,
+      "money": 5537,
+      "ordinal": 402,
+      "telephone": 1207,
+      "time": 5891
     },
     "N A ": {
-      "cardinal": 154,
-      "date": 55242,
+      "cardinal": 142,
+      "date": 50718,
       "measure": 10,
-      "money": 144,
+      "money": 137,
       "telephone": 2
     },
     "N A (N) N": {
@@ -1849,18 +1809,18 @@
       "telephone": 1
     },
     "N A / A": {
-      "measure": 21
+      "measure": 19
     },
     "N A /A": {
       "measure": 1
     },
     "N A A": {
-      "date": 29,
+      "date": 26,
       "decimal": 4,
-      "measure": 5077,
-      "money": 3294,
-      "telephone": 61,
-      "time": 372
+      "measure": 4655,
+      "money": 3024,
+      "telephone": 58,
+      "time": 339
     },
     "N A A ": {
       "money": 2
@@ -1873,7 +1833,7 @@
     },
     "N A A A": {
       "measure": 20,
-      "telephone": 33
+      "telephone": 29
     },
     "N A A A ": {
       "telephone": 1
@@ -1882,28 +1842,28 @@
       "telephone": 1
     },
     "N A A A A": {
-      "telephone": 55
+      "telephone": 51
     },
     "N A A A A A": {
-      "telephone": 42
+      "telephone": 41
     },
     "N A A A A A A": {
-      "telephone": 17
+      "telephone": 16
     },
     "N A A A A A A A": {
-      "telephone": 12
+      "telephone": 10
     },
     "N A A A A A A A - N-N": {
       "telephone": 1
     },
     "N A A A A A A A A": {
-      "telephone": 5
+      "telephone": 4
     },
     "N A A A A A A A A A": {
       "telephone": 2
     },
     "N A A A A A A A A A A": {
-      "telephone": 3
+      "telephone": 2
     },
     "N A A A A A A A A A A A": {
       "telephone": 1
@@ -1960,10 +1920,10 @@
       "telephone": 1
     },
     "N A A A A/A": {
-      "measure": 2
+      "measure": 1
     },
     "N A A A N": {
-      "telephone": 5
+      "telephone": 4
     },
     "N A A A N A": {
       "telephone": 2
@@ -1996,14 +1956,14 @@
       "measure": 2
     },
     "N A A N": {
-      "date": 19,
-      "telephone": 4
+      "date": 18,
+      "telephone": 3
     },
     "N A A, N": {
-      "date": 5
+      "date": 4
     },
     "N A A-": {
-      "date": 12,
+      "date": 11,
       "measure": 1
     },
     "N A A-A": {
@@ -2013,36 +1973,36 @@
       "telephone": 1
     },
     "N A A.": {
-      "date": 5,
+      "date": 4,
       "money": 4
     },
     "N A A.A.": {
-      "date": 2
+      "date": 1
     },
     "N A A/A": {
-      "measure": 9
+      "measure": 8
     },
     "N A A/AN": {
       "measure": 1
     },
     "N A AN": {
-      "measure": 186
+      "measure": 166
     },
     "N A A¤": {
-      "money": 49
+      "money": 46
     },
     "N A A²": {
-      "measure": 56
+      "measure": 51
     },
     "N A A³": {
-      "measure": 70
+      "measure": 66
     },
     "N A N": {
-      "date": 8223608,
-      "telephone": 208
+      "date": 7553259,
+      "telephone": 196
     },
     "N A N ": {
-      "date": 138
+      "date": 129
     },
     "N A N - N": {
       "telephone": 2
@@ -2051,8 +2011,8 @@
       "telephone": 3
     },
     "N A N A": {
-      "date": 110,
-      "telephone": 10
+      "date": 103,
+      "telephone": 9
     },
     "N A N A A A": {
       "telephone": 1
@@ -2061,25 +2021,25 @@
       "telephone": 1
     },
     "N A N A N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N A N A,": {
       "date": 3
     },
     "N A N A-": {
-      "date": 5
+      "date": 4
     },
     "N A N A.": {
-      "date": 72
+      "date": 68
     },
     "N A N A.A": {
       "date": 1
     },
     "N A N A.A.": {
-      "date": 9
+      "date": 8
     },
     "N A N N": {
-      "telephone": 6
+      "telephone": 5
     },
     "N A N N A": {
       "telephone": 1
@@ -2091,19 +2051,19 @@
       "telephone": 1
     },
     "N A N,": {
-      "date": 14842
+      "date": 13673
     },
     "N A N, ": {
-      "date": 117
+      "date": 108
     },
     "N A N-N": {
-      "telephone": 32
+      "telephone": 29
     },
     "N A N-N A": {
       "telephone": 1
     },
     "N A N-N-N-N": {
-      "telephone": 7
+      "telephone": 6
     },
     "N A N-N-N-N-N": {
       "telephone": 8
@@ -2118,7 +2078,7 @@
       "date": 3
     },
     "N A ¤": {
-      "money": 75
+      "money": 69
     },
     "N A(N) N": {
       "telephone": 2
@@ -2127,16 +2087,16 @@
       "telephone": 1
     },
     "N A,": {
-      "date": 15518,
-      "measure": 22,
-      "money": 5,
-      "time": 74
+      "date": 14205,
+      "measure": 21,
+      "money": 4,
+      "time": 71
     },
     "N A, ": {
-      "date": 122
+      "date": 107
     },
     "N A, N": {
-      "date": 5677
+      "date": 5214
     },
     "N A, N ": {
       "date": 3
@@ -2145,26 +2105,26 @@
       "date": 6
     },
     "N A, N A.": {
-      "date": 8
+      "date": 7
     },
     "N A, N A.A.": {
       "date": 1
     },
     "N A, N,": {
-      "date": 21
+      "date": 16
     },
     "N A, N, ": {
-      "date": 3
+      "date": 2
     },
     "N A-": {
-      "cardinal": 27,
+      "cardinal": 25,
       "date": 6
     },
     "N A-A": {
-      "telephone": 13
+      "telephone": 12
     },
     "N A-A A": {
-      "telephone": 4
+      "telephone": 2
     },
     "N A-A A A A": {
       "telephone": 1
@@ -2182,32 +2142,32 @@
       "telephone": 1
     },
     "N A-A N": {
-      "telephone": 3
+      "telephone": 2
     },
     "N A-N": {
-      "telephone": 6
+      "telephone": 4
     },
     "N A-N A": {
       "telephone": 1
     },
     "N A.": {
-      "date": 23689,
-      "money": 133
+      "date": 21735,
+      "money": 120
     },
     "N A. ": {
-      "date": 25
+      "date": 24
     },
     "N A. A.": {
-      "time": 14
+      "time": 12
     },
     "N A. A.A.": {
       "date": 1
     },
     "N A. N": {
-      "date": 19403
+      "date": 17870
     },
     "N A. N ": {
-      "date": 13
+      "date": 12
     },
     "N A. N A": {
       "date": 1
@@ -2216,34 +2176,34 @@
       "date": 23
     },
     "N A., N": {
-      "date": 131
+      "date": 122
     },
     "N A.A": {
-      "date": 226,
+      "date": 209,
       "measure": 3
     },
     "N A.A.": {
       "cardinal": 4,
-      "date": 2953,
+      "date": 2717,
       "measure": 9,
-      "time": 4713
+      "time": 4320
     },
     "N A.A. ": {
-      "cardinal": 5525,
+      "cardinal": 5070,
       "date": 7,
-      "digit": 3
+      "digit": 2
     },
     "N A.A. A": {
-      "time": 367
+      "time": 340
     },
     "N A.A.A": {
-      "date": 12
+      "date": 9
     },
     "N A.A.A.": {
-      "date": 84
+      "date": 78
     },
     "N A/": {
-      "date": 15
+      "date": 14
     },
     "N A/ A": {
       "measure": 1
@@ -2252,43 +2212,40 @@
       "money": 1
     },
     "N A/A": {
-      "measure": 12766
-    },
-    "N A/A A": {
-      "measure": 1
+      "measure": 11705
     },
     "N A/A A A": {
       "measure": 1
     },
     "N A/AN": {
-      "measure": 400
+      "measure": 373
     },
     "N A/A²": {
-      "measure": 69
+      "measure": 66
     },
     "N A/A³": {
       "measure": 34
     },
     "N AN": {
-      "measure": 9548
+      "measure": 8765
     },
     "N AN A": {
       "measure": 1
     },
     "N AN/A": {
-      "measure": 190
+      "measure": 178
     },
     "N AN/AN": {
       "measure": 1
     },
     "N A¤": {
-      "money": 84
+      "money": 73
     },
     "N A¤A": {
-      "money": 3
+      "money": 2
     },
     "N A²": {
-      "measure": 5537
+      "measure": 5099
     },
     "N A²/A": {
       "measure": 1
@@ -2297,18 +2254,18 @@
       "measure": 2
     },
     "N A³": {
-      "measure": 160
+      "measure": 146
     },
     "N A³ / A": {
       "measure": 1
     },
     "N A³/A": {
-      "measure": 128
+      "measure": 121
     },
     "N N": {
-      "cardinal": 8946,
-      "digit": 2202,
-      "telephone": 5072
+      "cardinal": 8186,
+      "digit": 1999,
+      "telephone": 4682
     },
     "N N ": {
       "digit": 4,
@@ -2318,16 +2275,13 @@
       "telephone": 1
     },
     "N N (N) N-N": {
-      "telephone": 10
+      "telephone": 9
     },
     "N N (N) N-N N": {
       "telephone": 1
     },
-    "N N (N)N": {
-      "telephone": 1
-    },
     "N N - A": {
-      "telephone": 45
+      "telephone": 41
     },
     "N N - A A": {
       "telephone": 4
@@ -2342,7 +2296,7 @@
       "telephone": 14
     },
     "N N - N": {
-      "telephone": 174
+      "telephone": 159
     },
     "N N - N A": {
       "telephone": 1
@@ -2362,16 +2316,13 @@
     "N N -N -N N N": {
       "telephone": 1
     },
-    "N N /N": {
-      "fraction": 1
-    },
     "N N A": {
       "cardinal": 2,
-      "decimal": 7,
+      "decimal": 5,
       "digit": 1,
-      "measure": 376,
-      "money": 58,
-      "telephone": 379,
+      "measure": 343,
+      "money": 55,
+      "telephone": 346,
       "time": 2
     },
     "N N A ": {
@@ -2381,9 +2332,9 @@
       "telephone": 1
     },
     "N N A A": {
-      "measure": 3,
-      "money": 2,
-      "telephone": 16,
+      "measure": 2,
+      "money": 1,
+      "telephone": 15,
       "time": 1
     },
     "N N A A A": {
@@ -2405,7 +2356,7 @@
       "telephone": 1
     },
     "N N A N": {
-      "telephone": 260
+      "telephone": 235
     },
     "N N A N A": {
       "telephone": 4
@@ -2419,9 +2370,6 @@
     "N N A N N": {
       "telephone": 1
     },
-    "N N A N N A N": {
-      "telephone": 1
-    },
     "N N A N N N N": {
       "telephone": 1
     },
@@ -2432,13 +2380,13 @@
       "telephone": 1
     },
     "N N A N-N-N-N": {
-      "telephone": 3
+      "telephone": 2
     },
     "N N A N-N-N-N-N": {
       "telephone": 2
     },
     "N N A-A": {
-      "telephone": 11
+      "telephone": 9
     },
     "N N A-A N": {
       "telephone": 1
@@ -2452,9 +2400,6 @@
     "N N A.": {
       "money": 4
     },
-    "N N A.A. ": {
-      "telephone": 1
-    },
     "N N A/A": {
       "measure": 3
     },
@@ -2465,18 +2410,18 @@
       "measure": 1
     },
     "N N AN": {
-      "measure": 49
+      "measure": 47
     },
     "N N A²": {
-      "measure": 177
+      "measure": 163
     },
     "N N A³": {
-      "measure": 6
+      "measure": 5
     },
     "N N N": {
-      "cardinal": 497,
-      "digit": 102,
-      "telephone": 2579
+      "cardinal": 463,
+      "digit": 93,
+      "telephone": 2350
     },
     "N N N ": {
       "telephone": 2
@@ -2518,9 +2463,9 @@
       "measure": 2
     },
     "N N N N": {
-      "cardinal": 256,
-      "digit": 46,
-      "telephone": 6805
+      "cardinal": 239,
+      "digit": 45,
+      "telephone": 6224
     },
     "N N N N ": {
       "telephone": 1
@@ -2540,19 +2485,16 @@
     "N N N N A N": {
       "telephone": 3
     },
-    "N N N N A N N N N N": {
-      "telephone": 1
-    },
     "N N N N A N N N N N N N N N N N": {
       "telephone": 1
     },
     "N N N N N": {
       "cardinal": 4,
-      "digit": 6,
-      "telephone": 2020
+      "digit": 5,
+      "telephone": 1849
     },
     "N N N N N - N N": {
-      "telephone": 17
+      "telephone": 13
     },
     "N N N N N A": {
       "telephone": 1
@@ -2563,7 +2505,7 @@
     "N N N N N N": {
       "cardinal": 1,
       "digit": 8,
-      "telephone": 29
+      "telephone": 22
     },
     "N N N N N N ": {
       "telephone": 1
@@ -2573,8 +2515,8 @@
     },
     "N N N N N N N": {
       "cardinal": 1,
-      "digit": 8,
-      "telephone": 829
+      "digit": 5,
+      "telephone": 771
     },
     "N N N N N N N ": {
       "telephone": 1
@@ -2584,7 +2526,7 @@
     },
     "N N N N N N N N": {
       "digit": 6,
-      "telephone": 193
+      "telephone": 179
     },
     "N N N N N N N N N": {
       "digit": 1,
@@ -2597,13 +2539,13 @@
       "telephone": 1
     },
     "N N N N N N N N N N N": {
-      "telephone": 6
+      "telephone": 5
     },
     "N N N N N N N N N N N N": {
-      "telephone": 19
+      "telephone": 16
     },
     "N N N N N N N N N N N N N": {
-      "telephone": 10
+      "telephone": 8
     },
     "N N N N N N N N N N N N N N N": {
       "telephone": 1
@@ -2615,22 +2557,22 @@
       "telephone": 4
     },
     "N N N N N N N N--------------------------------------------------------------N": {
-      "telephone": 3
+      "telephone": 2
     },
     "N N N N N N N N-------------------------------------------------------------N": {
       "telephone": 1
     },
     "N N N N N N N-------------------------------------------------------------- N": {
-      "telephone": 15
+      "telephone": 13
     },
     "N N N N N N N----------------------------------------------------------------------N": {
       "telephone": 2
     },
     "N N N N N N N--------------------------------------------------------------N": {
-      "telephone": 14
+      "telephone": 13
     },
     "N N N N N N N-------------------------------------------------------------N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N N N N N N N-N N": {
       "telephone": 1
@@ -2642,7 +2584,7 @@
       "telephone": 1
     },
     "N N N N N N-N N": {
-      "telephone": 50
+      "telephone": 47
     },
     "N N N N N N-N N N": {
       "telephone": 9
@@ -2654,13 +2596,10 @@
       "telephone": 1
     },
     "N N N N N- N N": {
-      "telephone": 132
+      "telephone": 125
     },
     "N N N N N- N N N": {
-      "telephone": 57
-    },
-    "N N N N N- N N N N": {
-      "telephone": 1
+      "telephone": 55
     },
     "N N N N N-N": {
       "telephone": 3
@@ -2669,25 +2608,25 @@
       "telephone": 10
     },
     "N N N N N-N - N N N": {
-      "telephone": 20
+      "telephone": 17
     },
     "N N N N N-N -N N": {
       "telephone": 2
     },
     "N N N N N-N N": {
-      "telephone": 4864
+      "telephone": 4488
     },
     "N N N N N-N N -------------------------------------------------------------N": {
       "telephone": 2
     },
     "N N N N N-N N N": {
-      "telephone": 2214
+      "telephone": 2027
     },
     "N N N N N-N N N N": {
-      "telephone": 11
+      "telephone": 10
     },
     "N N N N N-N N-------------------------------------------------------------N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N N N N N-N N--------------------------------------------------------N": {
       "telephone": 4
@@ -2699,13 +2638,13 @@
       "telephone": 3
     },
     "N N N N-N": {
-      "telephone": 11
+      "telephone": 8
     },
     "N N N N-N N": {
       "telephone": 18
     },
     "N N N N-N N N": {
-      "telephone": 3
+      "telephone": 2
     },
     "N N N ¤": {
       "money": 3
@@ -2717,13 +2656,13 @@
       "telephone": 1
     },
     "N N N--N": {
-      "telephone": 10
+      "telephone": 9
     },
     "N N N-A": {
       "telephone": 1
     },
     "N N N-N": {
-      "telephone": 152
+      "telephone": 140
     },
     "N N N-N A N-N-N-N": {
       "telephone": 1
@@ -2744,28 +2683,24 @@
       "money": 1
     },
     "N N N/N": {
-      "fraction": 2
+      "fraction": 1
     },
     "N N NA": {
-      "measure": 2,
-      "ordinal": 1
+      "measure": 2
     },
     "N N NAN": {
       "telephone": 1
     },
     "N N ¤": {
-      "money": 48
+      "money": 46
     },
     "N N%": {
-      "measure": 5
+      "measure": 4
     },
     "N N(N) N": {
       "telephone": 2
     },
     "N N(N) N - N": {
-      "telephone": 1
-    },
-    "N N(N) N N N": {
       "telephone": 1
     },
     "N N(N) N-N": {
@@ -2787,13 +2722,13 @@
       "telephone": 1
     },
     "N N- N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N N- N N N N": {
       "telephone": 1
     },
     "N N-A": {
-      "telephone": 31
+      "telephone": 29
     },
     "N N-A A": {
       "telephone": 3
@@ -2811,16 +2746,16 @@
       "telephone": 1
     },
     "N N-N": {
-      "telephone": 2670
+      "telephone": 2455
     },
     "N N-N ": {
-      "telephone": 4
+      "telephone": 3
     },
     "N N-N (N)N": {
       "telephone": 2
     },
     "N N-N A": {
-      "telephone": 16
+      "telephone": 14
     },
     "N N-N A A": {
       "telephone": 2
@@ -2838,7 +2773,7 @@
       "telephone": 1
     },
     "N N-N N": {
-      "telephone": 106
+      "telephone": 98
     },
     "N N-N N N": {
       "telephone": 1
@@ -2856,7 +2791,7 @@
       "telephone": 1
     },
     "N N-N-N": {
-      "telephone": 368
+      "telephone": 336
     },
     "N N-N-N A": {
       "telephone": 2
@@ -2868,7 +2803,7 @@
       "telephone": 1
     },
     "N N-N-N-N": {
-      "telephone": 42
+      "telephone": 34
     },
     "N N-N-N-N-N": {
       "telephone": 4
@@ -2877,7 +2812,7 @@
       "telephone": 1
     },
     "N N.N": {
-      "decimal": 19
+      "decimal": 17
     },
     "N N.N A": {
       "measure": 7
@@ -2893,22 +2828,22 @@
       "measure": 3
     },
     "N N.N ¤": {
-      "money": 8
+      "money": 7
     },
     "N N/A²": {
       "measure": 1
     },
     "N N/N": {
-      "fraction": 3390
+      "fraction": 3123
     },
     "N N/N ": {
       "fraction": 2
     },
     "N N/N A": {
-      "measure": 62
+      "measure": 56
     },
     "N N/N N": {
-      "fraction": 8
+      "fraction": 6
     },
     "N N/N%": {
       "measure": 5
@@ -2917,38 +2852,33 @@
       "measure": 12
     },
     "N NA": {
-      "measure": 77,
-      "money": 1,
-      "ordinal": 23,
-      "time": 1
+      "measure": 72,
+      "ordinal": 22
     },
     "N NA ": {
       "money": 1
     },
-    "N NA A": {
-      "time": 1
-    },
     "N NAN": {
-      "measure": 7,
+      "measure": 6,
       "telephone": 2
     },
     "N NA²": {
-      "measure": 10
+      "measure": 8
     },
     "N N¤": {
-      "money": 9
+      "money": 6
     },
     "N ¤": {
-      "money": 148
+      "money": 131
     },
     "N ¤A": {
       "money": 2
     },
     "N ¼": {
-      "fraction": 32
+      "fraction": 30
     },
     "N ½": {
-      "fraction": 346
+      "fraction": 308
     },
     "N ½ %": {
       "measure": 1
@@ -2957,13 +2887,13 @@
       "measure": 9
     },
     "N ¾": {
-      "fraction": 57
+      "fraction": 56
     },
     "N ¾ A": {
       "measure": 1
     },
     "N ⅓": {
-      "fraction": 9
+      "fraction": 8
     },
     "N ⅓ A": {
       "measure": 2
@@ -2978,13 +2908,13 @@
       "fraction": 1
     },
     "N\"": {
-      "measure": 15354
+      "measure": 14068
     },
     "N\" ": {
       "measure": 2
     },
     "N%": {
-      "measure": 282632
+      "measure": 259728
     },
     "N% ": {
       "measure": 3
@@ -2999,13 +2929,13 @@
       "measure": 1
     },
     "N'": {
-      "measure": 9189
+      "measure": 8366
     },
     "N' ": {
       "measure": 1
     },
     "N'A": {
-      "date": 30085
+      "date": 27782
     },
     "N'A ": {
       "date": 3
@@ -3014,10 +2944,10 @@
       "date": 2
     },
     "N(N) N": {
-      "telephone": 432
+      "telephone": 400
     },
     "N(N) N - N": {
-      "telephone": 12
+      "telephone": 11
     },
     "N(N) N -N": {
       "telephone": 2
@@ -3029,7 +2959,7 @@
       "telephone": 1
     },
     "N(N) N N": {
-      "telephone": 6
+      "telephone": 5
     },
     "N(N) N N A": {
       "telephone": 1
@@ -3038,13 +2968,13 @@
       "telephone": 3
     },
     "N(N) N- N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N(N) N-A": {
       "telephone": 1
     },
     "N(N) N-N": {
-      "telephone": 1299
+      "telephone": 1195
     },
     "N(N) N-N ": {
       "telephone": 2
@@ -3059,25 +2989,22 @@
       "telephone": 1
     },
     "N(N) N-N N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N(N) N-N N A A A": {
-      "telephone": 1
-    },
-    "N(N) N-N N-N N-N": {
       "telephone": 1
     },
     "N(N)- N": {
       "telephone": 1
     },
     "N(N)-N": {
-      "telephone": 35
+      "telephone": 34
     },
     "N(N)-N-N": {
       "telephone": 3
     },
     "N(N)N": {
-      "telephone": 178
+      "telephone": 167
     },
     "N(N)N -N": {
       "telephone": 2
@@ -3086,53 +3013,53 @@
       "telephone": 2
     },
     "N(N)N-N": {
-      "telephone": 77
+      "telephone": 67
     },
     "N,": {
-      "cardinal": 65091,
-      "date": 383,
-      "digit": 349
+      "cardinal": 59778,
+      "date": 359,
+      "digit": 318
     },
     "N, ": {
-      "cardinal": 19033,
-      "date": 2210,
-      "digit": 293
+      "cardinal": 17480,
+      "date": 2036,
+      "digit": 266
     },
     "N, A": {
       "date": 1,
       "measure": 1
     },
     "N, A ": {
-      "date": 205,
-      "measure": 10,
+      "date": 187,
+      "measure": 8,
       "money": 3
     },
     "N, A N,": {
-      "date": 151
+      "date": 139
     },
     "N, A,": {
       "date": 3,
       "measure": 2
     },
     "N, A, ": {
-      "date": 19
+      "date": 18
     },
     "N, A, N,": {
-      "date": 4
+      "date": 3
     },
     "N, AN": {
       "telephone": 2
     },
     "N, N": {
-      "cardinal": 187,
-      "digit": 10
+      "cardinal": 167,
+      "digit": 9
     },
     "N, N A": {
       "measure": 3,
-      "money": 2
+      "money": 1
     },
     "N, N AN": {
-      "measure": 4
+      "measure": 3
     },
     "N, N A²": {
       "measure": 1
@@ -3147,7 +3074,7 @@
       "decimal": 1
     },
     "N, NA": {
-      "ordinal": 217
+      "ordinal": 194
     },
     "N, NAN": {
       "measure": 1
@@ -3165,7 +3092,7 @@
       "date": 1
     },
     "N,N": {
-      "cardinal": 754039
+      "cardinal": 692562
     },
     "N,N ": {
       "cardinal": 8
@@ -3177,54 +3104,54 @@
       "measure": 1
     },
     "N,N / N": {
-      "fraction": 5
+      "fraction": 4
     },
     "N,N / N N": {
-      "fraction": 3
+      "fraction": 2
     },
     "N,N / N,N": {
       "fraction": 5
     },
     "N,N /A²": {
-      "measure": 101
+      "measure": 95
     },
     "N,N /N": {
       "fraction": 4
     },
     "N,N A": {
-      "cardinal": 70,
-      "decimal": 527,
-      "measure": 49528,
-      "money": 1644,
+      "cardinal": 65,
+      "decimal": 482,
+      "measure": 45480,
+      "money": 1506,
       "ordinal": 1
     },
     "N,N A ": {
       "money": 6
     },
     "N,N A A": {
-      "measure": 5551,
-      "money": 54
+      "measure": 5098,
+      "money": 52
     },
     "N,N A A A": {
       "measure": 1
     },
     "N,N A AN": {
-      "measure": 44
+      "measure": 43
     },
     "N,N A A²": {
-      "measure": 21
+      "measure": 18
     },
     "N,N A A³": {
-      "measure": 9
+      "measure": 6
     },
     "N,N A.": {
       "money": 7
     },
     "N,N A/A": {
-      "measure": 604
+      "measure": 572
     },
     "N,N A/AN": {
-      "measure": 28
+      "measure": 23
     },
     "N,N A/A²": {
       "measure": 1
@@ -3233,10 +3160,10 @@
       "measure": 2
     },
     "N,N AN": {
-      "measure": 14743
+      "measure": 13590
     },
     "N,N AN/A": {
-      "measure": 142
+      "measure": 126
     },
     "N,N AN/AN": {
       "measure": 2
@@ -3245,68 +3172,68 @@
       "money": 22
     },
     "N,N A²": {
-      "measure": 3815
+      "measure": 3515
     },
     "N,N A³": {
-      "measure": 173
+      "measure": 161
     },
     "N,N A³/A": {
-      "measure": 32
+      "measure": 30
     },
     "N,N N/N": {
-      "fraction": 13
+      "fraction": 12
     },
     "N,N NA": {
       "ordinal": 1
     },
     "N,N ¤": {
-      "money": 208
+      "money": 190
     },
     "N,N ½": {
       "fraction": 1
     },
     "N,N%": {
-      "measure": 149
+      "measure": 137
     },
     "N,N'": {
       "measure": 2
     },
     "N,N, NA": {
-      "ordinal": 6
+      "ordinal": 4
     },
     "N,N,N": {
-      "cardinal": 21969
+      "cardinal": 20200
     },
     "N,N,N / N": {
       "fraction": 1
     },
     "N,N,N A": {
-      "cardinal": 40,
-      "decimal": 46,
-      "measure": 730,
-      "money": 271
+      "cardinal": 34,
+      "decimal": 42,
+      "measure": 678,
+      "money": 247
     },
     "N,N,N A A": {
-      "measure": 371,
+      "measure": 349,
       "money": 3
     },
     "N,N,N A/A": {
-      "measure": 18
+      "measure": 17
     },
     "N,N,N A/AN": {
       "measure": 3
     },
     "N,N,N AN": {
-      "measure": 872
+      "measure": 790
     },
     "N,N,N A¤": {
       "money": 3
     },
     "N,N,N A²": {
-      "measure": 87
+      "measure": 82
     },
     "N,N,N A³": {
-      "measure": 45
+      "measure": 43
     },
     "N,N,N ¤": {
       "money": 19
@@ -3315,12 +3242,12 @@
       "measure": 3
     },
     "N,N,N,N": {
-      "cardinal": 435
+      "cardinal": 397
     },
     "N,N,N,N A": {
       "decimal": 2,
       "measure": 10,
-      "money": 30
+      "money": 28
     },
     "N,N,N,N AN": {
       "measure": 8
@@ -3331,26 +3258,23 @@
     "N,N,N,N ¤": {
       "money": 1
     },
-    "N,N,N,N%": {
-      "measure": 1
-    },
     "N,N,N,N,N": {
-      "cardinal": 56
+      "cardinal": 52
     },
     "N,N,N,N,N A": {
       "money": 1
     },
     "N,N,N,N,N,N": {
-      "cardinal": 21
+      "cardinal": 19
     },
     "N,N,N,N,N,N A": {
       "measure": 1
     },
     "N,N,N,N,N,N,N": {
-      "cardinal": 12
+      "cardinal": 11
     },
     "N,N,N,N,N,N,N,N": {
-      "cardinal": 5
+      "cardinal": 4
     },
     "N,N,N,N,N,N,N,N%": {
       "measure": 1
@@ -3365,7 +3289,7 @@
       "cardinal": 2
     },
     "N,N,N,N,N,N,N,N,N,N,N,N,N": {
-      "cardinal": 3
+      "cardinal": 2
     },
     "N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N": {
       "cardinal": 2
@@ -3380,29 +3304,29 @@
       "decimal": 1
     },
     "N,N,N,N.N": {
-      "decimal": 4
+      "decimal": 2
     },
     "N,N,N,N.N A": {
       "decimal": 1,
-      "money": 2
+      "money": 1
     },
     "N,N,N,NA": {
       "ordinal": 2
     },
     "N,N,N.N": {
-      "decimal": 89
+      "decimal": 88
     },
     "N,N,N.N A": {
       "decimal": 1,
-      "measure": 9,
+      "measure": 8,
       "money": 2
     },
     "N,N,N.N A A": {
-      "measure": 9,
+      "measure": 8,
       "money": 1
     },
     "N,N,N.N AN": {
-      "measure": 7
+      "measure": 6
     },
     "N,N,N.N A²": {
       "measure": 3
@@ -3420,33 +3344,33 @@
       "fraction": 1
     },
     "N,N,NA": {
-      "measure": 6,
+      "measure": 5,
       "money": 6,
-      "ordinal": 76
+      "ordinal": 73
     },
     "N,N,NAN": {
-      "measure": 5
+      "measure": 4
     },
     "N,N,NA²": {
-      "measure": 3
+      "measure": 2
     },
     "N,N,NA³": {
       "measure": 1
     },
     "N,N,N¤": {
-      "money": 8
+      "money": 7
     },
     "N,N.N": {
-      "decimal": 23227
+      "decimal": 21294
     },
     "N,N.N A": {
-      "decimal": 55,
-      "measure": 768,
+      "decimal": 52,
+      "measure": 702,
       "money": 10
     },
     "N,N.N A A": {
-      "measure": 439,
-      "money": 20
+      "measure": 392,
+      "money": 19
     },
     "N,N.N A A.": {
       "money": 1
@@ -3458,10 +3382,10 @@
       "measure": 6
     },
     "N,N.N A/A": {
-      "measure": 19
+      "measure": 17
     },
     "N,N.N AN": {
-      "measure": 1143
+      "measure": 1066
     },
     "N,N.N AN/A": {
       "measure": 2
@@ -3470,19 +3394,19 @@
       "money": 4
     },
     "N,N.N A²": {
-      "measure": 614
+      "measure": 558
     },
     "N,N.N A³": {
-      "measure": 2
+      "measure": 1
     },
     "N,N.N A³/A": {
-      "measure": 2
+      "measure": 1
     },
     "N,N.N ¤": {
       "money": 1
     },
     "N,N.N%": {
-      "measure": 8
+      "measure": 7
     },
     "N,N.N/A": {
       "measure": 2
@@ -3491,19 +3415,19 @@
       "measure": 4
     },
     "N,N.N/AN": {
-      "measure": 1850
+      "measure": 1699
     },
     "N,N.N/A²": {
-      "measure": 4011
+      "measure": 3652
     },
     "N,N.NA": {
-      "measure": 8
+      "measure": 7
     },
     "N,N.NA.": {
       "money": 1
     },
     "N,N.NAN": {
-      "measure": 9
+      "measure": 8
     },
     "N,N.NA²": {
       "measure": 3
@@ -3512,22 +3436,22 @@
       "money": 1
     },
     "N,N/A": {
-      "measure": 30
+      "measure": 26
     },
     "N,N/A A": {
       "measure": 3
     },
     "N,N/AN": {
-      "measure": 111
+      "measure": 100
     },
     "N,N/A²": {
-      "measure": 145
+      "measure": 133
     },
     "N,N/A³": {
       "measure": 1
     },
     "N,N/N": {
-      "fraction": 29
+      "fraction": 23
     },
     "N,N/N A": {
       "measure": 1
@@ -3536,18 +3460,18 @@
       "measure": 1
     },
     "N,N/N,N": {
-      "fraction": 39
+      "fraction": 38
     },
     "N,N/N,N A": {
       "measure": 8
     },
     "N,NA": {
-      "measure": 1701,
-      "money": 31,
-      "ordinal": 2141
+      "measure": 1555,
+      "money": 28,
+      "ordinal": 1971
     },
     "N,NA A": {
-      "measure": 23,
+      "measure": 20,
       "money": 2,
       "ordinal": 5
     },
@@ -3558,19 +3482,16 @@
       "measure": 5
     },
     "N,NAN": {
-      "measure": 201
-    },
-    "N,NA¤": {
-      "money": 1
+      "measure": 183
     },
     "N,NA²": {
-      "measure": 111
+      "measure": 96
     },
     "N,NA³": {
-      "measure": 13
+      "measure": 11
     },
     "N,N¤": {
-      "money": 34
+      "money": 32
     },
     "N,N½": {
       "fraction": 8
@@ -3585,18 +3506,15 @@
       "fraction": 1
     },
     "N-": {
-      "cardinal": 3415,
-      "digit": 50901
-    },
-    "N- A A A": {
-      "telephone": 1
+      "cardinal": 3126,
+      "digit": 46615
     },
     "N- A-N": {
-      "date": 2,
+      "date": 1,
       "telephone": 1
     },
     "N- N": {
-      "telephone": 61
+      "telephone": 57
     },
     "N- N - A": {
       "telephone": 1
@@ -3608,13 +3526,10 @@
       "date": 1
     },
     "N- N A": {
-      "telephone": 16
+      "telephone": 13
     },
     "N- N A A A": {
       "telephone": 2
-    },
-    "N- N A N-N": {
-      "telephone": 1
     },
     "N- N N": {
       "telephone": 45
@@ -3627,7 +3542,7 @@
     },
     "N- N-N": {
       "date": 11,
-      "telephone": 8
+      "telephone": 7
     },
     "N- N-N - N": {
       "telephone": 2
@@ -3636,10 +3551,10 @@
       "telephone": 1
     },
     "N- N-N-N": {
-      "telephone": 22
+      "telephone": 21
     },
     "N- N-N-N-N": {
-      "telephone": 10
+      "telephone": 9
     },
     "N------N-------------N": {
       "telephone": 1
@@ -3654,10 +3569,10 @@
       "telephone": 1
     },
     "N--N": {
-      "telephone": 21
+      "telephone": 17
     },
     "N--N A": {
-      "telephone": 8
+      "telephone": 7
     },
     "N--N A N": {
       "telephone": 1
@@ -3678,7 +3593,7 @@
       "telephone": 1
     },
     "N-A": {
-      "telephone": 2071
+      "telephone": 1898
     },
     "N-A (N)-N": {
       "telephone": 1
@@ -3705,7 +3620,7 @@
       "date": 1
     },
     "N-A-A": {
-      "telephone": 6
+      "telephone": 5
     },
     "N-A-A A A A A A A": {
       "telephone": 1
@@ -3717,65 +3632,59 @@
       "telephone": 1
     },
     "N-A-N": {
-      "date": 2335,
-      "telephone": 66
+      "date": 2135,
+      "telephone": 60
     },
     "N-A-N A": {
-      "telephone": 5
+      "telephone": 4
     },
     "N-A-N A A A": {
-      "telephone": 1
-    },
-    "N-A-N A N": {
       "telephone": 1
     },
     "N-A-N-A": {
       "telephone": 8
     },
     "N-A-N-A-A": {
-      "telephone": 3
+      "telephone": 2
     },
     "N-A-N-N": {
-      "telephone": 8
+      "telephone": 7
     },
     "N-AN": {
       "telephone": 2
     },
     "N-N": {
-      "telephone": 33069
+      "telephone": 30468
     },
     "N-N ": {
-      "telephone": 32
+      "telephone": 30
     },
     "N-N (N) N": {
-      "telephone": 50
+      "telephone": 44
     },
     "N-N (N) N-N": {
-      "telephone": 21
+      "telephone": 20
     },
     "N-N (N)N": {
-      "telephone": 16
-    },
-    "N-N (N)N A.A. ": {
-      "telephone": 1
+      "telephone": 14
     },
     "N-N (N)N-N-N": {
       "telephone": 1
     },
     "N-N - A": {
-      "telephone": 211
+      "telephone": 194
     },
     "N-N - A A": {
-      "telephone": 26
+      "telephone": 24
     },
     "N-N - A A A": {
-      "telephone": 7
+      "telephone": 4
     },
     "N-N - A A A A": {
       "telephone": 7
     },
     "N-N - A A A A A": {
-      "telephone": 21
+      "telephone": 20
     },
     "N-N - A A A A A A A": {
       "telephone": 2
@@ -3798,14 +3707,11 @@
     "N-N - A A A A N": {
       "telephone": 2
     },
-    "N-N - A A A A-A A A A A A": {
-      "telephone": 1
-    },
     "N-N - A N": {
       "telephone": 1
     },
     "N-N - A N-N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N - A N-N-N-N": {
       "telephone": 2
@@ -3824,13 +3730,13 @@
     },
     "N-N - N": {
       "date": 17,
-      "telephone": 198
+      "telephone": 176
     },
     "N-N - N ": {
       "telephone": 1
     },
     "N-N - N A": {
-      "telephone": 3
+      "telephone": 2
     },
     "N-N - N A A": {
       "telephone": 1
@@ -3839,7 +3745,7 @@
       "telephone": 1
     },
     "N-N - N-N": {
-      "telephone": 74
+      "telephone": 68
     },
     "N-N - N-N-N": {
       "telephone": 4
@@ -3848,20 +3754,20 @@
       "telephone": 2
     },
     "N-N -- N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N-N -- N-N": {
       "telephone": 1
     },
     "N-N -A": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N -A A A A A A": {
       "telephone": 3
     },
     "N-N -N": {
-      "date": 6,
-      "telephone": 8
+      "date": 5,
+      "telephone": 6
     },
     "N-N -N -N-N": {
       "telephone": 1
@@ -3873,7 +3779,7 @@
       "telephone": 2
     },
     "N-N A": {
-      "telephone": 10568
+      "telephone": 9698
     },
     "N-N A ": {
       "telephone": 3
@@ -3882,25 +3788,25 @@
       "telephone": 3
     },
     "N-N A A": {
-      "telephone": 309
+      "telephone": 284
     },
     "N-N A A -- A A A": {
       "telephone": 1
     },
     "N-N A A A": {
-      "telephone": 127
+      "telephone": 119
     },
     "N-N A A A A": {
-      "telephone": 57
+      "telephone": 54
     },
     "N-N A A A A ": {
       "telephone": 1
     },
     "N-N A A A A A": {
-      "telephone": 29
+      "telephone": 27
     },
     "N-N A A A A A A": {
-      "telephone": 21
+      "telephone": 19
     },
     "N-N A A A A A A A": {
       "telephone": 11
@@ -3918,28 +3824,25 @@
       "telephone": 1
     },
     "N-N A A A A A A A A A A A A A": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N A A A A A N A": {
       "telephone": 12
     },
     "N-N A A A A A N-N": {
-      "telephone": 2
-    },
-    "N-N A A A A A-A": {
       "telephone": 1
     },
     "N-N A A A A N": {
       "telephone": 1
     },
     "N-N A A A N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N A A A-A A": {
       "telephone": 4
     },
     "N-N A A N": {
-      "telephone": 8
+      "telephone": 7
     },
     "N-N A A N A": {
       "telephone": 1
@@ -3948,7 +3851,7 @@
       "telephone": 1
     },
     "N-N A A N-N": {
-      "telephone": 8
+      "telephone": 7
     },
     "N-N A A-A": {
       "telephone": 11
@@ -3963,7 +3866,7 @@
       "telephone": 1
     },
     "N-N A N": {
-      "telephone": 306
+      "telephone": 273
     },
     "N-N A N A": {
       "telephone": 5
@@ -3975,10 +3878,10 @@
       "telephone": 2
     },
     "N-N A N A A A A": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N A N A N": {
-      "telephone": 5
+      "telephone": 4
     },
     "N-N A N A N-N": {
       "telephone": 1
@@ -3999,7 +3902,7 @@
       "telephone": 1
     },
     "N-N A N-N": {
-      "telephone": 104
+      "telephone": 96
     },
     "N-N A N-N ": {
       "telephone": 1
@@ -4014,13 +3917,13 @@
       "telephone": 1
     },
     "N-N A N-N-N": {
-      "telephone": 30
+      "telephone": 27
     },
     "N-N A N-N-N-A": {
       "telephone": 2
     },
     "N-N A N-N-N-N": {
-      "telephone": 253
+      "telephone": 233
     },
     "N-N A N-N-N-N A": {
       "telephone": 1
@@ -4029,7 +3932,7 @@
       "telephone": 3
     },
     "N-N A N-N-N-N-N": {
-      "telephone": 104
+      "telephone": 97
     },
     "N-N A N-N-N-N-N A ": {
       "telephone": 1
@@ -4038,13 +3941,13 @@
       "telephone": 1
     },
     "N-N A,": {
-      "telephone": 55
+      "telephone": 49
     },
     "N-N A-A": {
-      "telephone": 142
+      "telephone": 131
     },
     "N-N A-A A": {
-      "telephone": 10
+      "telephone": 8
     },
     "N-N A-A A A A": {
       "telephone": 1
@@ -4071,7 +3974,7 @@
       "telephone": 3
     },
     "N-N A-N": {
-      "telephone": 31
+      "telephone": 30
     },
     "N-N A-N A": {
       "telephone": 2
@@ -4086,16 +3989,13 @@
       "telephone": 4
     },
     "N-N N": {
-      "telephone": 2085
+      "telephone": 1913
     },
     "N-N N -N": {
       "telephone": 1
     },
     "N-N N A": {
-      "telephone": 58
-    },
-    "N-N N A A A A": {
-      "telephone": 1
+      "telephone": 53
     },
     "N-N N A A A A A": {
       "telephone": 1
@@ -4104,7 +4004,7 @@
       "telephone": 2
     },
     "N-N N A N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N-N N A N-N-N-N": {
       "telephone": 1
@@ -4116,10 +4016,10 @@
       "telephone": 1
     },
     "N-N N N": {
-      "telephone": 69
+      "telephone": 63
     },
     "N-N N N N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N N N N N N": {
       "telephone": 4
@@ -4130,14 +4030,11 @@
     "N-N N N-N": {
       "telephone": 4
     },
-    "N-N N, A ": {
-      "telephone": 1
-    },
     "N-N N-A": {
       "telephone": 4
     },
     "N-N N-N": {
-      "telephone": 316
+      "telephone": 297
     },
     "N-N N-N A": {
       "telephone": 2
@@ -4146,13 +4043,10 @@
       "telephone": 1
     },
     "N-N N-N N": {
-      "telephone": 82
+      "telephone": 79
     },
     "N-N N-N N-N": {
       "telephone": 56
-    },
-    "N-N N-N N-N A": {
-      "telephone": 1
     },
     "N-N N-N N-N N": {
       "telephone": 1
@@ -4175,9 +4069,6 @@
     "N-N N-N N-N N-N(N) N-N": {
       "telephone": 1
     },
-    "N-N N-N N-N N-N-N": {
-      "telephone": 1
-    },
     "N-N N-N N-N(N) N-N": {
       "telephone": 2
     },
@@ -4188,7 +4079,7 @@
       "telephone": 2
     },
     "N-N N-N-N": {
-      "telephone": 32
+      "telephone": 31
     },
     "N-N N-N-N - N-N-N": {
       "telephone": 1
@@ -4197,28 +4088,25 @@
       "telephone": 4
     },
     "N-N NAN": {
-      "telephone": 12
-    },
-    "N-N(N) N": {
-      "telephone": 1
+      "telephone": 11
     },
     "N-N(N) N-N": {
       "telephone": 3
     },
     "N-N(N) N-N N-N": {
-      "telephone": 4
+      "telephone": 3
     },
     "N-N(N)-N": {
       "telephone": 1
     },
     "N-N(N)N": {
-      "telephone": 32
+      "telephone": 30
     },
     "N-N(N)N-A": {
       "telephone": 4
     },
     "N-N(N)N-N": {
-      "telephone": 165
+      "telephone": 154
     },
     "N-N(N)N-N A N": {
       "telephone": 3
@@ -4227,19 +4115,19 @@
       "telephone": 1
     },
     "N-N, ": {
-      "telephone": 15
+      "telephone": 13
     },
     "N-N, A": {
       "telephone": 2
     },
     "N-N, A ": {
-      "telephone": 10
+      "telephone": 9
     },
     "N-N, A N,": {
       "telephone": 3
     },
     "N-N, A,": {
-      "telephone": 41
+      "telephone": 37
     },
     "N-N, A, ": {
       "telephone": 2
@@ -4261,7 +4149,7 @@
       "telephone": 6
     },
     "N-N- N-N": {
-      "telephone": 28
+      "telephone": 26
     },
     "N-N- N-N-N": {
       "telephone": 11
@@ -4279,13 +4167,13 @@
       "telephone": 5
     },
     "N-N--N-N": {
-      "telephone": 13
+      "telephone": 12
     },
     "N-N--N-N-N": {
       "telephone": 1
     },
     "N-N-A": {
-      "telephone": 383
+      "telephone": 350
     },
     "N-N-A A": {
       "telephone": 2
@@ -4318,7 +4206,7 @@
       "telephone": 1
     },
     "N-N-A-A": {
-      "telephone": 84
+      "telephone": 77
     },
     "N-N-A-A-A": {
       "telephone": 2
@@ -4333,7 +4221,7 @@
       "telephone": 1
     },
     "N-N-A-N": {
-      "telephone": 37
+      "telephone": 35
     },
     "N-N-A-N A": {
       "telephone": 2
@@ -4354,27 +4242,27 @@
       "telephone": 2
     },
     "N-N-N": {
-      "date": 877426,
-      "telephone": 48552
+      "date": 805996,
+      "telephone": 44632
     },
     "N-N-N ": {
       "date": 7,
-      "telephone": 4
+      "telephone": 3
     },
     "N-N-N (N) N-N-N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N-N - A": {
       "telephone": 6
     },
     "N-N-N - A A": {
-      "telephone": 7
+      "telephone": 6
     },
     "N-N-N - A A A": {
       "telephone": 1
     },
     "N-N-N - A N": {
-      "telephone": 3
+      "telephone": 2
     },
     "N-N-N - A N - A": {
       "telephone": 1
@@ -4383,7 +4271,7 @@
       "telephone": 2
     },
     "N-N-N - N": {
-      "telephone": 8
+      "telephone": 7
     },
     "N-N-N - N A A A": {
       "telephone": 1
@@ -4395,7 +4283,7 @@
       "telephone": 1
     },
     "N-N-N - N-N-N": {
-      "telephone": 36
+      "telephone": 35
     },
     "N-N-N - NAN": {
       "telephone": 2
@@ -4404,16 +4292,16 @@
       "telephone": 8
     },
     "N-N-N -N-N": {
-      "telephone": 8
+      "telephone": 7
     },
     "N-N-N A": {
-      "telephone": 223
+      "telephone": 211
     },
     "N-N-N A ": {
       "date": 1
     },
     "N-N-N A A": {
-      "telephone": 14
+      "telephone": 11
     },
     "N-N-N A A A A": {
       "telephone": 8
@@ -4427,9 +4315,6 @@
     "N-N-N A A A A A A A A": {
       "telephone": 1
     },
-    "N-N-N A A A A A A A A A": {
-      "telephone": 1
-    },
     "N-N-N A A A A A A A A A A": {
       "telephone": 4
     },
@@ -4440,9 +4325,6 @@
       "telephone": 1
     },
     "N-N-N A A N": {
-      "telephone": 2
-    },
-    "N-N-N A A N A A N A": {
       "telephone": 1
     },
     "N-N-N A A N A A N A A A A": {
@@ -4458,7 +4340,7 @@
       "telephone": 1
     },
     "N-N-N A N-N": {
-      "telephone": 7
+      "telephone": 6
     },
     "N-N-N A N-N-N": {
       "telephone": 13
@@ -4473,7 +4355,7 @@
       "telephone": 3
     },
     "N-N-N A-N": {
-      "telephone": 11
+      "telephone": 9
     },
     "N-N-N A-N-N": {
       "telephone": 1
@@ -4482,7 +4364,7 @@
       "telephone": 1
     },
     "N-N-N N": {
-      "telephone": 495
+      "telephone": 444
     },
     "N-N-N N ": {
       "telephone": 1
@@ -4506,7 +4388,7 @@
       "telephone": 1
     },
     "N-N-N N-N": {
-      "telephone": 14
+      "telephone": 11
     },
     "N-N-N N-N A": {
       "telephone": 2
@@ -4515,16 +4397,16 @@
       "telephone": 1
     },
     "N-N-N N-N-N": {
-      "telephone": 19
+      "telephone": 18
     },
     "N-N-N N-N-N N": {
       "telephone": 1
     },
     "N-N-N- N": {
-      "telephone": 41
+      "telephone": 37
     },
     "N-N-N- N-N": {
-      "telephone": 166
+      "telephone": 155
     },
     "N-N-N- N-N-N": {
       "telephone": 1
@@ -4536,7 +4418,7 @@
       "telephone": 1
     },
     "N-N-N-A": {
-      "telephone": 292
+      "telephone": 267
     },
     "N-N-N-A - N A": {
       "telephone": 1
@@ -4572,7 +4454,7 @@
       "telephone": 1
     },
     "N-N-N-N": {
-      "telephone": 152309
+      "telephone": 139802
     },
     "N-N-N-N ": {
       "telephone": 18
@@ -4581,7 +4463,7 @@
       "telephone": 3
     },
     "N-N-N-N - A N-N-N-N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N-N-N - A N-N-N-N-N": {
       "telephone": 4
@@ -4590,15 +4472,12 @@
       "telephone": 3
     },
     "N-N-N-N -N": {
-      "telephone": 7
+      "telephone": 5
     },
     "N-N-N-N A": {
-      "telephone": 145
+      "telephone": 137
     },
     "N-N-N-N A A": {
-      "telephone": 2
-    },
-    "N-N-N-N A A A A": {
       "telephone": 1
     },
     "N-N-N-N A A A A A A": {
@@ -4611,7 +4490,7 @@
       "telephone": 1
     },
     "N-N-N-N A N": {
-      "telephone": 608
+      "telephone": 559
     },
     "N-N-N-N A N A N": {
       "telephone": 2
@@ -4632,13 +4511,13 @@
       "telephone": 2
     },
     "N-N-N-N A N-N": {
-      "telephone": 121
+      "telephone": 108
     },
     "N-N-N-N A N-N-N": {
-      "telephone": 2
+      "telephone": 1
     },
     "N-N-N-N A N-N-N-N": {
-      "telephone": 208
+      "telephone": 190
     },
     "N-N-N-N A N-N-N-N A N": {
       "telephone": 1
@@ -4650,24 +4529,18 @@
       "telephone": 1
     },
     "N-N-N-N A N-N-N-N-N": {
-      "telephone": 146
+      "telephone": 135
     },
     "N-N-N-N A-N": {
       "telephone": 1
     },
     "N-N-N-N N": {
-      "telephone": 34
+      "telephone": 30
     },
     "N-N-N-N N-N": {
       "telephone": 2
     },
     "N-N-N-N N-N-N-N N-N-N-N": {
-      "telephone": 1
-    },
-    "N-N-N-N N-N-N-N-N-N": {
-      "telephone": 1
-    },
-    "N-N-N-N- A A": {
       "telephone": 1
     },
     "N-N-N-N- N": {
@@ -4686,7 +4559,7 @@
       "telephone": 9
     },
     "N-N-N-N-N": {
-      "telephone": 66189
+      "telephone": 60863
     },
     "N-N-N-N-N ": {
       "telephone": 3
@@ -4701,7 +4574,7 @@
       "telephone": 1
     },
     "N-N-N-N-N A": {
-      "telephone": 36
+      "telephone": 35
     },
     "N-N-N-N-N A A A A": {
       "telephone": 1
@@ -4710,7 +4583,7 @@
       "telephone": 1
     },
     "N-N-N-N-N A N": {
-      "telephone": 285
+      "telephone": 265
     },
     "N-N-N-N-N A N N": {
       "telephone": 1
@@ -4719,7 +4592,7 @@
       "telephone": 1
     },
     "N-N-N-N-N A N-N": {
-      "telephone": 12
+      "telephone": 11
     },
     "N-N-N-N-N A N-N A N": {
       "telephone": 2
@@ -4731,19 +4604,16 @@
       "telephone": 1
     },
     "N-N-N-N-N A N-N-N-N": {
-      "telephone": 63
+      "telephone": 57
     },
     "N-N-N-N-N A N-N-N-N A N-N-N-N-N": {
       "telephone": 1
     },
     "N-N-N-N-N A N-N-N-N-N": {
-      "telephone": 30
-    },
-    "N-N-N-N-N A N-N-N-N-N A N-N-N-N": {
-      "telephone": 1
+      "telephone": 25
     },
     "N-N-N-N-N N": {
-      "telephone": 14
+      "telephone": 13
     },
     "N-N-N-N-N N N": {
       "telephone": 1
@@ -4752,7 +4622,7 @@
       "telephone": 4
     },
     "N-N-N-N-N-N": {
-      "telephone": 191
+      "telephone": 174
     },
     "N-N-N-N-N-N A A A": {
       "telephone": 1
@@ -4761,16 +4631,16 @@
       "telephone": 1
     },
     "N-N-N-N-N-N-N": {
-      "telephone": 24
+      "telephone": 22
     },
     "N-N-N-N-N-N-N-N": {
-      "telephone": 32
+      "telephone": 29
     },
     "N-N-N-N-N-N-N-N-N": {
-      "telephone": 5
+      "telephone": 4
     },
     "N-N-N-N-N-N-N-N-N-N": {
-      "telephone": 113
+      "telephone": 100
     },
     "N-N-N-N-N-N-N-N-N-N-N": {
       "telephone": 3
@@ -4791,19 +4661,19 @@
       "telephone": 1
     },
     "N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N": {
-      "telephone": 6
+      "telephone": 4
     },
     "N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N": {
       "telephone": 2
     },
     "N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N": {
-      "telephone": 3
+      "telephone": 2
     },
     "N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-A": {
       "telephone": 1
     },
     "N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N": {
-      "telephone": 11
+      "telephone": 10
     },
     "N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N-N": {
       "telephone": 2
@@ -4815,13 +4685,10 @@
       "telephone": 5
     },
     "N-N-NA": {
-      "date": 21
+      "date": 18
     },
     "N-N-NA.": {
       "date": 1
-    },
-    "N-N-NAN": {
-      "telephone": 2
     },
     "N-NA N": {
       "telephone": 2
@@ -4836,17 +4703,17 @@
       "date": 1
     },
     "N.A.N": {
-      "date": 173
+      "date": 157
     },
     "N.N": {
-      "decimal": 653060,
-      "time": 1862
+      "decimal": 599926,
+      "time": 1702
     },
     "N.N ": {
       "decimal": 14
     },
     "N.N %": {
-      "measure": 912
+      "measure": 843
     },
     "N.N .N": {
       "date": 1
@@ -4858,13 +4725,13 @@
       "measure": 1
     },
     "N.N /A²": {
-      "measure": 6
+      "measure": 5
     },
     "N.N A": {
-      "decimal": 33872,
-      "measure": 126334,
-      "money": 325,
-      "time": 1378
+      "decimal": 31059,
+      "measure": 116060,
+      "money": 289,
+      "time": 1279
     },
     "N.N A ": {
       "decimal": 1,
@@ -4879,15 +4746,15 @@
     },
     "N.N A A": {
       "decimal": 2,
-      "measure": 8660,
-      "money": 1491,
-      "time": 88
+      "measure": 7968,
+      "money": 1378,
+      "time": 83
     },
     "N.N A A ": {
       "money": 1
     },
     "N.N A A A": {
-      "measure": 21
+      "measure": 18
     },
     "N.N A A AN": {
       "measure": 3
@@ -4896,25 +4763,25 @@
       "measure": 1
     },
     "N.N A A.": {
-      "money": 4
+      "money": 3
     },
     "N.N A A/A": {
       "measure": 4
     },
     "N.N A AN": {
-      "measure": 116
+      "measure": 107
     },
     "N.N A A¤": {
-      "money": 23
+      "money": 20
     },
     "N.N A A²": {
-      "measure": 59
+      "measure": 55
     },
     "N.N A A³": {
-      "measure": 54
+      "measure": 52
     },
     "N.N A ¤": {
-      "money": 31
+      "money": 29
     },
     "N.N A.": {
       "money": 5
@@ -4924,58 +4791,58 @@
     },
     "N.N A.A.": {
       "measure": 6,
-      "time": 355
+      "time": 321
     },
     "N.N A.A. A": {
-      "time": 3
+      "time": 2
     },
     "N.N A/A": {
-      "measure": 2579
+      "measure": 2385
     },
     "N.N A/A/A": {
       "measure": 1
     },
     "N.N A/AN": {
-      "measure": 371
+      "measure": 339
     },
     "N.N A/A²": {
-      "measure": 38
+      "measure": 34
     },
     "N.N A/A³": {
-      "measure": 39
+      "measure": 38
     },
     "N.N AN": {
-      "measure": 18359
+      "measure": 16883
     },
     "N.N AN A A": {
       "measure": 1
     },
     "N.N AN/A": {
-      "measure": 161
+      "measure": 148
     },
     "N.N A¤": {
-      "money": 13
+      "money": 9
     },
     "N.N A²": {
-      "measure": 14256
+      "measure": 13098
     },
     "N.N A²/A²": {
       "measure": 1
     },
     "N.N A³": {
-      "measure": 105
+      "measure": 100
     },
     "N.N A³/A": {
-      "measure": 39
+      "measure": 35
     },
     "N.N ¤": {
       "money": 36
     },
     "N.N\"": {
-      "measure": 51
+      "measure": 50
     },
     "N.N%": {
-      "measure": 286770
+      "measure": 263569
     },
     "N.N% ": {
       "measure": 1
@@ -4987,7 +4854,7 @@
       "measure": 2
     },
     "N.N.N": {
-      "date": 17144
+      "date": 15666
     },
     "N.N.N ": {
       "date": 1
@@ -4996,51 +4863,51 @@
       "date": 6
     },
     "N.N/A": {
-      "measure": 315
+      "measure": 282
     },
     "N.N/A A": {
-      "measure": 11
+      "measure": 10
     },
     "N.N/AN": {
-      "measure": 26145
+      "measure": 23993
     },
     "N.N/A²": {
-      "measure": 57029
+      "measure": 52385
     },
     "N.NA": {
-      "decimal": 50,
-      "measure": 7611,
-      "money": 122,
-      "time": 2146
+      "decimal": 44,
+      "measure": 6954,
+      "money": 113,
+      "time": 1980
     },
     "N.NA ": {
-      "money": 4
+      "money": 3
     },
     "N.NA A": {
-      "measure": 7,
-      "money": 23,
-      "time": 639
+      "measure": 6,
+      "money": 20,
+      "time": 586
     },
     "N.NA A A": {
       "measure": 1
     },
     "N.NA A¤": {
-      "money": 2
+      "money": 1
     },
     "N.NA A²": {
       "measure": 1
     },
     "N.NA ¤": {
-      "money": 3
+      "money": 2
     },
     "N.NA-N": {
-      "decimal": 26
+      "decimal": 25
     },
     "N.NA.A.": {
       "time": 11
     },
     "N.NA/A": {
-      "measure": 29
+      "measure": 28
     },
     "N.NA/AN": {
       "measure": 8
@@ -5049,35 +4916,35 @@
       "measure": 1
     },
     "N.NAN": {
-      "decimal": 7,
-      "measure": 92
+      "decimal": 6,
+      "measure": 82
     },
     "N.NAN/A": {
-      "measure": 4
+      "measure": 3
     },
     "N.NA¤": {
-      "money": 8
+      "money": 5
     },
     "N.NA²": {
-      "measure": 169
+      "measure": 149
     },
     "N.NA³": {
       "measure": 1
     },
     "N.N¤": {
-      "money": 8
+      "money": 7
     },
     "N/": {
-      "date": 4864
+      "date": 4416
     },
     "N/ N": {
-      "fraction": 155
+      "fraction": 143
     },
     "N/ N /N": {
       "date": 1
     },
     "N/ N A": {
-      "measure": 21
+      "measure": 19
     },
     "N/ N,N": {
       "fraction": 1
@@ -5086,10 +4953,10 @@
       "date": 6
     },
     "N/ N/N": {
-      "date": 10
+      "date": 9
     },
     "N/A": {
-      "measure": 274
+      "measure": 253
     },
     "N/A A": {
       "measure": 5
@@ -5098,25 +4965,22 @@
       "date": 1
     },
     "N/A/N": {
-      "date": 120
+      "date": 105
     },
     "N/AN": {
-      "measure": 666
+      "measure": 625
     },
     "N/A²": {
-      "measure": 5220
+      "measure": 4800
     },
     "N/A³": {
       "measure": 2
     },
     "N/N": {
-      "fraction": 101611
+      "fraction": 93259
     },
     "N/N ": {
-      "fraction": 17
-    },
-    "N/N %": {
-      "measure": 1
+      "fraction": 16
     },
     "N/N / N": {
       "date": 1
@@ -5125,8 +4989,8 @@
       "date": 8
     },
     "N/N A": {
-      "fraction": 10,
-      "measure": 451
+      "fraction": 9,
+      "measure": 411
     },
     "N/N A ": {
       "fraction": 4
@@ -5141,7 +5005,7 @@
       "measure": 5
     },
     "N/N N": {
-      "fraction": 70
+      "fraction": 67
     },
     "N/N N A": {
       "fraction": 1,
@@ -5154,10 +5018,10 @@
       "measure": 3
     },
     "N/N%": {
-      "measure": 49
+      "measure": 45
     },
     "N/N,N": {
-      "fraction": 173
+      "fraction": 161
     },
     "N/N,N A": {
       "measure": 3
@@ -5166,7 +5030,7 @@
       "measure": 1
     },
     "N/N,N,N": {
-      "fraction": 14
+      "fraction": 13
     },
     "N/N,N,N,N": {
       "fraction": 2
@@ -5178,16 +5042,13 @@
       "measure": 1
     },
     "N/N/ N": {
-      "date": 13
-    },
-    "N/N/A": {
-      "measure": 1
+      "date": 12
     },
     "N/N/N": {
-      "date": 41926
+      "date": 38478
     },
     "N/N/N ": {
-      "date": 27
+      "date": 23
     },
     "N/N/N A": {
       "date": 1
@@ -5196,22 +5057,22 @@
       "date": 1
     },
     "N/NA": {
-      "measure": 524
+      "measure": 470
     },
     "N:": {
-      "cardinal": 11769
+      "cardinal": 10824
     },
     "N: ": {
-      "cardinal": 88
+      "cardinal": 83
     },
     "N: N": {
-      "time": 6798
+      "time": 6253
     },
     "N: N ": {
-      "time": 4
+      "time": 2
     },
     "N: N A": {
-      "time": 27
+      "time": 22
     },
     "N: N A.A.": {
       "time": 2
@@ -5220,28 +5081,28 @@
       "time": 6
     },
     "N:N": {
-      "time": 61570
+      "time": 56603
     },
     "N:N ": {
       "time": 2
     },
     "N:N A": {
-      "time": 17070
+      "time": 15738
     },
     "N:N A ": {
       "time": 2
     },
     "N:N A A": {
-      "time": 1673
+      "time": 1530
     },
     "N:N A A-": {
       "time": 1
     },
     "N:N A-": {
-      "time": 2
+      "time": 1
     },
     "N:N A-N": {
-      "time": 10
+      "time": 8
     },
     "N:N A-N:N": {
       "time": 2
@@ -5250,19 +5111,19 @@
       "time": 9
     },
     "N:N A.A.": {
-      "time": 6371
+      "time": 5838
     },
     "N:N A.A. ": {
       "time": 1
     },
     "N:N A.A. A": {
-      "time": 1052
+      "time": 966
     },
     "N:N A.A. A-N": {
       "time": 2
     },
     "N:N.N": {
-      "time": 5947
+      "time": 5492
     },
     "N:N.N A": {
       "time": 2
@@ -5271,54 +5132,54 @@
       "time": 1
     },
     "N:N:N": {
-      "time": 5141
+      "time": 4734
     },
     "N:N:N A": {
-      "time": 624
+      "time": 574
     },
     "N:N:NA": {
-      "time": 123
+      "time": 118
     },
     "N:NA": {
-      "time": 6723
+      "time": 6188
     },
     "N:NA A": {
-      "time": 792
+      "time": 716
     },
     "N:NA.A.": {
-      "time": 27
+      "time": 22
     },
     "NA": {
-      "date": 448042,
-      "decimal": 96,
-      "measure": 58321,
-      "money": 287,
-      "ordinal": 1134353,
-      "time": 11137
+      "date": 412069,
+      "decimal": 87,
+      "measure": 53507,
+      "money": 262,
+      "ordinal": 1042644,
+      "time": 10323
     },
     "NA ": {
-      "date": 38,
-      "measure": 30,
-      "money": 164,
-      "ordinal": 20
+      "date": 37,
+      "measure": 27,
+      "money": 154,
+      "ordinal": 18
     },
     "NA A": {
-      "date": 1463,
-      "measure": 56,
-      "money": 83,
+      "date": 1350,
+      "measure": 52,
+      "money": 77,
       "ordinal": 5,
-      "time": 503
+      "time": 459
     },
     "NA A ": {
-      "date": 47,
-      "money": 4,
+      "date": 45,
+      "money": 3,
       "ordinal": 1
     },
     "NA A A": {
       "measure": 1
     },
     "NA A N": {
-      "date": 6424
+      "date": 5882
     },
     "NA A N A.": {
       "date": 1
@@ -5327,7 +5188,7 @@
       "date": 4
     },
     "NA A, N": {
-      "date": 1005
+      "date": 929
     },
     "NA A, N ": {
       "date": 2
@@ -5337,14 +5198,14 @@
       "ordinal": 1
     },
     "NA A.": {
-      "date": 75,
+      "date": 65,
       "money": 1
     },
     "NA A. N": {
-      "date": 82
+      "date": 77
     },
     "NA A., N": {
-      "date": 12
+      "date": 11
     },
     "NA A.A. ": {
       "ordinal": 1
@@ -5360,10 +5221,10 @@
     },
     "NA,": {
       "date": 7,
-      "ordinal": 13
+      "ordinal": 12
     },
     "NA, ": {
-      "date": 16,
+      "date": 14,
       "measure": 2,
       "ordinal": 1
     },
@@ -5371,8 +5232,8 @@
       "measure": 1
     },
     "NA.": {
-      "date": 761,
-      "money": 159
+      "date": 685,
+      "money": 139
     },
     "NA. A.": {
       "time": 10
@@ -5381,12 +5242,12 @@
       "date": 7
     },
     "NA.A.": {
-      "date": 33,
+      "date": 32,
       "measure": 2,
-      "time": 92
+      "time": 84
     },
     "NA.A. A": {
-      "time": 5
+      "time": 4
     },
     "NA.N": {
       "telephone": 2
@@ -5398,7 +5259,7 @@
       "money": 1
     },
     "NA/A": {
-      "measure": 236
+      "measure": 216
     },
     "NA/AN": {
       "measure": 17
@@ -5410,41 +5271,38 @@
       "measure": 1
     },
     "NAN": {
-      "measure": 294,
+      "measure": 271,
       "telephone": 14
-    },
-    "NAN A": {
-      "measure": 1
     },
     "NAN%": {
       "measure": 3
     },
     "NAN/A": {
-      "measure": 5
+      "measure": 4
     },
     "NANA": {
-      "measure": 2
+      "measure": 1
     },
     "NA¤": {
       "money": 38
     },
     "NA²": {
-      "measure": 190
+      "measure": 173
     },
     "NA³": {
       "measure": 12
     },
     "N¤": {
-      "money": 183
+      "money": 167
     },
     "N°": {
-      "measure": 2
+      "measure": 1
     },
     "N¼": {
-      "fraction": 481
+      "fraction": 436
     },
     "N¼ A": {
-      "measure": 9
+      "measure": 8
     },
     "N¼%": {
       "measure": 1
@@ -5456,28 +5314,28 @@
       "fraction": 2
     },
     "N½": {
-      "fraction": 5425
+      "fraction": 4986
     },
     "N½ A": {
-      "measure": 156
+      "measure": 137
     },
     "N½ A³": {
       "measure": 1
     },
     "N½%": {
-      "measure": 24
+      "measure": 23
     },
     "N½A": {
-      "measure": 29
+      "measure": 27
     },
     "N½N": {
-      "fraction": 5
+      "fraction": 4
     },
     "N¾": {
-      "fraction": 498
+      "fraction": 455
     },
     "N¾ A": {
-      "measure": 29
+      "measure": 26
     },
     "N¾%": {
       "measure": 3
@@ -5489,22 +5347,19 @@
       "fraction": 1
     },
     "N⅓": {
-      "fraction": 273
+      "fraction": 256
     },
     "N⅓ A": {
-      "measure": 155
-    },
-    "N⅓%": {
-      "measure": 1
+      "measure": 140
     },
     "N⅓A": {
       "measure": 3
     },
     "N⅔": {
-      "fraction": 129
+      "fraction": 116
     },
     "N⅔ A": {
-      "measure": 13
+      "measure": 12
     },
     "N⅔%": {
       "measure": 1
@@ -5519,22 +5374,22 @@
       "fraction": 1
     },
     "N⅛": {
-      "fraction": 43
+      "fraction": 40
     },
     "N⅜": {
-      "fraction": 25
-    },
-    "N⅝": {
       "fraction": 24
     },
+    "N⅝": {
+      "fraction": 21
+    },
     "N⅞": {
-      "fraction": 23
+      "fraction": 22
     },
     "¤ N": {
-      "money": 185
+      "money": 170
     },
     "¤ N A": {
-      "money": 290
+      "money": 264
     },
     "¤ N N": {
       "money": 10
@@ -5546,13 +5401,13 @@
       "money": 5
     },
     "¤ N,N": {
-      "money": 334
+      "money": 311
     },
     "¤ N,N A": {
-      "money": 13
+      "money": 12
     },
     "¤ N,N,N": {
-      "money": 50
+      "money": 45
     },
     "¤ N,N,N,N": {
       "money": 21
@@ -5564,16 +5419,16 @@
       "money": 6
     },
     "¤ N.N": {
-      "money": 54
+      "money": 44
     },
     "¤ N.N A": {
-      "money": 145
+      "money": 135
     },
     "¤ N.NA": {
-      "money": 14
+      "money": 13
     },
     "¤ NA": {
-      "money": 24
+      "money": 22
     },
     "¤-N": {
       "money": 1
@@ -5585,13 +5440,13 @@
       "money": 1
     },
     "¤-N,N,N": {
-      "money": 2
+      "money": 1
     },
     "¤-N,N.N": {
       "money": 1
     },
     "¤.N": {
-      "money": 108
+      "money": 99
     },
     "¤.N A": {
       "money": 3
@@ -5600,37 +5455,37 @@
       "money": 4
     },
     "¤A N": {
-      "money": 11
+      "money": 10
     },
     "¤A N A": {
-      "money": 48
+      "money": 41
     },
     "¤A N,N": {
       "money": 20
     },
     "¤A N,N,N": {
-      "money": 6
+      "money": 5
     },
     "¤A N.N": {
       "money": 4
     },
     "¤A N.N A": {
-      "money": 36
+      "money": 34
     },
     "¤A N.NA": {
       "money": 5
     },
     "¤AN": {
-      "money": 50
+      "money": 44
     },
     "¤AN A": {
-      "money": 80
+      "money": 74
     },
     "¤AN,N": {
-      "money": 46
+      "money": 45
     },
     "¤AN,N,N": {
-      "money": 11
+      "money": 9
     },
     "¤AN,N,N.N": {
       "money": 1
@@ -5642,19 +5497,19 @@
       "money": 9
     },
     "¤AN.N A": {
-      "money": 48
+      "money": 44
     },
     "¤AN.NA": {
-      "money": 12
+      "money": 11
     },
     "¤ANA": {
-      "money": 22
+      "money": 18
     },
     "¤N": {
-      "money": 52461
+      "money": 48290
     },
     "¤N A": {
-      "money": 83407
+      "money": 76638
     },
     "¤N A A": {
       "money": 8
@@ -5663,13 +5518,13 @@
       "money": 1
     },
     "¤N N": {
-      "money": 235
+      "money": 217
     },
     "¤N N A": {
       "money": 1
     },
     "¤N N N": {
-      "money": 16
+      "money": 15
     },
     "¤N N,-": {
       "money": 1
@@ -5678,82 +5533,79 @@
       "money": 2
     },
     "¤N, N": {
-      "money": 32
+      "money": 28
     },
     "¤N,-": {
       "money": 3
     },
     "¤N,N": {
-      "money": 296440
+      "money": 272014
     },
     "¤N,N ": {
-      "money": 6
+      "money": 5
     },
     "¤N,N A": {
-      "money": 201
+      "money": 177
     },
     "¤N,N,N": {
-      "money": 17439
+      "money": 16049
     },
     "¤N,N,N A": {
       "money": 18
     },
     "¤N,N,N,N": {
-      "money": 909
+      "money": 833
     },
     "¤N,N,N,N A": {
       "money": 1
     },
     "¤N,N,N,N,N": {
-      "money": 6
+      "money": 5
     },
     "¤N,N,N,N.N": {
       "money": 9
     },
     "¤N,N,N.N": {
-      "money": 740
+      "money": 679
     },
     "¤N,N,N.N A": {
       "money": 1
     },
     "¤N,N.N": {
-      "money": 2913
+      "money": 2695
     },
     "¤N,N.N A": {
-      "money": 31
+      "money": 29
     },
     "¤N,N.NA": {
-      "money": 8
+      "money": 6
     },
     "¤N,NA": {
-      "money": 60
+      "money": 56
     },
     "¤N.N": {
-      "money": 11245
+      "money": 10352
     },
     "¤N.N A": {
-      "money": 44843
+      "money": 41114
     },
     "¤N.N A ": {
-      "money": 3
+      "money": 2
     },
     "¤N.N A A": {
       "money": 3
     },
     "¤N.NA": {
-      "money": 8333
+      "money": 7661
     },
     "¤N.NA A": {
       "money": 5
     },
-    "¤N.NA A-": {
-      "money": 1
-    },
     "¤NA": {
-      "money": 24836
+      "money": 22852
     },
     "¤NA A": {
-      "money": 7
+      "money": 6
     },
     "¤NAN": {
       "money": 1
@@ -5765,7 +5617,7 @@
     "generated": "2026-09-28",
     "license": "CC BY-SA 4.0",
     "locale": "en",
-    "note": "Raw shape->class counts over the Google/Sproat en_with_types text-normalization corpus. Only surfaces containing at least one Unicode-Nd digit are counted (the numeric-TN focus; the PLAIN alphabetic mass is dropped). Runtime derives P(class|shape) and n(shape); no smoothing, no ratios stored. Classes measure/telephone/address/digit are counted into each shape's total even though no reading type maps to them yet, so n(shape) reflects the full attested competition; the reflective ICU-generated shape backfill and blend are a separate later pass. Single Unicode-Lu letter surfaces lift the digit filter and class drops so their distribution includes the corpus's LETTERS and PLAIN classifications; per-letter counts are recorded separately; the held-out running-text (95) and published test (99) shards are not counted",
+    "note": "Raw shape->class counts over the Google/Sproat en_with_types text-normalization corpus. Only surfaces containing at least one Unicode-Nd digit are counted (the numeric-TN focus; the PLAIN alphabetic mass is dropped). Runtime derives P(class|shape) and n(shape); no smoothing, no ratios stored. Classes measure/telephone/address/digit are counted into each shape's total even though no reading type maps to them yet, so n(shape) reflects the full attested competition; the reflective ICU-generated shape backfill and blend are a separate later pass. Single Unicode-Lu letter surfaces lift the digit filter and class drops so their distribution includes the corpus's LETTERS and PLAIN classifications; per-letter counts are recorded separately; only the corpus README's training shards (00-89) are counted, the runtime-eval (90-94) and test (95-99) shards are held out",
     "shards": [
       "output-00000-of-00100",
       "output-00001-of-00100",
@@ -5856,203 +5708,195 @@
       "output-00086-of-00100",
       "output-00087-of-00100",
       "output-00088-of-00100",
-      "output-00089-of-00100",
-      "output-00090-of-00100",
-      "output-00091-of-00100",
-      "output-00092-of-00100",
-      "output-00093-of-00100",
-      "output-00094-of-00100",
-      "output-00096-of-00100",
-      "output-00097-of-00100",
-      "output-00098-of-00100"
+      "output-00089-of-00100"
     ],
     "source": "google-tn-en_with_types"
   },
   "single_uppercase_letters": {
     "A": {
-      "letters": 56036,
-      "plain": 898880
+      "letters": 51312,
+      "plain": 825924
     },
     "B": {
-      "letters": 30102,
-      "plain": 121966
+      "letters": 27631,
+      "plain": 112119
     },
     "C": {
-      "letters": 24156,
-      "plain": 119445
+      "letters": 22183,
+      "plain": 109579
     },
     "D": {
-      "letters": 54254,
-      "plain": 140377
+      "letters": 49932,
+      "plain": 128776
     },
     "E": {
-      "letters": 28475,
-      "plain": 83732
+      "letters": 26154,
+      "plain": 76924
     },
     "F": {
-      "letters": 32676,
-      "plain": 54599
+      "letters": 29915,
+      "plain": 50133
     },
     "G": {
-      "letters": 31023,
-      "plain": 74982
+      "letters": 28426,
+      "plain": 68821
     },
     "H": {
-      "letters": 19808,
-      "plain": 74002
+      "letters": 18170,
+      "plain": 67970
     },
     "I": {
-      "cardinal": 52913,
-      "letters": 2537,
-      "ordinal": 22763,
-      "plain": 335395
+      "cardinal": 48696,
+      "letters": 2328,
+      "ordinal": 20962,
+      "plain": 307982
     },
     "J": {
-      "letters": 7519,
-      "plain": 130425
+      "letters": 6906,
+      "plain": 119879
     },
     "K": {
-      "letters": 21800,
-      "plain": 81423
+      "letters": 19958,
+      "plain": 74800
     },
     "L": {
-      "letters": 14320,
-      "plain": 78412
+      "letters": 13146,
+      "plain": 71902
     },
     "M": {
-      "letters": 14910,
-      "plain": 142479
+      "letters": 13713,
+      "plain": 130923
     },
     "N": {
-      "letters": 18305,
-      "plain": 65987
+      "letters": 16849,
+      "plain": 60467
     },
     "O": {
-      "letters": 12494,
-      "plain": 44699
+      "letters": 11528,
+      "plain": 41051
     },
     "P": {
-      "letters": 19845,
-      "plain": 74534
+      "letters": 18154,
+      "plain": 68381
     },
     "Q": {
-      "letters": 7366,
-      "plain": 19068
+      "letters": 6808,
+      "plain": 17582
     },
     "R": {
-      "letters": 21104,
-      "plain": 106517
+      "letters": 19341,
+      "plain": 97724
     },
     "S": {
-      "letters": 29737,
-      "plain": 129085
+      "letters": 27331,
+      "plain": 118414
     },
     "T": {
-      "letters": 21303,
-      "plain": 98479
+      "letters": 19636,
+      "plain": 90541
     },
     "U": {
-      "letters": 24559,
-      "plain": 52257
+      "letters": 22510,
+      "plain": 47974
     },
     "V": {
-      "cardinal": 3834,
-      "letters": 16381,
-      "ordinal": 7392,
-      "plain": 49053
+      "cardinal": 3498,
+      "letters": 15001,
+      "ordinal": 6772,
+      "plain": 45022
     },
     "W": {
-      "letters": 11572,
-      "plain": 41413
+      "letters": 10592,
+      "plain": 37977
     },
     "X": {
-      "cardinal": 2118,
-      "letters": 30096,
-      "ordinal": 3328,
-      "plain": 98188
+      "cardinal": 1933,
+      "letters": 27608,
+      "ordinal": 3082,
+      "plain": 90300
     },
     "Y": {
-      "letters": 2857,
-      "plain": 45775
+      "letters": 2597,
+      "plain": 42032
     },
     "Z": {
-      "letters": 6934,
-      "plain": 29898
+      "letters": 6406,
+      "plain": 27468
     },
     "Ð": {
-      "verbatim": 213
+      "verbatim": 195
     },
     "Ą": {
-      "verbatim": 162
+      "verbatim": 146
     },
     "Ď": {
-      "verbatim": 123
+      "verbatim": 116
     },
     "Ē": {
-      "verbatim": 247
+      "verbatim": 228
     },
     "Ĕ": {
       "verbatim": 8
     },
     "Ė": {
-      "verbatim": 85
+      "verbatim": 75
     },
     "Ę": {
-      "verbatim": 94
+      "verbatim": 86
     },
     "Ě": {
-      "verbatim": 81
+      "verbatim": 77
     },
     "Ĝ": {
-      "verbatim": 14
-    },
-    "Ġ": {
-      "verbatim": 174
-    },
-    "Ģ": {
-      "verbatim": 30
-    },
-    "Ĥ": {
       "verbatim": 12
     },
+    "Ġ": {
+      "verbatim": 158
+    },
+    "Ģ": {
+      "verbatim": 29
+    },
+    "Ĥ": {
+      "verbatim": 9
+    },
     "Ĩ": {
-      "verbatim": 19
+      "verbatim": 17
     },
     "Ī": {
-      "verbatim": 492
+      "verbatim": 449
     },
     "Ĭ": {
       "verbatim": 5
     },
     "Į": {
-      "verbatim": 46
+      "verbatim": 38
     },
     "Ĵ": {
-      "verbatim": 7
+      "verbatim": 6
     },
     "Ķ": {
-      "verbatim": 104
+      "verbatim": 94
     },
     "Ĺ": {
-      "verbatim": 31
+      "verbatim": 30
     },
     "Ļ": {
-      "verbatim": 59
+      "verbatim": 56
     },
     "Ŀ": {
       "verbatim": 1
     },
     "Ņ": {
-      "verbatim": 30
+      "verbatim": 26
     },
     "Ň": {
-      "verbatim": 25
+      "verbatim": 20
     },
     "Ŏ": {
-      "verbatim": 21
+      "verbatim": 20
     },
     "Ő": {
-      "verbatim": 121
+      "verbatim": 115
     },
     "Ŕ": {
       "verbatim": 1
@@ -6061,16 +5905,16 @@
       "verbatim": 7
     },
     "Ś": {
-      "verbatim": 6227
+      "verbatim": 5708
     },
     "Ŝ": {
-      "verbatim": 19
+      "verbatim": 18
     },
     "Ţ": {
-      "verbatim": 464
+      "verbatim": 433
     },
     "Ť": {
-      "verbatim": 75
+      "verbatim": 69
     },
     "Ŧ": {
       "verbatim": 8
@@ -6079,19 +5923,19 @@
       "verbatim": 5
     },
     "Ū": {
-      "verbatim": 256
+      "verbatim": 240
     },
     "Ŭ": {
-      "verbatim": 23
+      "verbatim": 20
     },
     "Ů": {
-      "verbatim": 24
+      "verbatim": 23
     },
     "Ű": {
-      "verbatim": 13
+      "verbatim": 9
     },
     "Ų": {
-      "verbatim": 99
+      "verbatim": 85
     },
     "Ŵ": {
       "verbatim": 1
@@ -6100,10 +5944,10 @@
       "verbatim": 2
     },
     "Ź": {
-      "verbatim": 52
+      "verbatim": 48
     },
     "Ż": {
-      "verbatim": 3279
+      "verbatim": 3018
     },
     "Ƃ": {
       "verbatim": 1
@@ -6112,7 +5956,7 @@
       "verbatim": 1
     },
     "Ɔ": {
-      "verbatim": 14
+      "verbatim": 12
     },
     "Ɖ": {
       "verbatim": 3
@@ -6124,7 +5968,7 @@
       "verbatim": 14
     },
     "Ə": {
-      "verbatim": 579
+      "verbatim": 527
     },
     "Ɛ": {
       "verbatim": 22
@@ -6139,7 +5983,7 @@
       "verbatim": 1
     },
     "Ơ": {
-      "verbatim": 25
+      "verbatim": 22
     },
     "Ƨ": {
       "verbatim": 3
@@ -6148,7 +5992,7 @@
       "verbatim": 1
     },
     "Ư": {
-      "verbatim": 39
+      "verbatim": 30
     },
     "Ʊ": {
       "verbatim": 2
@@ -6171,13 +6015,7 @@
     "Ǐ": {
       "verbatim": 4
     },
-    "Ǒ": {
-      "verbatim": 1
-    },
     "Ǔ": {
-      "verbatim": 2
-    },
-    "Ǟ": {
       "verbatim": 2
     },
     "Ǣ": {
@@ -6187,7 +6025,7 @@
       "verbatim": 6
     },
     "Ǵ": {
-      "verbatim": 20
+      "verbatim": 19
     },
     "Ƕ": {
       "verbatim": 1
@@ -6208,7 +6046,7 @@
       "verbatim": 1
     },
     "Ț": {
-      "verbatim": 650
+      "verbatim": 601
     },
     "Ȝ": {
       "verbatim": 6
@@ -6217,100 +6055,100 @@
       "verbatim": 5
     },
     "Ȧ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ȯ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ɂ": {
-      "verbatim": 10
+      "verbatim": 9
     },
     "Ʌ": {
-      "verbatim": 31
+      "verbatim": 30
     },
     "Α": {
-      "verbatim": 6824
+      "verbatim": 6272
     },
     "Β": {
-      "verbatim": 1942
+      "verbatim": 1771
     },
     "Γ": {
-      "verbatim": 2268
+      "verbatim": 2068
     },
     "Δ": {
-      "verbatim": 3319
+      "verbatim": 3065
     },
     "Ε": {
-      "verbatim": 4794
+      "verbatim": 4399
     },
     "Ζ": {
-      "verbatim": 513
+      "verbatim": 478
     },
     "Η": {
-      "verbatim": 1678
+      "verbatim": 1547
     },
     "Θ": {
-      "verbatim": 1447
+      "verbatim": 1329
     },
     "Ι": {
-      "verbatim": 2335
+      "verbatim": 2111
     },
     "Κ": {
-      "verbatim": 5047
+      "verbatim": 4643
     },
     "Λ": {
-      "verbatim": 2274
+      "verbatim": 2102
     },
     "Μ": {
-      "verbatim": 4306
+      "verbatim": 3937
     },
     "Ν": {
-      "verbatim": 2570
+      "verbatim": 2362
     },
     "Ξ": {
-      "verbatim": 307
+      "verbatim": 285
     },
     "Ο": {
-      "verbatim": 3966
+      "verbatim": 3644
     },
     "Π": {
-      "verbatim": 5361
+      "verbatim": 4933
     },
     "Ρ": {
-      "verbatim": 1746
+      "verbatim": 1605
     },
     "Σ": {
-      "verbatim": 4967
+      "verbatim": 4558
     },
     "Τ": {
-      "verbatim": 3088
+      "verbatim": 2854
     },
     "Υ": {
-      "verbatim": 1294
+      "verbatim": 1184
     },
     "Φ": {
-      "verbatim": 1360
+      "verbatim": 1252
     },
     "Χ": {
-      "verbatim": 1172
+      "verbatim": 1068
     },
     "Ψ": {
-      "verbatim": 259
+      "verbatim": 236
     },
     "Ω": {
-      "verbatim": 961
+      "verbatim": 872
     },
     "Ϗ": {
       "verbatim": 1
     },
     "ϒ": {
-      "verbatim": 19
+      "verbatim": 18
     },
     "Ϙ": {
       "verbatim": 6
     },
     "Ϝ": {
-      "verbatim": 7
+      "verbatim": 6
     },
     "Ϡ": {
       "verbatim": 1
@@ -6324,9 +6162,6 @@
     "Ϭ": {
       "verbatim": 1
     },
-    "ϴ": {
-      "verbatim": 2
-    },
     "Ϲ": {
       "verbatim": 6
     },
@@ -6337,37 +6172,37 @@
       "verbatim": 1
     },
     "Ё": {
-      "verbatim": 42
+      "verbatim": 38
     },
     "Ђ": {
-      "verbatim": 106
+      "verbatim": 99
     },
     "Ѓ": {
-      "verbatim": 41
+      "verbatim": 39
     },
     "Є": {
-      "verbatim": 145
+      "verbatim": 131
     },
     "Ѕ": {
       "verbatim": 12
     },
     "І": {
-      "verbatim": 683
+      "verbatim": 623
     },
     "Ї": {
-      "verbatim": 54
+      "verbatim": 52
     },
     "Ј": {
-      "verbatim": 580
+      "verbatim": 546
     },
     "Љ": {
-      "verbatim": 120
+      "verbatim": 112
     },
     "Њ": {
-      "verbatim": 48
+      "verbatim": 43
     },
     "Ћ": {
-      "verbatim": 63
+      "verbatim": 57
     },
     "Ќ": {
       "verbatim": 16
@@ -6376,106 +6211,106 @@
       "verbatim": 2
     },
     "Ў": {
-      "verbatim": 16
+      "verbatim": 15
     },
     "Џ": {
-      "verbatim": 38
+      "verbatim": 37
     },
     "А": {
-      "verbatim": 17939
+      "verbatim": 16536
     },
     "Б": {
-      "verbatim": 10580
+      "verbatim": 9704
     },
     "В": {
-      "verbatim": 21285
+      "verbatim": 19462
     },
     "Г": {
-      "verbatim": 7888
+      "verbatim": 7185
     },
     "Д": {
-      "verbatim": 8377
+      "verbatim": 7715
     },
     "Е": {
-      "verbatim": 5512
+      "verbatim": 5054
     },
     "Ж": {
-      "verbatim": 1362
+      "verbatim": 1255
     },
     "З": {
-      "verbatim": 6531
+      "verbatim": 6016
     },
     "И": {
-      "verbatim": 9453
+      "verbatim": 8714
     },
     "Й": {
-      "verbatim": 805
+      "verbatim": 763
     },
     "К": {
-      "verbatim": 16094
+      "verbatim": 14723
     },
     "Л": {
-      "verbatim": 6152
+      "verbatim": 5653
     },
     "М": {
-      "verbatim": 13205
+      "verbatim": 12105
     },
     "Н": {
-      "verbatim": 10325
+      "verbatim": 9521
     },
     "О": {
-      "verbatim": 37596
+      "verbatim": 34468
     },
     "П": {
-      "verbatim": 14284
+      "verbatim": 13132
     },
     "Р": {
-      "verbatim": 15405
+      "verbatim": 14192
     },
     "С": {
-      "verbatim": 18676
+      "verbatim": 17164
     },
     "Т": {
-      "verbatim": 8637
+      "verbatim": 7955
     },
     "У": {
-      "verbatim": 6521
+      "verbatim": 6027
     },
     "Ф": {
-      "verbatim": 9294
+      "verbatim": 8554
     },
     "Х": {
-      "verbatim": 2665
+      "verbatim": 2454
     },
     "Ц": {
-      "verbatim": 1745
+      "verbatim": 1585
     },
     "Ч": {
-      "verbatim": 3605
+      "verbatim": 3299
     },
     "Ш": {
-      "verbatim": 2219
+      "verbatim": 2022
     },
     "Щ": {
-      "verbatim": 221
+      "verbatim": 195
     },
     "Ъ": {
-      "verbatim": 148
+      "verbatim": 138
     },
     "Ы": {
-      "verbatim": 465
+      "verbatim": 422
     },
     "Ь": {
-      "verbatim": 377
+      "verbatim": 353
     },
     "Э": {
-      "verbatim": 1700
+      "verbatim": 1574
     },
     "Ю": {
-      "verbatim": 1379
+      "verbatim": 1268
     },
     "Я": {
-      "verbatim": 2664
+      "verbatim": 2444
     },
     "Ѡ": {
       "verbatim": 4
@@ -6499,18 +6334,15 @@
       "verbatim": 2
     },
     "Ѱ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ѳ": {
-      "verbatim": 8
+      "verbatim": 6
     },
     "Ѵ": {
       "verbatim": 2
     },
     "Ѷ": {
-      "verbatim": 1
-    },
-    "Ѻ": {
       "verbatim": 1
     },
     "Ѽ": {
@@ -6523,19 +6355,19 @@
       "verbatim": 3
     },
     "Ҋ": {
-      "verbatim": 4
+      "verbatim": 3
     },
     "Ҍ": {
       "verbatim": 2
     },
     "Ҏ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ґ": {
-      "verbatim": 15
+      "verbatim": 14
     },
     "Ғ": {
-      "verbatim": 14
+      "verbatim": 13
     },
     "Ҕ": {
       "verbatim": 2
@@ -6547,7 +6379,7 @@
       "verbatim": 3
     },
     "Қ": {
-      "verbatim": 136
+      "verbatim": 123
     },
     "Ҝ": {
       "verbatim": 3
@@ -6559,7 +6391,7 @@
       "verbatim": 3
     },
     "Ң": {
-      "verbatim": 5
+      "verbatim": 4
     },
     "Ҥ": {
       "verbatim": 4
@@ -6568,22 +6400,22 @@
       "verbatim": 5
     },
     "Ҩ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ҫ": {
-      "verbatim": 5
+      "verbatim": 4
     },
     "Ҭ": {
       "verbatim": 4
     },
     "Ү": {
-      "verbatim": 34
+      "verbatim": 32
     },
     "Ұ": {
-      "verbatim": 16
+      "verbatim": 14
     },
     "Ҳ": {
-      "verbatim": 20
+      "verbatim": 19
     },
     "Ҵ": {
       "verbatim": 3
@@ -6610,19 +6442,19 @@
       "verbatim": 3
     },
     "Ӆ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ӈ": {
-      "verbatim": 5
+      "verbatim": 3
     },
     "Ӊ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ӌ": {
       "verbatim": 2
     },
     "Ӎ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ӑ": {
       "verbatim": 1
@@ -6637,10 +6469,7 @@
       "verbatim": 3
     },
     "Ә": {
-      "verbatim": 43
-    },
-    "Ӛ": {
-      "verbatim": 2
+      "verbatim": 41
     },
     "Ӝ": {
       "verbatim": 2
@@ -6655,7 +6484,7 @@
       "verbatim": 3
     },
     "Ө": {
-      "verbatim": 56
+      "verbatim": 50
     },
     "Ӭ": {
       "verbatim": 1
@@ -6687,9 +6516,6 @@
     "Ԉ": {
       "verbatim": 2
     },
-    "Ԋ": {
-      "verbatim": 2
-    },
     "Ԏ": {
       "verbatim": 2
     },
@@ -6706,7 +6532,7 @@
       "verbatim": 2
     },
     "Ԝ": {
-      "verbatim": 7
+      "verbatim": 5
     },
     "Ԟ": {
       "verbatim": 2
@@ -6721,118 +6547,118 @@
       "verbatim": 5
     },
     "Ա": {
-      "verbatim": 945
+      "verbatim": 863
     },
     "Բ": {
-      "verbatim": 178
+      "verbatim": 165
     },
     "Գ": {
-      "verbatim": 263
+      "verbatim": 236
     },
     "Դ": {
-      "verbatim": 123
+      "verbatim": 115
     },
     "Ե": {
-      "verbatim": 232
+      "verbatim": 210
     },
     "Զ": {
-      "verbatim": 63
+      "verbatim": 59
     },
     "Է": {
-      "verbatim": 53
+      "verbatim": 48
     },
     "Ը": {
-      "verbatim": 16
+      "verbatim": 11
     },
     "Թ": {
-      "verbatim": 86
+      "verbatim": 79
     },
     "Ժ": {
-      "verbatim": 32
+      "verbatim": 27
     },
     "Ի": {
-      "verbatim": 123
+      "verbatim": 110
     },
     "Լ": {
-      "verbatim": 107
+      "verbatim": 96
     },
     "Խ": {
-      "verbatim": 82
+      "verbatim": 80
     },
     "Ծ": {
-      "verbatim": 34
+      "verbatim": 30
     },
     "Կ": {
-      "verbatim": 250
+      "verbatim": 234
     },
     "Հ": {
-      "verbatim": 744
+      "verbatim": 673
     },
     "Ձ": {
-      "verbatim": 25
+      "verbatim": 23
     },
     "Ղ": {
-      "verbatim": 44
+      "verbatim": 40
     },
     "Ճ": {
-      "verbatim": 13
+      "verbatim": 12
     },
     "Մ": {
-      "verbatim": 362
+      "verbatim": 329
     },
     "Յ": {
-      "verbatim": 89
+      "verbatim": 78
     },
     "Ն": {
-      "verbatim": 287
+      "verbatim": 258
     },
     "Շ": {
-      "verbatim": 91
+      "verbatim": 81
     },
     "Ո": {
-      "verbatim": 138
+      "verbatim": 121
     },
     "Չ": {
-      "verbatim": 26
+      "verbatim": 24
     },
     "Պ": {
-      "verbatim": 105
+      "verbatim": 96
     },
     "Ջ": {
-      "verbatim": 49
+      "verbatim": 45
     },
     "Ռ": {
-      "verbatim": 60
+      "verbatim": 56
     },
     "Ս": {
-      "verbatim": 373
+      "verbatim": 340
     },
     "Վ": {
-      "verbatim": 187
+      "verbatim": 171
     },
     "Տ": {
-      "verbatim": 125
+      "verbatim": 117
     },
     "Ր": {
-      "verbatim": 105
+      "verbatim": 90
     },
     "Ց": {
-      "verbatim": 28
+      "verbatim": 27
     },
     "Ւ": {
-      "verbatim": 58
+      "verbatim": 51
     },
     "Փ": {
-      "verbatim": 41
+      "verbatim": 37
     },
     "Ք": {
-      "verbatim": 62
+      "verbatim": 56
     },
     "Օ": {
-      "verbatim": 29
+      "verbatim": 27
     },
     "Ֆ": {
-      "verbatim": 33
+      "verbatim": 27
     },
     "Ⴀ": {
       "verbatim": 1
@@ -6976,7 +6802,7 @@
       "verbatim": 3
     },
     "Ꭹ": {
-      "verbatim": 22
+      "verbatim": 19
     },
     "Ꭺ": {
       "verbatim": 3
@@ -6994,16 +6820,13 @@
       "verbatim": 9
     },
     "Ꮃ": {
-      "verbatim": 11
+      "verbatim": 10
     },
     "Ꮅ": {
       "verbatim": 7
     },
     "Ꮆ": {
       "verbatim": 1
-    },
-    "Ꮇ": {
-      "verbatim": 2
     },
     "Ꮈ": {
       "verbatim": 1
@@ -7078,13 +6901,13 @@
       "verbatim": 3
     },
     "Ꮪ": {
-      "verbatim": 3
+      "verbatim": 1
     },
     "Ꮲ": {
       "verbatim": 2
     },
     "Ꮳ": {
-      "verbatim": 8
+      "verbatim": 7
     },
     "Ꮵ": {
       "verbatim": 2
@@ -7114,7 +6937,7 @@
       "verbatim": 2
     },
     "Ᏹ": {
-      "verbatim": 5
+      "verbatim": 4
     },
     "Ᏺ": {
       "verbatim": 4
@@ -7135,10 +6958,10 @@
       "verbatim": 2
     },
     "Ḍ": {
-      "verbatim": 45
+      "verbatim": 40
     },
     "Ḏ": {
-      "verbatim": 27
+      "verbatim": 22
     },
     "Ḗ": {
       "verbatim": 3
@@ -7150,37 +6973,37 @@
       "verbatim": 4
     },
     "Ḥ": {
-      "verbatim": 1533
+      "verbatim": 1438
     },
     "Ḧ": {
-      "verbatim": 7
+      "verbatim": 6
     },
     "Ḩ": {
       "verbatim": 12
     },
     "Ḫ": {
-      "verbatim": 74
+      "verbatim": 68
     },
     "Ḱ": {
       "verbatim": 4
     },
     "Ḳ": {
-      "verbatim": 305
+      "verbatim": 278
     },
     "Ḵ": {
-      "verbatim": 55
+      "verbatim": 51
     },
     "Ḷ": {
       "verbatim": 6
     },
     "Ṁ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ṃ": {
       "verbatim": 4
     },
     "Ṅ": {
-      "verbatim": 7
+      "verbatim": 6
     },
     "Ṇ": {
       "verbatim": 6
@@ -7192,7 +7015,7 @@
       "verbatim": 2
     },
     "Ṛ": {
-      "verbatim": 95
+      "verbatim": 84
     },
     "Ṡ": {
       "verbatim": 7
@@ -7201,10 +7024,10 @@
       "verbatim": 2
     },
     "Ṭ": {
-      "verbatim": 549
+      "verbatim": 499
     },
     "Ṯ": {
-      "verbatim": 10
+      "verbatim": 9
     },
     "Ṿ": {
       "verbatim": 14
@@ -7216,7 +7039,7 @@
       "verbatim": 1
     },
     "Ẓ": {
-      "verbatim": 116
+      "verbatim": 104
     },
     "Ẕ": {
       "verbatim": 1
@@ -7225,16 +7048,16 @@
       "verbatim": 3
     },
     "Ấ": {
-      "verbatim": 26
+      "verbatim": 24
     },
     "Ầ": {
-      "verbatim": 6
+      "verbatim": 5
     },
     "Ẩ": {
-      "verbatim": 13
+      "verbatim": 11
     },
     "Ậ": {
-      "verbatim": 8
+      "verbatim": 6
     },
     "Ắ": {
       "verbatim": 1
@@ -7246,79 +7069,79 @@
       "verbatim": 2
     },
     "Ẽ": {
-      "verbatim": 7
+      "verbatim": 6
     },
     "Ế": {
-      "verbatim": 20
+      "verbatim": 17
     },
     "Ề": {
-      "verbatim": 9
+      "verbatim": 8
     },
     "Ể": {
       "verbatim": 7
     },
     "Ễ": {
-      "verbatim": 8
+      "verbatim": 7
     },
     "Ệ": {
-      "verbatim": 24
+      "verbatim": 21
     },
     "Ị": {
-      "verbatim": 36
+      "verbatim": 33
     },
     "Ọ": {
-      "verbatim": 69
+      "verbatim": 62
     },
     "Ố": {
-      "verbatim": 12
+      "verbatim": 11
     },
     "Ồ": {
-      "verbatim": 18
+      "verbatim": 16
     },
     "Ổ": {
-      "verbatim": 5
-    },
-    "Ỗ": {
       "verbatim": 3
     },
+    "Ỗ": {
+      "verbatim": 2
+    },
     "Ộ": {
-      "verbatim": 26
+      "verbatim": 25
     },
     "Ớ": {
-      "verbatim": 13
+      "verbatim": 11
     },
     "Ờ": {
-      "verbatim": 8
+      "verbatim": 6
     },
     "Ở": {
-      "verbatim": 18
+      "verbatim": 15
     },
     "Ỡ": {
       "verbatim": 1
     },
     "Ợ": {
-      "verbatim": 4
+      "verbatim": 3
     },
     "Ụ": {
-      "verbatim": 11
+      "verbatim": 10
     },
     "Ủ": {
-      "verbatim": 34
+      "verbatim": 31
     },
     "Ứ": {
-      "verbatim": 14
+      "verbatim": 13
     },
     "Ừ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ử": {
       "verbatim": 4
     },
     "Ữ": {
-      "verbatim": 14
+      "verbatim": 12
     },
     "Ự": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ỷ": {
       "verbatim": 5
@@ -7327,82 +7150,82 @@
       "verbatim": 1
     },
     "Ἀ": {
-      "verbatim": 1395
+      "verbatim": 1271
     },
     "Ἁ": {
-      "verbatim": 281
+      "verbatim": 258
     },
     "Ἂ": {
       "verbatim": 1
     },
     "Ἄ": {
-      "verbatim": 160
+      "verbatim": 148
     },
     "Ἅ": {
-      "verbatim": 1366
+      "verbatim": 1240
     },
     "Ἆ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ἐ": {
-      "verbatim": 432
+      "verbatim": 394
     },
     "Ἑ": {
-      "verbatim": 109
+      "verbatim": 97
     },
     "Ἓ": {
       "verbatim": 2
     },
     "Ἔ": {
-      "verbatim": 53
+      "verbatim": 50
     },
     "Ἕ": {
-      "verbatim": 27
+      "verbatim": 25
     },
     "Ἠ": {
-      "verbatim": 38
+      "verbatim": 36
     },
     "Ἡ": {
-      "verbatim": 306
+      "verbatim": 272
     },
     "Ἤ": {
       "verbatim": 5
     },
     "Ἥ": {
-      "verbatim": 8
+      "verbatim": 7
     },
     "Ἰ": {
-      "verbatim": 398
+      "verbatim": 368
     },
     "Ἱ": {
-      "verbatim": 257
+      "verbatim": 233
     },
     "Ἴ": {
-      "verbatim": 26
+      "verbatim": 24
     },
     "Ἵ": {
       "verbatim": 10
     },
     "Ἶ": {
-      "verbatim": 5
+      "verbatim": 4
     },
     "Ὀ": {
-      "verbatim": 86
+      "verbatim": 82
     },
     "Ὁ": {
-      "verbatim": 1816
+      "verbatim": 1659
     },
     "Ὂ": {
       "verbatim": 2
     },
     "Ὄ": {
-      "verbatim": 27
+      "verbatim": 26
     },
     "Ὅ": {
-      "verbatim": 666
+      "verbatim": 614
     },
     "Ὑ": {
-      "verbatim": 112
+      "verbatim": 106
     },
     "Ὓ": {
       "verbatim": 1
@@ -7411,7 +7234,7 @@
       "verbatim": 11
     },
     "Ὠ": {
-      "verbatim": 20
+      "verbatim": 18
     },
     "Ὡ": {
       "verbatim": 1
@@ -7426,7 +7249,7 @@
       "verbatim": 1
     },
     "Ὧ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ᾰ": {
       "verbatim": 1
@@ -7435,10 +7258,10 @@
       "verbatim": 1
     },
     "Ὰ": {
-      "verbatim": 3
+      "verbatim": 2
     },
     "Ὲ": {
-      "verbatim": 2
+      "verbatim": 1
     },
     "Ὶ": {
       "verbatim": 7
@@ -7447,7 +7270,7 @@
       "verbatim": 1
     },
     "Ῥ": {
-      "verbatim": 59
+      "verbatim": 52
     },
     "ℂ": {
       "verbatim": 11
@@ -7462,7 +7285,7 @@
       "verbatim": 4
     },
     "ℕ": {
-      "verbatim": 6
+      "verbatim": 5
     },
     "ℙ": {
       "verbatim": 1
@@ -7471,19 +7294,19 @@
       "verbatim": 1
     },
     "ℛ": {
-      "verbatim": 11
+      "verbatim": 10
     },
     "ℜ": {
       "verbatim": 1
     },
     "ℝ": {
-      "verbatim": 60
+      "verbatim": 57
     },
     "ℰ": {
       "verbatim": 1
     },
     "ℳ": {
-      "verbatim": 12
+      "verbatim": 11
     },
     "Ⰳ": {
       "verbatim": 1
@@ -7554,9 +7377,6 @@
     "Ꙉ": {
       "verbatim": 1
     },
-    "Ꙋ": {
-      "verbatim": 1
-    },
     "Ꙕ": {
       "verbatim": 1
     },
@@ -7614,9 +7434,6 @@
     "Ꝏ": {
       "verbatim": 1
     },
-    "Ꝑ": {
-      "verbatim": 1
-    },
     "Ꝥ": {
       "verbatim": 1
     },
@@ -7627,79 +7444,79 @@
       "verbatim": 9
     },
     "Ａ": {
-      "verbatim": 124
+      "verbatim": 120
     },
     "Ｂ": {
-      "verbatim": 72
+      "verbatim": 67
     },
     "Ｃ": {
-      "verbatim": 68
+      "verbatim": 64
     },
     "Ｄ": {
-      "verbatim": 36
+      "verbatim": 33
     },
     "Ｅ": {
-      "verbatim": 105
+      "verbatim": 98
     },
     "Ｆ": {
-      "verbatim": 22
+      "verbatim": 18
     },
     "Ｇ": {
-      "verbatim": 66
+      "verbatim": 62
     },
     "Ｈ": {
-      "verbatim": 36
+      "verbatim": 35
     },
     "Ｉ": {
-      "verbatim": 95
+      "verbatim": 91
     },
     "Ｊ": {
       "verbatim": 31
     },
     "Ｋ": {
-      "verbatim": 86
+      "verbatim": 81
     },
     "Ｌ": {
-      "verbatim": 65
+      "verbatim": 62
     },
     "Ｍ": {
-      "verbatim": 39
+      "verbatim": 33
     },
     "Ｎ": {
-      "verbatim": 84
+      "verbatim": 83
     },
     "Ｏ": {
-      "verbatim": 148
+      "verbatim": 140
     },
     "Ｐ": {
-      "verbatim": 18
+      "verbatim": 17
     },
     "Ｑ": {
       "verbatim": 7
     },
     "Ｒ": {
-      "verbatim": 97
+      "verbatim": 93
     },
     "Ｓ": {
-      "verbatim": 112
+      "verbatim": 102
     },
     "Ｔ": {
-      "verbatim": 83
+      "verbatim": 78
     },
     "Ｕ": {
-      "verbatim": 45
+      "verbatim": 39
     },
     "Ｖ": {
-      "verbatim": 64
+      "verbatim": 62
     },
     "Ｗ": {
       "verbatim": 22
     },
     "Ｘ": {
-      "verbatim": 26
+      "verbatim": 23
     },
     "Ｙ": {
-      "verbatim": 29
+      "verbatim": 24
     },
     "Ｚ": {
       "verbatim": 9
@@ -7718,9 +7535,6 @@
     },
     "𝔓": {
       "verbatim": 9
-    },
-    "𝕄": {
-      "verbatim": 1
     },
     "𝕷": {
       "verbatim": 1

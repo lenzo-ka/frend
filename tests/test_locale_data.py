@@ -235,8 +235,8 @@ def test_measured_tables_never_resolve_from_root():
 
 def test_every_table_names_locale_and_corpus():
     """Each measured table names the locale its counts are for (the directory it sits
-    in) and the corpus it was counted from; type_priors keeps its 98 shards and its
-    build date through the move (the date tracks counts, and the move changes none)."""
+    in) and the corpus it was counted from; type_priors counts the corpus README's 90
+    training shards (00-89)."""
     tables = {
         path.stem: path for path in sorted(_DATA.rglob("*_priors.json")) if "root" not in path.parts
     }
@@ -247,7 +247,7 @@ def test_every_table_names_locale_and_corpus():
         assert provenance["locale"] == path.parent.name == "en", name
         assert provenance.get("corpus") == _CORPUS, name
     type_provenance = json.loads(tables["type_priors"].read_text(encoding="utf-8"))["provenance"]
-    assert len(type_provenance["shards"]) == 98
+    assert len(type_provenance["shards"]) == 90
     assert type_provenance["generated"] == "2026-09-28"
     spoken = json.loads(tables["spoken_priors"].read_text(encoding="utf-8"))["provenance"]
     assert spoken["sample_rule"]["shards"]

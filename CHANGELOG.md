@@ -1,6 +1,38 @@
 # Changelog
 
 ## Unreleased
+- Train on the corpus's own split. The en_with_types README splits its 100 shards
+  training 00-89, runtime eval 90-94 and test 95-99; `tools/google_tn_rows.py` now
+  names the three pools (`TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`), and
+  `HELD_OUT_SHARDS` is 90-99, not 95 and 99 alone. Every builder reads training shards
+  only: `type_priors.json` all 90, and the spoken, zero, acronym and electronic tables
+  every tenth (00, 10, ..., 80), where shard 90 was the tenth. Shard 95 stays the
+  held-out running-text shard and 99 the published test; 90-94 are a second held-out
+  pool. Every table is rebuilt:
+  - `type_priors.json`, 98 shards to 90: 1,848 shapes become 1,800 (48 seen only in
+    90-94 drop out, none is new) and 56,237,940 surfaces become 51,649,056 (`N:N` time
+    61,570 becomes 56,603).
+  - `spoken_priors.json`, 10 shards to 9: 2,000 rows per class become 1,800 (4,000 to
+    3,600 for SYMBOL); no kind-level source share moves by more than 0.6 of a point
+    (SYMBOL's silence, 81.9% to 82.4%), and the fraction denominator 2 is matched 252
+    times, not 283.
+  - `zero_priors.json`, 10 shards to 9 (DIGIT "o" 33,028 becomes 29,579).
+  - `acronym_priors.json`, 10 shards to 9: spelled 853,152 becomes 767,364 and word
+    321,069 becomes 288,728; `roman:CIV`, `roman:CML`, `roman:DVI` and `roman:LXV`
+    fall under the 20-sighting floor (452 keys become 448).
+  - `electronic_priors.json`, 10 shards to 9: 53,257 rows (49,001 aligned) become
+    47,981 (44,151); five top-level domains fall out (`army`, `bd`, `gm`, `jm`,
+    `play`).
+
+  The one-best golden is regenerated on the rebuilt type table (9 of its 13 rows move
+  their hashes; no first choice moves). Re-baselined, the published report (shard 99)
+  moves by two tokens: first choice 99.05% and any reading 99.27% as before, sentences
+  90.24% become 90.23%; "DVI" is no longer spelled (LETTERS first choice 86.1% becomes
+  86.0%) and one long URL loses its any-reading match (ELECTRONIC any reading 77.6%
+  becomes 75.5%). Running text (1 of 110 first) is unchanged, and shard 95 is
+  identical per token (99.07%, 99.28%, 90.79%) and in running text (13,167 triples).
+  ARCTIC keeps every path count and alternative (902 of 902 known readings, max 216
+  paths); 192 graphs change only in their prior values.
 - Read a run of capitals in any script. The letters reader matches capitals by Unicode
   general category `Lu` (ICU's set), in one ICU script, not `[A-Z]`: "ÉCU" and "СССР"
   are letter runs, and capitals of two scripts ("AΒC", Latin and Greek) are not one run.

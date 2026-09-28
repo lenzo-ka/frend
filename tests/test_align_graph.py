@@ -559,7 +559,7 @@ def test_one_best_untouched():
         "code_commit": code_commit,
         "icukit_commit": "c2755b07e2c0adcfeb215eeab8ebe138d6edb495",
         "type_priors_counts_sha256": (
-            "b34097ffdddc1221906af80a7c824c26c5418cd4fafd91df93b320ac98a131c5"
+            "a0903d7803f84d4d78886d20efd5888b36dd44a435c650a5a963d29d1c0f6bb5"
         ),
         "type_priors_path": "frend/data/en/type_priors.json",
         "command": (

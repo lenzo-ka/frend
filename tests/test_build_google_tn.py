@@ -172,14 +172,17 @@ def test_serial_and_parallel_builds_are_byte_identical(tmp_path):
 
 
 def test_held_out_shards_are_never_counted(tmp_path):
-    """Shards 95 (held out) and 99 (the published test) are counted by neither build
-    path: the serial stream (--jobs 1) and the parallel file list (--jobs 2) both read
-    only the training shards."""
+    """The runtime-eval shards (90-94) and the test shards (95-99, 99 the published
+    test) are counted by neither build path: the serial stream (--jobs 1) and the
+    parallel file list (--jobs 2) both read only the training shards (00-89)."""
     corpus = tmp_path / "corpus"
     corpus.mkdir()
     for name, line in [
         ("output-00000-of-00100", "CARDINAL\t12\ttwelve\n"),
         ("output-00001-of-00100", "CARDINAL\t12\ttwelve\n"),
+        ("output-00089-of-00100", "CARDINAL\t12\ttwelve\n"),
+        ("output-00090-of-00100", "TIME\t3:00\tthree o'clock\n"),
+        ("output-00094-of-00100", "ORDINAL\t3rd\tthird\n"),
         ("output-00095-of-00100", "DECIMAL\t3.14\tthree point one four\n"),
         ("output-00099-of-00100", "FRACTION\t1/2\tone half\n"),
     ]:
@@ -189,7 +192,7 @@ def test_held_out_shards_are_never_counted(tmp_path):
         result = _run(["--corpus-dir", str(corpus), "--jobs", jobs, "--out", str(out)])
         assert result.returncode == 0, result.stderr
         counts = json.loads(out.read_text(encoding="utf-8"))["counts"]
-        assert counts == {"N": {"cardinal": 2}}, f"jobs={jobs}"
+        assert counts == {"N": {"cardinal": 3}}, f"jobs={jobs}"
 
 
 def test_default_corpus_is_google_tn(tmp_path):

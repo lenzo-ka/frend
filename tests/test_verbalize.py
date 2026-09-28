@@ -558,7 +558,7 @@ def test_well_attested_denominator_stays_close_to_its_own_share():
     lexical = "icu-rbnf:%spellout-numbering+lexical:en_US"
     blended = source_prior("fraction", lexical, "2")
 
-    assert blended.count == 283
+    assert blended.count == 252
     assert Decimal("0.98") < blended.share < Decimal(1)
 
 
