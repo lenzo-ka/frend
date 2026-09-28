@@ -21,7 +21,7 @@ from icukit.detectors import Capture
 __all__ = ["LettersDetector", "LettersValue", "cv_pattern", "is_roman", "numeral_share"]
 
 _RUN = re.compile(r"(?<![\w&'’.-])([A-Z]{2,})(s|['’]s)?(?![\w&'’]|-\w|\.\w)")
-_INITIAL = re.compile(r"(?<![\w&'’.-])([A-Z])(\.)(?!\w)")
+_INITIALS = re.compile(r"(?<![\w&'’.-])((?:[A-Z]\.)+)(?!\w)")
 
 
 @dataclass(frozen=True)
@@ -87,21 +87,34 @@ class LettersDetector:
 
     def detect(self, text: str) -> list[dict]:
         detections = []
-        for pattern, kind in ((_RUN, "letters:run"), (_INITIAL, "letters:initial")):
-            for match in pattern.finditer(text):
-                letters, suffix = match.group(1), match.group(2)
-                if not suffix and is_roman(letters, self.locale) and numeral_share(letters) > 0.5:
-                    # The corpus reads "II" as a number: icukit's Roman reading stands alone.
-                    continue
-                start, end = match.start(), match.end()
+        for chain in _INITIALS.finditer(text):
+            # "S." or a chain of initials ("J.R.R."): each letter with its period.
+            for at in range(chain.start(), chain.end(), 2):
+                letter = text[at]
                 detections.append(
                     {
-                        "text": text[start:end],
-                        "start": start,
-                        "end": end,
-                        "type": kind,
-                        "value": LettersValue(text[start:end], letters, suffix or ""),
-                        "captures": _captures(start, letters, suffix or ""),
+                        "text": text[at : at + 2],
+                        "start": at,
+                        "end": at + 2,
+                        "type": "letters:initial",
+                        "value": LettersValue(text[at : at + 2], letter, "."),
+                        "captures": _captures(at, letter, "."),
                     }
                 )
+        for match in _RUN.finditer(text):
+            letters, suffix = match.group(1), match.group(2) or ""
+            if not suffix and is_roman(letters, self.locale) and numeral_share(letters) > 0.5:
+                # The corpus reads "II" as a number: icukit's Roman reading stands alone.
+                continue
+            start, end = match.start(), match.end()
+            detections.append(
+                {
+                    "text": text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": "letters:run",
+                    "value": LettersValue(text[start:end], letters, suffix),
+                    "captures": _captures(start, letters, suffix),
+                }
+            )
         return sorted(detections, key=lambda detection: detection["start"])

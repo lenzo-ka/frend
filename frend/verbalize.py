@@ -1701,7 +1701,12 @@ def verbalize_edge(
             key_value = value.decimal
             path = "number"
         elif isinstance(value, AbbreviationValue):
-            alternatives = _with_acronym_readings(value.surface, _spoken_abbreviation(value))
+            # A lexicon entry with no expansion ("J.R.R.", a sentence-break exception)
+            # is still spelled when it is capitals; only a surface with neither fails.
+            expanded = _spoken_abbreviation(value) if value.expansions else ()
+            alternatives = _with_acronym_readings(value.surface, expanded)
+            if not alternatives:
+                raise NotImplementedError(f"no reading for {value.surface!r}")
             key_value = value.surface
             path = "abbreviation"
         elif isinstance(value, DateTimeValue) and type_.startswith("date:"):
