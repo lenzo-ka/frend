@@ -319,3 +319,14 @@ def test_extended_profile_recognizes_baseline_unmatched_forms(kind, written):
     recognized, _alternatives = build._alternatives(written, kind, build._detectors())
 
     assert recognized
+
+
+def test_a_year_first_date_is_ranked_by_its_own_row():
+    """The shipped table measures year-first dates apart: the corpus's day-first reading
+    takes a larger share there than over all dates, which is what a missing row falls
+    back to (so this fails without the row, where a month-first comparison would not)."""
+    day_first = "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year"
+    year_first = source_prior("date", day_first, "year-first")
+    all_dates = source_prior("date", day_first)
+    assert year_first is not None and all_dates is not None
+    assert year_first.share > all_dates.share

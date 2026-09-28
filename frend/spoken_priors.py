@@ -187,11 +187,15 @@ def measurement_sub_key(kind: str | None, detection: object) -> str | None:
         # "March 5, 2024" and "5 March 2024" differently, and the pooled shares cannot.
         # A year written first ("2008-09-30") is its own order: the corpus says it
         # day-first ("the thirtieth of september"), unlike a written month-first date.
-        starts = {}
+        # The first position of each field counts ("month" is the month's name), and a
+        # capture with no position says nothing about order.
+        starts: dict[str, int] = {}
         for capture in detection.get("captures", ()):  # type: ignore[union-attr]
             name = getattr(capture, "name", None)
-            if name in ("month", "M", "d", "y") and name not in starts:
-                starts[name if name in ("d", "y") else "M"] = capture.start
+            start = getattr(capture, "start", None)
+            field = "M" if name == "month" else name
+            if field in ("M", "d", "y") and isinstance(start, int):
+                starts.setdefault(field, start)
         if "M" in starts and "d" in starts:
             if "y" in starts and starts["y"] < min(starts["M"], starts["d"]):
                 return "year-first"

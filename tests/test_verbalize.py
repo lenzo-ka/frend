@@ -1809,6 +1809,8 @@ def test_a_year_first_date_ranks_day_first(written, first):
 
 
 def test_the_date_sub_key_follows_the_written_year():
+    from types import SimpleNamespace
+
     from icukit.detectors import Capture
 
     from frend.spoken_priors import measurement_sub_key
@@ -1820,6 +1822,12 @@ def test_the_date_sub_key_follows_the_written_year():
     assert measurement_sub_key("date", date("M", "d", "y")) == "month-first"
     assert measurement_sub_key("date", date("d", "M", "y")) == "day-first"
     assert measurement_sub_key("date", date("y")) == "other"
+    # The first position of a field counts, whatever it is named.
+    assert measurement_sub_key("date", date("M", "d", "month")) == "month-first"
+    # A capture without a position says nothing about order, and does not fail.
+    unplaced = SimpleNamespace(name="y", start=None)
+    captures = (unplaced, Capture("M", 5, 6, "", "", None), Capture("d", 8, 9, "", "", None))
+    assert measurement_sub_key("date", {"captures": captures}) == "month-first"
 
 
 @pytest.mark.parametrize(
