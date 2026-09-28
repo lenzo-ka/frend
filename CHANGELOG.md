@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- Spell a chain of initials ("J.R.R. Tolkien" "j r r", "C.S. Lewis" "c s"): a
+  capitals abbreviation icukit's lexicon lists with no expansion (a sentence-break
+  entry) is now spelled rather than left as written, and a chain the lexicon does not
+  list reads one initial at a time.
 - Say a date written year first ("2008-09-30") day first, as the corpus does ("the
   thirtieth of september two thousand eight"): the date measurement's sub-key gains
   `year-first` beside `month-first` and `day-first`, so a year-first date no longer
