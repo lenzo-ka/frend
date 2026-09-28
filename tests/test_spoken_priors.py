@@ -41,7 +41,7 @@ def test_shipped_table_shape_and_denominators():
     assert table.kinds == tuple(sorted(document["kinds"]))
     assert document["provenance"]["sub_key_rules"] == {
         "cardinal": None,
-        "date": "the written order of month and day: month-first, day-first, or other",
+        "date": "the written order: year-first, month-first, day-first, or other",
         "decimal": None,
         "digit": None,
         "electronic": None,
