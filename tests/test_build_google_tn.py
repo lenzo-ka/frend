@@ -123,11 +123,14 @@ def test_unmapped_classes_count_into_totals_but_have_no_reading_type():
 
 
 def test_google_provenance_profile():
-    """The google-tn profile records source, CC BY-SA 4.0 license, attribution to
-    Sproat & Jaitly, the fixed build date, and the derivation note."""
+    """The google-tn profile records source, the corpus directory it read, CC BY-SA 4.0
+    license, attribution to Sproat & Jaitly, the fixed build date, and the derivation
+    note."""
     build = _load_build_tool()
     prov = build._build("google-tn", _FIX, 1)["provenance"]
     assert prov["source"] == "google-tn-en_with_types"
+    assert prov["locale"] == "en"
+    assert prov["corpus"] == "google-tn:google_tn"  # the directory read, not the profile
     assert prov["license"] == "CC BY-SA 4.0"
     assert prov["attribution"].startswith("derived from Sproat & Jaitly")
     assert prov["generated"] == "2026-09-28"

@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import json
 import unicodedata
 from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import Decimal
 from functools import lru_cache
-from pathlib import Path
 from types import MappingProxyType
+
+from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
 __all__ = [
     "SourceMeasurement",
@@ -21,7 +21,6 @@ __all__ = [
     "normalize_spoken",
 ]
 
-_DATA = Path(__file__).parent / "data" / "spoken_priors.json"
 _UNMATCHED_REASONS = {"unrecognized", "unverbalized", "no_alternative_matched"}
 # How many matched rows the kind-level share is worth when a sub-key share is blended
 # toward it: at this many rows a sub-key's own evidence carries half the weight.
@@ -232,13 +231,23 @@ def _count_mapping(value: object, field: str) -> dict[str, int]:
     return {str(key): _count(count, f"{field}.{key}") for key, count in value.items()}
 
 
-@lru_cache(maxsize=1)
-def load_spoken_prior_table() -> SpokenPriorTable:
-    document = json.loads(_DATA.read_text(encoding="utf-8"))
+def load_spoken_prior_table(*, locale: str = "en_US") -> SpokenPriorTable | None:
+    """``locale``'s measured spoken-prior table (cached on the canonical locale), or
+    ``None`` when it has none."""
+    return _spoken_prior_table(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _spoken_prior_table(locale: str) -> SpokenPriorTable | None:
+    document = measured_table("spoken_priors", locale)
+    if document is None:
+        return None
     return SpokenPriorTable(document["kinds"], document["provenance"])
 
 
-def source_prior(kind: str, source: str, sub_key: str | None = None) -> SourceMeasurement | None:
+def source_prior(
+    kind: str, source: str, sub_key: str | None = None, *, locale: str = "en_US"
+) -> SourceMeasurement | None:
     """Return a source's share of matched rows in the selected scope, if attested.
 
     Matched rows are the denominator because an unmatched row credits no source;
@@ -247,9 +256,11 @@ def source_prior(kind: str, source: str, sub_key: str | None = None) -> SourceMe
     source's share is the sub-key's evidence blended toward the kind-level share by
     how many rows the sub-key has (``SpokenPriorTable.lookup``), so a single
     observation cannot decide a ranking alone. The returned measurement also
-    carries the sub-key's own matched count.
+    carries the sub-key's own matched count. A locale with no measured table
+    (``locale_data.measured_table``) has no share: ``None``.
     """
-    return load_spoken_prior_table().lookup(kind, source, sub_key)
+    table = load_spoken_prior_table(locale=locale)
+    return None if table is None else table.lookup(kind, source, sub_key)
 
 
 def spoken_tokens(text: str) -> tuple[str, ...]:

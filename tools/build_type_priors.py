@@ -1,4 +1,4 @@
-"""Build (or verify) the vendored corpus prior table ``frend/data/type_priors.json``.
+"""Build (or verify) the vendored corpus prior table ``frend/data/en/type_priors.json``.
 
 The table is ``shape -> class -> count``: for every ``(written_surface, class)``
 pair a corpus yields, increment ``counts[shape(written)][class]``. Runtime derives
@@ -41,7 +41,7 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "frend" / "data" / "type_priors.json"
+_OUT = _REPO / "frend" / "data" / "en" / "type_priors.json"
 
 
 def _ensure_repo_importable() -> None:
@@ -61,7 +61,7 @@ def _ensure_repo_importable() -> None:
 _ensure_repo_importable()
 if str(Path(__file__).resolve().parent) not in sys.path:  # tools/, for google_tn_rows
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-from google_tn_rows import training_shards  # noqa: E402
+from google_tn_rows import corpus_label, training_shards  # noqa: E402
 
 from frend.shape import is_single_uppercase  # noqa: E402
 
@@ -116,6 +116,7 @@ _GOOGLE_TN_NOTE = (
 
 _GOOGLE_TN_PROFILE: dict[str, str] = {
     "source": "google-tn-en_with_types",
+    "locale": "en",
     "license": "CC BY-SA 4.0",
     "attribution": ("derived from Sproat & Jaitly (2016) Google TN corpus; CC BY-SA 4.0"),
     "note": _GOOGLE_TN_NOTE,
@@ -297,6 +298,8 @@ def build_document(
     counts: dict[str, dict[str, int]] | None = None,
     single_uppercase_letters: dict[str, dict[str, int]] | None = None,
     shards: list[str] | None = None,
+    locale: str | None = None,
+    corpus: str | None = None,
 ) -> dict:
     """Assemble the full artifact: provenance plus raw counts.
 
@@ -304,11 +307,16 @@ def build_document(
     to a generic caller-provided-pairs profile; a corpus build passes its profile without
     touching the format or the runtime. ``counts`` may be supplied pre-built (a
     parallel build); otherwise it is tallied from ``pairs``. ``shards`` names the
-    corpus shards a corpus build counted.
+    corpus shards a corpus build counted; ``locale`` and ``corpus`` name the language
+    the counts are for and the corpus they were counted from.
     """
     provenance: dict = {"source": source, "generated": _BUILD_DATE, "note": note}
     if shards is not None:
         provenance["shards"] = list(shards)
+    if locale is not None:
+        provenance["locale"] = locale
+    if corpus is not None:
+        provenance["corpus"] = corpus
     if license is not None:
         provenance["license"] = license
     if attribution is not None:
@@ -336,6 +344,7 @@ def _build(corpus: str, corpus_dir: Path | None, jobs: int | None) -> dict:
             counts=counts,
             single_uppercase_letters=letters,
             shards=[path.name for path in _google_tn_files(directory)],
+            corpus=corpus_label(directory),
             **_GOOGLE_TN_PROFILE,
         )
     path = Path(corpus)
@@ -346,6 +355,7 @@ def _build(corpus: str, corpus_dir: Path | None, jobs: int | None) -> dict:
         counts=counts,
         single_uppercase_letters=letters,
         shards=[shard.name for shard in _google_tn_files(path)],
+        corpus=corpus_label(path),
         **profile,
     )
 

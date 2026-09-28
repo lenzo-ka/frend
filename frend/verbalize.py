@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
-from functools import cache
+from functools import cache, lru_cache
 from itertools import product
 
 import icu
@@ -27,6 +26,7 @@ from frend.electronic import (
 )
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import LettersValue, cv_pattern
+from frend.locale_data import LOCALE_CACHE
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
@@ -235,12 +235,20 @@ def _rank_final(
     return tuple(item[3] for item in ranked)
 
 
-@cache
-def _zero_priors() -> dict[str, dict[str, int]]:
-    from importlib.resources import files
+def _zero_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
+    """The locale's measured zero words by kind (``data/<locale>/zero_priors.json``);
+    empty when the locale has no table. Cached on the canonical locale."""
+    from frend.locale_data import canonical_locale
 
-    data = files("frend").joinpath("data/zero_priors.json").read_text(encoding="utf-8")
-    return json.loads(data)["kinds"]
+    return _zero_priors_for(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _zero_priors_for(locale: str) -> dict[str, dict[str, int]]:
+    from frend.locale_data import measured_table
+
+    table = measured_table("zero_priors", locale)
+    return {} if table is None else table["kinds"]
 
 
 _ZERO_WORDS = frozenset({"o", "oh", "zero"})
@@ -255,7 +263,7 @@ def _zero_shares(
 ) -> list[tuple[int, Decimal, int, SpokenAlternative]]:
     """Readings that differ only in how a zero is said ("point zero five", "point o
     five"; ICU's "oh-five", "o five") share their weight by how the corpus says a zero
-    in this kind of reading (``data/zero_priors.json``, ``tools/build_zero_priors.py``),
+    in this kind of reading (``data/en/zero_priors.json``, ``tools/build_zero_priors.py``),
     each zero counted once, add-one: a date's zero is "o", a decimal's mostly "o"."""
     counts = _zero_priors().get(kind or "")
     if not counts:
@@ -924,12 +932,20 @@ def _spoken_letters(value: LettersValue) -> tuple[SpokenAlternative, ...]:
 _ABBREVIATION_SOURCES = {"expansion": "icukit-abbreviation", "spell-out": "icukit-spell-out"}
 
 
-@cache
-def _acronym_priors() -> dict[str, dict[str, int]]:
-    from importlib.resources import files
+def _acronym_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
+    """The locale's measured acronym readings by key (``data/<locale>/acronym_priors.json``);
+    empty when the locale has no table. Cached on the canonical locale."""
+    from frend.locale_data import canonical_locale
 
-    data = files("frend").joinpath("data/acronym_priors.json").read_text(encoding="utf-8")
-    return json.loads(data)["keys"]
+    return _acronym_priors_for(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _acronym_priors_for(locale: str) -> dict[str, dict[str, int]]:
+    from frend.locale_data import measured_table
+
+    table = measured_table("acronym_priors", locale)
+    return {} if table is None else table["keys"]
 
 
 def _with_acronym_readings(
@@ -938,7 +954,7 @@ def _with_acronym_readings(
     """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
 
     kal ruled that frend says both: the share the corpus spells an all-capitals token
-    weights "f b i", the rest weights "fbi" (``data/acronym_priors.json``,
+    weights "f b i", the rest weights "fbi" (``data/en/acronym_priors.json``,
     ``tools/build_acronym_priors.py``), by the acronym's own counts where icukit's lexicon
     lists it or icukit reads it as a Roman numeral, blended toward its consonant-vowel
     pattern and then its shape (``letter_key``: length, vowel). icukit's long forms
@@ -1540,7 +1556,7 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
 
     Each letter run reads as a word or spelled, each digit run as one of its readings
     (ICU's cardinal or year, or digit by digit), each separator by its spoken name, all
-    with probabilities from ``data/electronic_priors.json``. The runs multiply, so the
+    with probabilities from ``data/en/electronic_priors.json``. The runs multiply, so the
     best readings by their product are kept (``ELECTRONIC_BEAM``), each weighted by it.
     A separator the corpus never names is not verbalized, except "@" (see
     ``_UNMEASURED_SEPARATORS``).

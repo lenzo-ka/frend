@@ -1,6 +1,17 @@
 # frend/data
 
-## `exceptions/en.json`
+## Layout
+
+Each table sits under the locale it is for: `<locale>/<table>` (`en/type_priors.json`).
+`frend.locale_data` looks a locale up along its chain, found by truncating subtags
+(`en_US` → `en` → `root`). A measured table (counted from one language's corpus) is
+looked up along the chain but never in `root`, so a locale with no measured table gets
+none, never another language's counts. The cross-locale tables (the ICU shape backfill,
+IANA's top-level domains) are in `root/`. Each measured table's provenance names its
+`locale` and the `corpus` it was counted from (`google-tn:en_with_types`), beside the
+shards it counted.
+
+## `en/exceptions.json`
 
 Curated English word- and sentence-break suppressions imported from the foreign
 `break_exceptions/en.txt` seed by `tools/import_break_exceptions.py`. The importer
@@ -14,7 +25,7 @@ gate. Each retained rule claims both levels: at the word level its abbreviation 
 one atomic token including the final period, and at the sentence level that period
 does not end the sentence.
 
-## `type_priors.json`
+## `en/type_priors.json`
 
 Vendored corpus prior table for the Layer-2 base-rate tiebreak: raw
 `shape -> class -> count` integer counts, plus provenance. Runtime
@@ -38,7 +49,7 @@ against this file, so it requires the corpus present at the corpus path
 corpus-free build. `--corpus` also accepts a path to any Google-TN-format shard directory,
 such as a small fixture, and records that path in the provenance.
 
-## `spoken_priors.json`
+## `en/spoken_priors.json`
 
 This table measures which sources among the alternatives returned by `frend.verbalize` match spoken forms in the Google/Sproat English text-normalization corpus. It records per-kind matched rows, unmatched rows split among unrecognized, unverbalized, and no-alternative-matched outcomes, source match counts, and frequent unmatched spoken forms with the same reason breakdown. End-to-end recall is `matched / total`. Verbalizer recall is `matched / (matched + no_alternative_matched)`; the loader and runtime do not compute or apply it.
 
@@ -54,7 +65,7 @@ The shared attribution above applies to this table. The corpus is not shipped he
 
 `tools/build_spoken_priors.py --check` repeats the declared sample and compares the canonical JSON byte-for-byte. A corpus path argument selects a fixture or another Google-TN-format shard directory.
 
-## `tlds-alpha-by-domain.txt`
+## `root/tlds-alpha-by-domain.txt`
 
 IANA's list of top-level domains, vendored unchanged from
 https://data.iana.org/TLD/tlds-alpha-by-domain.txt; its first line carries IANA's version
@@ -63,7 +74,7 @@ when its last label is in this list, so "e.g." and "report.pdf" are not domains.
 it by fetching the same URL; the electronic priors record the version they were built
 with.
 
-## `electronic_priors.json`
+## `en/electronic_priors.json`
 
 How the runs of a URL, email address or domain are said, measured from the corpus's
 ELECTRONIC class by `tools/build_electronic_priors.py` (`--check` repeats the sample and
@@ -79,7 +90,7 @@ In `spoken_priors.json`, ELECTRONIC is measured like the other kinds, with the c
 per-letter spoken notation ("b_letter o_letter") joined into words first. It records no
 `top_unmatched` examples, which would copy URLs from the corpus.
 
-## `acronym_priors.json`
+## `en/acronym_priors.json`
 
 Whether an acronym is spelled or said as a word, measured from the corpus by
 `tools/build_acronym_priors.py` (`--check` repeats the sample and compares byte for
@@ -92,7 +103,7 @@ reads (`roman:II`, which also counts the corpus's CARDINAL and ORDINAL readings 
 `numeral`), with `*` pooling all; no corpus text is stored. The shared attribution above
 applies.
 
-## `zero_priors.json`
+## `en/zero_priors.json`
 
 How the corpus says a zero digit, "o", "oh" or "zero", per reading kind, measured by
 `tools/build_zero_priors.py` (`--check` as above): the zero words in the spoken form of

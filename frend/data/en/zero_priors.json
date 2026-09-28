@@ -28,7 +28,9 @@
   },
   "provenance": {
     "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "corpus": "google-tn:en_with_types",
     "license": "CC BY-SA 4.0",
+    "locale": "en",
     "rule": "zero words (o, oh, zero) in the spoken form of a token written with 0: after 'point' for DECIMAL, MEASURE, MONEY; anywhere for DATE, TIME, DIGIT, ELECTRONIC",
     "shards": [
       "output-00000-of-00100",

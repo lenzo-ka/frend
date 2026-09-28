@@ -28,6 +28,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from build_spoken_priors import _default_corpus_dir, _files  # noqa: E402
+from google_tn_rows import corpus_label  # noqa: E402
 
 from frend.electronic import letter_key  # noqa: E402
 from frend.letters import cv_pattern, is_roman  # noqa: E402
@@ -45,7 +46,7 @@ def _lexicon_acronyms() -> frozenset[str]:
     )
 
 
-_OUT = _REPO / "frend" / "data" / "acronym_priors.json"
+_OUT = _REPO / "frend" / "data" / "en" / "acronym_priors.json"
 _LABELS = {"LETTERS": "spelled", "PLAIN": "word"}
 _NUMERAL = frozenset({"CARDINAL", "ORDINAL"})
 _ROMAN_FLOOR = 20
@@ -84,6 +85,8 @@ def build_document(corpus_dir: Path) -> dict:
     return {
         "provenance": {
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+            "locale": "en",
+            "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
             "shards": [path.name for path in files],
             "rule": (

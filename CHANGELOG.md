@@ -1,6 +1,22 @@
 # Changelog
 
 ## Unreleased
+- Keep the data by locale: each table moves under the locale it is for,
+  `frend/data/<locale>/` (`en/type_priors.json`, `en/spoken_priors.json`,
+  `en/zero_priors.json`, `en/acronym_priors.json`, `en/electronic_priors.json`, and
+  `en/exceptions.json`, formerly `exceptions/en.json`), and the cross-locale tables go
+  to `frend/data/root/` (the ICU shape backfill, IANA's top-level domains). The new
+  `frend.locale_data` looks a locale up along its chain, `en_US` → `en` → `root`, but
+  never finds a measured table in `root`. A locale with none gets `None`, never English
+  counts. The measured loaders take a keyword-only `locale` (default `en_US`):
+  `source_prior`, `load_spoken_prior_table`, `load_prior_table`,
+  `load_electronic_priors`, and the zero and acronym tables. Each measured table's
+  provenance now names its `locale` (`en`) and `corpus` (`google-tn:en_with_types`)
+  beside the shards it counted. No count moves: `type_priors.json` keeps its 98
+  shards, its `generated` date and its counts (the one-best golden's counts pin is
+  unchanged and only its path is re-pointed), every builder's `--check` passes, and
+  no reading moves (the published and held-out reports are identical). The
+  package-data globs are now `data/*/*.json` and `data/*/*.txt`.
 - Hold two shards out of every corpus table (`tools/google_tn_rows.py`):
   `output-00099-of-00100`, the published test shard, and `output-00095-of-00100`, a
   held-out shard to accept and select changes on. Every builder now reads its shards

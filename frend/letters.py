@@ -7,7 +7,7 @@ rest. A run is two or more Latin capitals standing alone, with a plural or posse
 run leaves a following period as written; an initial takes its period, as icukit's
 abbreviations do, so "S." ties "South" on span and the corpus decides (a letter, 26,596
 of 26,792 times in shard 0). Which reading comes
-first is measured (``data/acronym_priors.json``), by the run's length and vowels.
+first is measured (``data/en/acronym_priors.json``), by the run's length and vowels.
 """
 
 from __future__ import annotations

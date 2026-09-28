@@ -21,7 +21,7 @@ def _load_importer():
 
 importer = _load_importer()
 _REPO = Path(__file__).resolve().parent.parent
-_INVENTORY = _REPO / "frend" / "data" / "exceptions" / "en.json"
+_INVENTORY = _REPO / "frend" / "data" / "en" / "exceptions.json"
 
 
 def test_curation_keeps_conditioned_titles_and_audits_ambiguous_and_regex_drops() -> None:

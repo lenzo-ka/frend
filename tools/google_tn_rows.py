@@ -9,7 +9,8 @@ Two shards of the en_with_types corpus are never counted by a shipped table:
   (``--held-out-shard``).
 
 Every builder reads its shards through :func:`training_shards`, so neither can reach
-a table however the builder slices the corpus. :func:`running_text` is the one
+a table however the builder slices the corpus. :func:`corpus_label` names the corpus a
+table records, from the directory the builder read. :func:`running_text` is the one
 number, separator, number predicate the evaluator scores (and the planned range builder
 will count).
 """
@@ -20,6 +21,13 @@ from collections.abc import Iterable
 from pathlib import Path
 
 HELD_OUT_SHARDS = frozenset({"output-00095-of-00100", "output-00099-of-00100"})
+
+
+def corpus_label(corpus_dir: Path) -> str:
+    """The corpus a table was counted from, named by the directory actually read:
+    ``google-tn:en_with_types`` for the shipped corpus, ``google-tn:<name>`` for any other
+    Google-TN-format shard directory (a fixture, a custom slice)."""
+    return f"google-tn:{Path(corpus_dir).resolve().name}"
 
 
 def training_shards(paths: Iterable[Path]) -> list[Path]:

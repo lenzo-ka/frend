@@ -608,7 +608,7 @@ _HELD_OUT = {"output-00095-of-00100", "output-00099-of-00100"}
 
 
 def _shipped(name: str) -> dict:
-    return json.loads((_REPO / "frend" / "data" / name).read_text(encoding="utf-8"))
+    return json.loads((_REPO / "frend" / "data" / "en" / name).read_text(encoding="utf-8"))
 
 
 def test_shipped_table_counts_no_held_out_shard():
@@ -641,12 +641,12 @@ def test_shipped_table_lists_its_training_shards():
 
 
 def test_no_shipped_table_lists_a_held_out_shard():
-    """Every shipped corpus table (``*_priors.json``) names the shards it counted --
+    """Every shipped corpus table (``<locale>/*_priors.json``) names the shards it counted --
     ``provenance.shards``, or ``provenance.sample_rule.shards`` -- and none is held out."""
-    tables = sorted((_REPO / "frend" / "data").glob("*_priors.json"))
+    tables = sorted((_REPO / "frend" / "data").glob("*/*_priors.json"))
     assert {"type_priors.json", "spoken_priors.json"} <= {path.name for path in tables}
     for path in tables:
-        provenance = _shipped(path.name)["provenance"]
+        provenance = json.loads(path.read_text(encoding="utf-8"))["provenance"]
         shards = provenance.get("shards", provenance.get("sample_rule", {}).get("shards"))
         assert shards, path.name
         assert set(shards).isdisjoint(_HELD_OUT), path.name

@@ -36,7 +36,7 @@ def _load_builder():
 
 
 def test_shipped_table_shape_and_denominators():
-    document = json.loads((_REPO / "frend" / "data" / "spoken_priors.json").read_text())
+    document = json.loads((_REPO / "frend" / "data" / "en" / "spoken_priors.json").read_text())
     table = load_spoken_prior_table()
     assert table.kinds == tuple(sorted(document["kinds"]))
     assert document["provenance"]["sub_key_rules"] == {
@@ -74,7 +74,7 @@ def test_shipped_table_shape_and_denominators():
 
 
 def test_shipped_normalization_provenance_pins_contract():
-    document = json.loads((_REPO / "frend" / "data" / "spoken_priors.json").read_text())
+    document = json.loads((_REPO / "frend" / "data" / "en" / "spoken_priors.json").read_text())
     assert document["provenance"]["normalization"] == _NORMALIZATION_PROVENANCE
     assert _load_builder().build_document(_FIXTURE)["provenance"]["normalization"] == (
         _NORMALIZATION_PROVENANCE

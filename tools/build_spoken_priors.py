@@ -19,7 +19,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "frend" / "data" / "spoken_priors.json"
+_OUT = _REPO / "frend" / "data" / "en" / "spoken_priors.json"
 _BUILD_DATE = "2026-09-24"
 _SHARD_STEP = 10
 _ROWS_PER_CLASS_PER_SHARD = 200
@@ -257,6 +257,8 @@ def _files(corpus_dir: Path) -> list[Path]:
 
 def build_document(corpus_dir: Path) -> dict:
     files = _files(corpus_dir)
+    from google_tn_rows import corpus_label  # on sys.path once _files has run
+
     detectors = _detectors()
     aggregates: dict[str, dict] = {
         kind: {
@@ -369,6 +371,8 @@ def build_document(corpus_dir: Path) -> dict:
     return {
         "provenance": {
             "source": "google-tn-en_with_types",
+            "locale": "en",
+            "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "generated": _BUILD_DATE,

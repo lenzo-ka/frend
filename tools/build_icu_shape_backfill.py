@@ -32,7 +32,7 @@ from icukit.locale import format_currency, format_number, format_ordinal, format
 from icukit.measure import format_measure
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "frend" / "data" / "icu_shape_backfill.json"
+_OUT = _REPO / "frend" / "data" / "root" / "icu_shape_backfill.json"
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 

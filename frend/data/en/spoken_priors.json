@@ -4331,8 +4331,10 @@
       "TIME": "time",
       "VERBATIM": "symbol"
     },
+    "corpus": "google-tn:en_with_types",
     "generated": "2026-09-24",
     "license": "CC BY-SA 4.0",
+    "locale": "en",
     "normalization": "Written tokens: remove trailing spaces and commas before recognition. Spoken forms and alternatives: split at characters whose Unicode general category starts with P and at whitespace recognized by str.split(), then lowercase each token independently.",
     "outside_classes": {
       "ADDRESS": "no verbalized value family",
