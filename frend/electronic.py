@@ -303,9 +303,10 @@ def digit_forms(run: str, locale: str = "en_US") -> dict[str, tuple[tuple[str, s
 
     ``cardinal`` and ``year`` are ICU's rule sets for the run's value; ``digits`` reads
     each digit by ICU's cardinal, with zero also as the corpus's "o" (lexical: ICU has
-    no digit rule that calls zero "o").
+    no digit rule that calls zero "o"; ``lexical.json`` ``zero.digit``, so a locale with
+    none has no ``digits_o``).
     """
-    from frend.verbalize import LEXICAL_SOURCE, _number_leaf
+    from frend.verbalize import LEXICAL_SOURCE, _lexical, _number_leaf
 
     value = Decimal(run)
     words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in run]
@@ -316,7 +317,8 @@ def digit_forms(run: str, locale: str = "en_US") -> dict[str, tuple[tuple[str, s
         "year": tuple((item.text, item.provenance) for item in _number_leaf(value, "year", locale)),
         "digits": ((" ".join(words), "icu-rbnf:%spellout-cardinal"),),
     }
-    if "0" in run:
-        spoken = " ".join("o" if d == "0" else w for d, w in zip(run, words, strict=True))
+    zero = _lexical("zero.digit", locale)
+    if "0" in run and zero is not None:
+        spoken = " ".join(zero if d == "0" else w for d, w in zip(run, words, strict=True))
         forms["digits_o"] = ((spoken, LEXICAL_SOURCE),)
     return forms
