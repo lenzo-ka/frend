@@ -28,7 +28,10 @@ This attribution applies to `type_priors.json` and `spoken_priors.json`: their c
 **This data was filtered and aggregated**, not copied: surfaces containing a Unicode decimal digit (category `Nd`) use a fixed corpus-class → frend class mapping, while single uppercase-letter surfaces admit the corpus's own classes so their alphabetic and numeric interpretations share a denominator. Other surfaces and the PLAIN/PUNCT/LETTERS/VERBATIM/ELECTRONIC classes are dropped. Each retained surface is reduced to its `frend.shape` signature, and only the resulting integer `shape -> class` counts are retained. The `single_uppercase_letters` section preserves the corresponding per-letter aggregates for inspection. No corpus text is reproduced. The raw corpus itself is never vendored here.
 
 The table is rebuilt (or verified) by `tools/build_type_priors.py`, which streams
-the corpus shards line by line. `--check` re-derives the table and diffs it
+the corpus shards line by line. It counts every shard but the two held out
+(`tools/google_tn_rows.py`): `output-00099-of-00100`, the published test shard, and
+`output-00095-of-00100`, the shard changes are accepted on. `provenance.shards` lists
+the 98 it counted. `--check` re-derives the table and diffs it
 against this file, so it requires the corpus present at the corpus path
 (`--corpus-dir`, or the `FREND_TN_CORPUS_DIR` environment variable);
 `tools/fetch_corpora.py` fetches and verifies it. There is no
@@ -39,7 +42,7 @@ such as a small fixture, and records that path in the provenance.
 
 This table measures which sources among the alternatives returned by `frend.verbalize` match spoken forms in the Google/Sproat English text-normalization corpus. It records per-kind matched rows, unmatched rows split among unrecognized, unverbalized, and no-alternative-matched outcomes, source match counts, and frequent unmatched spoken forms with the same reason breakdown. End-to-end recall is `matched / total`. Verbalizer recall is `matched / (matched + no_alternative_matched)`; the loader and runtime do not compute or apply it.
 
-The builder reads every tenth sorted shard and keeps the first configured limit of eligible rows for each mapped corpus class in each selected shard. The exact shard names, limit, and resulting row counts live in the JSON provenance.
+The builder reads every tenth sorted shard, less the held-out shards, and keeps the first configured limit of eligible rows for each mapped corpus class in each selected shard. The exact shard names, limit, and resulting row counts live in the JSON provenance.
 
 frend has no canonical detector registry, so the builder declares its own recognition profile rather than claiming to reuse one. Cardinal and decimal recognition includes ICU-derived long and short compact-number patterns. Money recognition includes symbol and ICU-derived display-name detectors for each recorded currency code. Digit recognition (the corpus's DIGIT class, digit strings read one digit at a time) is frend's number reader and its written-forms reader. Measure recognition includes percent and a measure detector for each recorded unit, whose written forms icukit derives from ICU, and the recorded mixed measures (foot and inch, pound and ounce). Time recognition reads hours, minutes, a written day period ("5pm" is spoken "five p m") and a written time zone, spoken as its letters ("10 PM ET", "ten p m e t"); numeric durations ("1:47.22") are read by icukit's duration detector and filed under TIME, as the corpus files race times; ordinal recognition includes Roman numerals, which read as cardinals or ordinals; date recognition includes plural numerals ("1990s", "nineteen nineties", filed as DATE by the corpus). A letter-digit token read as its runs ("3D", "three d") has no corpus class of its own, so its detector joins the date, time and ordinal profiles, where such tokens occur. The JSON records the locale, detector classes by kind, date skeletons, currency codes, and full-span rule. Each full-span detection is resolved and verbalized separately through the normal frend lattice; no detection payload is constructed by the builder.
 

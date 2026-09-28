@@ -599,3 +599,54 @@ def test_plural_numerals_take_the_corpus_date_class():
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-v"]))
+
+
+# ------------------------------------------------------------------ held-out shards
+
+_ALL_SHARDS = {f"output-{index:05d}-of-00100" for index in range(100)}
+_HELD_OUT = {"output-00095-of-00100", "output-00099-of-00100"}
+
+
+def _shipped(name: str) -> dict:
+    return json.loads((_REPO / "frend" / "data" / name).read_text(encoding="utf-8"))
+
+
+def test_shipped_table_counts_no_held_out_shard():
+    """The falsifier: shapes seen once, only in a held-out shard, are absent, and the
+    exact counts are the 98-shard build's."""
+    table = _shipped("type_priors.json")
+    counts = table["counts"]
+    # Seen only in shard 95: present if 95 is counted.
+    assert "N N N - N N N" not in counts
+    assert "(N) N A N-N-N-N" not in counts
+    # Seen only in shard 99: present if 99 is counted.
+    assert "N-N A N-N N-N" not in counts
+    assert "N-N-N A A A A A A A" not in counts
+    assert counts["N:N"] == {"time": 61570}
+    assert counts["N-N"] == {"telephone": 33069}
+    assert table["single_uppercase_letters"]["I"] == {
+        "cardinal": 52913,
+        "letters": 2537,
+        "ordinal": 22763,
+        "plain": 335395,
+    }
+
+
+def test_shipped_table_lists_its_training_shards():
+    provenance = _shipped("type_priors.json")["provenance"]
+    shards = provenance["shards"]
+    assert len(shards) == 98 == len(set(shards))
+    assert _ALL_SHARDS - set(shards) == _HELD_OUT
+    assert provenance["generated"] == "2026-09-28"
+
+
+def test_no_shipped_table_lists_a_held_out_shard():
+    """Every shipped corpus table (``*_priors.json``) names the shards it counted --
+    ``provenance.shards``, or ``provenance.sample_rule.shards`` -- and none is held out."""
+    tables = sorted((_REPO / "frend" / "data").glob("*_priors.json"))
+    assert {"type_priors.json", "spoken_priors.json"} <= {path.name for path in tables}
+    for path in tables:
+        provenance = _shipped(path.name)["provenance"]
+        shards = provenance.get("shards", provenance.get("sample_rule", {}).get("shards"))
+        assert shards, path.name
+        assert set(shards).isdisjoint(_HELD_OUT), path.name

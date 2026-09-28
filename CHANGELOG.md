@@ -1,6 +1,28 @@
 # Changelog
 
 ## Unreleased
+- Hold two shards out of every corpus table (`tools/google_tn_rows.py`):
+  `output-00099-of-00100`, the published test shard, and `output-00095-of-00100`, a
+  held-out shard to accept and select changes on. Every builder now reads its shards
+  through `training_shards`, and each table lists the shards it counted
+  (`provenance.shards`, or `sample_rule.shards` in `spoken_priors.json`).
+  - **Counting overlap, fixed.** `data/type_priors.json` counted all 100 shards,
+    including the test shard it is scored on. It is rebuilt from the other 98 (1,864
+    shapes become 1,848; 57,386,447 surfaces become 56,237,940; for example `N:N` time
+    62,839 becomes 61,570). The rebuild changes no reading: the published report is
+    byte-identical (first choice 99.05%, any reading 99.27%, sentences 90.24%, running
+    text 1 of 110 first), and so is shard 95's. The spoken, zero, acronym and electronic
+    tables never read shard 95 or 99 and are unchanged. The one-best golden is
+    regenerated on the rebuilt table (9 of its 13 rows move their hashes; no first
+    choice moves) and now pins the table's counts.
+  - **Selection overlap, disclosed.** Earlier entries here chose and justified changes
+    by their figures "on the published test set", shard 99. Those figures were
+    selected on the test shard and are not held-out results. From now on changes are
+    accepted and selected on shard 95, and shard 99 is reported once per change.
+  - `tools/evaluate_google_tn.py --held-out-shard NAME` adds a held-out section: per
+    token over NAME's first 100,000 lines, cut as the test shard is, and running text
+    over the whole shard. Shard 95's baseline: first choice 99.07%, any reading 99.28%,
+    sentences 90.79% (92,425 tokens); 13,167 running-text triples.
 - Spell a chain of initials ("J.R.R. Tolkien" "j r r", "C.S. Lewis" "c s"): a
   capitals abbreviation icukit's lexicon lists with no expansion (a sentence-break
   entry) is now spelled rather than left as written, and a chain the lexicon does not

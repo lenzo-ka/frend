@@ -130,7 +130,8 @@ def test_google_provenance_profile():
     assert prov["source"] == "google-tn-en_with_types"
     assert prov["license"] == "CC BY-SA 4.0"
     assert prov["attribution"].startswith("derived from Sproat & Jaitly")
-    assert prov["generated"] == "2026-08-23"
+    assert prov["generated"] == "2026-09-28"
+    assert prov["shards"] == ["output-00000-of-00002", "output-00001-of-00002"]
     assert "en_with_types" in prov["note"]
     assert "LETTERS and PLAIN" in prov["note"]
 
@@ -165,6 +166,27 @@ def test_serial_and_parallel_builds_are_byte_identical(tmp_path):
     b = _run(["--corpus-dir", str(_FIX), "--jobs", "2", "--out", str(out2)])
     assert a.returncode == 0 and b.returncode == 0, (a.stderr, b.stderr)
     assert out1.read_text(encoding="utf-8") == out2.read_text(encoding="utf-8")
+
+
+def test_held_out_shards_are_never_counted(tmp_path):
+    """Shards 95 (held out) and 99 (the published test) are counted by neither build
+    path: the serial stream (--jobs 1) and the parallel file list (--jobs 2) both read
+    only the training shards."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    for name, line in [
+        ("output-00000-of-00100", "CARDINAL\t12\ttwelve\n"),
+        ("output-00001-of-00100", "CARDINAL\t12\ttwelve\n"),
+        ("output-00095-of-00100", "DECIMAL\t3.14\tthree point one four\n"),
+        ("output-00099-of-00100", "FRACTION\t1/2\tone half\n"),
+    ]:
+        (corpus / name).write_text(line, encoding="utf-8")
+    for jobs in ("1", "2"):
+        out = tmp_path / f"jobs{jobs}.json"
+        result = _run(["--corpus-dir", str(corpus), "--jobs", jobs, "--out", str(out)])
+        assert result.returncode == 0, result.stderr
+        counts = json.loads(out.read_text(encoding="utf-8"))["counts"]
+        assert counts == {"N": {"cardinal": 2}}, f"jobs={jobs}"
 
 
 def test_default_corpus_is_google_tn(tmp_path):

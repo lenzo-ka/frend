@@ -33,6 +33,7 @@ _REPO = Path(__file__).resolve().parents[1]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+import google_tn_rows  # noqa: E402
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
 
 _TEST_FILE = "output-00099-of-00100"
@@ -62,17 +63,7 @@ def _detectors():
     return _DETECTORS
 
 
-def _expected(corpus_class: str, written: str, spoken: str) -> str:
-    from frend.electronic import decode_letter_notation
-    from frend.spoken_priors import normalize_spoken
-
-    if spoken == "<self>":
-        return normalize_spoken(written)
-    if spoken == "sil":
-        return ""
-    if corpus_class == "ELECTRONIC":
-        spoken = decode_letter_notation(spoken)
-    return normalize_spoken(spoken)
+_expected = google_tn_rows.expected
 
 
 def _joined(texts_and_passthrough) -> str:
@@ -120,33 +111,9 @@ def _score_text(written: str, target: str) -> tuple[bool, bool]:
     return False, False
 
 
-# Running text writes a range or a dimension as one word ("5-10", "3x4", "3:2"), where the
-# corpus splits it into three tokens; these are rejoined by their written form alone.
-_JOINERS = frozenset({"-", "–", "x", ":"})
-
-
-def _running_text(sentences) -> list[tuple[str, str, str, str]]:
-    """(separator, the middle's corpus reading, joined written, joined target) for each
-    number, separator, number triple, left to right, never overlapping."""
-    found = []
-    for sentence in sentences:
-        at = 1
-        while at < len(sentence) - 1:
-            left, middle, right = sentence[at - 1], sentence[at], sentence[at + 1]
-            if middle[1] in _JOINERS and left[1][:1].isdigit() and right[1][:1].isdigit():
-                parts = [_expected(*row) for row in (left, middle, right)]
-                found.append(
-                    (
-                        middle[1],
-                        parts[1] or "(silence)",
-                        left[1] + middle[1] + right[1],
-                        " ".join(parts),
-                    )
-                )
-                at += 3
-            else:
-                at += 1
-    return found
+# The number, separator, number predicate is shared with the builders (one definition);
+# the alias keeps the name the evaluator has always had.
+_running_text = google_tn_rows.running_text
 
 
 def _score_joined(item: tuple[str, str, str, str]) -> tuple[str, str, bool, bool]:
@@ -154,11 +121,13 @@ def _score_joined(item: tuple[str, str, str, str]) -> tuple[str, str, bool, bool
     return (separator, middle, *_score_text(written, target))
 
 
-def _rows(corpus_dir: Path):
-    """The test set: sentences of (class, written, spoken) rows, as the paper cuts it."""
+def _rows(corpus_dir: Path, name: str = _TEST_FILE, limit: int | None = _TEST_LINES):
+    """Sentences of (class, written, spoken) rows from the first ``limit`` lines of shard
+    ``name`` (every line when ``limit`` is None); by default the test set, as the paper
+    cuts it."""
     sentences, current = [], []
-    with (corpus_dir / _TEST_FILE).open(encoding="utf-8") as handle:
-        for line in islice(handle, _TEST_LINES):
+    with (corpus_dir / name).open(encoding="utf-8") as handle:
+        for line in islice(handle, limit):
             parts = line.rstrip("\n").split("\t")
             if parts[0] == "<eos>":
                 if current:
@@ -172,11 +141,19 @@ def _rows(corpus_dir: Path):
     return sentences
 
 
-def evaluate(corpus_dir: Path, workers: int) -> dict:
-    sentences = _rows(corpus_dir)
-    rows = [row for sentence in sentences for row in sentence]
+def _map(function, items, workers: int, chunksize: int) -> list:
+    """``function`` over ``items``, across ``workers`` processes when there is more than one."""
+    if workers <= 1:
+        return [function(item) for item in items]
     with ProcessPoolExecutor(max_workers=workers) as pool:
-        results = list(pool.map(_score, rows, chunksize=256))
+        return list(pool.map(function, items, chunksize=chunksize))
+
+
+def _per_token(sentences, workers: int) -> dict:
+    """First-choice, any-reading and whole-sentence accuracy over every token of
+    ``sentences``, overall and per class."""
+    rows = [row for sentence in sentences for row in sentence]
+    results = _map(_score, rows, workers, 256)
     by_class: dict[str, Counter] = defaultdict(Counter)
     for corpus_class, first, any_ in results:
         by_class[corpus_class]["tokens"] += 1
@@ -185,26 +162,18 @@ def evaluate(corpus_dir: Path, workers: int) -> dict:
     total = Counter()
     for counts in by_class.values():
         total.update(counts)
-    joined = _running_text(sentences)
-    with ProcessPoolExecutor(max_workers=workers) as pool:
-        joined_results = list(pool.map(_score_joined, joined, chunksize=16))
-    by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
-    for separator, middle, first, any_ in joined_results:
-        by_joint[(separator, middle)]["n"] += 1
-        by_joint[(separator, middle)]["first"] += first
-        by_joint[(separator, middle)]["any"] += any_
     correct_sentences, at = 0, 0
     for sentence in sentences:
         outcome = results[at : at + len(sentence)]
         at += len(sentence)
         correct_sentences += all(first for _, first, _ in outcome)
+    tokens, count = total["tokens"], len(sentences)
     return {
-        "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
-        "tokens": total["tokens"],
-        "sentences": len(sentences),
-        "first_choice_accuracy": total["first"] / total["tokens"],
-        "any_reading_accuracy": total["any"] / total["tokens"],
-        "sentence_accuracy": correct_sentences / len(sentences),
+        "tokens": tokens,
+        "sentences": count,
+        "first_choice_accuracy": total["first"] / tokens if tokens else 0.0,
+        "any_reading_accuracy": total["any"] / tokens if tokens else 0.0,
+        "sentence_accuracy": correct_sentences / count if count else 0.0,
         "classes": {
             name: {
                 "tokens": counts["tokens"],
@@ -213,18 +182,65 @@ def evaluate(corpus_dir: Path, workers: int) -> dict:
             }
             for name, counts in sorted(by_class.items(), key=lambda kv: -kv[1]["tokens"])
         },
-        "running_text": [
-            {
-                "separator": separator,
-                "corpus_middle": middle,
-                "count": counts["n"],
-                "first_choice": counts["first"] / counts["n"],
-                "any_reading": counts["any"] / counts["n"],
-            }
-            for (separator, middle), counts in sorted(by_joint.items(), key=lambda kv: -kv[1]["n"])
-        ],
+    }
+
+
+def _running_text_rows(sentences, workers: int) -> list[dict]:
+    """Each number, separator, number triple of ``sentences`` rejoined as written and
+    scored, grouped by separator and the corpus's reading of it."""
+    joined_results = _map(_score_joined, _running_text(sentences), workers, 16)
+    by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
+    for separator, middle, first, any_ in joined_results:
+        by_joint[(separator, middle)]["n"] += 1
+        by_joint[(separator, middle)]["first"] += first
+        by_joint[(separator, middle)]["any"] += any_
+    return [
+        {
+            "separator": separator,
+            "corpus_middle": middle,
+            "count": counts["n"],
+            "first_choice": counts["first"] / counts["n"],
+            "any_reading": counts["any"] / counts["n"],
+        }
+        for (separator, middle), counts in sorted(by_joint.items(), key=lambda kv: -kv[1]["n"])
+    ]
+
+
+def _held_out(corpus_dir: Path, name: str, workers: int) -> dict:
+    """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
+    as the paper cuts the test shard, and running text over the whole shard."""
+    whole = _rows(corpus_dir, name, None)
+    return {
+        "shard": name,
+        "per_token": {
+            "lines": f"first {_TEST_LINES} lines of {name}",
+            **_per_token(_rows(corpus_dir, name, _TEST_LINES), workers),
+        },
+        "running_text": {
+            "lines": f"all lines of {name}",
+            "triples": len(_running_text(whole)),
+            "rows": _running_text_rows(whole, workers),
+        },
+    }
+
+
+def evaluate(corpus_dir: Path, workers: int, held_out_shard: str | None = None) -> dict:
+    sentences = _rows(corpus_dir)
+    per_token = _per_token(sentences, workers)
+    report = {
+        "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
+        **{key: per_token[key] for key in ("tokens", "sentences")},
+        **{
+            key: per_token[key]
+            for key in ("first_choice_accuracy", "any_reading_accuracy", "sentence_accuracy")
+        },
+        "classes": per_token["classes"],
+        "running_text": _running_text_rows(sentences, workers),
         "note": "frend reads each token alone; the published models see its sentence",
     }
+    if held_out_shard is not None:
+        report["held_out"] = _held_out(corpus_dir, held_out_shard, workers)
+    return report
 
 
 def _render(report: dict) -> str:
@@ -252,6 +268,26 @@ def _render(report: dict) -> str:
             f"{row['separator']:5s}{row['corpus_middle']:16s}{row['count']:>7d}"
             f"{100 * row['first_choice']:>8.1f}%{100 * row['any_reading']:>8.1f}%"
         )
+    held = report.get("held_out")
+    if held:
+        tokens = held["per_token"]
+        lines.append("")
+        lines.append(
+            f"Held out: {tokens['lines']} ({tokens['tokens']} tokens, "
+            f"{tokens['sentences']} sentences)"
+        )
+        lines.append(
+            f"First choice: {100 * tokens['first_choice_accuracy']:.2f}%   "
+            f"any reading: {100 * tokens['any_reading_accuracy']:.2f}%   "
+            f"sentences all right: {100 * tokens['sentence_accuracy']:.2f}%"
+        )
+        text = held["running_text"]
+        lines.append(f"Held-out running text: {text['lines']} ({text['triples']} triples)")
+        for row in text["rows"]:
+            lines.append(
+                f"{row['separator']:5s}{row['corpus_middle']:16s}{row['count']:>7d}"
+                f"{100 * row['first_choice']:>8.1f}%{100 * row['any_reading']:>8.1f}%"
+            )
     return "\n".join(lines)
 
 
@@ -260,8 +296,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--corpus-dir", type=Path, default=None)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--json", type=Path, default=None, help="also write the report here")
+    parser.add_argument(
+        "--held-out-shard",
+        default=None,
+        metavar="NAME",
+        help="also score shard NAME: per token over its first 100,000 lines, running "
+        "text over all of it (acceptance is on output-00095-of-00100)",
+    )
     args = parser.parse_args(argv)
-    report = evaluate(args.corpus_dir or _default_corpus_dir(), args.workers)
+    report = evaluate(args.corpus_dir or _default_corpus_dir(), args.workers, args.held_out_shard)
     print(_render(report))
     if args.json:
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

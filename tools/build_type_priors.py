@@ -59,11 +59,15 @@ def _ensure_repo_importable() -> None:
 
 
 _ensure_repo_importable()
+if str(Path(__file__).resolve().parent) not in sys.path:  # tools/, for google_tn_rows
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+from google_tn_rows import training_shards  # noqa: E402
+
 from frend.shape import is_single_uppercase  # noqa: E402
 
 # A fixed build date is used deliberately (no wall clock) so a rebuild from the
 # same corpus is byte-identical and ``--check`` stays a clean drift guard.
-_BUILD_DATE = "2026-08-23"
+_BUILD_DATE = "2026-09-28"
 
 
 def _default_corpus_dir() -> Path:
@@ -106,7 +110,8 @@ _GOOGLE_TN_NOTE = (
     "backfill and blend are a separate later pass. Single Unicode-Lu letter "
     "surfaces lift the digit filter and class drops so their distribution includes "
     "the corpus's LETTERS and PLAIN classifications; per-letter counts are recorded "
-    "separately."
+    "separately; the held-out running-text (95) and published test (99) shards are not "
+    "counted"
 )
 
 _GOOGLE_TN_PROFILE: dict[str, str] = {
@@ -171,8 +176,10 @@ def _google_tn_file_pairs(path: Path) -> Iterator[tuple[str, str]]:
 
 
 def _google_tn_files(corpus_dir: Path) -> list[Path]:
-    """The sorted ``output-NNNNN-of-NNNNN`` shards under ``corpus_dir``."""
-    files = sorted(corpus_dir.glob("output-*-of-*"))
+    """The sorted ``output-NNNNN-of-NNNNN`` shards under ``corpus_dir``, less the
+    held-out shards (``tools/google_tn_rows.py``): the serial stream, the parallel
+    file list and a fixture build all read their shards here."""
+    files = training_shards(sorted(corpus_dir.glob("output-*-of-*")))
     if not files:
         raise FileNotFoundError(
             f"no Google-TN corpus shards (output-*-of-*) under {corpus_dir}; "
@@ -289,15 +296,19 @@ def build_document(
     attribution: str | None = None,
     counts: dict[str, dict[str, int]] | None = None,
     single_uppercase_letters: dict[str, dict[str, int]] | None = None,
+    shards: list[str] | None = None,
 ) -> dict:
     """Assemble the full artifact: provenance plus raw counts.
 
     ``source``/``note``/``license``/``attribution`` name the provenance and default
     to a generic caller-provided-pairs profile; a corpus build passes its profile without
     touching the format or the runtime. ``counts`` may be supplied pre-built (a
-    parallel build); otherwise it is tallied from ``pairs``.
+    parallel build); otherwise it is tallied from ``pairs``. ``shards`` names the
+    corpus shards a corpus build counted.
     """
-    provenance: dict[str, str] = {"source": source, "generated": _BUILD_DATE, "note": note}
+    provenance: dict = {"source": source, "generated": _BUILD_DATE, "note": note}
+    if shards is not None:
+        provenance["shards"] = list(shards)
     if license is not None:
         provenance["license"] = license
     if attribution is not None:
@@ -318,14 +329,25 @@ def _serialize(document: dict) -> str:
 def _build(corpus: str, corpus_dir: Path | None, jobs: int | None) -> dict:
     """Assemble the artifact for the selected corpus seam."""
     if corpus == "google-tn":
-        counts, letters = _build_google_tn_material(corpus_dir, jobs)
+        directory = Path(corpus_dir) if corpus_dir is not None else _default_corpus_dir()
+        counts, letters = _build_google_tn_material(directory, jobs)
         return build_document(
-            [], counts=counts, single_uppercase_letters=letters, **_GOOGLE_TN_PROFILE
+            [],
+            counts=counts,
+            single_uppercase_letters=letters,
+            shards=[path.name for path in _google_tn_files(directory)],
+            **_GOOGLE_TN_PROFILE,
         )
     path = Path(corpus)
     counts, letters = _build_google_tn_material(path, 1 if jobs is None else jobs)
     profile = {**_GOOGLE_TN_PROFILE, "source": f"google-tn-en_with_types:{path}"}
-    return build_document([], counts=counts, single_uppercase_letters=letters, **profile)
+    return build_document(
+        [],
+        counts=counts,
+        single_uppercase_letters=letters,
+        shards=[shard.name for shard in _google_tn_files(path)],
+        **profile,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

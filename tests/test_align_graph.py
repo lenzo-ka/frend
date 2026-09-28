@@ -554,14 +554,30 @@ def test_one_best_untouched():
     ]
     data = Path(__file__).parent / "data"
     provenance = json.loads((data / "align_one_best.provenance.json").read_text())
+    code_commit = "1f5c1bf09ed31b6d89cd7017346023c14278e9e8"
     assert provenance == {
-        "baseline_commit": "7c6ef7b5e77adf9016655ee54c9fadce0ee62710",
+        "code_commit": code_commit,
+        "icukit_commit": "c2755b07e2c0adcfeb215eeab8ebe138d6edb495",
+        "type_priors_counts_sha256": (
+            "b34097ffdddc1221906af80a7c824c26c5418cd4fafd91df93b320ac98a131c5"
+        ),
+        "type_priors_path": "frend/data/type_priors.json",
         "command": (
-            "cd $FREND_BASELINE_CHECKOUT && PYTHONPATH=. python -B "
+            f"BASE=$(mktemp -d) && git -C $FREND_CHECKOUT archive {code_commit} "
+            "| tar -x -C $BASE && cp $FREND_ALIGN_WORKTREE/<type_priors_path> "
+            "$BASE/frend/data/type_priors.json && cd $BASE && PYTHONPATH=. python -B "
             "$FREND_ALIGN_WORKTREE/tests/generate_align_one_best.py "
             "$FREND_ALIGN_WORKTREE/tests/data/align_one_best.json"
         ),
     }
+    # The golden's table input is the tree's table, pinned on its counts (not its bytes,
+    # so a provenance-only edit of the table needs no regeneration).
+    table = json.loads(
+        (Path(__file__).resolve().parents[1] / provenance["type_priors_path"]).read_text()
+    )
+    counts = {key: value for key, value in table.items() if key != "provenance"}
+    canonical = json.dumps(counts, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    assert hashlib.sha256(canonical.encode()).hexdigest() == provenance["type_priors_counts_sha256"]
     rows = json.loads((data / "align_one_best.json").read_text())
     for row in rows:
         text = row["text"]
