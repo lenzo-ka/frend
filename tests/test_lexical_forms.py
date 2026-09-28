@@ -102,7 +102,8 @@ class _Text:
         if isinstance(node, ast.Call):
             func = node.func
             if isinstance(func, ast.Name) and func.id == "SpokenAlternative":
-                return self.constants(node.args[0], scope, seen) if node.args else []
+                spoken = _spoken_argument(node)
+                return [] if spoken is None else self.constants(spoken, scope, seen)
             if isinstance(func, ast.Name) and func.id in _READERS:
                 return [c for arg in node.args[2:] for c in self.constants(arg, scope, seen)]
             if isinstance(func, ast.Name) and func.id in self.functions:
@@ -140,6 +141,19 @@ class _Text:
     @staticmethod
     def _bound(name: str, scope: ast.AST) -> list[ast.AST]:
         values = []
+        if isinstance(scope, ast.FunctionDef):
+            # A parameter's default is a text the function writes.
+            arguments = scope.args
+            positional = [*arguments.posonlyargs, *arguments.args]
+            pairs = [
+                *zip(
+                    positional[len(positional) - len(arguments.defaults) :],
+                    arguments.defaults,
+                    strict=True,
+                ),
+                *zip(arguments.kwonlyargs, arguments.kw_defaults, strict=True),
+            ]
+            values += [default for arg, default in pairs if default is not None and arg.arg == name]
         for item in ast.walk(scope):
             if isinstance(item, ast.Assign) and name in {
                 t.id for target in item.targets for t in ast.walk(target) if isinstance(t, ast.Name)
@@ -150,12 +164,174 @@ class _Text:
         return values
 
 
+def _spoken_argument(node: ast.Call) -> ast.AST | None:
+    """The text a ``SpokenAlternative`` is given, positionally or as ``text=``."""
+    if node.args:
+        return node.args[0]
+    return next((k.value for k in node.keywords if k.arg == "text"), None)
+
+
+def _argument(node: ast.Call, index: int, keyword: str) -> ast.AST | None:
+    if len(node.args) > index:
+        return node.args[index]
+    return next((k.value for k in node.keywords if k.arg == keyword), None)
+
+
+class _Label:
+    """Whether an expression carries the lexical label.
+
+    A provenance is labeled lexical where it names ``LEXICAL_SOURCE``, writes the label
+    itself (a string holding ``lexical:``), or names a local or module-level name bound
+    to either (an alias). A field of a value already made (``item.provenance``) is
+    that value's label, not one given here.
+
+    The parts handed to ``_compose`` carry the label where they are, or are built
+    from, a value labeled here: followed through local names, loop and comprehension
+    variables, what a list is given by ``append``/``insert``/``extend``, and the
+    returns of the module's own functions."""
+
+    def __init__(self, tree: ast.Module, functions: dict[str, ast.FunctionDef]) -> None:
+        self.tree = tree
+        self.functions = functions
+
+    def _module_bound(self, name: str) -> list[ast.AST]:
+        return [
+            node.value
+            for node in self.tree.body
+            if isinstance(node, ast.Assign)
+            and name
+            in {
+                t.id for target in node.targets for t in ast.walk(target) if isinstance(t, ast.Name)
+            }
+        ]
+
+    def _aliases(self, name: str, scope: ast.AST) -> list[ast.AST]:
+        local = (
+            []
+            if scope is self.tree
+            else [
+                item.value
+                for item in ast.walk(scope)
+                if isinstance(item, ast.Assign)
+                and name
+                in {
+                    t.id
+                    for target in item.targets
+                    for t in ast.walk(target)
+                    if isinstance(t, ast.Name)
+                }
+            ]
+        )
+        return [*local, *self._module_bound(name)]
+
+    def provenance(self, node: ast.AST, scope: ast.AST, seen: set | None = None) -> bool:
+        seen = set() if seen is None else seen
+        if id(node) in seen:
+            return False
+        seen.add(id(node))
+        if isinstance(node, ast.Constant):
+            return isinstance(node.value, str) and "lexical:" in node.value
+        if isinstance(node, ast.Attribute):
+            return False
+        if isinstance(node, ast.Name):
+            return node.id == "LEXICAL_SOURCE" or any(
+                self.provenance(value, scope, seen) for value in self._aliases(node.id, scope)
+            )
+        if isinstance(node, ast.Call):
+            # A label is a string: one built by a string method ("+".join(...),
+            # "{}+{}".format(...)) carries what it is built from; any other call makes
+            # a value that is not a label.
+            if not isinstance(node.func, ast.Attribute):
+                return False
+            children = [node.func.value, *node.args, *(k.value for k in node.keywords)]
+        elif isinstance(node, ast.JoinedStr | ast.FormattedValue | ast.BinOp | ast.IfExp):
+            children = list(ast.iter_child_nodes(node))
+        else:
+            return False
+        return any(self.provenance(child, scope, seen) for child in children)
+
+    def parts(self, node: ast.AST, scope: ast.AST, seen: set | None = None) -> bool:
+        seen = set() if seen is None else seen
+        if id(node) in seen:
+            return False
+        seen.add(id(node))
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            if node.func.id == "SpokenAlternative":
+                label = _argument(node, 1, "provenance")
+                if label is not None and self.provenance(label, scope):
+                    return True
+            elif node.func.id in self.functions:
+                target = self.functions[node.func.id]
+                if any(
+                    self.parts(item.value, target, seen)
+                    for item in ast.walk(target)
+                    if isinstance(item, ast.Return) and item.value is not None
+                ):
+                    return True
+        if (
+            isinstance(node, ast.Tuple)
+            and len(node.elts) == 2
+            and self.provenance(node.elts[1], scope)
+        ):
+            return True
+        if isinstance(node, ast.Name):
+            return node.id == "LEXICAL_SOURCE" or any(
+                self.parts(value, scope, seen)
+                for value in [*_Text._bound(node.id, scope), *self._added(node.id, scope)]
+            )
+        return any(self.parts(child, scope, seen) for child in ast.iter_child_nodes(node))
+
+    @staticmethod
+    def _added(name: str, scope: ast.AST) -> list[ast.AST]:
+        """What a list is given after it is made (``name.append(x)``, ``.insert``,
+        ``.extend``)."""
+        return [
+            item
+            for call in ast.walk(scope)
+            if isinstance(call, ast.Call)
+            and isinstance(call.func, ast.Attribute)
+            and call.func.attr in {"append", "insert", "extend"}
+            and isinstance(call.func.value, ast.Name)
+            and call.func.value.id == name
+            for item in call.args
+        ]
+
+
+def _template_letters(node: ast.AST, scope: ast.AST, seen: set) -> list[str]:
+    """The lettered string literals a template is written from, following a local
+    name to what it is bound to; not what a comprehension iterates over or what a
+    call returns (``" ".join("{}" for _ in parts)`` writes no letter)."""
+    if id(node) in seen:
+        return []
+    seen.add(id(node))
+    if isinstance(node, ast.Constant):
+        return [node.value] if isinstance(node.value, str) and _LETTER.search(node.value) else []
+    if isinstance(node, ast.Name):
+        return [
+            c
+            for value in _Text._bound(node.id, scope)
+            for c in _template_letters(value, scope, seen)
+        ]
+    if isinstance(node, ast.comprehension | ast.Attribute):
+        return []
+    if isinstance(node, ast.Call):
+        if not isinstance(node.func, ast.Attribute):
+            return []
+        children = [node.func.value, *node.args, *(k.value for k in node.keywords)]
+    else:
+        children = list(ast.iter_child_nodes(node))
+    return [c for child in children for c in _template_letters(child, scope, seen)]
+
+
 def _lexical_constant_sites(source: str, name: str) -> list[str]:
     tree = ast.parse(source)
     text = _Text(tree)
+    label = _Label(tree, text.functions)
     found = []
     # A spoken form written in the code and labeled lexical: the text of a
-    # SpokenAlternative, or of a (text, source) pair, whose source is LEXICAL_SOURCE.
+    # SpokenAlternative (positional or ``text=``), or of a (text, source) pair, whose
+    # source is labeled lexical; and a lettered template ``_compose`` fills from parts
+    # that carry the label.
     scopes = [tree, *(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef))]
     for scope in scopes:
         body = (
@@ -164,30 +340,46 @@ def _lexical_constant_sites(source: str, name: str) -> list[str]:
             else [scope]
         )
         for node in (item for part in body for item in ast.walk(part)):
-            if (
-                isinstance(node, ast.Call)
-                and isinstance(node.func, ast.Name)
-                and node.func.id == "SpokenAlternative"
-                and node.args
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                if node.func.id == "SpokenAlternative":
+                    spoken = _spoken_argument(node)
+                    provenance = _argument(node, 1, "provenance")
+                    if (
+                        spoken is None
+                        or provenance is None
+                        or not label.provenance(provenance, scope)
+                    ):
+                        continue
+                elif node.func.id == "_compose":
+                    spoken = _argument(node, 1, "template")
+                    parts = _argument(node, 0, "parts")
+                    if spoken is None or parts is None or not label.parts(parts, scope):
+                        continue
+                else:
+                    continue
+            elif (
+                isinstance(node, ast.Tuple)
+                and len(node.elts) == 2
+                and not any(isinstance(elt, ast.Starred) for elt in node.elts)
             ):
-                spoken = node.args[0]
-                provenance = [
-                    *node.args[1:2],
-                    *(k.value for k in node.keywords if k.arg == "provenance"),
-                ]
-            elif isinstance(node, ast.Tuple) and len(node.elts) == 2:
-                spoken, provenance = node.elts[0], node.elts[1:]
+                spoken = node.elts[0]
+                if not label.provenance(node.elts[1], scope):
+                    continue
             else:
                 continue
-            if not any("LEXICAL_SOURCE" in _names(arg) for arg in provenance):
-                continue
-            letters = text.constants(spoken, scope, set())
+            letters = (
+                _template_letters(spoken, scope, set())
+                if isinstance(node, ast.Call) and node.func.id == "_compose"
+                else text.constants(spoken, scope, set())
+            )
             if letters:
                 found.append(f"{name}:{node.lineno} {sorted(set(letters))}")
     # A module-level table of words read by a function that labels its forms lexical.
     lexical_reads: set[str] = set()
     for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef) and "LEXICAL_SOURCE" in _names(node):
+        if isinstance(node, ast.FunctionDef) and any(
+            label.provenance(item, node) for item in ast.walk(node)
+        ):
             lexical_reads |= _names(node)
     for node in tree.body:
         if not isinstance(node, ast.Assign | ast.AnnAssign) or node.value is None:
@@ -197,7 +389,7 @@ def _lexical_constant_sites(source: str, name: str) -> list[str]:
             if (
                 isinstance(target, ast.Name)
                 and target.id in lexical_reads
-                and target.id != "LEXICAL_SOURCE"
+                and not label.provenance(node.value, tree)
                 and (name, target.id) not in _NOT_SPOKEN
                 and any(
                     isinstance(c, ast.Constant)
@@ -210,13 +402,42 @@ def _lexical_constant_sites(source: str, name: str) -> list[str]:
     return sorted(set(found))
 
 
+# Lettered templates ``_compose`` fills from parts that can carry the lexical label,
+# still written in the code: hand-written English the table does not yet hold. Each is
+# filed for P8 (fugu review of P2, findings 1 and 2). The test fails when one is moved
+# into the table, so the entry goes with it.
+_OPEN = {
+    "verbalize.py ['{} and {}']": "a whole and a fraction ('three and a half')",
+    "verbalize.py ['{} {} and {} {}']": "money's major and minor units",
+    "verbalize.py ['the {} of ']": "the day-first date frame",
+}
+
+
+def _unlined(site: str) -> str:
+    return re.sub(r":\d+ ", " ", site, count=1)
+
+
 def test_no_lexical_constant_outside_the_table():
-    """No hand-written spoken form stays in the code: each lexical form is read from
-    ``lexical.json``. Checked on the syntax tree of every module in the package."""
+    """No spoken form labeled lexical is written in the code, outside the open items
+    named in ``_OPEN``. Checked on the syntax tree of every module in the package.
+
+    What the check finds (each shown by the tests below): a lettered text given to
+    ``SpokenAlternative`` positionally or as ``text=``, or as the first of a (text,
+    source) pair, whose source is labeled lexical (``LEXICAL_SOURCE``, a name bound to
+    it, or a string holding ``lexical:``); that text followed through local names,
+    parameter defaults, module tables and the returns of the module's functions; a
+    lettered template given to ``_compose`` with parts that carry the label; and a
+    module table of words read by a function that labels its forms lexical.
+
+    What it does not find: English written in the code whose reading is not labeled
+    lexical (the fraction's "{} over {}" and ordinal plural "s", filed for P8), a
+    label passed in from another module, and a text built by a function from outside
+    the module. It shows that no labeled form bypasses the table by these routes, not
+    that none can."""
     found = []
     for path in sorted(_PACKAGE.glob("*.py")):
         found += _lexical_constant_sites(path.read_text(encoding="utf-8"), path.name)
-    assert found == []
+    assert sorted({_unlined(site) for site in found}) == sorted(_OPEN), found
 
 
 def test_the_constant_check_finds_a_form_written_in_the_code():
@@ -245,6 +466,76 @@ def test_the_constant_check_finds_a_form_written_in_the_code():
         "m.py:2 _NAMES",
         "m.py:8 ['the ']",
     ]
+
+
+@pytest.mark.parametrize(
+    ("body", "expected"),
+    [
+        (
+            "def speak(x):\n"
+            "    return SpokenAlternative(text='the ' + x, provenance=LEXICAL_SOURCE)\n",
+            ["m.py:3 ['the ']"],
+        ),
+        (
+            "SRC = LEXICAL_SOURCE\ndef speak(x):\n    return SpokenAlternative('the ' + x, SRC)\n",
+            ["m.py:4 ['the ']"],
+        ),
+        (
+            "def speak(x):\n"
+            "    source = f'{LEXICAL_SOURCE}+x'\n"
+            "    return SpokenAlternative('the ' + x, source)\n",
+            ["m.py:4 ['the ']"],
+        ),
+        (
+            "def speak(x):\n    return SpokenAlternative('the ' + x, 'lexical:en_US')\n",
+            ["m.py:3 ['the ']"],
+        ),
+        (
+            "def speak(x, art='the'):\n"
+            "    return SpokenAlternative(f'{art} {x}', LEXICAL_SOURCE)\n",
+            ["m.py:3 ['the']"],
+        ),
+        (
+            "def _day(d):\n"
+            "    return (SpokenAlternative(d, LEXICAL_SOURCE),)\n"
+            "def speak(d, m):\n"
+            "    p = [_day(d), m]\n"
+            "    return _compose(p, 'the {} of {}')\n",
+            ["m.py:6 ['the {} of {}']"],
+        ),
+        (
+            "def speak(d, m):\n"
+            "    p = [d]\n"
+            "    p.append((SpokenAlternative('x', LEXICAL_SOURCE),))\n"
+            "    template = 'the {} of {}'\n"
+            "    return _compose(p, template)\n",
+            ["m.py:4 ['x']", "m.py:6 ['the {} of {}']"],
+        ),
+    ],
+    ids=["keyword", "alias", "local-alias", "literal-label", "default", "compose", "compose-local"],
+)
+def test_the_constant_check_follows_every_way_a_label_is_given(body, expected):
+    """The routes fugu's review found the first version of the check blind to (a
+    ``text=`` keyword, an alias of ``LEXICAL_SOURCE``, the literal label, a default
+    argument, a ``_compose`` template), each in a made-up module."""
+    source = "LEXICAL_SOURCE = 'lexical:en_US'\n" + body
+    assert _lexical_constant_sites(source, "m.py") == expected
+
+
+def test_the_constant_check_passes_a_template_without_a_label():
+    """No false positive: a lettered template filled from unlabeled parts, a template
+    of bare slots filled from labeled ones, and a label passed on from a value already
+    made (``item.provenance``) are not lexical forms written here."""
+    source = (
+        "LEXICAL_SOURCE = 'lexical:en_US'\n"
+        "def speak(n, d, items):\n"
+        "    over = _compose([n, d], '{} over {}')\n"
+        "    zero = (SpokenAlternative(_lexical('zero.digit', 'en_US'), LEXICAL_SOURCE),)\n"
+        "    plain = _compose([n, zero], ' '.join('{}' for _ in n))\n"
+        "    passed = [SpokenAlternative(f'{i.text}s', i.provenance) for i in items]\n"
+        "    return over, plain, passed\n"
+    )
+    assert _lexical_constant_sites(source, "m.py") == []
 
 
 def test_lexical_provenance_string_is_unchanged():
@@ -307,6 +598,231 @@ _CONSUMERS = [
     ),
     ("zero.digit", "6 0", [WrittenFormsDetector("en_US")], "six o"),
 ]
+
+
+# What each consumer above emits, in order: every alternative's text and provenance,
+# unit by unit. Taken from this tree and identical on origin/main (b1de4e2), where
+# every one of these forms was written in the code, so the move to the table changed
+# no reading, no provenance and no order. The order also pins ``zero.words``, which
+# only reweights: without it "three point zero five", "nineteen oh-eight" and "ten oh
+# five" lead.
+_GOLDEN = {
+    ("zero.digit", "3.05"): [
+        [
+            (
+                "three point o five",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering",
+            ),
+            (
+                "three point zero five",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering",
+            ),
+        ],
+    ],
+    ("zero.minute", "10:05"): [
+        [
+            (
+                "ten o five",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+            ),
+            (
+                "ten oh five",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+            ),
+        ],
+    ],
+    ("zero.year", "1908"): [
+        [
+            ("nineteen o eight", "icu-rbnf:%spellout-numbering-year+lexical:en_US"),
+            ("nineteen oh-eight", "icu-rbnf:%spellout-numbering-year"),
+            ("one thousand nine hundred eight", "icu-rbnf:%spellout-numbering"),
+            ("one thousand nine hundred and eight", "icu-rbnf:%spellout-numbering-verbose"),
+        ],
+    ],
+    ("clock.oclock", "5pm"): [
+        [
+            ("five p m", "icu-rbnf:%spellout-numbering+surface:letters"),
+            ("five o'clock p m", "icu-rbnf:%spellout-numbering+lexical:en_US+surface:letters"),
+        ],
+    ],
+    ("clock.hundred", "20:00"): [
+        [
+            ("twenty o'clock", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            ("twenty hundred", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            ("twenty", "icu-rbnf:%spellout-numbering"),
+        ],
+    ],
+    ("possessive.suffix", "II's"): [
+        [
+            ("two's", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            ("second's", "icu-rbnf:%spellout-ordinal+lexical:en_US"),
+            ("the second's", "lexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US"),
+        ],
+    ],
+    ("separator.words", "jane@example.org"): [
+        [
+            ("jane at example dot org", "measured:electronic+lexical:en_US"),
+            ("j a n e at example dot org", "measured:electronic+lexical:en_US"),
+            ("jane at e x a m p l e dot org", "measured:electronic+lexical:en_US"),
+            ("j a n e at e x a m p l e dot org", "measured:electronic+lexical:en_US"),
+            ("jane at example dot o r g", "measured:electronic+lexical:en_US"),
+            ("j a n e at example dot o r g", "measured:electronic+lexical:en_US"),
+            ("jane at e x a m p l e dot o r g", "measured:electronic+lexical:en_US"),
+            ("j a n e at e x a m p l e dot o r g", "measured:electronic+lexical:en_US"),
+        ],
+    ],
+    ("currency.units", "$1.50"): [
+        [
+            (
+                "one dollar and fifty cents",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+            ),
+            (
+                "one united states dollars and fifty cents",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+            ),
+            (
+                "one US dollars and fifty cents",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US",
+            ),
+        ],
+    ],
+    ("currency.region_names", "$2"): [
+        [
+            ("two dollars", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            ("two united states dollars", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            ("two US dollars", "icu-rbnf:%spellout-numbering+icu-measure:wide"),
+        ],
+    ],
+    ("fraction.denominators", "1/2"): [
+        [
+            ("one half", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            ("one second", "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"),
+            ("one over two", "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering"),
+        ],
+    ],
+    ("fraction.one", "3 1/2"): [
+        [
+            ("three and a half", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            (
+                "three and one second",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal",
+            ),
+            (
+                "three and one half",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US",
+            ),
+            (
+                "three and one over two",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering",
+            ),
+        ],
+    ],
+    ("ordinal.article", "V."): [
+        [
+            ("fifth", "icu-rbnf:%spellout-ordinal"),
+            ("the fifth", "lexical:en_US+icu-rbnf:%spellout-ordinal"),
+        ],
+    ],
+    ("sign.plus", "+5"): [
+        [
+            ("plus five", "lexical:en_US+icu-rbnf:%spellout-numbering"),
+            ("five", "icu-rbnf:%spellout-numbering"),
+        ],
+    ],
+    ("numeral.plural", "1990s"): [
+        [
+            ("nineteen nineties", "icu-rbnf:%spellout-numbering-year+lexical:en_US"),
+            ("one thousand nine hundred nineties", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            (
+                "one thousand nine hundred and nineties",
+                "icu-rbnf:%spellout-numbering-verbose+lexical:en_US",
+            ),
+        ],
+    ],
+    ("duration.milliseconds", "1:47.22"): [
+        [
+            (
+                "one hour forty-seven point two two minutes",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+            ),
+            (
+                "one hour and forty-seven point two two minutes",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+            ),
+        ],
+        [
+            (
+                "one minute forty-seven seconds and twenty-two milliseconds",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US",
+            ),
+            (
+                "one minute forty-seven point two two seconds",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+            ),
+            (
+                "one minute and forty-seven point two two seconds",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+            ),
+        ],
+    ],
+    ("measure.per_plural", "578.3/km2"): [
+        [
+            (
+                "five hundred seventy-eight point three per square kilometers",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US",
+            ),
+            (
+                "five hundred seventy-eight point three per square kilometer",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide",
+            ),
+            (
+                "five hundred and seventy-eight point three per square kilometers",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US",
+            ),
+            (
+                "five hundred and seventy-eight point three per square kilometer",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide",
+            ),
+        ],
+    ],
+    ("zero.digit", "6 0"): [
+        [
+            ("six o", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
+            ("six zero", "icu-rbnf:%spellout-cardinal"),
+        ],
+    ],
+}
+_GOLDEN_DIGIT_FORMS = {
+    "cardinal": (
+        ("one hundred five", "icu-rbnf:%spellout-numbering"),
+        ("one hundred and five", "icu-rbnf:%spellout-numbering-verbose"),
+    ),
+    "year": (
+        ("one hundred five", "icu-rbnf:%spellout-numbering-year"),
+        ("one hundred and five", "icu-rbnf:%spellout-numbering-verbose"),
+    ),
+    "digits": (("one zero five", "icu-rbnf:%spellout-cardinal"),),
+    "digits_o": (("one o five", "lexical:en_US"),),
+}
+
+
+@pytest.mark.parametrize(("key", "text", "detectors", "form"), _CONSUMERS)
+def test_each_lexical_reading_is_emitted_as_before(key, text, detectors, form):
+    emitted = [
+        [(item.text, item.provenance) for item in unit.alternatives]
+        for unit in _units(text, detectors)
+    ]
+    assert emitted == _GOLDEN[(key, text)]
+
+
+def test_the_electronic_digit_forms_are_emitted_as_before():
+    """``electronic.digit_forms`` reads ``zero.digit`` itself."""
+    assert digit_forms("105", "en_US") == _GOLDEN_DIGIT_FORMS
+
+
+def test_the_golden_readings_cover_every_consumer():
+    assert set(_GOLDEN) == {(key, text) for key, text, *_ in _CONSUMERS}
 
 
 def test_every_read_form_has_a_consumer_here():
@@ -428,7 +944,9 @@ def test_calendar_walk_finds_no_en_range_connector():
     why = _tables()["en"]["forms"]["range.connector"]["why"]
     assert f"miscPatterns/range '{number_range.getString()}'" in why
     assert f"intervalFormats/fallback '{fallback.getString()}'" in why
-    assert "its 76 intervalFormats patterns hold no literal word" in why
+    assert "its intervalFormats patterns hold no literal word" in why
+    # The walk pins no pattern count, so the why states none.
+    assert not re.search(r"\d+ intervalFormats", why)
     assert "'at' in DateTimePatterns%atTime and %relative" in why
     assert "'week' and 'of' in availableFormats MMMMW and yw" in why
     assert "no connector word" not in why
@@ -444,3 +962,58 @@ def test_calendar_walk_flags_a_range_connector_where_cldr_writes_one():
     }
     assert "gregorian/intervalFormats/Bh/B" in connectors
     assert len(connectors) > 1
+
+
+def test_the_colon_separator_why_says_where_en_writes_a_colon():
+    """en's calendar/gregorian writes ':' between numbers only between a time's fields
+    (hour, minute, second); the why keeps kal's ruling and says that much, not that
+    ICU writes ':' nowhere between numbers in en. (appendItems' ':' follows a
+    field's name, as in "{0} ({2}: {1})".)"""
+    gregorian = icu.ResourceBundle("", icu.Locale("en")).get("calendar").get("gregorian")
+    patterns = dict(_walk(gregorian, "gregorian"))
+    joined = {
+        pair
+        for path, pattern in patterns.items()
+        if "/appendItems/" not in path
+        for pair in re.findall(r"(.):(.)", _QUOTED.sub("", pattern))
+    }
+    assert joined and all(a in "HhKkms" and b in "HhKkms" for a, b in joined), joined
+    assert any("h:mm:ss" in p for k, p in patterns.items() if "/DateTimePatterns/" in k)
+    for key in ("Hm", "hm"):
+        assert ":" in patterns[f"gregorian/availableFormats/{key}"]
+        assert any(":" in p for k, p in patterns.items() if f"/intervalFormats/{key}/" in k)
+
+    why = _tables()["en"]["forms"]["range.separator"]["why"]
+    assert "ICU writes nowhere in en (kal, 2026-09-28)" in why
+    assert "only in time patterns" in why
+    assert "DateTimePatterns 'h:mm:ss'" in why
+    assert "the Hm and hm availableFormats and intervalFormats" in why
+    assert "1,419 'to', 41 silent" in why
+
+
+def test_the_currency_why_says_what_cldr_names():
+    """CLDR's en CurrencyPlurals name EUR bare ('euro', 'euros', as the table's EUR major
+    row) and every other currency here with its region; no row's minor name is
+    CLDR's. The why says so instead of claiming CLDR lacks every bare major name."""
+    plurals = icu.ResourceBundle("ICUDATA-curr", icu.Locale("en")).get("CurrencyPlurals")
+    units = _tables()["en"]["forms"]["currency.units"]["value"]
+
+    def cldr(code):
+        entry = plurals.get(code)
+        names = {entry.get(i).getKey(): entry.get(i).getString() for i in range(entry.getSize())}
+        return [names["one"], names["other"]]
+
+    bare = {code for code, (major, _) in units.items() if cldr(code) == major}
+    assert bare == {"EUR"}
+    assert cldr("USD") == ["US dollar", "US dollars"]
+    for code, (major, minor) in units.items():
+        assert minor != cldr(code), code
+        if code != "EUR":
+            assert cldr(code)[0].endswith(" " + major[0]), (code, cldr(code))
+
+    why = _tables()["en"]["forms"]["currency.units"]["why"]
+    assert "('US dollar'/'US dollars', 'British pound', 'Japanese yen')" in why
+    assert "except EUR's 'euro'/'euros'" in why
+    assert "for the other nine currencies" in why and len(units) == 10
+    assert "EUR's major row equals CLDR's" in why
+    assert "not the corpus's bare major names" not in why

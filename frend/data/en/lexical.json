@@ -3,7 +3,7 @@
   "schema_version": 1,
   "forms": {
     "range.connector": {
-      "why": "No ICU/CLDR resource walked gives en a spoken range connector. CLDR writes only the separator: root NumberElements/latn/miscPatterns/range '{0}–{1}' and calendar/gregorian/intervalFormats/fallback '{0} – {1}' (ICU 78.3). Resources searched with no spoken connector: RBNF spellout/ordinal/duration, ICUDATA-unit, ICUDATA-lang, en NumberElements, fields, listPattern (dualplan-ranges 03, (N)); and calendar/gregorian in root, en and en_US, walked by tests/test_lexical_forms.py::test_calendar_walk_finds_no_en_range_connector: its 76 intervalFormats patterns hold no literal word, and the words the subtree does hold join other things, not a range's two ends ('at' in DateTimePatterns%atTime and %relative, \"{1} 'at' {0}\"; 'week' and 'of' in availableFormats MMMMW and yw, \"'week' W 'of' MMMM\"). Which pattern is said is for the corpus to measure, not for this table",
+      "why": "No ICU/CLDR resource walked gives en a spoken range connector. CLDR writes only the separator: root NumberElements/latn/miscPatterns/range '{0}–{1}' and calendar/gregorian/intervalFormats/fallback '{0} – {1}' (ICU 78.3). Resources searched with no spoken connector: RBNF spellout/ordinal/duration, ICUDATA-unit, ICUDATA-lang, en NumberElements, fields, listPattern (dualplan-ranges 03, (N)); and calendar/gregorian in root, en and en_US, walked by tests/test_lexical_forms.py::test_calendar_walk_finds_no_en_range_connector: its intervalFormats patterns hold no literal word, and the words the subtree does hold join other things, not a range's two ends ('at' in DateTimePatterns%atTime and %relative, \"{1} 'at' {0}\"; 'week' and 'of' in availableFormats MMMMW and yw, \"'week' W 'of' MMMM\"). Which pattern is said is for the corpus to measure, not for this table",
       "value": {
         "range": [
           {
@@ -38,7 +38,7 @@
       }
     },
     "range.separator": {
-      "why": "hyphen-minus, ':' and 'x' between numbers are forms ICU writes nowhere in en (kal, 2026-09-28); en dash ranges come from icukit",
+      "why": "hyphen-minus, ':' and 'x' between numbers are forms ICU writes nowhere in en (kal, 2026-09-28); en dash ranges come from icukit. Measured narrowly for ':': en's calendar/gregorian writes it between numbers only in time patterns, joining a clock's hour, minute and second (DateTimePatterns 'h:mm:ss', and the Hm and hm availableFormats and intervalFormats); the corpus reads a ':' between numbers that is not a valid clock 'to' (training shard 0: 1,419 'to', 41 silent; dualplan-ranges 03)",
       "value": {
         "range": [
           "-"
@@ -100,7 +100,7 @@
       "value": "aeiouy"
     },
     "currency.units": {
-      "why": "CLDR gives wide currency names ('US dollars') and currency precision, but not the corpus's bare major names or its minor-unit names; each row is singular and plural, major then minor",
+      "why": "CLDR's en CurrencyPlurals name each major unit with its region ('US dollar'/'US dollars', 'British pound', 'Japanese yen'), except EUR's 'euro'/'euros'; the table holds the corpus's bare major names for the other nine currencies, and every minor-unit name, which CLDR's currency data does not give. EUR's major row equals CLDR's and is here only because a row pairs the major name with the minor ('cent'); reading it from CLDR is filed. Each row is singular and plural, major then minor",
       "value": {
         "USD": [
           [
