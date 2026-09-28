@@ -38,8 +38,8 @@ _PACKAGE = _REPO / "frend"
 _LEXICAL = "lexical:en_US"
 
 # Forms that sit in the table unread until a later change reads them: the range
-# connector and separators (the range readers) and the vowels (the letters reader).
-_UNREAD = frozenset({"range.connector", "range.separator", "letter.vowels"})
+# connector and separators (the range readers).
+_UNREAD = frozenset({"range.connector", "range.separator"})
 
 
 def _tables() -> dict[str, dict]:
@@ -827,7 +827,9 @@ def test_the_golden_readings_cover_every_consumer():
 
 def test_every_read_form_has_a_consumer_here():
     en = set(_tables()["en"]["forms"])
-    assert {key for key, *_ in _CONSUMERS} | {"zero.words"} == en - _UNREAD
+    # The zero words and the vowels are read as sets, not emitted: tests below and
+    # tests/test_letters.py::test_the_vowels_are_the_locales cover them.
+    assert {key for key, *_ in _CONSUMERS} | {"zero.words", "letter.vowels"} == en - _UNREAD
 
 
 def _spoken(text, detectors):

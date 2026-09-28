@@ -1,6 +1,22 @@
 # Changelog
 
 ## Unreleased
+- Read a run of capitals in any script. The letters reader matches capitals by Unicode
+  general category `Lu` (ICU's set), in one ICU script, not `[A-Z]`: "ÉCU" and "СССР"
+  are letter runs, and capitals of two scripts ("AΒC", Latin and Greek) are not one run.
+  Initials follow the same rule. The acronym builder counts a token by the same
+  predicate (`frend.letters.is_letter_run`), so it no longer counts capitals the reader
+  cannot match; on the ten sampled shards no token moves, and `acronym_priors.json` is
+  unchanged. The vowels behind the acronym keys (`letters.cv_pattern`,
+  `electronic.letter_key`) now come from the locale's `lexical.json` (`letter.vowels`);
+  a locale without them forms no vowel key. The evaluator reads a shared profile,
+  `tools/reading_profile.py`: `reading_detectors(locale)`, the spoken-priors profile
+  plus the abbreviation and letters readers, every reader built for the locale asked
+  for; `build_spoken_priors._detectors(locale="en_US")` takes the locale too, and
+  Russian builds no English reader. ARCTIC keeps its own reader set and does not read
+  this profile. No reading moves: every corpus builder's `--check` passes, the
+  published and held-out reports are identical, and the ARCTIC graphs are
+  byte-identical.
 - Hold every hand-written spoken form in a per-locale table,
   `frend/data/<locale>/lexical.json`, each form with the reason ICU and CLDR do not
   give it (`why`). `frend/data/en/lexical.json` holds every form frend labels

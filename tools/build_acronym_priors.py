@@ -1,16 +1,22 @@
 """Build or verify whether an acronym is spelled or said as a word, measured from the corpus.
 
 An all-capitals token of two or more letters is spelled when the corpus files it as
-LETTERS ("FBI" "f b i") and said as written when it files it as PLAIN ("NASA"). The
-sampled shards are the spoken priors' (every tenth). Counts are kept by the token's
-shape (``frend.electronic.letter_key``: case, length, whether a vowel letter occurs), by
-its consonant-vowel pattern up to seven letters (``frend.letters.cv_pattern``: "cvc" is
-mostly a word, "ccc" spelled), and for an acronym icukit's lexicon lists, by its own
-surface ("NASA" is a word, "FBI" spelled; the surfaces are icukit's, not the corpus's);
-``*`` pools all. A token icukit also reads as a Roman numeral ("II", "CD") is counted a
-third way, as a numeral when the corpus files it CARDINAL or ORDINAL, under
-``roman:<surface>`` for a numeral seen at least ``_ROMAN_FLOOR`` times and ``roman:*``
-for all, so frend reads "II" as two and "CD" as letters. Only counts are stored.
+LETTERS ("FBI" "f b i") and said as written when it files it as PLAIN ("NASA"). A token
+is counted when frend's letters reader would match it whole
+(``frend.letters.is_letter_run``: after NFC, capitals of general category Lu with their
+combining marks, in one script as UAX #24 resolves a run), so the counts and the reader
+cover one population, except that the reader leaves a bare run the corpus mostly reads
+as a Roman numeral ("II") to icukit, while this counts it, by shape and under
+``roman:``. The sampled shards are the spoken priors' (every tenth). Counts are kept by
+the token's shape (``frend.electronic.letter_key``: case, length, whether a vowel letter
+occurs), by its consonant-vowel pattern up to seven letters
+(``frend.letters.cv_pattern``: "cvc" is mostly a word, "ccc" spelled), and for an
+acronym icukit's lexicon lists, by its own surface ("NASA" is a word, "FBI" spelled; the
+surfaces are icukit's, not the corpus's); ``*`` pools all. A token icukit also reads as
+a Roman numeral ("II", "CD") is counted a third way, as a numeral when the corpus files
+it CARDINAL or ORDINAL, under ``roman:<surface>`` for a numeral seen at least
+``_ROMAN_FLOOR`` times and ``roman:*`` for all, so frend reads "II" as two and "CD" as
+letters. Only counts are stored.
 
 ``--check`` repeats the sample and compares the JSON byte for byte.
 """
@@ -23,6 +29,8 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
+import icu
+
 _REPO = Path(__file__).resolve().parents[1]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
@@ -31,7 +39,7 @@ from build_spoken_priors import _default_corpus_dir, _files  # noqa: E402
 from google_tn_rows import corpus_label  # noqa: E402
 
 from frend.electronic import letter_key  # noqa: E402
-from frend.letters import cv_pattern, is_roman  # noqa: E402
+from frend.letters import cv_pattern, is_letter_run, is_roman  # noqa: E402
 
 
 def _lexicon_acronyms() -> frozenset[str]:
@@ -40,12 +48,11 @@ def _lexicon_acronyms() -> frozenset[str]:
 
     compiled = compile_lexicon("en_US")
     return frozenset(
-        entry.surface
-        for entry in compiled.lexicon.entries
-        if len(entry.surface) >= 2 and entry.surface.isalpha() and entry.surface.isupper()
+        entry.surface for entry in compiled.lexicon.entries if is_letter_run(entry.surface)
     )
 
 
+_NFC = icu.Normalizer2.getNFCInstance()
 _OUT = _REPO / "frend" / "data" / "en" / "acronym_priors.json"
 _LABELS = {"LETTERS": "spelled", "PLAIN": "word"}
 _NUMERAL = frozenset({"CARDINAL", "ORDINAL"})
@@ -63,8 +70,9 @@ def build_document(corpus_dir: Path) -> dict:
                 parts = line.rstrip("\n").split("\t")
                 if len(parts) < 3 or parts[0] not in _LABELS.keys() | _NUMERAL:
                     continue
-                written = parts[1]
-                if len(written) < 2 or not (written.isalpha() and written.isupper()):
+                # Keyed in NFC, as the reader reads a run: "E\u0301CO" is "ÉCO".
+                written = _NFC.normalize(parts[1])
+                if not is_letter_run(written):
                     continue
                 roman = is_roman(written)
                 label = "numeral" if parts[0] in _NUMERAL else _LABELS[parts[0]]
