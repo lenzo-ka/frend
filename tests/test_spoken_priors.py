@@ -330,3 +330,21 @@ def test_a_year_first_date_is_ranked_by_its_own_row():
     all_dates = source_prior("date", day_first)
     assert year_first is not None and all_dates is not None
     assert year_first.share > all_dates.share
+
+
+def test_spoken_profile_default_is_en_US():
+    """``_detectors`` takes the locale; called bare (as the builder and ARCTIC call it)
+    it is the en_US profile, kind for kind and reader for reader."""
+    build = _load_builder()
+
+    def names(profile):
+        return {
+            kind: [(type(detector).__name__, detector.locale) for detector in detectors]
+            for kind, detectors in profile.items()
+        }
+
+    assert names(build._detectors()) == names(build._detectors("en_US"))
+    profile = build._detectors("en_US")
+    assert {detector.locale for detectors in profile.values() for detector in detectors} == {
+        "en_US"
+    }

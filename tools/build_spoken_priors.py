@@ -135,7 +135,13 @@ def _default_corpus_dir() -> Path:
     return _REPO.parent / "tn-corpus" / "en_with_types"
 
 
-def _detectors():
+def _detectors(locale: str = "en_US"):
+    """The recognition profile by corpus kind, every reader built for ``locale``.
+
+    The builder measures English and calls this with its default; a caller asking for
+    another locale gets no reader built for English (what those readers then read is
+    that locale's own measure, not this one's).
+    """
     from icukit.detectors import date_detectors
     from icukit.recognize import (
         AlphanumericRunsDetector,
@@ -159,48 +165,48 @@ def _detectors():
 
     # A letter-digit token read as its runs competes inside the classes it occurs in
     # (TIME "5pm", ORDINAL "4th", DATE "1830s"); it has no corpus class of its own.
-    runs = AlphanumericRunsDetector("en_US")
+    runs = AlphanumericRunsDetector(locale)
     # Forms ICU writes nowhere, read by frend itself (kal's ruling): "2: 13", "339 U.S.",
     # "6 3", "500 B.C.".
-    written = WrittenFormsDetector("en_US")
-    dates = date_detectors("en_US", _DATE_SKELETONS).with_(
-        FlexibleDateDetector("en_US"),
-        FlexibleTextDateDetector("en_US"),
-        PluralNumeralDetector("en_US"),
+    written = WrittenFormsDetector(locale)
+    dates = date_detectors(locale, _DATE_SKELETONS).with_(
+        FlexibleDateDetector(locale),
+        FlexibleTextDateDetector(locale),
+        PluralNumeralDetector(locale),
         runs,
     )
     numbers = (
-        FlexibleNumberDetector("en_US"),
-        FlexibleCompactDetector("en_US", "long"),
-        FlexibleCompactDetector("en_US", "short"),
+        FlexibleNumberDetector(locale),
+        FlexibleCompactDetector(locale, "long"),
+        FlexibleCompactDetector(locale, "short"),
     )
-    cardinals = numbers + (LetterNameDetector("en_US"), SingleLetterWordDetector("en_US"))
+    cardinals = numbers + (LetterNameDetector(locale), SingleLetterWordDetector(locale))
     return {
         "cardinal": (*cardinals, written),
-        "digit": (FlexibleNumberDetector("en_US"), written),
-        "symbol": (SymbolDetector("en_US"),),
+        "digit": (FlexibleNumberDetector(locale), written),
+        "symbol": (SymbolDetector(locale),),
         "decimal": numbers,
         "date": (*dates.detectors, written),
-        "fraction": (FlexibleFractionDetector("en_US"),),
-        "ordinal": (FlexibleOrdinalDetector("en_US"), FlexibleNumberDetector("en_US"), runs),
+        "fraction": (FlexibleFractionDetector(locale),),
+        "ordinal": (FlexibleOrdinalDetector(locale), FlexibleNumberDetector(locale), runs),
         "time": (
-            FlexibleTimeDetector("en_US"),
-            FlexibleNumericDurationDetector("en_US"),
+            FlexibleTimeDetector(locale),
+            FlexibleNumericDurationDetector(locale),
             runs,
             written,
         ),
-        "electronic": (ElectronicDetector("en_US"),),
+        "electronic": (ElectronicDetector(locale),),
         "measure": (
-            FlexiblePercentDetector("en_US"),
-            *(FlexibleMeasureDetector("en_US", unit) for unit in _MEASURE_UNITS),
-            *(FlexibleMixedMeasureDetector("en_US", mixed) for mixed in _MIXED_MEASURES),
+            FlexiblePercentDetector(locale),
+            *(FlexibleMeasureDetector(locale, unit) for unit in _MEASURE_UNITS),
+            *(FlexibleMixedMeasureDetector(locale, mixed) for mixed in _MIXED_MEASURES),
         ),
         "money": tuple(
             detector
             for code in _CURRENCIES
             for detector in (
-                FlexibleCurrencyDetector("en_US", code),
-                FlexibleCurrencyNameDetector("en_US", code),
+                FlexibleCurrencyDetector(locale, code),
+                FlexibleCurrencyNameDetector(locale, code),
             )
         ),
     }

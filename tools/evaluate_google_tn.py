@@ -40,27 +40,13 @@ _TEST_FILE = "output-00099-of-00100"
 _TEST_LINES = 100_000
 _ANY_CAP = 64
 
-_DETECTORS = None
-
 
 def _detectors():
-    global _DETECTORS
-    if _DETECTORS is None:
-        from build_spoken_priors import _detectors as profile
-        from icukit.abbreviation_recognize import AbbreviationDetector
+    """The evaluator's readers: the shared en_US profile (``reading_profile``), the very
+    list ``reading_profile.reading_detectors("en_US")`` returns."""
+    from reading_profile import reading_detectors
 
-        from frend.letters import LettersDetector
-
-        seen, detectors = set(), []
-        for group in profile().values():
-            for detector in group:
-                if id(detector) not in seen:
-                    seen.add(id(detector))
-                    detectors.append(detector)
-        detectors.append(AbbreviationDetector("en_US"))
-        detectors.append(LettersDetector("en_US"))
-        _DETECTORS = detectors
-    return _DETECTORS
+    return reading_detectors("en_US")
 
 
 _expected = google_tn_rows.expected

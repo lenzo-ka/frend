@@ -25,6 +25,7 @@ from importlib.resources import files
 import icu
 from icukit.detectors import Capture
 
+from frend.letters import letter_vowels
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
 __all__ = [
@@ -213,12 +214,15 @@ def decode_letter_notation(spoken: str) -> str:
     return " ".join(words)
 
 
-def letter_key(run: str) -> str:
+def letter_key(run: str, locale: str = "en_US") -> str:
     """The shape a letter run's word-or-spelled measurement is keyed by.
 
-    Case pattern, length (7 and more pooled) and whether it has a vowel letter; the
-    keys are features, the probabilities under them are measured.
+    Case pattern, length (7 and more pooled) and whether it has a vowel letter, the
+    locale's vowels (``lexical.json``'s ``letter.vowels``); a locale with none keys by
+    case and length alone. The keys are features, the probabilities under them are
+    measured.
     """
+
     if run.islower():
         case = "lower"
     elif run.isupper():
@@ -227,8 +231,11 @@ def letter_key(run: str) -> str:
         case = "title"
     else:
         case = "mixed"
-    vowel = "v" if any(ch in "aeiouyAEIOUY" for ch in run) else "nv"
-    return f"{case}:{min(len(run), 7)}:{vowel}"
+    shape = f"{case}:{min(len(run), 7)}"
+    vowels = letter_vowels(locale)
+    if vowels is None:
+        return shape
+    return f"{shape}:{'v' if any(ch in vowels for ch in run) else 'nv'}"
 
 
 def digit_key(run: str) -> str:

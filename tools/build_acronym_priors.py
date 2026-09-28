@@ -1,7 +1,10 @@
 """Build or verify whether an acronym is spelled or said as a word, measured from the corpus.
 
 An all-capitals token of two or more letters is spelled when the corpus files it as
-LETTERS ("FBI" "f b i") and said as written when it files it as PLAIN ("NASA"). The
+LETTERS ("FBI" "f b i") and said as written when it files it as PLAIN ("NASA"). A token
+is counted when frend's letters reader would match it whole
+(``frend.letters.is_letter_run``: capitals of general category Lu, in one ICU script),
+so the counts and the reader cover one population. The
 sampled shards are the spoken priors' (every tenth). Counts are kept by the token's
 shape (``frend.electronic.letter_key``: case, length, whether a vowel letter occurs), by
 its consonant-vowel pattern up to seven letters (``frend.letters.cv_pattern``: "cvc" is
@@ -31,7 +34,7 @@ from build_spoken_priors import _default_corpus_dir, _files  # noqa: E402
 from google_tn_rows import corpus_label  # noqa: E402
 
 from frend.electronic import letter_key  # noqa: E402
-from frend.letters import cv_pattern, is_roman  # noqa: E402
+from frend.letters import cv_pattern, is_letter_run, is_roman  # noqa: E402
 
 
 def _lexicon_acronyms() -> frozenset[str]:
@@ -40,9 +43,7 @@ def _lexicon_acronyms() -> frozenset[str]:
 
     compiled = compile_lexicon("en_US")
     return frozenset(
-        entry.surface
-        for entry in compiled.lexicon.entries
-        if len(entry.surface) >= 2 and entry.surface.isalpha() and entry.surface.isupper()
+        entry.surface for entry in compiled.lexicon.entries if is_letter_run(entry.surface)
     )
 
 
@@ -64,7 +65,7 @@ def build_document(corpus_dir: Path) -> dict:
                 if len(parts) < 3 or parts[0] not in _LABELS.keys() | _NUMERAL:
                     continue
                 written = parts[1]
-                if len(written) < 2 or not (written.isalpha() and written.isupper()):
+                if not is_letter_run(written):
                     continue
                 roman = is_roman(written)
                 label = "numeral" if parts[0] in _NUMERAL else _LABELS[parts[0]]
