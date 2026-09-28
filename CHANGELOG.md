@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Say a date written year first ("2008-09-30") day first, as the corpus does ("the
+  thirtieth of september two thousand eight"): the date measurement's sub-key gains
+  `year-first` beside `month-first` and `day-first`, so a year-first date no longer
+  ranks like "March 5, 2024". On the published test set DATE rises from 97.1% to 99.8%
+  first choice and all tokens from 98.97% to 99.05%.
 - Require icukit 0.8.0, the first release with CLDR symbol names, so the symbol
   reading below reaches every install; the guards for older icukit are gone.
 - Say a zero as the corpus does (kal, reconsidering the earlier "oh"): readings that

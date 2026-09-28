@@ -102,13 +102,13 @@
           }
         },
         "month-first": {
-          "matched": 392,
+          "matched": 371,
           "source_matched": {
             "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
-            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 22
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 1
           }
         },
         "other": {
@@ -117,6 +117,12 @@
             "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 95,
             "icu-rbnf:%spellout-numbering-year": 922,
             "icu-rbnf:%spellout-numbering-year+lexical:en_US": 39
+          }
+        },
+        "year-first": {
+          "matched": 21,
+          "source_matched": {
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 21
           }
         }
       },
@@ -4575,7 +4581,7 @@
     "source_measurement": "The verbalizer deduplicates equal text in rule-set order, so a matched row is credited to the first retained source that produces its text and to the sub-key of that same reading. Source priors are disabled while measuring so the table is not measured through the ranking it drives. Shares are raw matched-source counts divided by matched rows in the selected scope, with no smoothing, confidence threshold, or other small-sample correction; each source record retains its matched count.",
     "sub_key_rules": {
       "cardinal": null,
-      "date": "the written order of month and day: month-first, day-first, or other",
+      "date": "the written order: year-first, month-first, day-first, or other",
       "decimal": null,
       "digit": null,
       "electronic": null,

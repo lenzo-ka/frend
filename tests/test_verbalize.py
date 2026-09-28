@@ -1795,6 +1795,42 @@ def test_date_ranks_by_its_written_order(written, first):
 
 
 @pytest.mark.parametrize(
+    ("written", "first"),
+    [
+        ("2008-09-30", "the thirtieth of september two thousand eight"),
+        ("2008/09/10", "the tenth of september two thousand eight"),
+    ],
+)
+def test_a_year_first_date_ranks_day_first(written, first):
+    """A year written first is its own order: the corpus says "2008-09-30" day first, not
+    as a written month-first date ("March 5, 2024") is said."""
+    unit = _full_span_forms(written, [FlexibleDateDetector("en_US")], "date:flexible")
+    assert normalize_spoken(unit.alternatives[0].text) == first
+
+
+def test_the_date_sub_key_follows_the_written_year():
+    from types import SimpleNamespace
+
+    from icukit.detectors import Capture
+
+    from frend.spoken_priors import measurement_sub_key
+
+    def date(*names):
+        return {"captures": tuple(Capture(n, i, i + 1, "", "", None) for i, n in enumerate(names))}
+
+    assert measurement_sub_key("date", date("y", "M", "d")) == "year-first"
+    assert measurement_sub_key("date", date("M", "d", "y")) == "month-first"
+    assert measurement_sub_key("date", date("d", "M", "y")) == "day-first"
+    assert measurement_sub_key("date", date("y")) == "other"
+    # The first position of a field counts, whatever it is named.
+    assert measurement_sub_key("date", date("M", "d", "month")) == "month-first"
+    # A capture without a position says nothing about order, and does not fail.
+    unplaced = SimpleNamespace(name="y", start=None)
+    captures = (unplaced, Capture("M", 5, 6, "", "", None), Capture("d", 8, 9, "", "", None))
+    assert measurement_sub_key("date", {"captures": captures}) == "month-first"
+
+
+@pytest.mark.parametrize(
     ("written", "spoken"),
     [
         ("March 5, 2024 at 2:07 PM", "march fifth twenty twenty four at two oh seven p m"),
