@@ -85,19 +85,25 @@ def _joined(texts_and_passthrough) -> str:
 
 
 def _score(row: tuple[str, str, str]) -> tuple[str, bool, bool]:
+    corpus_class, written, spoken = row
+    first, any_ = _score_text(written, _expected(corpus_class, written, spoken))
+    return corpus_class, first, any_
+
+
+def _score_text(written: str, target: str) -> tuple[bool, bool]:
+    """Whether frend's first reading of ``written``, and whether any reading, says ``target``."""
     from icukit.detectors import detect
 
     from frend import resolve_lattice
     from frend.spoken_priors import normalize_spoken
     from frend.verbalize import verbalize_lattice
 
-    corpus_class, written, spoken = row
-    target = _expected(corpus_class, written, spoken)
+    target = normalize_spoken(target)
     try:
         detections = list(detect(written, _detectors())) if written.strip() else []
         verbalized = verbalize_lattice(resolve_lattice(detections, source_text=written))
     except Exception:  # noqa: BLE001 - a crash is a miss, counted, not hidden
-        return corpus_class, target == normalize_spoken(written), False
+        return target == normalize_spoken(written), False
 
     def passthrough(unit) -> bool:
         return unit.best.provenance == "surface:passthrough"
@@ -105,13 +111,47 @@ def _score(row: tuple[str, str, str]) -> tuple[str, bool, bool]:
     best = verbalized.best_path
     first = normalize_spoken(_joined((unit.best.text, passthrough(unit)) for unit in best.units))
     if first == target:
-        return corpus_class, True, True
+        return True, True
     for path in verbalized.paths:
         options = [[(a.text, passthrough(unit)) for a in unit.alternatives] for unit in path.units]
         for combination in islice(product(*options), _ANY_CAP):
             if normalize_spoken(_joined(combination)) == target:
-                return corpus_class, False, True
-    return corpus_class, False, False
+                return False, True
+    return False, False
+
+
+# Running text writes a range or a dimension as one word ("5-10", "3x4", "3:2"), where the
+# corpus splits it into three tokens; these are rejoined by their written form alone.
+_JOINERS = frozenset({"-", "–", "x", ":"})
+
+
+def _running_text(sentences) -> list[tuple[str, str, str, str]]:
+    """(separator, the middle's corpus reading, joined written, joined target) for each
+    number, separator, number triple, left to right, never overlapping."""
+    found = []
+    for sentence in sentences:
+        at = 1
+        while at < len(sentence) - 1:
+            left, middle, right = sentence[at - 1], sentence[at], sentence[at + 1]
+            if middle[1] in _JOINERS and left[1][:1].isdigit() and right[1][:1].isdigit():
+                parts = [_expected(*row) for row in (left, middle, right)]
+                found.append(
+                    (
+                        middle[1],
+                        parts[1] or "(silence)",
+                        left[1] + middle[1] + right[1],
+                        " ".join(parts),
+                    )
+                )
+                at += 3
+            else:
+                at += 1
+    return found
+
+
+def _score_joined(item: tuple[str, str, str, str]) -> tuple[str, str, bool, bool]:
+    separator, middle, written, target = item
+    return (separator, middle, *_score_text(written, target))
 
 
 def _rows(corpus_dir: Path):
@@ -145,6 +185,14 @@ def evaluate(corpus_dir: Path, workers: int) -> dict:
     total = Counter()
     for counts in by_class.values():
         total.update(counts)
+    joined = _running_text(sentences)
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        joined_results = list(pool.map(_score_joined, joined, chunksize=16))
+    by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
+    for separator, middle, first, any_ in joined_results:
+        by_joint[(separator, middle)]["n"] += 1
+        by_joint[(separator, middle)]["first"] += first
+        by_joint[(separator, middle)]["any"] += any_
     correct_sentences, at = 0, 0
     for sentence in sentences:
         outcome = results[at : at + len(sentence)]
@@ -165,6 +213,16 @@ def evaluate(corpus_dir: Path, workers: int) -> dict:
             }
             for name, counts in sorted(by_class.items(), key=lambda kv: -kv[1]["tokens"])
         },
+        "running_text": [
+            {
+                "separator": separator,
+                "corpus_middle": middle,
+                "count": counts["n"],
+                "first_choice": counts["first"] / counts["n"],
+                "any_reading": counts["any"] / counts["n"],
+            }
+            for (separator, middle), counts in sorted(by_joint.items(), key=lambda kv: -kv[1]["n"])
+        ],
         "note": "frend reads each token alone; the published models see its sentence",
     }
 
@@ -186,6 +244,14 @@ def _render(report: dict) -> str:
         )
     lines.append("")
     lines.append(report["note"])
+    lines.append("")
+    lines.append('Running text: number, separator, number rejoined as written ("5-10")')
+    lines.append(f"{'sep':5s}{'corpus middle':16s}{'count':>7s}{'first':>9s}{'any':>9s}")
+    for row in report["running_text"]:
+        lines.append(
+            f"{row['separator']:5s}{row['corpus_middle']:16s}{row['count']:>7d}"
+            f"{100 * row['first_choice']:>8.1f}%{100 * row['any_reading']:>8.1f}%"
+        )
     return "\n".join(lines)
 
 
