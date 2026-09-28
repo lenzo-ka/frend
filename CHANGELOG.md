@@ -1,6 +1,24 @@
 # Changelog
 
 ## Unreleased
+- Hold every hand-written spoken form in a per-locale table,
+  `frend/data/<locale>/lexical.json`, each form with the reason ICU and CLDR do not
+  give it (`why`). `frend/data/en/lexical.json` holds every form frend labels
+  `lexical:en_US`: the spoken zero ("o", "oh" before a minute, "o" for ICU's year
+  "oh", and the zero words weight is shared across), "o'clock" and "hundred" for a
+  time, the possessive "'s", "at" for "@", the bare currency names and "united states
+  dollar", "half" and "quarter" and "a half", "the" before an ordinal, "plus", the
+  plural of a number word, "and" before milliseconds, and the plural after "per". The
+  range connectors and separators and the acronym vowels are in the table too, unread
+  until the readers that use them land. `frend/data/ru/lexical.json` is empty, so for
+  Russian each of those features is off (a zero-led minute reads as ICU's cardinal).
+  The source label stays `lexical:en_US` byte for byte (the spoken table keys on it),
+  and no reading moves: every corpus builder's `--check` passes, the published and
+  held-out reports are identical, and the ARCTIC graphs are byte-identical. The range
+  connector's `why` states only what was checked: no resource walked gives English a
+  spoken range connector; CLDR's calendar data does hold "at" and "of" in English, but
+  outside its interval patterns (a test walks `calendar/gregorian` in root, en and
+  en_US, and fails on Chinese, whose interval patterns write 至).
 - Keep the data by locale: each table moves under the locale it is for,
   `frend/data/<locale>/` (`en/type_priors.json`, `en/spoken_priors.json`,
   `en/zero_priors.json`, `en/acronym_priors.json`, `en/electronic_priors.json`, and

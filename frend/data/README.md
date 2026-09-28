@@ -115,3 +115,13 @@ SYMBOL (`spoken_priors.json`) measures the corpus's VERBATIM and PUNCT rows with
 symbol reader; unlike the other kinds, a spoken `sil` is a target (silence), not a
 skipped row, and the written token is not trimmed. Its sub-key is a symbol's code point
 (`U+0026`) or a letter's script (`Grek`).
+
+## `<locale>/lexical.json`
+
+The spoken forms frend writes by hand because ICU and CLDR do not give them, one
+table per locale, loaded through `frend.locale_data.lexical_forms`. Each entry under
+`forms` holds its `value` and `why`: the reason it is hand-written, stating only what
+was checked. Forms emitted into a reading carry the source `lexical:en_US`, the key the
+measured tables count them under. A locale with no forms (`ru/lexical.json`) has each
+lexical feature off. `range.connector`, `range.separator` and `letter.vowels` are held
+for the range and letters readers and are not yet read.

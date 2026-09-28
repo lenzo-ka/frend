@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import cache, lru_cache
 from itertools import product
+from types import MappingProxyType
 
 import icu
 from icukit import AbbreviationValue, DateTimeFormatter
@@ -26,7 +27,7 @@ from frend.electronic import (
 )
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import LettersValue, cv_pattern
-from frend.locale_data import LOCALE_CACHE
+from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
@@ -43,32 +44,35 @@ __all__ = [
 
 LEXICAL_SOURCE = "lexical:en_US"
 
-# CLDR exposes wide currency names and currency precision, but not these
-# corpus-attested bare major names or minor-unit names. Keeping the missing English
-# lexical facts together makes their locale boundary explicit.
-_EN_CURRENCY_UNITS = {
-    "USD": (("dollar", "dollars"), ("cent", "cents")),
-    "EUR": (("euro", "euros"), ("cent", "cents")),
-    "GBP": (("pound", "pounds"), ("pence", "pence")),
-    "JPY": (("yen", "yen"), ("sen", "sen")),
-    "CNY": (("yuan", "yuan"), ("fen", "fen")),
-    "INR": (("rupee", "rupees"), ("paisa", "paise")),
-    "CAD": (("dollar", "dollars"), ("cent", "cents")),
-    "AUD": (("dollar", "dollars"), ("cent", "cents")),
-    "KRW": (("won", "won"), ("jeon", "jeon")),
-    "RUB": (("ruble", "rubles"), ("kopek", "kopeks")),
-}
+# Every form ICU and CLDR do not give, and the corpus says, is a hand-written lexical
+# form: it lives with its reason in ``data/<locale>/lexical.json`` and is read here by
+# key. A locale with no table has no lexical forms, and each feature that needs one is
+# off for it. The provenance string above stays as it is: the measured tables key on it.
 
-# CLDR's en_US display name is "US Dollar" rather than the corpus's
-# region-expanded name.
-_EN_USD_REGION_NAMES = ("united states dollar", "united states dollars")
 
-# English RBNF has regular ordinal names such as "second" and "fourth", but
-# carries neither of the corpus's conventional fraction words.
-_EN_FRACTION_DENOMINATORS = {
-    2: ("half", "halves"),
-    4: ("quarter", "quarters"),
-}
+def _freeze(value: object) -> object:
+    if isinstance(value, dict):
+        return MappingProxyType({key: _freeze(item) for key, item in value.items()})
+    if isinstance(value, list):
+        return tuple(_freeze(item) for item in value)
+    return value
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _lexical_for(locale: str) -> Mapping[str, object]:
+    return MappingProxyType(
+        {key: _freeze(entry["value"]) for key, entry in lexical_forms(locale).items()}
+    )
+
+
+def _lexical(key: str, locale: str):
+    """The locale's lexical form ``key`` (``data/<locale>/lexical.json``), or ``None``."""
+    return _lexical_for(canonical_locale(locale)).get(key)
+
+
+def _lexical_pattern(key: str, locale: str, *texts: str) -> str | None:
+    pattern = _lexical(key, locale)
+    return None if pattern is None else pattern.format(*texts)
 
 
 @dataclass(frozen=True)
@@ -251,11 +255,14 @@ def _zero_priors_for(locale: str) -> dict[str, dict[str, int]]:
     return {} if table is None else table["kinds"]
 
 
-_ZERO_WORDS = frozenset({"o", "oh", "zero"})
+def _zero_words(locale: str = "en_US") -> frozenset[str]:
+    """The words a zero digit is said as (``lexical.json`` ``zero.words``); none without."""
+    return frozenset(_lexical("zero.words", locale) or ())
 
 
-def _zero_key(text: str) -> tuple[str, ...]:
-    return tuple("0" if word in _ZERO_WORDS else word for word in text.replace("-", " ").split())
+def _zero_key(text: str, locale: str = "en_US") -> tuple[str, ...]:
+    zeros = _zero_words(locale)
+    return tuple("0" if word in zeros else word for word in text.replace("-", " ").split())
 
 
 def _zero_shares(
@@ -266,12 +273,13 @@ def _zero_shares(
     in this kind of reading (``data/en/zero_priors.json``, ``tools/build_zero_priors.py``),
     each zero counted once, add-one: a date's zero is "o", a decimal's mostly "o"."""
     counts = _zero_priors().get(kind or "")
-    if not counts:
+    zeros = _zero_words()
+    if not counts or not zeros:
         return ranked
-    total = sum(counts.get(word, 0) + 1 for word in _ZERO_WORDS)
+    total = sum(counts.get(word, 0) + 1 for word in zeros)
     groups: dict[tuple[str, ...], list[int]] = {}
     for position, (_, _, _, alternative) in enumerate(ranked):
-        if _ZERO_WORDS & set(alternative.text.replace("-", " ").split()):
+        if zeros & set(alternative.text.replace("-", " ").split()):
             groups.setdefault(_zero_key(alternative.text), []).append(position)
     out = list(ranked)
     for members in groups.values():
@@ -283,7 +291,7 @@ def _zero_shares(
         for at in members:
             score = Decimal(1)
             for word in ranked[at][3].text.replace("-", " ").split():
-                if word in _ZERO_WORDS:
+                if word in zeros:
                     score *= Decimal(counts.get(word, 0) + 1) / total
             scores.append(score)
         tier = min(ranked[at][0] for at in members)
@@ -402,12 +410,13 @@ def _spoken_decimal(
     formatter = _spellout_formatter(locale)
     parts = [] if omit_zero_integer and not sign and not integer else [integer_alternatives]
     parts.append((_decimal_separator_word(formatter, locale),))
+    zero = _lexical("zero.digit", locale)
     for digit in fractional_digits:
         words = list(_number_leaf(Decimal(digit), "cardinal", locale))
-        if digit == "0":
+        if digit == "0" and zero is not None:
             # ICU has no digit-reading rule that calls zero "o"; the corpus uses
             # that spelling for zero digits in decimals.
-            words.append(SpokenAlternative("o", LEXICAL_SOURCE))
+            words.append(SpokenAlternative(zero, LEXICAL_SOURCE))
         parts.append(_ranked(words))
     alternatives = list(_compose(parts, " ".join("{}" for _ in parts)))
     if set(fractional_digits) <= {"0"} and value == value.to_integral_value():
@@ -544,7 +553,7 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
                 ordinal.provenance,
             )
         )
-    irregular = _EN_FRACTION_DENOMINATORS.get(int(denominator))
+    irregular = (_lexical("fraction.denominators", locale) or {}).get(str(int(denominator)))
     if irregular is not None:
         denominator_words.insert(
             0, SpokenAlternative(irregular[0 if singular else 1], LEXICAL_SOURCE)
@@ -554,21 +563,31 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
     if whole is not None:
         whole_words = _number_leaf(whole, "cardinal", locale)
         mixed_fraction = list(fraction)
-        if numerator == 1 and irregular is not None:
-            mixed_fraction.insert(0, SpokenAlternative(f"a {irregular[0]}", LEXICAL_SOURCE))
+        single = (
+            None if irregular is None else _lexical_pattern("fraction.one", locale, irregular[0])
+        )
+        if numerator == 1 and single is not None:
+            mixed_fraction.insert(0, SpokenAlternative(single, LEXICAL_SOURCE))
         mixed = _compose([whole_words, _ranked(mixed_fraction)], "{} and {}")
         mixed_over = _compose([whole_words, over], "{} and {}")
         return _ranked([*mixed, *mixed_over])
     return _ranked([*fraction, *over])
 
 
-def _currency_unit_name(currency: str, amount: Decimal, minor: bool) -> SpokenAlternative:
-    try:
-        names = _EN_CURRENCY_UNITS[currency][minor]
-    except KeyError as exc:
-        raise NotImplementedError(f"no bare English currency terms for {currency}") from exc
+def _currency_units(currency: str, locale: str):
+    """The corpus's bare major and minor names for ``currency`` (``currency.units``)."""
+    return (_lexical("currency.units", locale) or {}).get(currency)
+
+
+def _currency_unit_name(
+    currency: str, amount: Decimal, minor: bool, locale: str
+) -> SpokenAlternative:
+    units = _currency_units(currency, locale)
+    if units is None:
+        raise NotImplementedError(f"no bare currency terms for {currency} in {locale}")
+    names = units[minor]
     plural = (
-        amount != amount.to_integral_value() or _plural_rules("en_US").select(int(amount)) != "one"
+        amount != amount.to_integral_value() or _plural_rules(locale).select(int(amount)) != "one"
     )
     return SpokenAlternative(names[plural], LEXICAL_SOURCE)
 
@@ -578,8 +597,9 @@ def _currency_wide_names(
 ) -> tuple[SpokenAlternative, ...]:
     plural = amount != 1
     names = [SpokenAlternative(_currency_name(currency, plural, locale), "icu-measure:wide")]
-    if currency == "USD":
-        names.append(SpokenAlternative(_EN_USD_REGION_NAMES[plural], LEXICAL_SOURCE))
+    region = (_lexical("currency.region_names", locale) or {}).get(currency)
+    if region is not None:
+        names.append(SpokenAlternative(region[plural], LEXICAL_SOURCE))
     return _ranked(names)
 
 
@@ -597,12 +617,12 @@ def _spoken_money(value: Decimal, currency: str, locale: str) -> tuple[SpokenAlt
     fraction_digits = _currency_fraction_digits(currency, locale)
     scale = Decimal(10) ** fraction_digits
     scaled = absolute * scale
-    lexical_units = _EN_CURRENCY_UNITS.get(currency)
+    lexical_units = _currency_units(currency, locale)
     wide_names = _currency_wide_names(currency, absolute, locale)
     if scaled != scaled.to_integral_value() or (absolute != major and lexical_units is None):
         names = list(wide_names)
         if lexical_units is not None:
-            names.insert(0, _currency_unit_name(currency, absolute, False))
+            names.insert(0, _currency_unit_name(currency, absolute, False, locale))
         return _compose([_spoken_decimal(value, locale), names], "{} {}")
     minor = int(scaled) % int(scale) if fraction_digits else 0
     major_words = tuple(
@@ -612,13 +632,13 @@ def _spoken_money(value: Decimal, currency: str, locale: str) -> tuple[SpokenAlt
     alternatives = list(_compose([major_words, wide_names], "{} {}"))
     if lexical_units is None:
         return _ranked(alternatives)
-    bare_name = _currency_unit_name(currency, Decimal(major), False)
+    bare_name = _currency_unit_name(currency, Decimal(major), False, locale)
     if minor:
         minor_words = tuple(
             SpokenAlternative(item.text.replace("-", " "), item.provenance)
             for item in _number_leaf(Decimal(minor), "cardinal", locale)
         )
-        minor_name = _currency_unit_name(currency, Decimal(minor), True)
+        minor_name = _currency_unit_name(currency, Decimal(minor), True, locale)
         return _ranked(
             [
                 *_compose(
@@ -694,10 +714,6 @@ _MINUS_SIGNS = frozenset({"-", "−"})
 _PLUS_SIGNS = frozenset({"+"})
 
 
-_OCLOCK = SpokenAlternative("o'clock", LEXICAL_SOURCE)
-_HUNDRED = SpokenAlternative("hundred", LEXICAL_SOURCE)
-
-
 @cache
 def _zone_display_names(zone: str, locale: str) -> frozenset[str]:
     """ICU's long names for an IANA zone: standard, daylight and generic."""
@@ -770,41 +786,56 @@ def _spoken_time(
             tail.append((spelled, *expansions))
     minute = fields.get("m")
     forms: list[SpokenAlternative] = []
+    zeros = _lexical("zero.minute", locale)
     if minute:
-        if minute < 10:
-            digits = _number_leaf(Decimal(minute), "cardinal", locale)
+        minutes = _number_leaf(Decimal(minute), "cardinal", locale)
+        if minute < 10 and zeros:
+            # A zero-led minute is said with its zero ("oh five", "o five"), which no
+            # ICU time pattern says; without the locale's words it is ICU's cardinal.
             minutes = tuple(
                 SpokenAlternative(f"{zero} {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
-                for zero in ("oh", "o")
-                for item in digits
+                for zero in zeros
+                for item in minutes
             )
-        else:
-            minutes = _number_leaf(Decimal(minute), "cardinal", locale)
         parts = [hours, minutes, *tail]
         forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
     else:
-        for parts in ([hours, *tail], [hours, (_OCLOCK,), *tail]):
+        oclock = _lexical("clock.oclock", locale)
+        spoken_hours = [[hours, *tail]]
+        if oclock is not None:
+            spoken_hours.append([hours, (SpokenAlternative(oclock, LEXICAL_SOURCE),), *tail])
+        for parts in spoken_hours:
             forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
-        if minute == 0 and period is None:
+        hundred = _lexical("clock.hundred", locale)
+        if minute == 0 and period is None and hundred is not None:
             # A written on-the-hour 24-hour time: the corpus reads "20:00" "twenty hundred".
-            parts = [hours, (_HUNDRED,), *tail]
+            parts = [hours, (SpokenAlternative(hundred, LEXICAL_SOURCE),), *tail]
             forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
     return _ranked(forms)
 
 
-def _plural_word(word: str) -> str:
-    """English plural of one number word; CLDR has no plural of a numeral, so lexical."""
-    if word.endswith("y") and word[-2:-1] not in ("a", "e", "i", "o", "u"):
-        return word[:-1] + "ies"
-    if word.endswith(("s", "x", "ch", "sh")):
-        return word + "es"
-    return word + "s"
+def _plural_word(word: str, rules: Sequence[Mapping]) -> str:
+    """The plural of one number word by the locale's ``numeral.plural`` rules: the first
+    rule whose ending fits (and whose ending does not follow a ``not_after`` letter)
+    strips ``strip`` letters and adds ``add``. CLDR has no plural of a numeral."""
+    for rule in rules:
+        for ending in rule["ends"]:
+            if not word.endswith(ending):
+                continue
+            before = word[: len(word) - len(ending)][-1:]
+            if before in rule.get("not_after", ()):
+                continue
+            return word[: len(word) - rule.get("strip", 0)] + rule["add"]
+    raise NotImplementedError(f"no plural rule fits {word!r}")
 
 
-def _plural_phrase(text: str) -> str:
+def _plural_phrase(text: str, locale: str) -> str:
+    rules = _lexical("numeral.plural", locale)
+    if not rules:
+        raise NotImplementedError(f"no plural of a number word for {locale}")
     head, space, last = text.rpartition(" ")
     stem, hyphen, final = last.rpartition("-")
-    return f"{head}{space}{stem}{hyphen}{_plural_word(final)}"
+    return f"{head}{space}{stem}{hyphen}{_plural_word(final, rules)}"
 
 
 def _spoken_plural(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
@@ -818,7 +849,9 @@ def _spoken_plural(detection: object, locale: str) -> tuple[SpokenAlternative, .
         raise NotImplementedError("plural numeral did not retain its number")
     return _ranked(
         [
-            SpokenAlternative(_plural_phrase(item.text), f"{item.provenance}+{LEXICAL_SOURCE}")
+            SpokenAlternative(
+                _plural_phrase(item.text, locale), f"{item.provenance}+{LEXICAL_SOURCE}"
+            )
             for kind in ("year", "cardinal")
             for item in _number_leaf(number, kind, locale)
         ]
@@ -865,20 +898,33 @@ def _roman_readings(
     ranking. A written possessive ("II's") adds "'s" to every form.
     """
     ordinals = _number_leaf(Decimal(value.decimal), "ordinal", locale)
-    forms = [
-        *alternatives,
-        *ordinals,
-        *(
-            SpokenAlternative(f"the {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
-            for item in ordinals
-        ),
-    ]
+    forms = [*alternatives, *ordinals, *_with_article(ordinals, locale)]
     if _capture(detection, "suffix") is not None:
+        suffix = _lexical("possessive.suffix", locale)
+        if suffix is None:
+            raise NotImplementedError(f"no spoken possessive for {locale}")
         forms = [
-            SpokenAlternative(f"{item.text}'s", f"{item.provenance}+{LEXICAL_SOURCE}", item.weight)
+            SpokenAlternative(
+                f"{item.text}{suffix}", f"{item.provenance}+{LEXICAL_SOURCE}", item.weight
+            )
             for item in forms
         ]
     return _ranked(forms)
+
+
+def _with_article(
+    ordinals: Sequence[SpokenAlternative], locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Each ordinal said with the locale's article (``ordinal.article``: "the second")."""
+    if _lexical("ordinal.article", locale) is None:
+        return ()
+    return tuple(
+        SpokenAlternative(
+            _lexical_pattern("ordinal.article", locale, item.text),
+            f"{LEXICAL_SOURCE}+{item.provenance}",
+        )
+        for item in ordinals
+    )
 
 
 def _spoken_ordinal(
@@ -898,15 +944,7 @@ def _spoken_ordinal(
     ordinals = _number_leaf(number, "ordinal", locale)
     if getattr(_capture(detection, "integer"), "form", None) != "roman":
         return ordinals
-    return _ranked(
-        [
-            *ordinals,
-            *(
-                SpokenAlternative(f"the {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
-                for item in ordinals
-            ),
-        ]
-    )
+    return _ranked([*ordinals, *_with_article(ordinals, locale)])
 
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
@@ -1134,10 +1172,11 @@ def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
     over ICU's, as a zero-led minute already is.
     """
     forms = list(_number_leaf(value, "year", locale))
+    said = _lexical("zero.year", locale) or {}
     for item in tuple(forms):
         words = item.text.replace("-", " ").split(" ")
-        if "oh" in words:
-            text = " ".join("o" if word == "oh" else word for word in words)
+        if said.keys() & set(words):
+            text = " ".join(said.get(word, word) for word in words)
             forms.append(SpokenAlternative(text, f"{item.provenance}+{LEXICAL_SOURCE}"))
     return _ranked(forms)
 
@@ -1300,8 +1339,8 @@ def _spoken_number(
         if value.currency is None:
             return alternatives
         names = list(_currency_wide_names(value.currency, decimal, locale))
-        if value.currency in _EN_CURRENCY_UNITS:
-            names.insert(0, _currency_unit_name(value.currency, decimal, False))
+        if _currency_units(value.currency, locale) is not None:
+            names.insert(0, _currency_unit_name(value.currency, decimal, False, locale))
         return _compose([alternatives, _ranked(names)], "{} {}")
     if value.currency is not None or type_.startswith(("money:", "number:currency")):
         if value.currency is None:
@@ -1393,7 +1432,7 @@ def _spoken_measure(value: MeasureValue, locale: str) -> tuple[SpokenAlternative
     amount = Decimal(value.decimal)
     head = _measure_template(amount, value.unit, locale)
     templates = [(head, "icu-measure:wide")]
-    if value.unit.startswith("per-"):
+    if value.unit.startswith("per-") and _lexical("measure.per_plural", locale):
         base = value.unit.removeprefix("per-")
         singular = _measure_template(Decimal(1), base, locale).replace("{}", "").strip()
         plural = _measure_template(amount, base, locale).replace("{}", "").strip()
@@ -1463,7 +1502,7 @@ def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative,
     else:
         exact = Decimal(f"{last_amount}.{fraction.text}")
         readings.append(([*head, phrase(exact, last_unit, decimal)], ""))
-        if last_unit == "second":
+        if last_unit == "second" and _lexical("duration.milliseconds", locale) is not None:
             count = Decimal(str(fraction.text))
             milliseconds = phrase(count, "millisecond", cardinal)
             readings.append(
@@ -1479,7 +1518,8 @@ def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative,
                 body = _unit_joiners(locale)[0].format(texts[:-1])
                 forms.append(
                     SpokenAlternative(
-                        f"{body} and {texts[-1]}", f"{source}+icu-list:units+{LEXICAL_SOURCE}"
+                        _lexical_pattern("duration.milliseconds", locale, body, texts[-1]),
+                        f"{source}+icu-list:units+{LEXICAL_SOURCE}",
                     )
                 )
                 continue
@@ -1547,8 +1587,8 @@ def _spoken_mixed_measure(detection: object, locale: str) -> tuple[SpokenAlterna
 ELECTRONIC_BEAM = 8
 ELECTRONIC_SOURCE = "measured:electronic"
 # The corpus holds no email address, so "@" has no measured name, and locale data has
-# no spoken name for it (ICU's character name is COMMERCIAL AT). "at" is lexical.
-_UNMEASURED_SEPARATORS = {"@": "at"}
+# no spoken name for it (ICU's character name is COMMERCIAL AT): "at" is lexical, in
+# ``lexical.json`` ``separator.words``.
 
 
 def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlternative, ...]:
@@ -1558,10 +1598,11 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
     (ICU's cardinal or year, or digit by digit), each separator by its spoken name, all
     with probabilities from ``data/en/electronic_priors.json``. The runs multiply, so the
     best readings by their product are kept (``ELECTRONIC_BEAM``), each weighted by it.
-    A separator the corpus never names is not verbalized, except "@" (see
-    ``_UNMEASURED_SEPARATORS``).
+    A separator the corpus never names is not verbalized, except one the locale names
+    in ``lexical.json`` (``separator.words``: "@" "at").
     """
     tlds = tld_positions(value.parts)
+    unmeasured_names = _lexical("separator.words", locale) or {}
     unmeasured = False
     choices: list[dict[str, Decimal]] = []
     for index, (kind, text) in enumerate(value.parts):
@@ -1586,8 +1627,8 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
                 )
         else:
             names = {name: share for name, share in separator_names(text).items() if name != "sil"}
-            if not names and text in _UNMEASURED_SEPARATORS:
-                names = {_UNMEASURED_SEPARATORS[text]: Decimal(1)}
+            if not names and text in unmeasured_names:
+                names = {unmeasured_names[text]: Decimal(1)}
                 unmeasured = True
             if not names:
                 raise NotImplementedError(f"no measured spoken name for {text!r}")
@@ -1613,8 +1654,9 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
     also "o", which ICU has no rule for, so that form is lexical."""
     words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in value.digits]
     forms = [SpokenAlternative(" ".join(words), "icu-rbnf:%spellout-cardinal")]
-    if "0" in value.digits:
-        spoken = " ".join("o" if d == "0" else w for d, w in zip(value.digits, words, strict=True))
+    zero = _lexical("zero.digit", locale)
+    if "0" in value.digits and zero is not None:
+        spoken = " ".join(zero if d == "0" else w for d, w in zip(value.digits, words, strict=True))
         forms.append(SpokenAlternative(spoken, f"icu-rbnf:%spellout-cardinal+{LEXICAL_SOURCE}"))
     return _ranked(forms)
 
@@ -1799,13 +1841,19 @@ def verbalize_edge(
             for item in alternatives
         )
     sign = _capture(detection, "sign") if path == "number" else None
-    if sign is not None and str(getattr(sign, "text", "")).strip() in _PLUS_SIGNS:
+    if (
+        sign is not None
+        and str(getattr(sign, "text", "")).strip() in _PLUS_SIGNS
+        and _lexical("sign.plus", locale) is not None
+    ):
         # A written plus is usually said and sometimes dropped: "plus five" leads, and
         # the unsigned form stays as the fallback. ICU spells no plus, so it is lexical.
         alternatives = (
             *(
                 SpokenAlternative(
-                    f"plus {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}", item.weight
+                    _lexical_pattern("sign.plus", locale, item.text),
+                    f"{LEXICAL_SOURCE}+{item.provenance}",
+                    item.weight,
                 )
                 for item in alternatives
             ),

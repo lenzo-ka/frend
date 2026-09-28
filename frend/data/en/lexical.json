@@ -1,0 +1,284 @@
+{
+  "locale": "en",
+  "schema_version": 1,
+  "forms": {
+    "range.connector": {
+      "why": "No ICU/CLDR resource walked gives en a spoken range connector. CLDR writes only the separator: root NumberElements/latn/miscPatterns/range '{0}–{1}' and calendar/gregorian/intervalFormats/fallback '{0} – {1}' (ICU 78.3). Resources searched with no spoken connector: RBNF spellout/ordinal/duration, ICUDATA-unit, ICUDATA-lang, en NumberElements, fields, listPattern (dualplan-ranges 03, (N)); and calendar/gregorian in root, en and en_US, walked by tests/test_lexical_forms.py::test_calendar_walk_finds_no_en_range_connector: its 76 intervalFormats patterns hold no literal word, and the words the subtree does hold join other things, not a range's two ends ('at' in DateTimePatterns%atTime and %relative, \"{1} 'at' {0}\"; 'week' and 'of' in availableFormats MMMMW and yw, \"'week' W 'of' MMMM\"). Which pattern is said is for the corpus to measure, not for this table",
+      "value": {
+        "range": [
+          {
+            "id": "to",
+            "pattern": "{0} to {1}"
+          },
+          {
+            "id": "silent",
+            "pattern": "{0} {1}"
+          }
+        ],
+        "ratio": [
+          {
+            "id": "to",
+            "pattern": "{0} to {1}"
+          },
+          {
+            "id": "silent",
+            "pattern": "{0} {1}"
+          }
+        ],
+        "dimension": [
+          {
+            "id": "by",
+            "pattern": "{0} by {1}"
+          },
+          {
+            "id": "letter",
+            "pattern": "{0} x {1}"
+          }
+        ]
+      }
+    },
+    "range.separator": {
+      "why": "hyphen-minus, ':' and 'x' between numbers are forms ICU writes nowhere in en (kal, 2026-09-28); en dash ranges come from icukit",
+      "value": {
+        "range": [
+          "-"
+        ],
+        "ratio": [
+          ":"
+        ],
+        "dimension": [
+          "x",
+          "×"
+        ]
+      }
+    },
+    "zero.words": {
+      "why": "the words a zero digit is said as, so readings that differ only there share their weight: RBNF's cardinal says 'zero' and its year rule 'oh'; the corpus says 'o' (kal, 2026-09-26)",
+      "value": [
+        "o",
+        "oh",
+        "zero"
+      ]
+    },
+    "zero.digit": {
+      "why": "the corpus says a zero digit 'o' (a date's zero is 'o' 47,752 times, 'oh' never); ICU has no digit rule that says 'o'",
+      "value": "o"
+    },
+    "zero.minute": {
+      "why": "a zero-led minute ('10:05') is said 'oh five' or 'o five'; ICU's cardinal says 'five' and no ICU time pattern says the zero",
+      "value": [
+        "oh",
+        "o"
+      ]
+    },
+    "zero.year": {
+      "why": "ICU's year rule says a zero-led second half 'oh' ('nineteen oh-eight'); the corpus says 'o' ('nineteen o eight')",
+      "value": {
+        "oh": "o"
+      }
+    },
+    "clock.oclock": {
+      "why": "no CLDR form for an on-the-hour time said with o'clock",
+      "value": "o'clock"
+    },
+    "clock.hundred": {
+      "why": "the corpus reads a written on-the-hour 24-hour time ('20:00') 'twenty hundred'; no CLDR time pattern says 'hundred'",
+      "value": "hundred"
+    },
+    "possessive.suffix": {
+      "why": "no CLDR possessive for a spelled run",
+      "value": "'s"
+    },
+    "separator.words": {
+      "why": "no CLDR spoken name for '@' in an address (ICU's character name is COMMERCIAL AT), and the corpus holds no email address to measure one",
+      "value": {
+        "@": "at"
+      }
+    },
+    "letter.vowels": {
+      "why": "a consonant-vowel key for acronym ranking, not a CLDR set",
+      "value": "aeiouy"
+    },
+    "currency.units": {
+      "why": "CLDR gives wide currency names ('US dollars') and currency precision, but not the corpus's bare major names or its minor-unit names; each row is singular and plural, major then minor",
+      "value": {
+        "USD": [
+          [
+            "dollar",
+            "dollars"
+          ],
+          [
+            "cent",
+            "cents"
+          ]
+        ],
+        "EUR": [
+          [
+            "euro",
+            "euros"
+          ],
+          [
+            "cent",
+            "cents"
+          ]
+        ],
+        "GBP": [
+          [
+            "pound",
+            "pounds"
+          ],
+          [
+            "pence",
+            "pence"
+          ]
+        ],
+        "JPY": [
+          [
+            "yen",
+            "yen"
+          ],
+          [
+            "sen",
+            "sen"
+          ]
+        ],
+        "CNY": [
+          [
+            "yuan",
+            "yuan"
+          ],
+          [
+            "fen",
+            "fen"
+          ]
+        ],
+        "INR": [
+          [
+            "rupee",
+            "rupees"
+          ],
+          [
+            "paisa",
+            "paise"
+          ]
+        ],
+        "CAD": [
+          [
+            "dollar",
+            "dollars"
+          ],
+          [
+            "cent",
+            "cents"
+          ]
+        ],
+        "AUD": [
+          [
+            "dollar",
+            "dollars"
+          ],
+          [
+            "cent",
+            "cents"
+          ]
+        ],
+        "KRW": [
+          [
+            "won",
+            "won"
+          ],
+          [
+            "jeon",
+            "jeon"
+          ]
+        ],
+        "RUB": [
+          [
+            "ruble",
+            "rubles"
+          ],
+          [
+            "kopek",
+            "kopeks"
+          ]
+        ]
+      }
+    },
+    "currency.region_names": {
+      "why": "CLDR's en_US display name is 'US Dollar', not the corpus's region-expanded name; singular and plural",
+      "value": {
+        "USD": [
+          "united states dollar",
+          "united states dollars"
+        ]
+      }
+    },
+    "fraction.denominators": {
+      "why": "English RBNF names regular ordinals ('second', 'fourth') but carries neither of the corpus's fraction words; singular and plural by denominator",
+      "value": {
+        "2": [
+          "half",
+          "halves"
+        ],
+        "4": [
+          "quarter",
+          "quarters"
+        ]
+      }
+    },
+    "fraction.one": {
+      "why": "the corpus reads a whole and a single half or quarter with an article ('1 1/2' 'one and a half'); no CLDR pattern puts one there",
+      "value": "a {0}"
+    },
+    "ordinal.article": {
+      "why": "the corpus reads a Roman numeral or Roman ordinal with 'the' ('Henry II' 'the second', 'V.' 'the fifth'); no CLDR pattern puts an article before an ordinal",
+      "value": "the {0}"
+    },
+    "sign.plus": {
+      "why": "a written plus is usually said and sometimes dropped; ICU spells no plus sign",
+      "value": "plus {0}"
+    },
+    "numeral.plural": {
+      "why": "the English plural of a number word ('nineties', 'sixes', 'hundreds'); CLDR has no plural of a numeral. The first rule whose ending matches applies: drop 'strip' characters and add 'add', unless the character before the ending is in 'not_after'",
+      "value": [
+        {
+          "ends": [
+            "y"
+          ],
+          "not_after": [
+            "a",
+            "e",
+            "i",
+            "o",
+            "u"
+          ],
+          "strip": 1,
+          "add": "ies"
+        },
+        {
+          "ends": [
+            "s",
+            "x",
+            "ch",
+            "sh"
+          ],
+          "add": "es"
+        },
+        {
+          "ends": [
+            ""
+          ],
+          "add": "s"
+        }
+      ]
+    },
+    "duration.milliseconds": {
+      "why": "the corpus's race-time reading ('1:47.22' '... seconds and twenty two milliseconds'): 'and' before the milliseconds only, after ICU's unit list joins the rest",
+      "value": "{0} and {1}"
+    },
+    "measure.per_plural": {
+      "why": "the corpus also puts the unit's plural after 'per' ('per square kilometers'); both unit forms are ICU's, and where the plural goes is the corpus's choice",
+      "value": true
+    }
+  }
+}
