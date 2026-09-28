@@ -19,13 +19,13 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from decimal import Decimal
-from functools import cache
+from functools import cache, lru_cache
 from importlib.resources import files
 
 import icu
 from icukit.detectors import Capture
 
-from frend.locale_data import canonical_locale, measured_table
+from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
 __all__ = [
     "ElectronicDetector",
@@ -242,7 +242,7 @@ def load_electronic_priors(*, locale: str = "en_US") -> dict | None:
     return _electronic_priors(canonical_locale(locale))
 
 
-@cache
+@lru_cache(maxsize=LOCALE_CACHE)
 def _electronic_priors(locale: str) -> dict | None:
     return measured_table("electronic_priors", locale)
 

@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
-from functools import cache
+from functools import cache, lru_cache
 from itertools import product
 
 import icu
@@ -26,6 +26,7 @@ from frend.electronic import (
 )
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import LettersValue, cv_pattern
+from frend.locale_data import LOCALE_CACHE
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
@@ -242,7 +243,7 @@ def _zero_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
     return _zero_priors_for(canonical_locale(locale))
 
 
-@cache
+@lru_cache(maxsize=LOCALE_CACHE)
 def _zero_priors_for(locale: str) -> dict[str, dict[str, int]]:
     from frend.locale_data import measured_table
 
@@ -939,7 +940,7 @@ def _acronym_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
     return _acronym_priors_for(canonical_locale(locale))
 
 
-@cache
+@lru_cache(maxsize=LOCALE_CACHE)
 def _acronym_priors_for(locale: str) -> dict[str, dict[str, int]]:
     from frend.locale_data import measured_table
 

@@ -72,7 +72,7 @@ from functools import cache, lru_cache
 from pathlib import Path
 from typing import Any, Literal, Protocol, runtime_checkable
 
-from frend.locale_data import canonical_locale, measured_table, root_table
+from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table, root_table
 from frend.shape import shape
 
 __all__ = [
@@ -365,7 +365,7 @@ def _prior_table_at(path: str) -> PriorTable:
     return PriorTable(raw.get("counts", {}), raw.get("provenance", {}))
 
 
-@cache
+@lru_cache(maxsize=LOCALE_CACHE)
 def _locale_prior_table(locale: str) -> PriorTable | None:
     raw = measured_table("type_priors", locale)
     if raw is None:

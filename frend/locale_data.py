@@ -35,6 +35,8 @@ __all__ = [
 ]
 
 ROOT = "root"
+# Locale-keyed caches hold at most this many locales (absent ones included).
+LOCALE_CACHE = 16
 
 
 # A well-formed tag's shape (BCP 47's language, script, region and variant subtags; no
@@ -52,7 +54,8 @@ def canonical_locale(locale: str) -> str:
     """``locale`` as the one spelling its data directory and caches use.
 
     ``"EN-US"``, ``"en-us"`` and ``"en_US"`` are all ``"en_US"`` (ICU's base name:
-    language lower, script title, region upper); ``root`` in any case is ``"root"``.
+    language lower, script title, region upper); ``root`` in any case, and ``und``
+    (CLDR's code for root, with any script or region), is ``"root"``.
     Raises ``ValueError`` for anything that is not a well-formed tag.
     """
     if not isinstance(locale, str):
@@ -61,6 +64,13 @@ def canonical_locale(locale: str) -> str:
         return ROOT
     if not _WELL_FORMED.fullmatch(locale):
         raise ValueError(f"not a locale tag: {locale!r}")
+    subtags = [tag.lower() for tag in re.split(r"[-_]", locale)]
+    if len(set(subtags)) != len(subtags):
+        # BCP 47 allows no repeated variant ("en_US_POSIX_POSIX").
+        raise ValueError(f"not a locale tag: {locale!r}")
+    if subtags[0] == "und":
+        # CLDR's root locale is "und" (ICU's base name for it is empty).
+        return ROOT
     canonical = icu.Locale(locale.replace("-", "_")).getBaseName()
     if not _CANONICAL.fullmatch(canonical):
         raise ValueError(f"not a locale tag: {locale!r}")

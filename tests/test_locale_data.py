@@ -12,6 +12,8 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from frend import locale_data
+
 _REPO = Path(__file__).resolve().parents[1]
 _DATA = _REPO / "frend" / "data"
 _TOOLS = _REPO / "tools"
@@ -313,3 +315,23 @@ def test_english_first_readings_are_unchanged(written, first):
     read through the evaluator's own profile."""
     evaluate = _evaluator()
     assert evaluate._score_text(written, first)[0], written
+
+
+@pytest.mark.parametrize("tag", ["und", "und-Latn", "und_US", "UND"])
+def test_und_is_cldrs_root(tag):
+    assert locale_data.canonical_locale(tag) == "root"
+    assert locale_data.locale_chain(tag) == ("root",)
+
+
+@pytest.mark.parametrize("tag", ["en_US_POSIX_POSIX", "en-us-US"])
+def test_a_repeated_subtag_is_refused(tag):
+    with pytest.raises(ValueError):
+        locale_data.canonical_locale(tag)
+
+
+def test_a_locale_cache_holds_a_bounded_number_of_locales():
+    from frend.type_priors import _locale_prior_table, load_prior_table
+
+    for index in range(3 * locale_data.LOCALE_CACHE):
+        load_prior_table(locale=f"xx_{chr(65 + index % 26)}{chr(65 + index // 26)}")
+    assert _locale_prior_table.cache_info().currsize <= locale_data.LOCALE_CACHE

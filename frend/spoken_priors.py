@@ -6,10 +6,10 @@ import unicodedata
 from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import Decimal
-from functools import cache
+from functools import lru_cache
 from types import MappingProxyType
 
-from frend.locale_data import canonical_locale, measured_table
+from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
 __all__ = [
     "SourceMeasurement",
@@ -237,7 +237,7 @@ def load_spoken_prior_table(*, locale: str = "en_US") -> SpokenPriorTable | None
     return _spoken_prior_table(canonical_locale(locale))
 
 
-@cache
+@lru_cache(maxsize=LOCALE_CACHE)
 def _spoken_prior_table(locale: str) -> SpokenPriorTable | None:
     document = measured_table("spoken_priors", locale)
     if document is None:
