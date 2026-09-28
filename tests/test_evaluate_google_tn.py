@@ -79,10 +79,11 @@ def _corpus(root: Path, first: int) -> Path:
 
 
 def test_no_builder_reads_a_held_out_shard(tmp_path, monkeypatch):
-    """Every corpus builder, run on a corpus of all 100 shards (where every tenth shard
-    lands on 00090) and on one missing 00000-00004 (where it lands on 00095), opens at
-    least one shard and never a held-out one (90-99) -- by what it opens, not by what it
-    says it counted."""
+    """Every corpus builder, run on a corpus of all 100 shards (where every tenth shard by
+    position lands on 00090), opens at least one shard and never a held-out one (90-99)
+    -- by what it opens, not by what it says it counted; and on one missing 00000-00004
+    (where every tenth by position lands on 00095) it refuses to build rather than sample
+    by position, again opening no held-out shard."""
     type_priors = _tool("build_type_priors")
     spoken = _tool("build_spoken_priors")
     builders = {
@@ -106,9 +107,13 @@ def test_no_builder_reads_a_held_out_shard(tmp_path, monkeypatch):
     for builder, build in builders.items():
         for label, corpus in corpora.items():
             opened.clear()
-            build(corpus)
+            if label == "corpus5":
+                with pytest.raises(FileNotFoundError, match="training shard"):
+                    build(corpus)
+            else:
+                build(corpus)
             shards = [name for name in opened if name.startswith("output-")]
-            if not shards:
+            if not shards and label == "corpus0":
                 read_nothing.append(f"{builder}@{label}")
             held = sorted(set(shards) & _HELD_OUT)
             if held:

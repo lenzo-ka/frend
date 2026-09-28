@@ -251,12 +251,15 @@ def _files(corpus_dir: Path) -> list[Path]:
     tools = str(Path(__file__).resolve().parent)
     if tools not in sys.path:
         sys.path.insert(0, tools)
-    from google_tn_rows import training_shards
+    from google_tn_rows import full_training_set, training_shards
 
     available = sorted(corpus_dir.glob("output-*-of-*"))
     if not available:
         raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
-    chosen = training_shards(available[::_SHARD_STEP])
+    full = full_training_set(available)
+    # The full corpus samples every tenth training shard by name (00, 10, ..., 80),
+    # never by position in a listing that may be partial.
+    chosen = full[::_SHARD_STEP] if full is not None else training_shards(available[::_SHARD_STEP])
     if not chosen:
         raise FileNotFoundError(f"no training shards under {corpus_dir} (only held-out ones)")
     return chosen

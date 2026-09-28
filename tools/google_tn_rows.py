@@ -37,6 +37,29 @@ TEST_SHARDS = _pool(95, 99)
 HELD_OUT_SHARDS = RUNTIME_EVAL_SHARDS | TEST_SHARDS
 
 
+_FULL_SUFFIX = "-of-00100"
+
+
+def full_training_set(paths: Iterable[Path]) -> list[Path] | None:
+    """For the full 100-shard corpus, its training shards in order, refusing a partial
+    listing (a missing shard, or a stalled mount that lists only some): a table built
+    from fewer shards than it names would be silently wrong. ``None`` for any other
+    corpus (a fixture), whose shards are taken as found."""
+    paths = [Path(path) for path in paths]
+    if not any(path.name.endswith(_FULL_SUFFIX) for path in paths):
+        return None
+    by_name = {path.name: path for path in paths}
+    missing = sorted(TRAINING_SHARDS - by_name.keys())
+    if len(missing) == len(TRAINING_SHARDS):
+        raise FileNotFoundError("no training shards in the corpus (only held-out ones)")
+    if missing:
+        raise FileNotFoundError(
+            f"{len(missing)} training shard(s) missing, first {missing[0]}; "
+            "refusing to build from a partial corpus"
+        )
+    return [by_name[name] for name in sorted(TRAINING_SHARDS)]
+
+
 def corpus_label(corpus_dir: Path) -> str:
     """The corpus a table was counted from, named by the directory actually read:
     ``google-tn:en_with_types`` for the shipped corpus, ``google-tn:<name>`` for any other

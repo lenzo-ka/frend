@@ -21,6 +21,8 @@ import sys
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
+
 from frend.type_priors import PriorTable, corpus_classes
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -177,6 +179,9 @@ def test_held_out_shards_are_never_counted(tmp_path):
     parallel file list (--jobs 2) both read only the training shards (00-89)."""
     corpus = tmp_path / "corpus"
     corpus.mkdir()
+    # A full corpus names all 90 training shards; most are empty here.
+    for index in range(90):
+        (corpus / f"output-{index:05d}-of-00100").write_text("", encoding="utf-8")
     for name, line in [
         ("output-00000-of-00100", "CARDINAL\t12\ttwelve\n"),
         ("output-00001-of-00100", "CARDINAL\t12\ttwelve\n"),
@@ -223,3 +228,28 @@ def test_check_runs_in_a_clean_environment(tmp_path):
     out.write_text(out.read_text(encoding="utf-8").replace("}", "} ", 1), encoding="utf-8")
     drift = _run(["--check", "--corpus-dir", str(_FIX), "--out", str(out)], env=env)
     assert drift.returncode == 1
+
+
+def test_a_partial_full_corpus_is_refused(tmp_path):
+    """A 100-shard corpus missing a training shard (or a stalled mount listing only some)
+    is refused by name, never sampled by position."""
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+    import build_spoken_priors
+    import build_type_priors
+
+    for index in range(100):
+        if index != 10:
+            (tmp_path / f"output-{index:05d}-of-00100").write_text(
+                "CARDINAL\t7\tseven\n", encoding="utf-8"
+            )
+    with pytest.raises(FileNotFoundError, match="training shard"):
+        build_spoken_priors._files(tmp_path)
+    with pytest.raises(FileNotFoundError, match="training shard"):
+        build_type_priors._google_tn_files(tmp_path)
+    (tmp_path / "output-00010-of-00100").write_text("CARDINAL\t7\tseven\n", encoding="utf-8")
+    assert [p.name[:12] for p in build_spoken_priors._files(tmp_path)] == [
+        f"output-{index:05d}" for index in range(0, 90, 10)
+    ]
