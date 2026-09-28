@@ -25,7 +25,7 @@ from importlib.resources import files
 import icu
 from icukit.detectors import Capture
 
-from frend.locale_data import measured_table
+from frend.locale_data import canonical_locale, measured_table
 
 __all__ = [
     "ElectronicDetector",
@@ -235,10 +235,15 @@ def digit_key(run: str) -> str:
     return f"{min(len(run), 5)}:{'z' if len(run) > 1 and run[0] == '0' else 'n'}"
 
 
-@cache
 def load_electronic_priors(*, locale: str = "en_US") -> dict | None:
     """The locale's measured electronic table (``data/<locale>/electronic_priors.json``),
-    or ``None`` when the locale has none."""
+    or ``None`` when the locale has none; cached on the canonical locale, so every
+    spelling of a locale gets the same table."""
+    return _electronic_priors(canonical_locale(locale))
+
+
+@cache
+def _electronic_priors(locale: str) -> dict | None:
     return measured_table("electronic_priors", locale)
 
 

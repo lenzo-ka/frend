@@ -24,6 +24,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from build_spoken_priors import _default_corpus_dir, _files  # noqa: E402
+from google_tn_rows import corpus_label  # noqa: E402
 
 _OUT = _REPO / "frend" / "data" / "en" / "zero_priors.json"
 _ZEROS = ("o", "oh", "zero")
@@ -73,7 +74,7 @@ def build_document(corpus_dir: Path) -> dict:
         "provenance": {
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "locale": "en",
-            "corpus": "google-tn:en_with_types",
+            "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
             "shards": [path.name for path in files],
             "rule": (

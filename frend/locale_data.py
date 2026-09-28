@@ -6,19 +6,28 @@ language's corpus) is looked up along the chain but never in ``root``, so a loca
 no measured table gets ``None``, never another language's counts. A root-only table
 (the ICU shape backfill, the IANA list of top-level domains) is read from ``root``.
 
+A tag is validated and canonicalized (:func:`canonical_locale`) before it names a
+directory: ``"-"`` and ``"_"`` both separate subtags, ICU's base name sets the case
+(``EN-us`` -> ``en_US``), ``root`` in any case is ``root``, and anything that is not a
+well-formed tag (a ``/``, ``..``, an empty subtag) is refused with ``ValueError``.
+
 CLDR ``parentLocales`` exceptions are not handled: truncation is exact for en and ru.
 """
 
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Mapping
 from importlib.resources import files
 from importlib.resources.abc import Traversable
 from types import MappingProxyType
 
+import icu
+
 __all__ = [
     "ROOT",
+    "canonical_locale",
     "lexical_forms",
     "locale_chain",
     "measured_table",
@@ -28,15 +37,46 @@ __all__ = [
 ROOT = "root"
 
 
+# A well-formed tag's shape (BCP 47's language, script, region and variant subtags; no
+# extensions), with "-" or "_" between subtags. Anything else never reaches a path.
+_WELL_FORMED = re.compile(
+    r"(?:[A-Za-z]{2,3}|[A-Za-z]{5,8})"  # language
+    r"(?:[-_][A-Za-z]{4})?"  # script
+    r"(?:[-_](?:[A-Za-z]{2}|[0-9]{3}))?"  # region
+    r"(?:[-_](?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*",  # variants
+)
+_CANONICAL = re.compile(r"[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*")
+
+
+def canonical_locale(locale: str) -> str:
+    """``locale`` as the one spelling its data directory and caches use.
+
+    ``"EN-US"``, ``"en-us"`` and ``"en_US"`` are all ``"en_US"`` (ICU's base name:
+    language lower, script title, region upper); ``root`` in any case is ``"root"``.
+    Raises ``ValueError`` for anything that is not a well-formed tag.
+    """
+    if not isinstance(locale, str):
+        raise ValueError(f"not a locale tag: {locale!r}")
+    if locale.lower() == ROOT:
+        return ROOT
+    if not _WELL_FORMED.fullmatch(locale):
+        raise ValueError(f"not a locale tag: {locale!r}")
+    canonical = icu.Locale(locale.replace("-", "_")).getBaseName()
+    if not _CANONICAL.fullmatch(canonical):
+        raise ValueError(f"not a locale tag: {locale!r}")
+    return canonical
+
+
 def locale_chain(locale: str) -> tuple[str, ...]:
     """The locales ``locale`` looks in, most specific first, ending at ``root``.
 
-    ``"en_US"`` -> ``("en_US", "en", "root")``; a hyphen separates subtags as an
-    underscore does.
+    ``"en_US"`` -> ``("en_US", "en", "root")``; the tag is canonicalized first
+    (:func:`canonical_locale`), so ``"EN-us"`` walks the same chain.
     """
-    if not locale or locale == ROOT:
+    canonical = canonical_locale(locale)
+    if canonical == ROOT:
         return (ROOT,)
-    tags = locale.replace("-", "_").split("_")
+    tags = canonical.split("_")
     return (*("_".join(tags[:count]) for count in range(len(tags), 0, -1)), ROOT)
 
 

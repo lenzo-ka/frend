@@ -61,7 +61,7 @@ def _ensure_repo_importable() -> None:
 _ensure_repo_importable()
 if str(Path(__file__).resolve().parent) not in sys.path:  # tools/, for google_tn_rows
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-from google_tn_rows import training_shards  # noqa: E402
+from google_tn_rows import corpus_label, training_shards  # noqa: E402
 
 from frend.shape import is_single_uppercase  # noqa: E402
 
@@ -117,7 +117,6 @@ _GOOGLE_TN_NOTE = (
 _GOOGLE_TN_PROFILE: dict[str, str] = {
     "source": "google-tn-en_with_types",
     "locale": "en",
-    "corpus": "google-tn:en_with_types",
     "license": "CC BY-SA 4.0",
     "attribution": ("derived from Sproat & Jaitly (2016) Google TN corpus; CC BY-SA 4.0"),
     "note": _GOOGLE_TN_NOTE,
@@ -345,6 +344,7 @@ def _build(corpus: str, corpus_dir: Path | None, jobs: int | None) -> dict:
             counts=counts,
             single_uppercase_letters=letters,
             shards=[path.name for path in _google_tn_files(directory)],
+            corpus=corpus_label(directory),
             **_GOOGLE_TN_PROFILE,
         )
     path = Path(corpus)
@@ -355,6 +355,7 @@ def _build(corpus: str, corpus_dir: Path | None, jobs: int | None) -> dict:
         counts=counts,
         single_uppercase_letters=letters,
         shards=[shard.name for shard in _google_tn_files(path)],
+        corpus=corpus_label(path),
         **profile,
     )
 

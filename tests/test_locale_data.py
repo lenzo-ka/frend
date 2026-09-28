@@ -33,6 +33,170 @@ def test_chain_walks_en_US_to_en_to_root():
     assert locale_chain("root") == ("root",)
 
 
+@pytest.mark.parametrize("spelling", ["en_US", "en-US", "EN-US", "en-us", "en_us", "EN_us"])
+def test_every_spelling_of_a_locale_walks_one_chain(spelling):
+    """A tag is canonicalized through ICU before it names a directory, so its case and
+    its separator never matter (a case-sensitive installed package would otherwise
+    look for ``EN_US`` and ``EN``)."""
+    from frend.locale_data import locale_chain
+
+    assert locale_chain(spelling) == ("en_US", "en", "root")
+
+
+def test_the_canonical_spelling_is_icus_base_name():
+    from frend.locale_data import canonical_locale
+
+    for spelling in ("en_US", "en-US", "EN-US", "en-us", "EN_us"):
+        assert canonical_locale(spelling) == "en_US", spelling
+    assert canonical_locale("SR-latn-rs") == "sr_Latn_RS"
+    assert canonical_locale("ROOT") == "root"
+
+
+def test_a_script_is_title_cased_and_walks_its_chain():
+    from frend.locale_data import locale_chain
+
+    assert locale_chain("zh-hant-tw") == ("zh_Hant_TW", "zh_Hant", "zh", "root")
+
+
+@pytest.mark.parametrize("spelling", ["root", "ROOT", "Root", "rOoT"])
+def test_root_in_any_case_is_root_and_serves_no_measured_table(spelling):
+    from frend.locale_data import locale_chain, measured_table
+
+    assert locale_chain(spelling) == ("root",)
+    assert measured_table("icu_shape_backfill", spelling) is None
+    for name in _MEASURED:
+        assert measured_table(name, spelling) is None, name
+
+
+@pytest.mark.parametrize(
+    "tag",
+    [
+        "en/../root",
+        "../root",
+        "en/root",
+        "en\\..\\root",
+        "..",
+        "",
+        "en__US",
+        "en_",
+        "_en",
+        "en-",
+        "en US",
+        "x",
+        "123",
+        "en.US",
+    ],
+)
+def test_a_malformed_tag_is_refused_before_any_path(tag):
+    """Anything that is not a well-formed tag never reaches a path join: a path-shaped
+    tag would otherwise walk out of its locale directory (``en/../root`` read the
+    root-only ICU backfill as though it were measured)."""
+    from frend.electronic import load_electronic_priors
+    from frend.locale_data import locale_chain, measured_table
+    from frend.spoken_priors import load_spoken_prior_table
+    from frend.type_priors import load_prior_table
+
+    with pytest.raises(ValueError):
+        locale_chain(tag)
+    with pytest.raises(ValueError):
+        measured_table("icu_shape_backfill", tag)
+    for load in (load_prior_table, load_spoken_prior_table, load_electronic_priors):
+        with pytest.raises(ValueError):
+            load(locale=tag)
+
+
+def test_the_most_specific_locale_wins(tmp_path, monkeypatch):
+    """With both ``en_US`` and ``en`` holding a table, ``en_US`` is read; a locale with
+    only the parent's falls back to it."""
+    import frend.locale_data as locale_data
+
+    for tag, value in (("en_US", "us"), ("en", "en"), ("root", "root")):
+        (tmp_path / tag).mkdir()
+        (tmp_path / tag / "probe.json").write_text(json.dumps({"from": value}), "utf-8")
+    monkeypatch.setattr(locale_data, "_data", lambda: tmp_path)
+
+    assert locale_data.measured_table("probe", "en_US") == {"from": "us"}
+    assert locale_data.measured_table("probe", "EN-us") == {"from": "us"}
+    assert locale_data.measured_table("probe", "en_GB") == {"from": "en"}
+    assert locale_data.measured_table("probe", "en") == {"from": "en"}
+    assert locale_data.measured_table("probe", "fr_FR") is None
+    assert locale_data.measured_table("probe", "root") is None
+
+
+def test_every_loader_caches_on_the_canonical_locale():
+    """Equivalent spellings share one cached table: the electronic loader hands out
+    mutable dictionaries, so two copies could drift apart."""
+    from frend.electronic import load_electronic_priors
+    from frend.spoken_priors import load_spoken_prior_table
+    from frend.type_priors import load_prior_table
+    from frend.verbalize import _acronym_priors, _zero_priors
+
+    loaders = (
+        load_electronic_priors,
+        load_prior_table,
+        load_spoken_prior_table,
+        _zero_priors,
+        _acronym_priors,
+    )
+    for load in loaders:
+        default = load()
+        assert default, load.__name__
+        for spelling in ("en_US", "en-US", "EN-US", "en_us"):
+            assert load(locale=spelling) is default, (load.__name__, spelling)
+
+
+def test_a_missing_locale_table_passed_on_gives_no_english_counts():
+    """``load_prior_table`` answers ``None`` for a locale with no table; handing that
+    to a consumer means no measured prior, not the default English table. Only an
+    omitted argument means the default."""
+    from frend.type_priors import BlendedPrior, CorpusPrior, load_prior_table
+
+    missing = load_prior_table(locale="ru_RU")
+    assert missing is None
+    english = load_prior_table()
+    detection = {"type": "number:cardinal", "text": "12", "start": 0, "end": 2}
+    assert english.reading_prior(detection).tier == "measured"
+
+    corpus = CorpusPrior(missing)
+    assert corpus._table is None
+    assert corpus.reading_prior(detection) is None
+    assert corpus.features(detection, None) == ()
+
+    blended = BlendedPrior(missing)
+    assert blended.measured is None
+    prior = blended.reading_prior(detection)
+    assert prior is None or prior.tier != "measured"
+
+    assert CorpusPrior()._table is english
+    assert BlendedPrior().measured is english
+
+
+def _builder(name: str):
+    if str(_TOOLS) not in sys.path:
+        sys.path.insert(0, str(_TOOLS))
+    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "build_acronym_priors",
+        "build_electronic_priors",
+        "build_spoken_priors",
+        "build_zero_priors",
+    ],
+)
+def test_a_builder_records_the_corpus_it_read(name):
+    """A table built from another shard directory names that directory as its corpus,
+    not the shipped corpus's (the type-priors builder: test_build_google_tn)."""
+    fixture = _REPO / "tests" / "data" / "google_tn"
+    provenance = _builder(name).build_document(fixture)["provenance"]
+    assert provenance["corpus"] == "google-tn:google_tn", name
+
+
 def test_a_locale_with_no_measured_table_gets_none():
     """No en counts stand in for a locale that has none: every measured loader says
     so, and English keeps its tables."""

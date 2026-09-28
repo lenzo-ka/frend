@@ -72,7 +72,7 @@ from functools import cache, lru_cache
 from pathlib import Path
 from typing import Any, Literal, Protocol, runtime_checkable
 
-from frend.locale_data import measured_table, root_table
+from frend.locale_data import canonical_locale, measured_table, root_table
 from frend.shape import shape
 
 __all__ = [
@@ -352,10 +352,11 @@ class PriorTable:
 def load_prior_table(path: str | None = None, *, locale: str = "en_US") -> PriorTable | None:
     """Load a prior table once (cached): the file at ``path``, else ``locale``'s measured
     table (``data/<locale>/type_priors.json`` along its chain, never ``root``), or
-    ``None`` when the locale has none."""
+    ``None`` when the locale has none. The cache keys on the canonical locale, so
+    ``"en-US"`` and ``"en_US"`` share one table."""
     if path is not None:
         return _prior_table_at(path)
-    return _locale_prior_table(locale)
+    return _locale_prior_table(canonical_locale(locale))
 
 
 @cache
@@ -417,18 +418,33 @@ def load_icu_backfill_table(path: str | None = None) -> IcuBackfillTable:
     )
 
 
+class _Omitted:
+    """The type of :data:`_OMITTED`: an argument the caller did not pass."""
+
+    def __repr__(self) -> str:
+        return "<omitted>"
+
+
+# An omitted table means the default (English) table; an explicit ``None`` is what
+# ``load_prior_table`` returns for a locale with no table, and means no measured prior,
+# never the English counts.
+_OMITTED = _Omitted()
+
+
 class BlendedPrior:
     """Measured-first prior with ICU backfill only for corpus-silent shapes."""
 
     def __init__(
         self,
-        measured: PriorTable | None = None,
+        measured: PriorTable | None | _Omitted = _OMITTED,
         backfill: IcuBackfillTable | None = None,
         *,
         class_prior: Mapping[str, Decimal | int] | None = None,
         class_prior_source: str | None = None,
     ):
-        self.measured = measured if measured is not None else load_prior_table()
+        # Omitted: the default table. ``None``: this locale has no measured table, so
+        # no measured tier -- only the cross-locale ICU backfill (read from ``root``).
+        self.measured = load_prior_table() if measured is _OMITTED else measured
         self.backfill = backfill if backfill is not None else load_icu_backfill_table()
         self.class_prior = (
             None
@@ -458,8 +474,8 @@ class BlendedPrior:
         group = corpus_group(type_) or type_.partition(":")[0] or shape_key
         if not classes:
             return ReadingPrior(group, shape_key, None, None, False, "unsupported", "unsupported")
-        measured_prior = self.measured.reading_prior(detection)
-        if self.measured.has_raw_shape(shape_key):
+        if self.measured is not None and self.measured.has_raw_shape(shape_key):
+            measured_prior = self.measured.reading_prior(detection)
             assert measured_prior is not None
             return measured_prior
         likelihoods = [
@@ -489,11 +505,14 @@ class BlendedPrior:
 class CorpusPrior:
     """The Layer-2 feature source: a base-rate log-weight per supported reading."""
 
-    def __init__(self, table: PriorTable | None = None):
-        self._table = table if table is not None else load_prior_table()
+    def __init__(self, table: PriorTable | None | _Omitted = _OMITTED):
+        # Omitted: the default table. ``None``: this locale has no table, so no prior.
+        self._table = load_prior_table() if table is _OMITTED else table
 
     def reading_prior(self, detection: Detection) -> ReadingPrior | None:
         """Expose the decomposed :class:`ReadingPrior`, or ``None`` for no support."""
+        if self._table is None:
+            return None
         return self._table.reading_prior(detection)
 
     def features(self, detection: Detection, context: ResolveContext) -> tuple[ReadingFeature, ...]:
@@ -509,7 +528,7 @@ class CorpusPrior:
         ignored: a base rate depends only on the reading's own type and shape.
         """
         del context
-        prior = self._table.reading_prior(detection)
+        prior = self.reading_prior(detection)
         if prior is None or not prior.supported:
             return ()
         assert prior.p is not None and prior.n is not None  # invariant of supported

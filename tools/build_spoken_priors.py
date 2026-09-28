@@ -257,6 +257,8 @@ def _files(corpus_dir: Path) -> list[Path]:
 
 def build_document(corpus_dir: Path) -> dict:
     files = _files(corpus_dir)
+    from google_tn_rows import corpus_label  # on sys.path once _files has run
+
     detectors = _detectors()
     aggregates: dict[str, dict] = {
         kind: {
@@ -370,7 +372,7 @@ def build_document(corpus_dir: Path) -> dict:
         "provenance": {
             "source": "google-tn-en_with_types",
             "locale": "en",
-            "corpus": "google-tn:en_with_types",
+            "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "generated": _BUILD_DATE,

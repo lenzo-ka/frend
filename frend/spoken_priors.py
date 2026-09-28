@@ -9,7 +9,7 @@ from decimal import Decimal
 from functools import cache
 from types import MappingProxyType
 
-from frend.locale_data import measured_table
+from frend.locale_data import canonical_locale, measured_table
 
 __all__ = [
     "SourceMeasurement",
@@ -232,8 +232,9 @@ def _count_mapping(value: object, field: str) -> dict[str, int]:
 
 
 def load_spoken_prior_table(*, locale: str = "en_US") -> SpokenPriorTable | None:
-    """``locale``'s measured spoken-prior table (cached), or ``None`` when it has none."""
-    return _spoken_prior_table(locale)
+    """``locale``'s measured spoken-prior table (cached on the canonical locale), or
+    ``None`` when it has none."""
+    return _spoken_prior_table(canonical_locale(locale))
 
 
 @cache

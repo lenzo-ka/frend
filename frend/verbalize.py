@@ -234,10 +234,16 @@ def _rank_final(
     return tuple(item[3] for item in ranked)
 
 
-@cache
 def _zero_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
     """The locale's measured zero words by kind (``data/<locale>/zero_priors.json``);
-    empty when the locale has no table."""
+    empty when the locale has no table. Cached on the canonical locale."""
+    from frend.locale_data import canonical_locale
+
+    return _zero_priors_for(canonical_locale(locale))
+
+
+@cache
+def _zero_priors_for(locale: str) -> dict[str, dict[str, int]]:
     from frend.locale_data import measured_table
 
     table = measured_table("zero_priors", locale)
@@ -925,10 +931,16 @@ def _spoken_letters(value: LettersValue) -> tuple[SpokenAlternative, ...]:
 _ABBREVIATION_SOURCES = {"expansion": "icukit-abbreviation", "spell-out": "icukit-spell-out"}
 
 
-@cache
 def _acronym_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
     """The locale's measured acronym readings by key (``data/<locale>/acronym_priors.json``);
-    empty when the locale has no table."""
+    empty when the locale has no table. Cached on the canonical locale."""
+    from frend.locale_data import canonical_locale
+
+    return _acronym_priors_for(canonical_locale(locale))
+
+
+@cache
+def _acronym_priors_for(locale: str) -> dict[str, dict[str, int]]:
     from frend.locale_data import measured_table
 
     table = measured_table("acronym_priors", locale)
