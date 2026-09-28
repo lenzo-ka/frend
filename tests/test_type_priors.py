@@ -604,7 +604,8 @@ if __name__ == "__main__":
 # ------------------------------------------------------------------ held-out shards
 
 _ALL_SHARDS = {f"output-{index:05d}-of-00100" for index in range(100)}
-_HELD_OUT = {"output-00095-of-00100", "output-00099-of-00100"}
+# The corpus README's split: training 00-89; runtime eval 90-94 and test 95-99 held out.
+_HELD_OUT = {f"output-{index:05d}-of-00100" for index in range(90, 100)}
 
 
 def _shipped(name: str) -> dict:
@@ -613,29 +614,32 @@ def _shipped(name: str) -> dict:
 
 def test_shipped_table_counts_no_held_out_shard():
     """The falsifier: shapes seen once, only in a held-out shard, are absent, and the
-    exact counts are the 98-shard build's."""
+    exact counts are the 90-shard (00-89) build's."""
     table = _shipped("type_priors.json")
     counts = table["counts"]
+    # Seen once, only in the runtime-eval shards 90-94: present if one is counted.
+    assert "N - N A N-N-N" not in counts
+    assert "A. N/N/N" not in counts
     # Seen only in shard 95: present if 95 is counted.
     assert "N N N - N N N" not in counts
     assert "(N) N A N-N-N-N" not in counts
     # Seen only in shard 99: present if 99 is counted.
     assert "N-N A N-N N-N" not in counts
     assert "N-N-N A A A A A A A" not in counts
-    assert counts["N:N"] == {"time": 61570}
-    assert counts["N-N"] == {"telephone": 33069}
+    assert counts["N:N"] == {"time": 56603}
+    assert counts["N-N"] == {"telephone": 30468}
     assert table["single_uppercase_letters"]["I"] == {
-        "cardinal": 52913,
-        "letters": 2537,
-        "ordinal": 22763,
-        "plain": 335395,
+        "cardinal": 48696,
+        "letters": 2328,
+        "ordinal": 20962,
+        "plain": 307982,
     }
 
 
 def test_shipped_table_lists_its_training_shards():
     provenance = _shipped("type_priors.json")["provenance"]
     shards = provenance["shards"]
-    assert len(shards) == 98 == len(set(shards))
+    assert len(shards) == 90 == len(set(shards))
     assert _ALL_SHARDS - set(shards) == _HELD_OUT
     assert provenance["generated"] == "2026-09-28"
 

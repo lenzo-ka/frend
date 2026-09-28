@@ -1,60 +1,60 @@
 {
   "keys": {
     "*": {
-      "spelled": 853152,
-      "word": 321069
+      "spelled": 767364,
+      "word": 288728
     },
     "cv:cc": {
-      "spelled": 177899,
-      "word": 7983
+      "spelled": 160082,
+      "word": 7182
     },
     "cv:ccc": {
-      "spelled": 223250,
-      "word": 762
+      "spelled": 200769,
+      "word": 697
     },
     "cv:cccc": {
-      "spelled": 31536,
+      "spelled": 28349,
       "word": 19
     },
     "cv:ccccc": {
-      "spelled": 2939
+      "spelled": 2664
     },
     "cv:cccccc": {
-      "spelled": 263,
+      "spelled": 238,
       "word": 4
     },
     "cv:ccccccc": {
-      "spelled": 42
+      "spelled": 40
     },
     "cv:ccccccv": {
-      "spelled": 12
+      "spelled": 11
     },
     "cv:cccccv": {
-      "spelled": 109
+      "spelled": 97
     },
     "cv:cccccvc": {
-      "spelled": 35
+      "spelled": 31
     },
     "cv:cccccvv": {
-      "spelled": 13
+      "spelled": 12
     },
     "cv:ccccv": {
-      "spelled": 1075
+      "spelled": 972
     },
     "cv:ccccvc": {
-      "spelled": 176,
-      "word": 3
+      "spelled": 161,
+      "word": 2
     },
     "cv:ccccvcc": {
-      "spelled": 34,
-      "word": 8
+      "spelled": 30,
+      "word": 7
     },
     "cv:ccccvcv": {
-      "spelled": 16,
+      "spelled": 15,
       "word": 1
     },
     "cv:ccccvv": {
-      "spelled": 119,
+      "spelled": 111,
       "word": 2
     },
     "cv:ccccvvc": {
@@ -62,58 +62,57 @@
       "word": 2
     },
     "cv:ccccvvv": {
-      "spelled": 19
+      "spelled": 18
     },
     "cv:cccv": {
-      "spelled": 12309,
-      "word": 133
+      "spelled": 11088,
+      "word": 120
     },
     "cv:cccvc": {
-      "spelled": 1850,
-      "word": 84
+      "spelled": 1670,
+      "word": 80
     },
     "cv:cccvcc": {
-      "spelled": 165,
-      "word": 123
+      "spelled": 144,
+      "word": 107
     },
     "cv:cccvccc": {
-      "spelled": 15,
-      "word": 25
+      "spelled": 12,
+      "word": 22
     },
     "cv:cccvccv": {
-      "spelled": 7,
-      "word": 13
+      "spelled": 5,
+      "word": 12
     },
     "cv:cccvcv": {
-      "spelled": 117,
-      "word": 72
+      "spelled": 111,
+      "word": 62
     },
     "cv:cccvcvc": {
-      "spelled": 28,
-      "word": 39
+      "spelled": 26,
+      "word": 36
     },
     "cv:cccvcvv": {
-      "spelled": 6,
-      "word": 1
+      "spelled": 6
     },
     "cv:cccvv": {
-      "spelled": 511,
-      "word": 92
+      "spelled": 452,
+      "word": 83
     },
     "cv:cccvvc": {
-      "spelled": 50,
-      "word": 339
+      "spelled": 46,
+      "word": 306
     },
     "cv:cccvvcc": {
       "spelled": 10,
-      "word": 144
+      "word": 134
     },
     "cv:cccvvcv": {
-      "spelled": 6,
+      "spelled": 3,
       "word": 1
     },
     "cv:cccvvv": {
-      "spelled": 108,
+      "spelled": 94,
       "word": 1
     },
     "cv:cccvvvc": {
@@ -121,115 +120,115 @@
       "word": 2
     },
     "cv:ccv": {
-      "spelled": 51193,
-      "word": 8711
+      "spelled": 45999,
+      "word": 7826
     },
     "cv:ccvc": {
-      "spelled": 11954,
-      "word": 6142
+      "spelled": 10766,
+      "word": 5511
     },
     "cv:ccvcc": {
-      "spelled": 1485,
-      "word": 3112
+      "spelled": 1356,
+      "word": 2806
     },
     "cv:ccvccc": {
-      "spelled": 337,
-      "word": 1036
+      "spelled": 308,
+      "word": 941
     },
     "cv:ccvcccc": {
-      "spelled": 21,
-      "word": 24
+      "spelled": 17,
+      "word": 22
     },
     "cv:ccvcccv": {
-      "spelled": 28,
-      "word": 138
+      "spelled": 27,
+      "word": 131
     },
     "cv:ccvccv": {
-      "spelled": 165,
-      "word": 569
+      "spelled": 144,
+      "word": 508
     },
     "cv:ccvccvc": {
-      "spelled": 152,
-      "word": 976
+      "spelled": 135,
+      "word": 881
     },
     "cv:ccvccvv": {
-      "spelled": 42,
-      "word": 95
+      "spelled": 34,
+      "word": 84
     },
     "cv:ccvcv": {
-      "spelled": 897,
-      "word": 2311
+      "spelled": 798,
+      "word": 2072
     },
     "cv:ccvcvc": {
-      "spelled": 346,
-      "word": 1224
+      "spelled": 310,
+      "word": 1081
     },
     "cv:ccvcvcc": {
-      "spelled": 83,
-      "word": 481
+      "spelled": 76,
+      "word": 426
     },
     "cv:ccvcvcv": {
-      "spelled": 79,
-      "word": 490
+      "spelled": 72,
+      "word": 440
     },
     "cv:ccvcvv": {
-      "spelled": 57,
-      "word": 170
+      "spelled": 51,
+      "word": 158
     },
     "cv:ccvcvvc": {
-      "spelled": 18,
-      "word": 404
+      "spelled": 15,
+      "word": 366
     },
     "cv:ccvcvvv": {
-      "spelled": 8,
-      "word": 6
+      "spelled": 7,
+      "word": 5
     },
     "cv:ccvv": {
-      "spelled": 2274,
-      "word": 1097
+      "spelled": 2066,
+      "word": 969
     },
     "cv:ccvvc": {
-      "spelled": 538,
-      "word": 1325
+      "spelled": 485,
+      "word": 1182
     },
     "cv:ccvvcc": {
-      "spelled": 119,
-      "word": 313
+      "spelled": 104,
+      "word": 288
     },
     "cv:ccvvccc": {
-      "spelled": 4,
-      "word": 53
+      "spelled": 2,
+      "word": 48
     },
     "cv:ccvvccv": {
       "spelled": 11,
-      "word": 69
+      "word": 62
     },
     "cv:ccvvcv": {
-      "spelled": 39,
-      "word": 207
+      "spelled": 36,
+      "word": 181
     },
     "cv:ccvvcvc": {
-      "spelled": 18,
-      "word": 269
+      "spelled": 16,
+      "word": 242
     },
     "cv:ccvvcvv": {
-      "spelled": 5,
-      "word": 24
+      "spelled": 4,
+      "word": 23
     },
     "cv:ccvvv": {
-      "spelled": 157,
-      "word": 6
+      "spelled": 139,
+      "word": 5
     },
     "cv:ccvvvc": {
-      "spelled": 33,
-      "word": 86
+      "spelled": 30,
+      "word": 78
     },
     "cv:ccvvvcc": {
-      "spelled": 4,
-      "word": 54
+      "spelled": 3,
+      "word": 47
     },
     "cv:ccvvvcv": {
-      "spelled": 2,
+      "spelled": 1,
       "word": 4
     },
     "cv:ccvvvv": {
@@ -240,233 +239,233 @@
       "spelled": 2
     },
     "cv:cv": {
-      "spelled": 22839,
-      "word": 24651
+      "spelled": 20563,
+      "word": 22313
     },
     "cv:cvc": {
-      "spelled": 15462,
-      "word": 45865
+      "spelled": 13953,
+      "word": 41278
     },
     "cv:cvcc": {
-      "spelled": 9469,
-      "word": 14192
+      "spelled": 8476,
+      "word": 12781
     },
     "cv:cvccc": {
-      "spelled": 1543,
-      "word": 2473
+      "spelled": 1389,
+      "word": 2237
     },
     "cv:cvcccc": {
-      "spelled": 151,
-      "word": 87
+      "spelled": 137,
+      "word": 75
     },
     "cv:cvccccc": {
-      "spelled": 15
+      "spelled": 12
     },
     "cv:cvccccv": {
-      "spelled": 18,
-      "word": 19
+      "spelled": 14,
+      "word": 18
     },
     "cv:cvcccv": {
-      "spelled": 213,
-      "word": 508
+      "spelled": 189,
+      "word": 462
     },
     "cv:cvcccvc": {
-      "spelled": 224,
-      "word": 718
+      "spelled": 204,
+      "word": 645
     },
     "cv:cvcccvv": {
-      "spelled": 33,
-      "word": 116
+      "spelled": 30,
+      "word": 96
     },
     "cv:cvccv": {
-      "spelled": 1356,
-      "word": 4143
+      "spelled": 1238,
+      "word": 3724
     },
     "cv:cvccvc": {
-      "spelled": 1264,
-      "word": 6470
+      "spelled": 1151,
+      "word": 5830
     },
     "cv:cvccvcc": {
-      "spelled": 234,
-      "word": 2228
+      "spelled": 213,
+      "word": 1990
     },
     "cv:cvccvcv": {
-      "spelled": 280,
-      "word": 1772
+      "spelled": 263,
+      "word": 1606
     },
     "cv:cvccvv": {
-      "spelled": 118,
-      "word": 801
+      "spelled": 108,
+      "word": 712
     },
     "cv:cvccvvc": {
-      "spelled": 72,
-      "word": 874
+      "spelled": 68,
+      "word": 777
     },
     "cv:cvccvvv": {
-      "spelled": 15,
-      "word": 21
+      "spelled": 14,
+      "word": 19
     },
     "cv:cvcv": {
-      "spelled": 2538,
-      "word": 22876
+      "spelled": 2291,
+      "word": 20587
     },
     "cv:cvcvc": {
-      "spelled": 5685,
-      "word": 6818
+      "spelled": 5088,
+      "word": 6094
     },
     "cv:cvcvcc": {
-      "spelled": 490,
-      "word": 2137
+      "spelled": 431,
+      "word": 1924
     },
     "cv:cvcvccc": {
-      "spelled": 35,
-      "word": 562
+      "spelled": 32,
+      "word": 509
     },
     "cv:cvcvccv": {
-      "spelled": 231,
-      "word": 593
+      "spelled": 205,
+      "word": 513
     },
     "cv:cvcvcv": {
-      "spelled": 639,
-      "word": 1862
+      "spelled": 572,
+      "word": 1635
     },
     "cv:cvcvcvc": {
-      "spelled": 512,
-      "word": 1335
+      "spelled": 470,
+      "word": 1208
     },
     "cv:cvcvcvv": {
-      "spelled": 105,
-      "word": 243
+      "spelled": 92,
+      "word": 227
     },
     "cv:cvcvv": {
-      "spelled": 368,
-      "word": 1444
+      "spelled": 328,
+      "word": 1289
     },
     "cv:cvcvvc": {
-      "spelled": 195,
-      "word": 1471
+      "spelled": 179,
+      "word": 1340
     },
     "cv:cvcvvcc": {
-      "spelled": 17,
-      "word": 289
+      "spelled": 14,
+      "word": 264
     },
     "cv:cvcvvcv": {
-      "spelled": 49,
-      "word": 276
+      "spelled": 44,
+      "word": 250
     },
     "cv:cvcvvv": {
-      "spelled": 33,
-      "word": 28
+      "spelled": 29,
+      "word": 25
     },
     "cv:cvcvvvc": {
       "spelled": 12,
-      "word": 23
+      "word": 22
     },
     "cv:cvcvvvv": {
-      "spelled": 2,
+      "spelled": 1,
       "word": 3
     },
     "cv:cvv": {
-      "spelled": 10304,
-      "word": 6350
+      "spelled": 9259,
+      "word": 5716
     },
     "cv:cvvc": {
-      "spelled": 3088,
-      "word": 5224
+      "spelled": 2750,
+      "word": 4719
     },
     "cv:cvvcc": {
-      "spelled": 1045,
-      "word": 1686
+      "spelled": 942,
+      "word": 1521
     },
     "cv:cvvccc": {
-      "spelled": 49,
-      "word": 336
+      "spelled": 45,
+      "word": 307
     },
     "cv:cvvcccc": {
       "spelled": 3,
-      "word": 9
+      "word": 8
     },
     "cv:cvvcccv": {
-      "spelled": 24,
-      "word": 77
+      "spelled": 22,
+      "word": 70
     },
     "cv:cvvccv": {
-      "spelled": 85,
-      "word": 577
+      "spelled": 78,
+      "word": 520
     },
     "cv:cvvccvc": {
-      "spelled": 87,
-      "word": 504
+      "spelled": 72,
+      "word": 451
     },
     "cv:cvvccvv": {
       "spelled": 6,
-      "word": 106
+      "word": 96
     },
     "cv:cvvcv": {
-      "spelled": 292,
-      "word": 935
+      "spelled": 259,
+      "word": 823
     },
     "cv:cvvcvc": {
-      "spelled": 213,
-      "word": 633
+      "spelled": 193,
+      "word": 557
     },
     "cv:cvvcvcc": {
-      "spelled": 38,
-      "word": 492
+      "spelled": 35,
+      "word": 437
     },
     "cv:cvvcvcv": {
-      "spelled": 86,
-      "word": 186
+      "spelled": 75,
+      "word": 166
     },
     "cv:cvvcvv": {
-      "spelled": 30,
-      "word": 187
+      "spelled": 24,
+      "word": 168
     },
     "cv:cvvcvvc": {
-      "spelled": 15,
-      "word": 80
+      "spelled": 13,
+      "word": 71
     },
     "cv:cvvcvvv": {
       "spelled": 3,
       "word": 2
     },
     "cv:cvvv": {
-      "spelled": 1863,
-      "word": 245
+      "spelled": 1684,
+      "word": 221
     },
     "cv:cvvvc": {
-      "spelled": 109,
-      "word": 201
+      "spelled": 101,
+      "word": 178
     },
     "cv:cvvvcc": {
-      "spelled": 42,
-      "word": 57
+      "spelled": 41,
+      "word": 52
     },
     "cv:cvvvccc": {
       "spelled": 1
     },
     "cv:cvvvccv": {
       "spelled": 7,
-      "word": 11
+      "word": 8
     },
     "cv:cvvvcv": {
       "spelled": 20,
-      "word": 49
+      "word": 43
     },
     "cv:cvvvcvc": {
       "spelled": 3,
-      "word": 14
+      "word": 11
     },
     "cv:cvvvcvv": {
-      "spelled": 2
+      "spelled": 1
     },
     "cv:cvvvv": {
-      "spelled": 25,
+      "spelled": 23,
       "word": 4
     },
     "cv:cvvvvc": {
-      "spelled": 13,
-      "word": 9
+      "spelled": 9,
+      "word": 6
     },
     "cv:cvvvvcc": {
       "spelled": 3,
@@ -477,7 +476,7 @@
       "word": 1
     },
     "cv:cvvvvv": {
-      "spelled": 2
+      "spelled": 1
     },
     "cv:cvvvvvc": {
       "word": 1
@@ -486,36 +485,36 @@
       "spelled": 2
     },
     "cv:vc": {
-      "spelled": 73070,
-      "word": 25669
+      "spelled": 65701,
+      "word": 23007
     },
     "cv:vcc": {
-      "spelled": 51053,
-      "word": 12596
+      "spelled": 45922,
+      "word": 11360
     },
     "cv:vccc": {
-      "spelled": 49003,
-      "word": 392
+      "spelled": 43987,
+      "word": 357
     },
     "cv:vcccc": {
-      "spelled": 1438,
-      "word": 5
+      "spelled": 1262,
+      "word": 4
     },
     "cv:vccccc": {
-      "spelled": 144
+      "spelled": 136
     },
     "cv:vcccccc": {
-      "spelled": 9
+      "spelled": 7
     },
     "cv:vcccccv": {
       "spelled": 8
     },
     "cv:vccccv": {
-      "spelled": 70,
+      "spelled": 63,
       "word": 7
     },
     "cv:vccccvc": {
-      "spelled": 29,
+      "spelled": 26,
       "word": 8
     },
     "cv:vccccvv": {
@@ -523,191 +522,191 @@
       "word": 1
     },
     "cv:vcccv": {
-      "spelled": 941,
-      "word": 360
+      "spelled": 841,
+      "word": 324
     },
     "cv:vcccvc": {
-      "spelled": 233,
-      "word": 248
+      "spelled": 211,
+      "word": 219
     },
     "cv:vcccvcc": {
-      "spelled": 40,
-      "word": 229
+      "spelled": 37,
+      "word": 203
     },
     "cv:vcccvcv": {
-      "spelled": 25,
-      "word": 108
+      "spelled": 21,
+      "word": 97
     },
     "cv:vcccvv": {
-      "spelled": 26,
-      "word": 46
+      "spelled": 24,
+      "word": 41
     },
     "cv:vcccvvc": {
       "spelled": 12,
-      "word": 45
+      "word": 40
     },
     "cv:vcccvvv": {
       "spelled": 2,
       "word": 1
     },
     "cv:vccv": {
-      "spelled": 7398,
-      "word": 3467
+      "spelled": 6685,
+      "word": 3107
     },
     "cv:vccvc": {
-      "spelled": 1353,
-      "word": 9602
+      "spelled": 1218,
+      "word": 8669
     },
     "cv:vccvcc": {
-      "spelled": 199,
-      "word": 704
+      "spelled": 176,
+      "word": 630
     },
     "cv:vccvccc": {
-      "spelled": 12,
-      "word": 132
+      "spelled": 11,
+      "word": 117
     },
     "cv:vccvccv": {
-      "spelled": 48,
-      "word": 148
+      "spelled": 45,
+      "word": 130
     },
     "cv:vccvcv": {
-      "spelled": 142,
-      "word": 816
+      "spelled": 128,
+      "word": 720
     },
     "cv:vccvcvc": {
-      "spelled": 151,
-      "word": 495
+      "spelled": 136,
+      "word": 441
     },
     "cv:vccvcvv": {
-      "spelled": 22,
-      "word": 63
+      "spelled": 21,
+      "word": 56
     },
     "cv:vccvv": {
-      "spelled": 419,
-      "word": 443
+      "spelled": 375,
+      "word": 396
     },
     "cv:vccvvc": {
-      "spelled": 91,
-      "word": 361
+      "spelled": 84,
+      "word": 317
     },
     "cv:vccvvcc": {
-      "spelled": 21,
-      "word": 154
+      "spelled": 19,
+      "word": 133
     },
     "cv:vccvvcv": {
-      "spelled": 18,
-      "word": 79
+      "spelled": 17,
+      "word": 64
     },
     "cv:vccvvv": {
       "spelled": 7,
       "word": 1
     },
     "cv:vccvvvc": {
-      "spelled": 2,
-      "word": 2
+      "spelled": 1,
+      "word": 1
     },
     "cv:vccvvvv": {
       "spelled": 1
     },
     "cv:vcv": {
-      "spelled": 17632,
-      "word": 11607
+      "spelled": 15835,
+      "word": 10452
     },
     "cv:vcvc": {
-      "spelled": 4593,
-      "word": 4618
+      "spelled": 4117,
+      "word": 4164
     },
     "cv:vcvcc": {
-      "spelled": 870,
-      "word": 537
+      "spelled": 787,
+      "word": 483
     },
     "cv:vcvccc": {
-      "spelled": 98,
-      "word": 253
+      "spelled": 90,
+      "word": 232
     },
     "cv:vcvcccc": {
-      "spelled": 9,
+      "spelled": 8,
       "word": 1
     },
     "cv:vcvcccv": {
-      "spelled": 15,
-      "word": 18
+      "spelled": 11,
+      "word": 16
     },
     "cv:vcvccv": {
-      "spelled": 142,
-      "word": 1360
+      "spelled": 133,
+      "word": 1228
     },
     "cv:vcvccvc": {
-      "spelled": 89,
-      "word": 138
+      "spelled": 78,
+      "word": 123
     },
     "cv:vcvccvv": {
-      "spelled": 16,
-      "word": 15
+      "spelled": 15,
+      "word": 10
     },
     "cv:vcvcv": {
-      "spelled": 589,
-      "word": 1048
+      "spelled": 528,
+      "word": 949
     },
     "cv:vcvcvc": {
-      "spelled": 396,
-      "word": 938
+      "spelled": 351,
+      "word": 855
     },
     "cv:vcvcvcc": {
-      "spelled": 32,
-      "word": 178
+      "spelled": 31,
+      "word": 164
     },
     "cv:vcvcvcv": {
-      "spelled": 80,
-      "word": 247
+      "spelled": 72,
+      "word": 218
     },
     "cv:vcvcvv": {
-      "spelled": 56,
-      "word": 76
+      "spelled": 51,
+      "word": 66
     },
     "cv:vcvcvvc": {
-      "spelled": 29,
-      "word": 156
+      "spelled": 28,
+      "word": 143
     },
     "cv:vcvcvvv": {
-      "spelled": 4,
+      "spelled": 3,
       "word": 8
     },
     "cv:vcvv": {
-      "spelled": 1113,
-      "word": 2050
+      "spelled": 994,
+      "word": 1826
     },
     "cv:vcvvc": {
-      "spelled": 526,
-      "word": 661
+      "spelled": 471,
+      "word": 611
     },
     "cv:vcvvcc": {
-      "spelled": 16,
-      "word": 74
+      "spelled": 15,
+      "word": 64
     },
     "cv:vcvvccc": {
       "spelled": 1,
-      "word": 39
+      "word": 35
     },
     "cv:vcvvccv": {
       "spelled": 3,
       "word": 6
     },
     "cv:vcvvcv": {
-      "spelled": 31,
-      "word": 28
+      "spelled": 30,
+      "word": 26
     },
     "cv:vcvvcvc": {
-      "spelled": 20,
-      "word": 23
+      "spelled": 17,
+      "word": 22
     },
     "cv:vcvvcvv": {
-      "spelled": 4,
+      "spelled": 3,
       "word": 3
     },
     "cv:vcvvv": {
-      "spelled": 63,
-      "word": 8
+      "spelled": 57,
+      "word": 7
     },
     "cv:vcvvvc": {
       "spelled": 10
@@ -721,108 +720,108 @@
       "word": 1
     },
     "cv:vcvvvv": {
-      "spelled": 5
+      "spelled": 4
     },
     "cv:vv": {
-      "spelled": 4341,
-      "word": 4047
+      "spelled": 3886,
+      "word": 3641
     },
     "cv:vvc": {
-      "spelled": 7851,
-      "word": 2116
+      "spelled": 7054,
+      "word": 1929
     },
     "cv:vvcc": {
-      "spelled": 8593,
-      "word": 1757
+      "spelled": 7760,
+      "word": 1579
     },
     "cv:vvccc": {
-      "spelled": 335,
-      "word": 173
+      "spelled": 301,
+      "word": 157
     },
     "cv:vvcccc": {
-      "spelled": 52,
+      "spelled": 51,
       "word": 6
     },
     "cv:vvccccc": {
       "spelled": 5
     },
     "cv:vvcccv": {
-      "spelled": 49,
+      "spelled": 44,
       "word": 2
     },
     "cv:vvcccvc": {
-      "spelled": 11,
+      "spelled": 9,
       "word": 8
     },
     "cv:vvcccvv": {
       "spelled": 3,
-      "word": 13
+      "word": 11
     },
     "cv:vvccv": {
-      "spelled": 360,
-      "word": 112
+      "spelled": 324,
+      "word": 95
     },
     "cv:vvccvc": {
-      "spelled": 133,
-      "word": 103
+      "spelled": 120,
+      "word": 89
     },
     "cv:vvccvcc": {
-      "spelled": 10,
-      "word": 72
+      "spelled": 9,
+      "word": 62
     },
     "cv:vvccvcv": {
-      "spelled": 18,
-      "word": 16
+      "spelled": 16,
+      "word": 14
     },
     "cv:vvccvv": {
       "spelled": 11,
-      "word": 12
+      "word": 11
     },
     "cv:vvccvvc": {
       "spelled": 1,
-      "word": 28
+      "word": 27
     },
     "cv:vvccvvv": {
       "spelled": 1
     },
     "cv:vvcv": {
-      "spelled": 2583,
-      "word": 2013
+      "spelled": 2324,
+      "word": 1811
     },
     "cv:vvcvc": {
-      "spelled": 390,
-      "word": 240
+      "spelled": 344,
+      "word": 217
     },
     "cv:vvcvcc": {
-      "spelled": 22,
-      "word": 36
+      "spelled": 20,
+      "word": 33
     },
     "cv:vvcvccv": {
-      "spelled": 12,
-      "word": 14
+      "spelled": 9,
+      "word": 12
     },
     "cv:vvcvcv": {
-      "spelled": 53,
-      "word": 109
+      "spelled": 47,
+      "word": 97
     },
     "cv:vvcvcvc": {
-      "spelled": 41,
-      "word": 11
+      "spelled": 40,
+      "word": 9
     },
     "cv:vvcvcvv": {
       "spelled": 9,
-      "word": 6
+      "word": 5
     },
     "cv:vvcvv": {
-      "spelled": 82,
-      "word": 25
+      "spelled": 70,
+      "word": 23
     },
     "cv:vvcvvc": {
       "spelled": 7,
-      "word": 8
+      "word": 7
     },
     "cv:vvcvvcc": {
-      "spelled": 7,
+      "spelled": 5,
       "word": 1
     },
     "cv:vvcvvv": {
@@ -833,20 +832,19 @@
       "word": 1
     },
     "cv:vvv": {
-      "spelled": 2700,
-      "word": 555
+      "spelled": 2432,
+      "word": 500
     },
     "cv:vvvc": {
-      "spelled": 1267,
-      "word": 291
+      "spelled": 1154,
+      "word": 257
     },
     "cv:vvvcc": {
-      "spelled": 105,
-      "word": 146
+      "spelled": 92,
+      "word": 132
     },
     "cv:vvvccc": {
-      "spelled": 39,
-      "word": 1
+      "spelled": 36
     },
     "cv:vvvccv": {
       "spelled": 4,
@@ -859,19 +857,19 @@
       "spelled": 3
     },
     "cv:vvvcv": {
-      "spelled": 57,
-      "word": 6
+      "spelled": 50,
+      "word": 5
     },
     "cv:vvvcvc": {
-      "spelled": 26,
-      "word": 7
+      "spelled": 23,
+      "word": 4
     },
     "cv:vvvcvcc": {
-      "spelled": 4
+      "spelled": 3
     },
     "cv:vvvcvcv": {
       "spelled": 3,
-      "word": 7
+      "word": 6
     },
     "cv:vvvcvv": {
       "spelled": 3,
@@ -884,12 +882,11 @@
       "spelled": 1
     },
     "cv:vvvv": {
-      "spelled": 349,
-      "word": 17
+      "spelled": 313,
+      "word": 12
     },
     "cv:vvvvc": {
-      "spelled": 17,
-      "word": 1
+      "spelled": 16
     },
     "cv:vvvvcc": {
       "spelled": 2
@@ -907,761 +904,746 @@
       "spelled": 3
     },
     "cv:vvvvv": {
-      "spelled": 37
+      "spelled": 33
     },
     "cv:vvvvvv": {
       "spelled": 4
     },
     "roman:*": {
-      "numeral": 48011,
-      "spelled": 27595,
-      "word": 3680
+      "numeral": 43311,
+      "spelled": 24869,
+      "word": 3324
     },
     "roman:CC": {
       "numeral": 9,
-      "spelled": 577
+      "spelled": 519
     },
     "roman:CCC": {
-      "spelled": 204
+      "spelled": 181
     },
     "roman:CCI": {
-      "spelled": 86
+      "spelled": 80
     },
     "roman:CCL": {
-      "spelled": 84
+      "spelled": 70
     },
     "roman:CD": {
-      "numeral": 13,
-      "spelled": 7196
+      "numeral": 11,
+      "spelled": 6490
     },
     "roman:CDI": {
-      "spelled": 49
+      "spelled": 44
     },
     "roman:CI": {
       "numeral": 4,
-      "spelled": 141
+      "spelled": 129
     },
     "roman:CII": {
       "numeral": 1,
-      "spelled": 37
-    },
-    "roman:CIV": {
-      "numeral": 1,
-      "word": 19
+      "spelled": 33
     },
     "roman:CL": {
-      "numeral": 5,
-      "spelled": 390
+      "numeral": 3,
+      "spelled": 349
     },
     "roman:CLI": {
-      "spelled": 27
+      "spelled": 26
     },
     "roman:CM": {
       "numeral": 5,
-      "spelled": 742
+      "spelled": 682
     },
     "roman:CMI": {
-      "spelled": 47
-    },
-    "roman:CML": {
-      "numeral": 1,
-      "spelled": 20
+      "spelled": 45
     },
     "roman:CMV": {
-      "spelled": 26
+      "spelled": 25
     },
     "roman:CV": {
       "numeral": 3,
-      "spelled": 484
+      "spelled": 422
     },
     "roman:CX": {
       "numeral": 1,
-      "spelled": 99
+      "spelled": 86
     },
     "roman:DC": {
-      "numeral": 14,
-      "spelled": 4803
+      "numeral": 12,
+      "spelled": 4335
     },
     "roman:DCC": {
-      "spelled": 57
+      "spelled": 51
     },
     "roman:DCI": {
       "numeral": 4,
-      "spelled": 84
+      "spelled": 75
     },
     "roman:DCL": {
-      "spelled": 28
+      "spelled": 27
     },
     "roman:DI": {
       "spelled": 2,
-      "word": 208
+      "word": 184
     },
     "roman:DL": {
       "numeral": 7,
-      "spelled": 614
+      "spelled": 553
     },
     "roman:DLX": {
       "spelled": 22
     },
     "roman:DV": {
-      "spelled": 168
-    },
-    "roman:DVI": {
-      "spelled": 20
+      "spelled": 157
     },
     "roman:DX": {
       "numeral": 1,
-      "spelled": 156
+      "spelled": 137
     },
     "roman:II": {
-      "numeral": 25983,
-      "spelled": 56,
-      "word": 97
+      "numeral": 23438,
+      "spelled": 50,
+      "word": 84
     },
     "roman:III": {
-      "numeral": 8718,
-      "spelled": 33
+      "numeral": 7846,
+      "spelled": 32
     },
     "roman:IV": {
-      "numeral": 1939,
-      "spelled": 2502
+      "numeral": 1738,
+      "spelled": 2246
     },
     "roman:IX": {
-      "numeral": 355,
-      "spelled": 7,
-      "word": 566
+      "numeral": 322,
+      "spelled": 5,
+      "word": 509
     },
     "roman:LI": {
-      "numeral": 14,
-      "spelled": 108
+      "numeral": 11,
+      "spelled": 96
     },
     "roman:LII": {
-      "numeral": 7,
-      "word": 24
+      "numeral": 6,
+      "word": 22
     },
     "roman:LIII": {
       "numeral": 7,
-      "spelled": 20
+      "spelled": 18
     },
     "roman:LIV": {
       "numeral": 2,
       "spelled": 1,
-      "word": 21
+      "word": 17
     },
     "roman:LIX": {
       "numeral": 3,
-      "word": 60
+      "word": 54
     },
     "roman:LV": {
-      "numeral": 3,
-      "spelled": 135
+      "numeral": 2,
+      "spelled": 121
     },
     "roman:LVI": {
       "numeral": 3,
-      "spelled": 33
+      "spelled": 29
     },
     "roman:LVII": {
       "numeral": 8,
-      "spelled": 19
+      "spelled": 17
     },
     "roman:LVIII": {
       "numeral": 3,
-      "spelled": 36
+      "spelled": 33
     },
     "roman:LX": {
-      "numeral": 10,
-      "spelled": 157
+      "numeral": 9,
+      "spelled": 141
     },
     "roman:LXI": {
       "numeral": 3,
-      "spelled": 75
+      "spelled": 68
     },
     "roman:LXII": {
       "numeral": 4,
-      "spelled": 91
-    },
-    "roman:LXV": {
-      "numeral": 5,
-      "spelled": 15
+      "spelled": 80
     },
     "roman:MC": {
-      "numeral": 10,
-      "spelled": 1055
+      "numeral": 9,
+      "spelled": 955
     },
     "roman:MCC": {
-      "spelled": 302
+      "spelled": 266
     },
     "roman:MCD": {
-      "spelled": 50
+      "spelled": 46
     },
     "roman:MCI": {
-      "spelled": 72
+      "spelled": 67
     },
     "roman:MCL": {
-      "spelled": 34
+      "spelled": 30
     },
     "roman:MCM": {
-      "spelled": 105
+      "spelled": 85
     },
     "roman:MD": {
-      "numeral": 8,
-      "spelled": 2430
+      "numeral": 6,
+      "spelled": 2172
     },
     "roman:MDC": {
-      "spelled": 83
+      "spelled": 76
     },
     "roman:MI": {
       "numeral": 3,
-      "spelled": 212,
-      "word": 677
+      "spelled": 193,
+      "word": 612
     },
     "roman:MIX": {
       "spelled": 6,
-      "word": 38
+      "word": 30
     },
     "roman:ML": {
       "numeral": 3,
-      "spelled": 505
+      "spelled": 444
     },
     "roman:MM": {
       "numeral": 3,
-      "spelled": 492
+      "spelled": 448
     },
     "roman:MMC": {
-      "spelled": 112
+      "spelled": 109
     },
     "roman:MMI": {
-      "spelled": 25
+      "spelled": 23
     },
     "roman:MMM": {
-      "spelled": 42
+      "spelled": 35
     },
     "roman:MV": {
       "numeral": 1,
-      "spelled": 481
+      "spelled": 448
     },
     "roman:MX": {
-      "spelled": 221
+      "spelled": 204
     },
     "roman:VI": {
-      "numeral": 1078,
-      "spelled": 5,
-      "word": 977
+      "numeral": 969,
+      "spelled": 4,
+      "word": 888
     },
     "roman:VII": {
-      "numeral": 1495,
+      "numeral": 1347,
       "spelled": 1,
       "word": 17
     },
     "roman:VIII": {
-      "numeral": 1250,
+      "numeral": 1126,
       "spelled": 3
     },
     "roman:XC": {
       "numeral": 3,
-      "spelled": 77
+      "spelled": 70
     },
     "roman:XI": {
-      "numeral": 366,
+      "numeral": 330,
       "spelled": 7,
-      "word": 955
+      "word": 868
     },
     "roman:XII": {
-      "numeral": 851,
+      "numeral": 767,
       "spelled": 2
     },
     "roman:XIII": {
-      "numeral": 798,
+      "numeral": 722,
       "spelled": 1
     },
     "roman:XIV": {
-      "numeral": 669,
+      "numeral": 610,
       "spelled": 1
     },
     "roman:XIX": {
-      "numeral": 277
+      "numeral": 252
     },
     "roman:XL": {
-      "numeral": 26,
-      "spelled": 269
+      "numeral": 21,
+      "spelled": 238
     },
     "roman:XLI": {
-      "numeral": 22,
-      "spelled": 27
+      "numeral": 21,
+      "spelled": 25
     },
     "roman:XLII": {
-      "numeral": 26,
-      "spelled": 14
+      "numeral": 22,
+      "spelled": 13
     },
     "roman:XLIII": {
       "numeral": 28,
-      "spelled": 10
+      "spelled": 9
     },
     "roman:XLIV": {
-      "numeral": 16,
-      "spelled": 19
+      "numeral": 14,
+      "spelled": 16
     },
     "roman:XLIX": {
       "numeral": 19,
-      "spelled": 11
+      "spelled": 9
     },
     "roman:XLV": {
-      "numeral": 20,
+      "numeral": 18,
       "spelled": 16
     },
     "roman:XLVI": {
-      "numeral": 26,
+      "numeral": 23,
       "spelled": 23
     },
     "roman:XLVII": {
-      "numeral": 13,
-      "spelled": 11
+      "numeral": 12,
+      "spelled": 10
     },
     "roman:XLVIII": {
-      "numeral": 23,
+      "numeral": 21,
       "spelled": 10
     },
     "roman:XV": {
-      "numeral": 704,
-      "spelled": 19
+      "numeral": 648,
+      "spelled": 16
     },
     "roman:XVI": {
-      "numeral": 613
+      "numeral": 569
     },
     "roman:XVII": {
-      "numeral": 270
+      "numeral": 238
     },
     "roman:XVIII": {
-      "numeral": 302
+      "numeral": 273
     },
     "roman:XX": {
-      "numeral": 82,
-      "spelled": 424
+      "numeral": 75,
+      "spelled": 387
     },
     "roman:XXI": {
-      "numeral": 281,
+      "numeral": 248,
       "spelled": 1
     },
     "roman:XXII": {
-      "numeral": 178,
+      "numeral": 160,
       "spelled": 1
     },
     "roman:XXIII": {
-      "numeral": 200
+      "numeral": 185
     },
     "roman:XXIV": {
-      "numeral": 128
-    },
-    "roman:XXIX": {
-      "numeral": 117
-    },
-    "roman:XXV": {
       "numeral": 114
     },
+    "roman:XXIX": {
+      "numeral": 107
+    },
+    "roman:XXV": {
+      "numeral": 106
+    },
     "roman:XXVI": {
-      "numeral": 87,
+      "numeral": 77,
       "spelled": 1
     },
     "roman:XXVII": {
-      "numeral": 80
+      "numeral": 74
     },
     "roman:XXVIII": {
-      "numeral": 70
+      "numeral": 60
     },
     "roman:XXX": {
-      "numeral": 57,
-      "spelled": 137
+      "numeral": 52,
+      "spelled": 121
     },
     "roman:XXXI": {
-      "numeral": 71
+      "numeral": 66
     },
     "roman:XXXII": {
-      "numeral": 61
+      "numeral": 55
     },
     "roman:XXXIII": {
-      "numeral": 46
+      "numeral": 43
     },
     "roman:XXXIV": {
-      "numeral": 68,
+      "numeral": 60,
       "spelled": 1
     },
     "roman:XXXIX": {
-      "numeral": 42
-    },
-    "roman:XXXV": {
-      "numeral": 45
-    },
-    "roman:XXXVI": {
-      "numeral": 40
-    },
-    "roman:XXXVII": {
       "numeral": 39
     },
+    "roman:XXXV": {
+      "numeral": 39
+    },
+    "roman:XXXVI": {
+      "numeral": 37
+    },
+    "roman:XXXVII": {
+      "numeral": 37
+    },
     "roman:XXXVIII": {
-      "numeral": 35
+      "numeral": 31
     },
     "surface:ABC": {
-      "spelled": 4283
+      "spelled": 3864
     },
     "surface:AFL": {
-      "spelled": 2785
+      "spelled": 2521
     },
     "surface:AK": {
-      "spelled": 469
+      "spelled": 430
     },
     "surface:AL": {
-      "spelled": 22,
-      "word": 928
+      "spelled": 21,
+      "word": 837
     },
     "surface:AR": {
-      "spelled": 62,
-      "word": 731
+      "spelled": 55,
+      "word": 630
     },
     "surface:AS": {
-      "spelled": 57,
-      "word": 1061
+      "spelled": 45,
+      "word": 947
     },
     "surface:AZ": {
-      "spelled": 359
+      "spelled": 326
     },
     "surface:BBC": {
-      "spelled": 13263
+      "spelled": 11940
     },
     "surface:CA": {
-      "spelled": 2684
+      "spelled": 2432
     },
     "surface:CBC": {
-      "spelled": 1293
-    },
-    "surface:CD": {
-      "spelled": 7196
-    },
-    "surface:CDP": {
-      "spelled": 2901
-    },
-    "surface:CEO": {
-      "spelled": 3767
-    },
-    "surface:CIA": {
-      "spelled": 1238
-    },
-    "surface:CNN": {
-      "spelled": 1289
-    },
-    "surface:CO": {
-      "spelled": 839
-    },
-    "surface:CT": {
-      "spelled": 996
-    },
-    "surface:DC": {
-      "spelled": 4803
-    },
-    "surface:DE": {
-      "spelled": 60,
-      "word": 1130
-    },
-    "surface:DJ": {
-      "spelled": 2556
-    },
-    "surface:DNA": {
-      "spelled": 3938
-    },
-    "surface:DVD": {
-      "spelled": 6735
-    },
-    "surface:EP": {
-      "spelled": 4096
-    },
-    "surface:FBI": {
       "spelled": 1159
     },
+    "surface:CD": {
+      "spelled": 6490
+    },
+    "surface:CDP": {
+      "spelled": 2606
+    },
+    "surface:CEO": {
+      "spelled": 3418
+    },
+    "surface:CIA": {
+      "spelled": 1086
+    },
+    "surface:CNN": {
+      "spelled": 1165
+    },
+    "surface:CO": {
+      "spelled": 757
+    },
+    "surface:CT": {
+      "spelled": 896
+    },
+    "surface:DC": {
+      "spelled": 4335
+    },
+    "surface:DE": {
+      "spelled": 56,
+      "word": 1023
+    },
+    "surface:DJ": {
+      "spelled": 2294
+    },
+    "surface:DNA": {
+      "spelled": 3536
+    },
+    "surface:DVD": {
+      "spelled": 6031
+    },
+    "surface:EP": {
+      "spelled": 3694
+    },
+    "surface:FBI": {
+      "spelled": 1027
+    },
     "surface:FC": {
-      "spelled": 7070
+      "spelled": 6354
     },
     "surface:FCC": {
-      "spelled": 1115
+      "spelled": 1001
     },
     "surface:FL": {
-      "spelled": 660
+      "spelled": 586
     },
     "surface:FM": {
-      "spelled": 5638
+      "spelled": 5014
     },
     "surface:GA": {
-      "spelled": 27,
-      "word": 491
+      "spelled": 24,
+      "word": 444
     },
     "surface:GU": {
-      "spelled": 14,
-      "word": 28
+      "spelled": 13,
+      "word": 27
     },
     "surface:HD": {
-      "spelled": 1722
+      "spelled": 1569
     },
     "surface:HI": {
-      "spelled": 3,
-      "word": 140
+      "spelled": 2,
+      "word": 129
     },
     "surface:HIV": {
-      "spelled": 1161
+      "spelled": 1057
     },
     "surface:HMS": {
-      "spelled": 1845
+      "spelled": 1646
     },
     "surface:IA": {
-      "spelled": 11,
-      "word": 354
+      "spelled": 8,
+      "word": 324
     },
     "surface:IATA": {
-      "spelled": 1804
+      "spelled": 1620
     },
     "surface:IBM": {
-      "spelled": 1419
+      "spelled": 1273
     },
     "surface:ID": {
-      "spelled": 950
+      "spelled": 850
     },
     "surface:IL": {
-      "spelled": 70,
-      "word": 1285
+      "spelled": 55,
+      "word": 1147
     },
     "surface:IN": {
       "spelled": 10,
-      "word": 1887
+      "word": 1698
     },
     "surface:ISBN": {
-      "spelled": 32916
+      "spelled": 29464
     },
     "surface:IUCN": {
-      "spelled": 5750
+      "spelled": 5187
     },
     "surface:KS": {
-      "spelled": 59,
-      "word": 384
+      "spelled": 50,
+      "word": 345
     },
     "surface:KY": {
-      "spelled": 342
+      "spelled": 313
     },
     "surface:LA": {
-      "spelled": 1913
+      "spelled": 1727
     },
     "surface:LLC": {
-      "spelled": 5042
+      "spelled": 4523
     },
     "surface:LP": {
-      "spelled": 2220
+      "spelled": 1988
     },
     "surface:MA": {
-      "spelled": 2345
+      "spelled": 2104
     },
     "surface:MD": {
-      "spelled": 2430
+      "spelled": 2172
     },
     "surface:ME": {
-      "spelled": 24,
-      "word": 668
+      "spelled": 21,
+      "word": 611
     },
     "surface:MI": {
-      "spelled": 212,
-      "word": 677
+      "spelled": 193,
+      "word": 612
     },
     "surface:MLB": {
-      "spelled": 1074
+      "spelled": 943
     },
     "surface:MN": {
-      "spelled": 486
+      "spelled": 441
     },
     "surface:MO": {
       "spelled": 15,
-      "word": 397
+      "word": 362
     },
     "surface:MP": {
-      "spelled": 3957
+      "spelled": 3554
     },
     "surface:MS": {
-      "spelled": 1228
+      "spelled": 1101
     },
     "surface:MT": {
-      "spelled": 73,
-      "word": 403
+      "spelled": 66,
+      "word": 362
     },
     "surface:MTV": {
-      "spelled": 2178
+      "spelled": 1950
     },
     "surface:NASA": {
       "spelled": 4,
-      "word": 2118
+      "word": 1903
     },
     "surface:NBA": {
-      "spelled": 2859
+      "spelled": 2562
     },
     "surface:NBC": {
-      "spelled": 2445
+      "spelled": 2195
     },
     "surface:NC": {
-      "spelled": 1244
+      "spelled": 1124
     },
     "surface:ND": {
-      "spelled": 226
+      "spelled": 211
     },
     "surface:NE": {
-      "spelled": 65,
-      "word": 441
+      "spelled": 56,
+      "word": 399
     },
     "surface:NFL": {
-      "spelled": 4390
+      "spelled": 3924
     },
     "surface:NH": {
-      "spelled": 731
+      "spelled": 651
     },
     "surface:NHL": {
-      "spelled": 2222
+      "spelled": 2015
     },
     "surface:NJ": {
-      "spelled": 1991
+      "spelled": 1798
     },
     "surface:NM": {
-      "spelled": 255
+      "spelled": 229
     },
     "surface:NSW": {
-      "spelled": 2294
+      "spelled": 2037
     },
     "surface:NV": {
-      "spelled": 190
+      "spelled": 164
     },
     "surface:NY": {
-      "spelled": 3698
+      "spelled": 3316
     },
     "surface:OCLC": {
-      "spelled": 1272
+      "spelled": 1125
     },
     "surface:OH": {
-      "spelled": 26,
-      "word": 468
+      "spelled": 23,
+      "word": 419
     },
     "surface:OK": {
       "spelled": 3,
-      "word": 633
+      "word": 567
     },
     "surface:OR": {
-      "spelled": 535
+      "spelled": 489
     },
     "surface:PA": {
-      "spelled": 2788
+      "spelled": 2529
     },
     "surface:PC": {
-      "spelled": 2819
+      "spelled": 2535
     },
     "surface:PDF": {
-      "spelled": 61393
+      "spelled": 55301
     },
     "surface:PR": {
-      "spelled": 794
+      "spelled": 701
     },
     "surface:RI": {
       "spelled": 2,
-      "word": 219
+      "word": 201
     },
     "surface:RNA": {
-      "spelled": 1281
+      "spelled": 1173
     },
     "surface:SC": {
-      "spelled": 1808
+      "spelled": 1626
     },
     "surface:SD": {
-      "spelled": 659
+      "spelled": 588
     },
     "surface:TN": {
-      "spelled": 260
+      "spelled": 233
     },
     "surface:TV": {
-      "spelled": 22913
+      "spelled": 20635
     },
     "surface:TX": {
-      "spelled": 601
+      "spelled": 536
     },
     "surface:UCLA": {
-      "spelled": 1104
+      "spelled": 1007
     },
     "surface:UFC": {
-      "spelled": 2481
+      "spelled": 2205
     },
     "surface:UT": {
-      "spelled": 12,
-      "word": 358
+      "spelled": 9,
+      "word": 322
     },
     "surface:VA": {
-      "spelled": 599
+      "spelled": 534
     },
     "surface:VI": {
-      "spelled": 5,
-      "word": 977
+      "spelled": 4,
+      "word": 888
     },
     "surface:VT": {
-      "spelled": 312
+      "spelled": 273
     },
     "surface:WA": {
-      "spelled": 34,
-      "word": 900
+      "spelled": 30,
+      "word": 825
     },
     "surface:WI": {
-      "word": 390
+      "word": 342
     },
     "surface:WV": {
-      "spelled": 187
+      "spelled": 162
     },
     "surface:WWE": {
-      "spelled": 2144
+      "spelled": 1949
     },
     "surface:WY": {
-      "word": 85
+      "word": 77
     },
     "upper:2:nv": {
-      "spelled": 177899,
-      "word": 7983
+      "spelled": 160082,
+      "word": 7182
     },
     "upper:2:v": {
-      "spelled": 100250,
-      "word": 54367
+      "spelled": 90150,
+      "word": 48961
     },
     "upper:3:nv": {
-      "spelled": 223250,
-      "word": 762
+      "spelled": 200769,
+      "word": 697
     },
     "upper:3:v": {
-      "spelled": 156195,
-      "word": 87800
+      "spelled": 140454,
+      "word": 79061
     },
     "upper:4:nv": {
-      "spelled": 31536,
+      "spelled": 28349,
       "word": 19
     },
     "upper:4:v": {
-      "spelled": 118394,
-      "word": 64514
+      "spelled": 106455,
+      "word": 58021
     },
     "upper:5:nv": {
-      "spelled": 2939
+      "spelled": 2664
     },
     "upper:5:v": {
-      "spelled": 24518,
-      "word": 38001
+      "spelled": 22009,
+      "word": 34170
     },
     "upper:6:nv": {
-      "spelled": 263,
+      "spelled": 238,
       "word": 4
     },
     "upper:6:v": {
-      "spelled": 7580,
-      "word": 24559
+      "spelled": 6851,
+      "word": 22032
     },
     "upper:7:nv": {
-      "spelled": 61
+      "spelled": 58
     },
     "upper:7:v": {
-      "spelled": 10267,
-      "word": 43060
+      "spelled": 9285,
+      "word": 38581
     }
   },
   "provenance": {
@@ -1680,8 +1662,7 @@
       "output-00050-of-00100",
       "output-00060-of-00100",
       "output-00070-of-00100",
-      "output-00080-of-00100",
-      "output-00090-of-00100"
+      "output-00080-of-00100"
     ]
   }
 }

@@ -20,7 +20,7 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
 _OUT = _REPO / "frend" / "data" / "en" / "spoken_priors.json"
-_BUILD_DATE = "2026-09-24"
+_BUILD_DATE = "2026-09-28"
 _SHARD_STEP = 10
 _ROWS_PER_CLASS_PER_SHARD = 200
 _TOP_UNMATCHED = 20
@@ -243,19 +243,23 @@ def _alternatives(
 
 
 def _files(corpus_dir: Path) -> list[Path]:
-    """Every tenth shard, less the held-out shards: with shards missing the step can
-    land on one (00005, 00015, ..., 00095). Imported here, not at the top, because
-    ARCTIC loads this file by path without tools/ on ``sys.path`` and calls only
-    ``_detectors()``."""
+    """Every tenth shard, less the held-out shards (90-99, the corpus README's runtime
+    eval and test pools): on the full corpus 00000, 00010, ..., 00080; with shards
+    missing the step can land on a held-out one (00005, 00015, ..., 00095). Imported
+    here, not at the top, because ARCTIC loads this file by path without tools/ on
+    ``sys.path`` and calls only ``_detectors()``."""
     tools = str(Path(__file__).resolve().parent)
     if tools not in sys.path:
         sys.path.insert(0, tools)
-    from google_tn_rows import training_shards
+    from google_tn_rows import full_training_set, training_shards
 
     available = sorted(corpus_dir.glob("output-*-of-*"))
     if not available:
         raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
-    chosen = training_shards(available[::_SHARD_STEP])
+    full = full_training_set(available)
+    # The full corpus samples every tenth training shard by name (00, 10, ..., 80),
+    # never by position in a listing that may be partial.
+    chosen = full[::_SHARD_STEP] if full is not None else training_shards(available[::_SHARD_STEP])
     if not chosen:
         raise FileNotFoundError(f"no training shards under {corpus_dir} (only held-out ones)")
     return chosen

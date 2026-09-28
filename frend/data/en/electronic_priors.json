@@ -1,98 +1,98 @@
 {
   "digits": {
     "*": {
-      "cardinal": 5388,
-      "digits": 1621,
-      "digits_o": 3899,
-      "year": 1188
+      "cardinal": 4941,
+      "digits": 1456,
+      "digits_o": 3547,
+      "year": 1088
     },
     "1:n": {
-      "cardinal": 2972,
-      "digits_o": 238
+      "cardinal": 2696,
+      "digits_o": 220
     },
     "2:n": {
-      "cardinal": 2416,
+      "cardinal": 2245,
       "digits": 11,
       "digits_o": 5
     },
     "2:z": {
-      "digits_o": 1071
+      "digits_o": 967
     },
     "3:n": {
-      "digits": 584,
-      "digits_o": 307
+      "digits": 529,
+      "digits_o": 279
     },
     "3:z": {
-      "digits_o": 164
+      "digits_o": 147
     },
     "4:n": {
-      "digits": 380,
-      "digits_o": 764,
-      "year": 1188
+      "digits": 348,
+      "digits_o": 705,
+      "year": 1088
     },
     "4:z": {
-      "digits_o": 110
+      "digits_o": 101
     },
     "5:n": {
-      "digits": 646,
-      "digits_o": 986
+      "digits": 568,
+      "digits_o": 886
     },
     "5:z": {
-      "digits_o": 254
+      "digits_o": 237
     }
   },
   "letters": {
     "*": {
-      "spelled": 34846,
-      "word": 120672
+      "spelled": 31327,
+      "word": 108745
     },
     "lower:1:nv": {
-      "word": 967
+      "word": 867
     },
     "lower:1:v": {
-      "word": 585
+      "word": 535
     },
     "lower:2:nv": {
-      "spelled": 1180
+      "spelled": 1061
     },
     "lower:2:v": {
-      "spelled": 111,
-      "word": 4293
+      "spelled": 104,
+      "word": 3863
     },
     "lower:3:nv": {
-      "spelled": 9622
+      "spelled": 8619
     },
     "lower:3:v": {
-      "spelled": 871,
-      "word": 5765
+      "spelled": 796,
+      "word": 5197
     },
     "lower:4:nv": {
-      "spelled": 6591
+      "spelled": 5921
     },
     "lower:4:v": {
-      "spelled": 804,
-      "word": 4806
+      "spelled": 724,
+      "word": 4324
     },
     "lower:5:nv": {
-      "spelled": 446
+      "spelled": 395
     },
     "lower:5:v": {
-      "spelled": 148,
-      "word": 5399
+      "spelled": 133,
+      "word": 4825
     },
     "lower:6:nv": {
-      "spelled": 16
+      "spelled": 13
     },
     "lower:6:v": {
-      "spelled": 53,
-      "word": 4871
+      "spelled": 46,
+      "word": 4390
     },
     "lower:7:nv": {
-      "spelled": 283
+      "spelled": 256
     },
     "lower:7:v": {
-      "spelled": 269,
-      "word": 23615
+      "spelled": 242,
+      "word": 21291
     },
     "mixed:2:nv": {
       "spelled": 3
@@ -101,80 +101,80 @@
       "word": 4
     },
     "mixed:3:nv": {
-      "spelled": 21
+      "spelled": 20
     },
     "mixed:3:v": {
-      "word": 25
+      "word": 22
     },
     "mixed:4:nv": {
-      "spelled": 41
+      "spelled": 32
     },
     "mixed:4:v": {
-      "spelled": 127,
-      "word": 145
+      "spelled": 122,
+      "word": 133
     },
     "mixed:5:nv": {
       "spelled": 20
     },
     "mixed:5:v": {
-      "spelled": 28,
-      "word": 241
+      "spelled": 24,
+      "word": 210
     },
     "mixed:6:nv": {
-      "spelled": 9
+      "spelled": 5
     },
     "mixed:6:v": {
-      "spelled": 10,
-      "word": 1024
+      "spelled": 8,
+      "word": 910
     },
     "mixed:7:nv": {
       "spelled": 10
     },
     "mixed:7:v": {
       "spelled": 3,
-      "word": 10482
+      "word": 9480
     },
     "title:2:nv": {
-      "spelled": 89
+      "spelled": 85
     },
     "title:2:v": {
       "spelled": 15,
-      "word": 142
+      "word": 129
     },
     "title:3:nv": {
-      "spelled": 88
+      "spelled": 79
     },
     "title:3:v": {
-      "spelled": 79,
-      "word": 794
+      "spelled": 72,
+      "word": 706
     },
     "title:4:nv": {
       "spelled": 25
     },
     "title:4:v": {
-      "spelled": 65,
-      "word": 1528
+      "spelled": 55,
+      "word": 1367
     },
     "title:5:nv": {
-      "spelled": 8
+      "spelled": 7
     },
     "title:5:v": {
-      "spelled": 18,
-      "word": 2711
+      "spelled": 17,
+      "word": 2455
     },
     "title:6:nv": {
       "spelled": 2
     },
     "title:6:v": {
       "spelled": 8,
-      "word": 4731
+      "word": 4269
     },
     "title:7:nv": {
       "spelled": 1
     },
     "title:7:v": {
       "spelled": 2,
-      "word": 12108
+      "word": 10930
     },
     "tld:aaa": {
       "word": 3
@@ -183,7 +183,7 @@
       "word": 3
     },
     "tld:ac": {
-      "spelled": 4
+      "spelled": 3
     },
     "tld:ad": {
       "spelled": 1
@@ -211,22 +211,19 @@
       "word": 2
     },
     "tld:am": {
-      "spelled": 114
+      "spelled": 103
     },
     "tld:app": {
       "word": 7
     },
     "tld:ar": {
-      "spelled": 15
-    },
-    "tld:army": {
-      "word": 1
+      "spelled": 12
     },
     "tld:arpa": {
       "word": 1
     },
     "tld:art": {
-      "word": 14
+      "word": 11
     },
     "tld:as": {
       "spelled": 3
@@ -235,18 +232,18 @@
       "word": 2
     },
     "tld:at": {
-      "spelled": 125,
+      "spelled": 110,
       "word": 1
     },
     "tld:au": {
-      "spelled": 497,
-      "word": 32
+      "spelled": 447,
+      "word": 31
     },
     "tld:az": {
       "spelled": 19
     },
     "tld:ba": {
-      "spelled": 17
+      "spelled": 15
     },
     "tld:baseball": {
       "word": 2
@@ -255,17 +252,14 @@
       "spelled": 1
     },
     "tld:bbc": {
-      "spelled": 6
-    },
-    "tld:bd": {
-      "spelled": 1
+      "spelled": 4
     },
     "tld:be": {
-      "spelled": 91,
+      "spelled": 79,
       "word": 1
     },
     "tld:bf": {
-      "spelled": 11
+      "spelled": 10
     },
     "tld:bg": {
       "spelled": 20
@@ -274,7 +268,7 @@
       "spelled": 2
     },
     "tld:biz": {
-      "word": 51
+      "word": 45
     },
     "tld:bm": {
       "spelled": 1
@@ -286,17 +280,17 @@
       "word": 1
     },
     "tld:br": {
-      "spelled": 58
+      "spelled": 50
     },
     "tld:by": {
-      "spelled": 10
+      "spelled": 9
     },
     "tld:bz": {
       "spelled": 1
     },
     "tld:ca": {
-      "spelled": 544,
-      "word": 20
+      "spelled": 487,
+      "word": 17
     },
     "tld:cal": {
       "word": 1
@@ -308,10 +302,10 @@
       "word": 1
     },
     "tld:cat": {
-      "word": 8
+      "word": 7
     },
     "tld:cc": {
-      "spelled": 18
+      "spelled": 16
     },
     "tld:cd": {
       "spelled": 3
@@ -320,29 +314,29 @@
       "spelled": 3
     },
     "tld:ch": {
-      "spelled": 250
+      "spelled": 221
     },
     "tld:ci": {
-      "spelled": 3
+      "spelled": 2
     },
     "tld:ck": {
       "spelled": 1
     },
     "tld:cl": {
-      "spelled": 23
+      "spelled": 19
     },
     "tld:cm": {
       "spelled": 1
     },
     "tld:cn": {
-      "spelled": 79
+      "spelled": 69
     },
     "tld:co": {
-      "spelled": 46,
+      "spelled": 41,
       "word": 1
     },
     "tld:com": {
-      "word": 25673
+      "word": 23130
     },
     "tld:company": {
       "word": 1
@@ -357,7 +351,7 @@
       "spelled": 6
     },
     "tld:cx": {
-      "spelled": 8
+      "spelled": 7
     },
     "tld:cy": {
       "spelled": 4
@@ -366,13 +360,13 @@
       "word": 1
     },
     "tld:cz": {
-      "spelled": 872
+      "spelled": 785
     },
     "tld:day": {
       "word": 1
     },
     "tld:de": {
-      "spelled": 734,
+      "spelled": 652,
       "word": 10
     },
     "tld:degree": {
@@ -382,20 +376,20 @@
       "word": 1
     },
     "tld:dk": {
-      "spelled": 163
+      "spelled": 149
     },
     "tld:do": {
       "spelled": 4,
-      "word": 12
+      "word": 11
     },
     "tld:ec": {
       "spelled": 2
     },
     "tld:edu": {
-      "spelled": 620
+      "spelled": 566
     },
     "tld:ee": {
-      "spelled": 26
+      "spelled": 22
     },
     "tld:eg": {
       "spelled": 2
@@ -407,18 +401,18 @@
       "spelled": 1
     },
     "tld:es": {
-      "spelled": 76,
+      "spelled": 69,
       "word": 3
     },
     "tld:et": {
       "spelled": 2
     },
     "tld:eu": {
-      "spelled": 87,
+      "spelled": 84,
       "word": 6
     },
     "tld:fi": {
-      "spelled": 248
+      "spelled": 223
     },
     "tld:fit": {
       "word": 1
@@ -427,13 +421,13 @@
       "spelled": 2
     },
     "tld:fm": {
-      "spelled": 72
+      "spelled": 64
     },
     "tld:fo": {
       "spelled": 9
     },
     "tld:fr": {
-      "spelled": 236
+      "spelled": 209
     },
     "tld:gal": {
       "word": 1
@@ -451,7 +445,7 @@
       "spelled": 1
     },
     "tld:ge": {
-      "spelled": 7
+      "spelled": 6
     },
     "tld:gg": {
       "spelled": 1
@@ -462,17 +456,14 @@
     "tld:gl": {
       "spelled": 1
     },
-    "tld:gm": {
-      "spelled": 1
-    },
     "tld:gov": {
-      "word": 615
+      "word": 554
     },
     "tld:gr": {
-      "spelled": 60
+      "spelled": 57
     },
     "tld:gt": {
-      "spelled": 4
+      "spelled": 1
     },
     "tld:gu": {
       "spelled": 1
@@ -481,53 +472,53 @@
       "word": 1
     },
     "tld:hk": {
-      "spelled": 23
+      "spelled": 21
     },
     "tld:hn": {
-      "spelled": 14
+      "spelled": 11
     },
     "tld:hr": {
-      "spelled": 119
+      "spelled": 110
     },
     "tld:ht": {
       "spelled": 1
     },
     "tld:hu": {
-      "spelled": 39,
+      "spelled": 35,
       "word": 3
     },
     "tld:id": {
-      "spelled": 58
+      "spelled": 51
     },
     "tld:ie": {
-      "spelled": 180,
-      "word": 4
+      "spelled": 159,
+      "word": 3
     },
     "tld:il": {
-      "spelled": 44,
+      "spelled": 38,
       "word": 1
     },
     "tld:im": {
-      "spelled": 4
+      "spelled": 3
     },
     "tld:in": {
-      "spelled": 202,
-      "word": 20
+      "spelled": 179,
+      "word": 19
     },
     "tld:inc": {
       "word": 1
     },
     "tld:info": {
-      "word": 165
+      "word": 148
     },
     "tld:ing": {
-      "word": 7
+      "word": 6
     },
     "tld:ink": {
       "word": 1
     },
     "tld:int": {
-      "word": 34
+      "word": 30
     },
     "tld:io": {
       "spelled": 30
@@ -536,25 +527,22 @@
       "spelled": 4
     },
     "tld:ir": {
-      "spelled": 9,
+      "spelled": 7,
       "word": 3
     },
     "tld:is": {
-      "spelled": 37
+      "spelled": 34
     },
     "tld:it": {
-      "spelled": 313,
+      "spelled": 287,
       "word": 5
     },
-    "tld:jm": {
-      "spelled": 1
-    },
     "tld:jo": {
-      "spelled": 2,
+      "spelled": 1,
       "word": 1
     },
     "tld:jp": {
-      "spelled": 159
+      "spelled": 140
     },
     "tld:ke": {
       "spelled": 8
@@ -563,10 +551,10 @@
       "spelled": 2
     },
     "tld:km": {
-      "spelled": 4
+      "spelled": 3
     },
     "tld:kr": {
-      "spelled": 25
+      "spelled": 23
     },
     "tld:krd": {
       "spelled": 3
@@ -587,14 +575,14 @@
       "spelled": 3
     },
     "tld:lc": {
-      "spelled": 3
+      "spelled": 2
     },
     "tld:li": {
       "spelled": 1,
       "word": 1
     },
     "tld:lk": {
-      "spelled": 16
+      "spelled": 15
     },
     "tld:lol": {
       "word": 1
@@ -606,10 +594,10 @@
       "spelled": 1
     },
     "tld:lt": {
-      "spelled": 16
+      "spelled": 13
     },
     "tld:lu": {
-      "spelled": 3
+      "spelled": 2
     },
     "tld:lv": {
       "spelled": 19
@@ -619,10 +607,10 @@
       "word": 1
     },
     "tld:ma": {
-      "spelled": 3
+      "spelled": 2
     },
     "tld:man": {
-      "word": 3
+      "word": 2
     },
     "tld:management": {
       "word": 1
@@ -631,25 +619,25 @@
       "word": 1
     },
     "tld:md": {
-      "spelled": 10
+      "spelled": 8
     },
     "tld:me": {
-      "spelled": 17
+      "spelled": 14
     },
     "tld:med": {
-      "word": 22
+      "word": 18
     },
     "tld:mil": {
-      "word": 78
+      "word": 65
     },
     "tld:mk": {
-      "spelled": 5
+      "spelled": 4
     },
     "tld:ml": {
       "spelled": 1
     },
     "tld:mm": {
-      "spelled": 2
+      "spelled": 1
     },
     "tld:mn": {
       "spelled": 4
@@ -664,7 +652,7 @@
       "word": 1
     },
     "tld:mov": {
-      "word": 6
+      "word": 5
     },
     "tld:mp": {
       "spelled": 1
@@ -676,7 +664,7 @@
       "spelled": 1
     },
     "tld:mu": {
-      "spelled": 2
+      "spelled": 1
     },
     "tld:music": {
       "word": 1
@@ -686,7 +674,7 @@
     },
     "tld:my": {
       "spelled": 10,
-      "word": 2
+      "word": 1
     },
     "tld:na": {
       "spelled": 5
@@ -701,13 +689,13 @@
       "spelled": 3
     },
     "tld:net": {
-      "word": 2274
+      "word": 2051
     },
     "tld:network": {
       "word": 1
     },
     "tld:news": {
-      "word": 4
+      "word": 3
     },
     "tld:next": {
       "word": 2
@@ -716,14 +704,14 @@
       "spelled": 7
     },
     "tld:ni": {
-      "spelled": 5
+      "spelled": 4
     },
     "tld:nl": {
-      "spelled": 270
+      "spelled": 238
     },
     "tld:no": {
-      "spelled": 218,
-      "word": 2
+      "spelled": 203,
+      "word": 1
     },
     "tld:now": {
       "word": 3
@@ -732,16 +720,16 @@
       "spelled": 5
     },
     "tld:nu": {
-      "spelled": 22
+      "spelled": 21
     },
     "tld:nz": {
-      "spelled": 171
+      "spelled": 162
     },
     "tld:one": {
       "word": 1
     },
     "tld:org": {
-      "word": 4859
+      "word": 4368
     },
     "tld:pa": {
       "spelled": 1
@@ -750,28 +738,25 @@
       "word": 4
     },
     "tld:pe": {
-      "spelled": 9
+      "spelled": 7
     },
     "tld:pg": {
-      "spelled": 5
+      "spelled": 3
     },
     "tld:ph": {
-      "spelled": 73
+      "spelled": 69
     },
     "tld:phone": {
       "word": 1
     },
     "tld:pk": {
-      "spelled": 30
+      "spelled": 28
     },
     "tld:pl": {
-      "spelled": 163
-    },
-    "tld:play": {
-      "word": 1
+      "spelled": 146
     },
     "tld:pm": {
-      "spelled": 2
+      "spelled": 1
     },
     "tld:pn": {
       "spelled": 1
@@ -789,10 +774,10 @@
       "word": 1
     },
     "tld:pt": {
-      "spelled": 21
+      "spelled": 19
     },
     "tld:pub": {
-      "word": 5
+      "word": 4
     },
     "tld:py": {
       "spelled": 1
@@ -804,17 +789,17 @@
       "spelled": 1
     },
     "tld:ro": {
-      "spelled": 58,
+      "spelled": 48,
       "word": 1
     },
     "tld:room": {
       "word": 1
     },
     "tld:rs": {
-      "spelled": 29
+      "spelled": 26
     },
     "tld:ru": {
-      "spelled": 278,
+      "spelled": 250,
       "word": 3
     },
     "tld:sa": {
@@ -828,8 +813,8 @@
       "word": 2
     },
     "tld:se": {
-      "spelled": 159,
-      "word": 4
+      "spelled": 147,
+      "word": 2
     },
     "tld:sg": {
       "spelled": 16
@@ -838,10 +823,10 @@
       "spelled": 2
     },
     "tld:si": {
-      "spelled": 26
+      "spelled": 22
     },
     "tld:sk": {
-      "spelled": 43
+      "spelled": 37
     },
     "tld:sl": {
       "spelled": 2
@@ -856,7 +841,7 @@
       "spelled": 2
     },
     "tld:soccer": {
-      "word": 2
+      "word": 1
     },
     "tld:solar": {
       "word": 1
@@ -875,10 +860,10 @@
       "spelled": 3
     },
     "tld:sy": {
-      "spelled": 5
+      "spelled": 3
     },
     "tld:tab": {
-      "word": 5
+      "word": 4
     },
     "tld:th": {
       "spelled": 2
@@ -893,7 +878,7 @@
       "spelled": 1
     },
     "tld:to": {
-      "spelled": 13
+      "spelled": 10
     },
     "tld:today": {
       "word": 2
@@ -902,29 +887,29 @@
       "word": 3
     },
     "tld:tr": {
-      "spelled": 21
+      "spelled": 16
     },
     "tld:tv": {
-      "spelled": 191
+      "spelled": 168
     },
     "tld:tw": {
       "spelled": 11
     },
     "tld:ua": {
-      "spelled": 24
+      "spelled": 22
     },
     "tld:ug": {
-      "spelled": 10
+      "spelled": 9
     },
     "tld:uk": {
-      "spelled": 1847,
-      "word": 60
+      "spelled": 1657,
+      "word": 56
     },
     "tld:university": {
       "word": 1
     },
     "tld:us": {
-      "spelled": 115,
+      "spelled": 103,
       "word": 4
     },
     "tld:uy": {
@@ -934,10 +919,10 @@
       "spelled": 5
     },
     "tld:va": {
-      "spelled": 7
+      "spelled": 6
     },
     "tld:ve": {
-      "spelled": 3
+      "spelled": 2
     },
     "tld:vet": {
       "word": 1
@@ -952,7 +937,7 @@
       "word": 7
     },
     "tld:ws": {
-      "spelled": 9
+      "spelled": 6
     },
     "tld:xxx": {
       "spelled": 3
@@ -961,8 +946,7 @@
       "word": 4
     },
     "tld:za": {
-      "spelled": 56,
-      "word": 1
+      "spelled": 50
     },
     "tld:zip": {
       "word": 4
@@ -971,46 +955,46 @@
       "spelled": 1
     },
     "upper:1:nv": {
-      "word": 684
+      "word": 620
     },
     "upper:1:v": {
-      "word": 217
+      "word": 195
     },
     "upper:2:nv": {
-      "spelled": 519
+      "spelled": 485
     },
     "upper:2:v": {
-      "spelled": 93,
-      "word": 304
+      "spelled": 82,
+      "word": 270
     },
     "upper:3:nv": {
-      "spelled": 1206
+      "spelled": 1091
     },
     "upper:3:v": {
-      "spelled": 366,
-      "word": 357
+      "spelled": 335,
+      "word": 329
     },
     "upper:4:nv": {
-      "spelled": 146
+      "spelled": 127
     },
     "upper:4:v": {
-      "spelled": 582,
-      "word": 390
+      "spelled": 509,
+      "word": 362
     },
     "upper:5:nv": {
-      "spelled": 82
+      "spelled": 74
     },
     "upper:5:v": {
-      "spelled": 57,
-      "word": 123
+      "spelled": 52,
+      "word": 114
     },
     "upper:6:v": {
-      "spelled": 10,
-      "word": 81
+      "spelled": 9,
+      "word": 71
     },
     "upper:7:v": {
       "spelled": 1,
-      "word": 149
+      "word": 137
     }
   },
   "provenance": {
@@ -1023,8 +1007,8 @@
     },
     "license": "CC BY-SA 4.0",
     "locale": "en",
-    "rows": 53257,
-    "rows_aligned": 49001,
+    "rows": 47981,
+    "rows_aligned": 44151,
     "shards": [
       "output-00000-of-00100",
       "output-00010-of-00100",
@@ -1034,52 +1018,51 @@
       "output-00050-of-00100",
       "output-00060-of-00100",
       "output-00070-of-00100",
-      "output-00080-of-00100",
-      "output-00090-of-00100"
+      "output-00080-of-00100"
     ],
     "tld_list": "Version 2026092400, Last Updated Thu Sep 24 07:07:01 2026 UTC"
   },
   "separators": {
     "#": {
-      "hash": 302
+      "hash": 272
     },
     "$": {
       "dollar": 8
     },
     "%": {
-      "percent": 382
+      "percent": 350
     },
     "&": {
-      "and": 7
+      "and": 5
     },
     "+": {
       "plus": 1
     },
     ",": {
-      "comma": 153
+      "comma": 138
     },
     "-": {
-      "dash": 15107,
+      "dash": 13585,
       "sil": 11
     },
     ".": {
-      "dot": 69258
+      "dot": 62404
     },
     "/": {
-      "slash": 33980
+      "slash": 30620
     },
     ":": {
-      "colon": 6503,
+      "colon": 5843,
       "sil": 29
     },
     ";": {
-      "semicolon": 84
+      "semicolon": 76
     },
     "_": {
-      "underscore": 2688
+      "underscore": 2434
     },
     "~": {
-      "tilde": 90
+      "tilde": 81
     }
   }
 }

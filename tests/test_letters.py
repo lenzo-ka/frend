@@ -151,7 +151,7 @@ _POPULATION = ["ÉCO", "E\u0301CO", "AB\u0301CD", "СССР", "ℂA", "ℂℍ", 
 def _counted(tmp_path, token: str) -> bool:
     shard = tmp_path / token.encode("unicode_escape").decode("ascii").replace("\\", "_")
     shard.mkdir()
-    (shard / "output-00000-of-00100").write_text(
+    (shard / "output-00000-of-00001").write_text(
         f"LETTERS\t{token}\t{' '.join(token.lower())}\n<eos>\t<eos>\n", encoding="utf-8"
     )
     return "*" in _acronym_builder().build_document(shard)["keys"]

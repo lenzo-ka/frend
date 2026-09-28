@@ -50,7 +50,11 @@ def test_silence_and_non_numbers_and_overlaps():
 
 # ------------------------------------------------------------------ held-out shards
 
-_HELD_OUT = {"output-00095-of-00100", "output-00099-of-00100"}
+# The corpus README's split: training 00-89, runtime eval 90-94, test 95-99.
+_TRAINING = {f"output-{index:05d}-of-00100" for index in range(90)}
+_RUNTIME_EVAL = {f"output-{index:05d}-of-00100" for index in range(90, 95)}
+_TEST = {f"output-{index:05d}-of-00100" for index in range(95, 100)}
+_HELD_OUT = _RUNTIME_EVAL | _TEST
 
 
 def _tool(name: str):
@@ -75,9 +79,11 @@ def _corpus(root: Path, first: int) -> Path:
 
 
 def test_no_builder_reads_a_held_out_shard(tmp_path, monkeypatch):
-    """Every corpus builder, run on a corpus of all 100 shards and on one missing
-    00000-00004 (where every tenth shard lands on 00095), opens at least one shard and
-    never a held-out one -- by what it opens, not by what it says it counted."""
+    """Every corpus builder, run on a corpus of all 100 shards (where every tenth shard by
+    position lands on 00090), opens at least one shard and never a held-out one (90-99)
+    -- by what it opens, not by what it says it counted; and on one missing 00000-00004
+    (where every tenth by position lands on 00095) it refuses to build rather than sample
+    by position, again opening no held-out shard."""
     type_priors = _tool("build_type_priors")
     spoken = _tool("build_spoken_priors")
     builders = {
@@ -101,9 +107,13 @@ def test_no_builder_reads_a_held_out_shard(tmp_path, monkeypatch):
     for builder, build in builders.items():
         for label, corpus in corpora.items():
             opened.clear()
-            build(corpus)
+            if label == "corpus5":
+                with pytest.raises(FileNotFoundError, match="training shard"):
+                    build(corpus)
+            else:
+                build(corpus)
             shards = [name for name in opened if name.startswith("output-")]
-            if not shards:
+            if not shards and label == "corpus0":
                 read_nothing.append(f"{builder}@{label}")
             held = sorted(set(shards) & _HELD_OUT)
             if held:
@@ -115,7 +125,22 @@ def test_no_builder_reads_a_held_out_shard(tmp_path, monkeypatch):
     # Imported last, so the check above fails on what a builder reads, not on an import.
     google_tn_rows = _tool("google_tn_rows")
     assert google_tn_rows.HELD_OUT_SHARDS == frozenset(_HELD_OUT)
-    assert _evaluator()._TEST_FILE in google_tn_rows.HELD_OUT_SHARDS
+    assert _evaluator()._TEST_FILE in google_tn_rows.TEST_SHARDS
+
+
+def test_the_shards_follow_the_corpus_split():
+    """The three pools are the corpus README's (training 00-89, runtime eval 90-94, test
+    95-99), they partition the 100 shards, and training_shards keeps exactly the
+    training pool of a full corpus, and a fixture's shards of another split."""
+    google_tn_rows = _tool("google_tn_rows")
+    assert google_tn_rows.TRAINING_SHARDS == frozenset(_TRAINING)
+    assert google_tn_rows.RUNTIME_EVAL_SHARDS == frozenset(_RUNTIME_EVAL)
+    assert google_tn_rows.TEST_SHARDS == frozenset(_TEST)
+    assert google_tn_rows.HELD_OUT_SHARDS == frozenset(_HELD_OUT)
+    every = [Path(f"output-{index:05d}-of-00100") for index in range(100)]
+    assert [path.name for path in google_tn_rows.training_shards(every)] == sorted(_TRAINING)
+    fixture = [Path("output-00000-of-00002"), Path("output-00001-of-00002")]
+    assert google_tn_rows.training_shards(fixture) == fixture
 
 
 def test_builder_and_evaluator_share_one_triple_predicate():
@@ -167,12 +192,12 @@ def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path):
 
 
 def test_a_corpus_of_only_held_out_shards_fails_loudly(tmp_path):
-    """With nothing but the held-out shards, the spoken-family builders refuse to build
-    rather than measure nothing."""
+    """With nothing but the held-out shards (90-99), the spoken-family builders refuse
+    to build rather than measure nothing (every tenth of them is 00090)."""
     _evaluator()  # puts tools/ on sys.path
     import build_spoken_priors
 
-    for name in ("output-00095-of-00100", "output-00099-of-00100"):
+    for name in sorted(_HELD_OUT):
         (tmp_path / name).write_text("CARDINAL\t7\tseven\n", encoding="utf-8")
     with pytest.raises(FileNotFoundError, match="no training shards"):
         build_spoken_priors._files(tmp_path)

@@ -1,9 +1,9 @@
 {
   "kinds": {
     "cardinal": {
-      "matched": 1995,
+      "matched": 1795,
       "source_matched": {
-        "icu-rbnf:%spellout-numbering": 1995
+        "icu-rbnf:%spellout-numbering": 1795
       },
       "sub_keys": {},
       "top_unmatched": [
@@ -68,7 +68,7 @@
           }
         }
       ],
-      "total": 2000,
+      "total": 1800,
       "unmatched": 5,
       "unmatched_by_reason": {
         "no_alternative_matched": 0,
@@ -77,52 +77,52 @@
       }
     },
     "date": {
-      "matched": 1997,
+      "matched": 1797,
       "source_matched": {
         "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
-        "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 3,
-        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 95,
-        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
-        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
+        "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 2,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 89,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 15,
+        "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 312,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
-        "icu-rbnf:%spellout-numbering-year": 922,
-        "icu-rbnf:%spellout-numbering-year+lexical:en_US": 39,
+        "icu-rbnf:%spellout-numbering-year": 822,
+        "icu-rbnf:%spellout-numbering-year+lexical:en_US": 34,
         "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL": 21,
-        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 546,
+        "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 496,
         "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": 1
       },
       "sub_keys": {
         "day-first": {
-          "matched": 549,
+          "matched": 501,
           "source_matched": {
-            "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 3,
+            "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 2,
             "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL": 21,
-            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 524,
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 477,
             "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": 1
           }
         },
         "month-first": {
-          "matched": 371,
+          "matched": 333,
           "source_matched": {
             "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
-            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 16,
-            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 349,
+            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 15,
+            "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 312,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
             "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 1
           }
         },
         "other": {
-          "matched": 1056,
+          "matched": 945,
           "source_matched": {
-            "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 95,
-            "icu-rbnf:%spellout-numbering-year": 922,
-            "icu-rbnf:%spellout-numbering-year+lexical:en_US": 39
+            "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 89,
+            "icu-rbnf:%spellout-numbering-year": 822,
+            "icu-rbnf:%spellout-numbering-year+lexical:en_US": 34
           }
         },
         "year-first": {
-          "matched": 21,
+          "matched": 18,
           "source_matched": {
-            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 21
+            "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 18
           }
         }
       },
@@ -164,7 +164,7 @@
           }
         }
       ],
-      "total": 2000,
+      "total": 1800,
       "unmatched": 3,
       "unmatched_by_reason": {
         "no_alternative_matched": 1,
@@ -173,22 +173,21 @@
       }
     },
     "decimal": {
-      "matched": 1999,
+      "matched": 1799,
       "source_matched": {
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 85,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 114,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 125,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 20,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 5,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 16,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 2,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 20,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 22,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 5,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 72,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 102,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 116,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 15,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 3,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 13,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 1,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 17,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 18,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 4,
         "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 1,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 5,
-        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 3,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 4,
+        "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 2,
         "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+lexical:en_US": 1,
         "icu-rbnf:%spellout-cardinal+lexical:en_US": 6,
         "icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 9,
@@ -197,13 +196,13 @@
         "icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 1,
         "icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 1,
         "icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": 1,
-        "icu-rbnf:%spellout-numbering": 54,
-        "icu-rbnf:%spellout-numbering+icu-compact:long": 67,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 895,
+        "icu-rbnf:%spellout-numbering": 50,
+        "icu-rbnf:%spellout-numbering+icu-compact:long": 61,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 801,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long": 45,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 283,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 255,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long": 15,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 32,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 29,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long": 4,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 6,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 3,
@@ -213,18 +212,17 @@
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 4,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 45,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 42,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 5,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 2,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 2,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 3,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+lexical:en_US": 1,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 42,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 40,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-compact:long": 2,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 9,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 8,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US": 1,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 15,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 13,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering": 2,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": 7,
@@ -245,7 +243,7 @@
           }
         }
       ],
-      "total": 2000,
+      "total": 1800,
       "unmatched": 1,
       "unmatched_by_reason": {
         "no_alternative_matched": 0,
@@ -254,60 +252,24 @@
       }
     },
     "digit": {
-      "matched": 1779,
+      "matched": 1604,
       "source_matched": {
-        "icu-rbnf:%spellout-cardinal": 535,
-        "icu-rbnf:%spellout-cardinal+lexical:en_US": 823,
-        "icu-rbnf:%spellout-numbering": 421
+        "icu-rbnf:%spellout-cardinal": 482,
+        "icu-rbnf:%spellout-cardinal+lexical:en_US": 742,
+        "icu-rbnf:%spellout-numbering": 380
       },
       "sub_keys": {},
       "top_unmatched": [
         {
-          "count": 14,
+          "count": 13,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 14,
+            "unrecognized": 13,
             "unverbalized": 0
           },
           "spoken": "two",
           "written_forms": {
-            "2-": 14
-          }
-        },
-        {
-          "count": 13,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 13,
-            "unverbalized": 0
-          },
-          "spoken": "one",
-          "written_forms": {
-            "1-": 13
-          }
-        },
-        {
-          "count": 13,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 13,
-            "unverbalized": 0
-          },
-          "spoken": "three",
-          "written_forms": {
-            "3-": 13
-          }
-        },
-        {
-          "count": 11,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 11,
-            "unverbalized": 0
-          },
-          "spoken": "five",
-          "written_forms": {
-            "5-": 11
+            "2-": 13
           }
         },
         {
@@ -317,9 +279,33 @@
             "unrecognized": 10,
             "unverbalized": 0
           },
-          "spoken": "one o",
+          "spoken": "one",
           "written_forms": {
-            "10-": 10
+            "1-": 10
+          }
+        },
+        {
+          "count": 10,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 10,
+            "unverbalized": 0
+          },
+          "spoken": "three",
+          "written_forms": {
+            "3-": 10
+          }
+        },
+        {
+          "count": 9,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 9,
+            "unverbalized": 0
+          },
+          "spoken": "five",
+          "written_forms": {
+            "5-": 9
           }
         },
         {
@@ -332,6 +318,18 @@
           "spoken": "four",
           "written_forms": {
             "4-": 9
+          }
+        },
+        {
+          "count": 9,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 9,
+            "unverbalized": 0
+          },
+          "spoken": "one o",
+          "written_forms": {
+            "10-": 9
           }
         },
         {
@@ -377,57 +375,45 @@
             "unrecognized": 5,
             "unverbalized": 0
           },
-          "spoken": "one one",
-          "written_forms": {
-            "11-": 5
-          }
-        },
-        {
-          "count": 5,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 5,
-            "unverbalized": 0
-          },
           "spoken": "one seven three",
           "written_forms": {
             "173-": 5
           }
         },
         {
-          "count": 5,
+          "count": 4,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 5,
+            "unrecognized": 4,
+            "unverbalized": 0
+          },
+          "spoken": "one one",
+          "written_forms": {
+            "11-": 4
+          }
+        },
+        {
+          "count": 4,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 4,
             "unverbalized": 0
           },
           "spoken": "six",
           "written_forms": {
-            "6-": 5
+            "6-": 4
           }
         },
         {
-          "count": 4,
+          "count": 3,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 4,
+            "unrecognized": 3,
             "unverbalized": 0
           },
           "spoken": "eight",
           "written_forms": {
-            "8-": 4
-          }
-        },
-        {
-          "count": 4,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 4,
-            "unverbalized": 0
-          },
-          "spoken": "seven",
-          "written_forms": {
-            "7-": 4
+            "8-": 3
           }
         },
         {
@@ -452,6 +438,18 @@
           "spoken": "one six",
           "written_forms": {
             "16-": 3
+          }
+        },
+        {
+          "count": 3,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 3,
+            "unverbalized": 0
+          },
+          "spoken": "seven",
+          "written_forms": {
+            "7-": 3
           }
         },
         {
@@ -485,9 +483,9 @@
             "unrecognized": 2,
             "unverbalized": 0
           },
-          "spoken": "one five",
+          "spoken": "one o o",
           "written_forms": {
-            "15-": 2
+            "100-": 2
           }
         },
         {
@@ -497,62 +495,62 @@
             "unrecognized": 2,
             "unverbalized": 0
           },
-          "spoken": "one o o",
+          "spoken": "seven two nine",
           "written_forms": {
-            "100-": 2
+            "729-": 2
           }
         }
       ],
-      "total": 2000,
-      "unmatched": 221,
+      "total": 1800,
+      "unmatched": 196,
       "unmatched_by_reason": {
         "no_alternative_matched": 13,
-        "unrecognized": 208,
+        "unrecognized": 183,
         "unverbalized": 0
       }
     },
     "electronic": {
-      "matched": 1605,
+      "matched": 1443,
       "source_matched": {
-        "measured:electronic": 1605
+        "measured:electronic": 1443
       },
       "sub_keys": {},
       "top_unmatched": [],
-      "total": 2000,
-      "unmatched": 395,
+      "total": 1800,
+      "unmatched": 357,
       "unmatched_by_reason": {
-        "no_alternative_matched": 128,
-        "unrecognized": 263,
+        "no_alternative_matched": 109,
+        "unrecognized": 244,
         "unverbalized": 4
       }
     },
     "fraction": {
-      "matched": 1961,
+      "matched": 1764,
       "source_matched": {
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 74,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 64,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 16,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 13,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1434,
-        "icu-rbnf:%spellout-numbering+lexical:en_US": 424
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 11,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1291,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 382
       },
       "sub_keys": {
         "1": {
-          "matched": 74,
+          "matched": 64,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 74
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 64
           }
         },
         "10": {
-          "matched": 48,
+          "matched": 42,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 48
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 42
           }
         },
         "100": {
-          "matched": 34,
+          "matched": 28,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 33
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 27
           }
         },
         "1000": {
@@ -586,9 +584,9 @@
           }
         },
         "11": {
-          "matched": 43,
+          "matched": 37,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 43
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 37
           }
         },
         "110": {
@@ -598,12 +596,6 @@
           }
         },
         "11086": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
-        "112": {
           "matched": 1,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
@@ -622,9 +614,9 @@
           }
         },
         "12": {
-          "matched": 24,
+          "matched": 23,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 24
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 23
           }
         },
         "121": {
@@ -651,16 +643,10 @@
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
-        "127": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
         "128": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "13": {
@@ -712,9 +698,9 @@
           }
         },
         "14": {
-          "matched": 30,
+          "matched": 26,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 30
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 26
           }
         },
         "1400": {
@@ -742,9 +728,9 @@
           }
         },
         "15": {
-          "matched": 24,
+          "matched": 23,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 24
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 23
           }
         },
         "152": {
@@ -754,9 +740,9 @@
           }
         },
         "1542": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "159": {
@@ -766,10 +752,10 @@
           }
         },
         "16": {
-          "matched": 30,
+          "matched": 29,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 28
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 27
           }
         },
         "160": {
@@ -809,9 +795,9 @@
           }
         },
         "17": {
-          "matched": 12,
+          "matched": 10,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 12
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 10
           }
         },
         "170": {
@@ -833,9 +819,9 @@
           }
         },
         "18": {
-          "matched": 14,
+          "matched": 13,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 14
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
           }
         },
         "180": {
@@ -869,9 +855,9 @@
           }
         },
         "19": {
-          "matched": 17,
+          "matched": 15,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 17
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 15
           }
         },
         "1900": {
@@ -995,9 +981,9 @@
           }
         },
         "1986": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "1988": {
@@ -1049,22 +1035,22 @@
           }
         },
         "1999": {
-          "matched": 5,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "2": {
-          "matched": 283,
+          "matched": 252,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+lexical:en_US": 283
+            "icu-rbnf:%spellout-numbering+lexical:en_US": 252
           }
         },
         "20": {
-          "matched": 42,
+          "matched": 36,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 41
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 35
           }
         },
         "2000": {
@@ -1152,9 +1138,9 @@
           }
         },
         "2014": {
-          "matched": 26,
+          "matched": 22,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 26
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 22
           }
         },
         "2015": {
@@ -1230,12 +1216,6 @@
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
-        "22104": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
         "229": {
           "matched": 1,
           "source_matched": {
@@ -1243,9 +1223,9 @@
           }
         },
         "23": {
-          "matched": 16,
+          "matched": 15,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 16
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 15
           }
         },
         "230": {
@@ -1291,9 +1271,9 @@
           }
         },
         "24": {
-          "matched": 17,
+          "matched": 15,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 17
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 15
           }
         },
         "240": {
@@ -1315,9 +1295,9 @@
           }
         },
         "25": {
-          "matched": 13,
+          "matched": 12,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 12
           }
         },
         "250": {
@@ -1357,9 +1337,9 @@
           }
         },
         "26": {
-          "matched": 10,
+          "matched": 7,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 10
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
           }
         },
         "2612": {
@@ -1381,9 +1361,9 @@
           }
         },
         "27": {
-          "matched": 15,
+          "matched": 13,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 15
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
           }
         },
         "2740": {
@@ -1405,9 +1385,9 @@
           }
         },
         "28": {
-          "matched": 13,
+          "matched": 12,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 13
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 12
           }
         },
         "287": {
@@ -1423,9 +1403,9 @@
           }
         },
         "29": {
-          "matched": 7,
+          "matched": 6,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
           }
         },
         "298": {
@@ -1435,22 +1415,16 @@
           }
         },
         "3": {
-          "matched": 91,
+          "matched": 81,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 88
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 78
           }
         },
         "30": {
           "matched": 7,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
-          }
-        },
-        "300": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
         "3000": {
@@ -1478,9 +1452,9 @@
           }
         },
         "31": {
-          "matched": 11,
+          "matched": 10,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 11
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 10
           }
         },
         "318": {
@@ -1490,9 +1464,9 @@
           }
         },
         "32": {
-          "matched": 9,
+          "matched": 7,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 9
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
           }
         },
         "320": {
@@ -1514,9 +1488,9 @@
           }
         },
         "33": {
-          "matched": 7,
+          "matched": 6,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
           }
         },
         "331": {
@@ -1532,12 +1506,6 @@
           }
         },
         "337": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
-        "339": {
           "matched": 1,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
@@ -1568,15 +1536,9 @@
           }
         },
         "35": {
-          "matched": 6,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
-          }
-        },
-        "350": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "3520": {
@@ -1598,15 +1560,15 @@
           }
         },
         "36": {
-          "matched": 11,
+          "matched": 10,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 11
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 10
           }
         },
         "364": {
-          "matched": 2,
+          "matched": 1,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
         "368": {
@@ -1616,9 +1578,9 @@
           }
         },
         "37": {
-          "matched": 2,
+          "matched": 1,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
         "37062": {
@@ -1676,16 +1638,16 @@
           }
         },
         "4": {
-          "matched": 154,
+          "matched": 141,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 13,
-            "icu-rbnf:%spellout-numbering+lexical:en_US": 141
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US": 11,
+            "icu-rbnf:%spellout-numbering+lexical:en_US": 130
           }
         },
         "40": {
-          "matched": 8,
+          "matched": 7,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 7
           }
         },
         "400": {
@@ -1701,9 +1663,9 @@
           }
         },
         "41": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "412": {
@@ -1719,15 +1681,15 @@
           }
         },
         "42": {
-          "matched": 8,
+          "matched": 5,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
           }
         },
         "43": {
-          "matched": 9,
+          "matched": 8,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 9
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
           }
         },
         "43001": {
@@ -1737,18 +1699,12 @@
           }
         },
         "44": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "440": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
-        "446": {
           "matched": 1,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
@@ -1803,9 +1759,9 @@
           }
         },
         "48": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "484": {
@@ -1827,9 +1783,9 @@
           }
         },
         "5": {
-          "matched": 67,
+          "matched": 60,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 67
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 60
           }
         },
         "50": {
@@ -1850,12 +1806,6 @@
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
-        "501": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
         "51": {
           "matched": 4,
           "source_matched": {
@@ -1869,9 +1819,9 @@
           }
         },
         "52": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "53": {
@@ -1893,9 +1843,9 @@
           }
         },
         "55": {
-          "matched": 6,
+          "matched": 5,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 6
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
           }
         },
         "56": {
@@ -1946,16 +1896,10 @@
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
-        "599": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
         "6": {
-          "matched": 36,
+          "matched": 34,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 36
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 34
           }
         },
         "60": {
@@ -2048,12 +1992,6 @@
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
-        "656": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
-          }
-        },
         "66": {
           "matched": 3,
           "source_matched": {
@@ -2061,9 +1999,9 @@
           }
         },
         "67": {
-          "matched": 2,
+          "matched": 1,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
         "68": {
@@ -2085,21 +2023,21 @@
           }
         },
         "7": {
-          "matched": 62,
+          "matched": 55,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 62
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 55
           }
         },
         "70": {
-          "matched": 4,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
-          }
-        },
-        "700": {
           "matched": 3,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+          }
+        },
+        "700": {
+          "matched": 1,
+          "source_matched": {
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
         "702": {
@@ -2145,9 +2083,9 @@
           }
         },
         "73": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "74": {
@@ -2181,9 +2119,9 @@
           }
         },
         "78": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "780": {
@@ -2205,10 +2143,10 @@
           }
         },
         "8": {
-          "matched": 64,
+          "matched": 54,
           "source_matched": {
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 63
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 53
           }
         },
         "80": {
@@ -2224,9 +2162,9 @@
           }
         },
         "81": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "82": {
@@ -2278,21 +2216,21 @@
           }
         },
         "86": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "861": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "87": {
-          "matched": 2,
+          "matched": 1,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 1
           }
         },
         "870": {
@@ -2302,9 +2240,9 @@
           }
         },
         "88": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "889": {
@@ -2314,9 +2252,9 @@
           }
         },
         "89": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "892": {
@@ -2332,15 +2270,15 @@
           }
         },
         "9": {
-          "matched": 40,
+          "matched": 36,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 40
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 36
           }
         },
         "90": {
-          "matched": 9,
+          "matched": 8,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 9
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 8
           }
         },
         "900": {
@@ -2356,9 +2294,9 @@
           }
         },
         "91": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "912": {
@@ -2374,9 +2312,9 @@
           }
         },
         "92": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
           }
         },
         "93": {
@@ -2410,15 +2348,15 @@
           }
         },
         "96": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 3
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 2
           }
         },
         "97": {
-          "matched": 5,
+          "matched": 4,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 5
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal": 4
           }
         },
         "977": {
@@ -2529,18 +2467,6 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "four four thousand two hundred thirty seconds",
-          "written_forms": {
-            "4/4 232": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
           "spoken": "four hundred fifty five four hundred fifty sixths",
           "written_forms": {
             "455 / 456": 1
@@ -2580,18 +2506,6 @@
           "spoken": "nine thousand ninety nine one thousand nine hundred ninety fifths",
           "written_forms": {
             "9,099/1995": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "ninety two thousandths",
-          "written_forms": {
-            "90 / 2000": 1
           }
         },
         {
@@ -2673,9 +2587,9 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "seven hundred sixty thousand five hundred three twenty fourths",
+          "spoken": "seven two hundred sixty three thousand three hundred sixths",
           "written_forms": {
-            "760,503/24": 1
+            "7/263 306": 1
           }
         },
         {
@@ -2685,36 +2599,60 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "seven two hundred sixty three thousand three hundred sixths",
+          "spoken": "seventy three zeroths",
           "written_forms": {
-            "7/263 306": 1
+            "73/0": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "sixty two zeroths",
+          "written_forms": {
+            "62/0": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "ten thousand nine hundred twenty five sixty one thousand nine hundred eightieths",
+          "written_forms": {
+            "10,925/61980": 1
           }
         }
       ],
-      "total": 2000,
-      "unmatched": 39,
+      "total": 1800,
+      "unmatched": 36,
       "unmatched_by_reason": {
         "no_alternative_matched": 5,
-        "unrecognized": 34,
+        "unrecognized": 31,
         "unverbalized": 0
       }
     },
     "measure": {
-      "matched": 1954,
+      "matched": 1757,
       "source_matched": {
-        "icu-measure:wide": 17,
-        "icu-rbnf:%spellout-numbering": 535,
-        "icu-rbnf:%spellout-numbering+icu-measure:wide": 678,
+        "icu-measure:wide": 14,
+        "icu-rbnf:%spellout-numbering": 480,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide": 617,
         "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 284,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 135,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 110,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 85,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 47,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 251,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 118,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 93,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 77,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 46,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 16,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 10,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 9,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 3,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 3,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-measure:wide": 1,
@@ -2722,15 +2660,15 @@
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 6,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 2,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1
       },
       "sub_keys": {
         "centimeter": {
-          "matched": 46,
+          "matched": 38,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 36,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 10
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 32,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 6
           }
         },
         "cubic-meter": {
@@ -2740,10 +2678,10 @@
           }
         },
         "foot": {
-          "matched": 63,
+          "matched": 57,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 59,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 4
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 55,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
           }
         },
         "gigabyte": {
@@ -2775,9 +2713,9 @@
           }
         },
         "horsepower": {
-          "matched": 23,
+          "matched": 17,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 23
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 17
           }
         },
         "hour": {
@@ -2787,16 +2725,16 @@
           }
         },
         "inch": {
-          "matched": 16,
+          "matched": 14,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 16
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 14
           }
         },
         "kilogram": {
-          "matched": 24,
+          "matched": 20,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 22,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 19,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
         },
         "kilohertz": {
@@ -2806,10 +2744,10 @@
           }
         },
         "kilometer": {
-          "matched": 184,
+          "matched": 169,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 138,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 36,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 126,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 33,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 6,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
@@ -2817,17 +2755,17 @@
           }
         },
         "kilometer-per-hour": {
-          "matched": 23,
+          "matched": 20,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 20,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 17,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-measure:wide": 1
           }
         },
         "kilowatt": {
-          "matched": 17,
+          "matched": 14,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 17
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 14
           }
         },
         "megabyte": {
@@ -2852,19 +2790,13 @@
           }
         },
         "meter": {
-          "matched": 121,
+          "matched": 115,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 88,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 26,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 86,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 22,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-measure:wide": 1,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
-          }
-        },
-        "meter-per-second": {
-          "matched": 1,
-          "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
         },
         "micrometer": {
@@ -2874,19 +2806,18 @@
           }
         },
         "mile": {
-          "matched": 55,
+          "matched": 45,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 34,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 19,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 26,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 17,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
         },
         "mile-per-hour": {
-          "matched": 30,
+          "matched": 26,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 20,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 17,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 7,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
@@ -2912,9 +2843,9 @@
           }
         },
         "millimeter": {
-          "matched": 95,
+          "matched": 91,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 84,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 80,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 9,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 2
           }
@@ -2938,45 +2869,44 @@
           }
         },
         "per-second": {
-          "matched": 4,
+          "matched": 3,
           "source_matched": {
-            "icu-measure:wide": 4
+            "icu-measure:wide": 3
           }
         },
         "per-square-kilometer": {
-          "matched": 124,
+          "matched": 105,
           "source_matched": {
-            "icu-measure:wide": 9,
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
+            "icu-measure:wide": 7,
             "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 5,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 108,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 92,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 1
           }
         },
         "per-square-mile": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
             "icu-measure:wide": 1,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 2
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 1
           }
         },
         "percent": {
-          "matched": 930,
+          "matched": 832,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering": 535,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 284,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 85,
+            "icu-rbnf:%spellout-numbering": 480,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering": 251,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 77,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 10,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US": 9,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering": 11,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 3,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": 2,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 1
           }
         },
         "pound": {
-          "matched": 14,
+          "matched": 13,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 12,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 11,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
@@ -2988,9 +2918,9 @@
           }
         },
         "square-kilometer": {
-          "matched": 65,
+          "matched": 64,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 24,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 23,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 12,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 20,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
@@ -3000,18 +2930,18 @@
           }
         },
         "square-meter": {
-          "matched": 9,
+          "matched": 8,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 8,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 7,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
         },
         "square-mile": {
-          "matched": 25,
+          "matched": 23,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 10,
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 9,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide": 4,
-            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 10,
+            "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide": 9,
             "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-measure:wide": 1
           }
         },
@@ -3028,9 +2958,9 @@
           }
         },
         "yard": {
-          "matched": 3,
+          "matched": 2,
           "source_matched": {
-            "icu-rbnf:%spellout-numbering+icu-measure:wide": 3
+            "icu-rbnf:%spellout-numbering+icu-measure:wide": 2
           }
         }
       },
@@ -3270,33 +3200,33 @@
             "unrecognized": 1,
             "unverbalized": 0
           },
-          "spoken": "one thousand meters",
+          "spoken": "one thousand one hundred c c",
           "written_forms": {
-            "1 000 m": 1
+            "1,100 cm3": 1
           }
         }
       ],
-      "total": 2000,
-      "unmatched": 46,
+      "total": 1800,
+      "unmatched": 43,
       "unmatched_by_reason": {
         "no_alternative_matched": 2,
-        "unrecognized": 44,
+        "unrecognized": 41,
         "unverbalized": 0
       }
     },
     "money": {
-      "matched": 1916,
+      "matched": 1721,
       "source_matched": {
         "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 1,
-        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 443,
+        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 401,
         "icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 160,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 28,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 143,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 27,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 4,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 3,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 2,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 1,
-        "icu-rbnf:%spellout-numbering+lexical:en_US": 1237,
-        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 37
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 1109,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 31
       },
       "sub_keys": {},
       "top_unmatched": [
@@ -3334,18 +3264,6 @@
           "spoken": "eight thousand five hundred billion rupees",
           "written_forms": {
             "Rs 8,500 bn": 1
-          }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "eight won",
-          "written_forms": {
-            "8 won": 1
           }
         },
         {
@@ -3539,21 +3457,33 @@
           "written_forms": {
             "SHP-1": 1
           }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 1,
+            "unverbalized": 0
+          },
+          "spoken": "minus one samoan talas",
+          "written_forms": {
+            "WST-1": 1
+          }
         }
       ],
-      "total": 2000,
-      "unmatched": 84,
+      "total": 1800,
+      "unmatched": 79,
       "unmatched_by_reason": {
         "no_alternative_matched": 4,
-        "unrecognized": 80,
+        "unrecognized": 75,
         "unverbalized": 0
       }
     },
     "ordinal": {
-      "matched": 1994,
+      "matched": 1794,
       "source_matched": {
-        "icu-rbnf:%spellout-ordinal": 1761,
-        "lexical:en_US+icu-rbnf:%spellout-ordinal": 228,
+        "icu-rbnf:%spellout-ordinal": 1585,
+        "lexical:en_US+icu-rbnf:%spellout-ordinal": 204,
         "lexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US": 5
       },
       "sub_keys": {},
@@ -3595,7 +3525,7 @@
           }
         }
       ],
-      "total": 2000,
+      "total": 1800,
       "unmatched": 6,
       "unmatched_by_reason": {
         "no_alternative_matched": 2,
@@ -3604,15 +3534,15 @@
       }
     },
     "symbol": {
-      "matched": 3286,
+      "matched": 2961,
       "source_matched": {
-        "cldr-symbol:and": 237,
+        "cldr-symbol:and": 206,
         "cldr-symbol:dollar": 3,
         "cldr-symbol:hash": 1,
-        "cldr-symbol:number": 35,
+        "cldr-symbol:number": 29,
         "cldr-symbol:tilde": 2,
-        "icu-name:letter": 318,
-        "surface:silence": 2690
+        "icu-name:letter": 279,
+        "surface:silence": 2441
       },
       "sub_keys": {
         "Arab": {
@@ -3622,28 +3552,28 @@
           }
         },
         "Cyrl": {
-          "matched": 597,
+          "matched": 587,
           "source_matched": {
-            "surface:silence": 597
+            "surface:silence": 587
           }
         },
         "Grek": {
-          "matched": 319,
+          "matched": 280,
           "source_matched": {
-            "icu-name:letter": 318,
+            "icu-name:letter": 279,
             "surface:silence": 1
           }
         },
         "Hang": {
-          "matched": 19,
+          "matched": 13,
           "source_matched": {
-            "surface:silence": 19
+            "surface:silence": 13
           }
         },
         "Hani": {
-          "matched": 75,
+          "matched": 49,
           "source_matched": {
-            "surface:silence": 75
+            "surface:silence": 49
           }
         },
         "Hebr": {
@@ -3653,9 +3583,9 @@
           }
         },
         "Hira": {
-          "matched": 13,
+          "matched": 9,
           "source_matched": {
-            "surface:silence": 13
+            "surface:silence": 9
           }
         },
         "Kana": {
@@ -3677,10 +3607,10 @@
           }
         },
         "U+0023": {
-          "matched": 36,
+          "matched": 30,
           "source_matched": {
             "cldr-symbol:hash": 1,
-            "cldr-symbol:number": 35
+            "cldr-symbol:number": 29
           }
         },
         "U+0024": {
@@ -3690,39 +3620,39 @@
           }
         },
         "U+0026": {
-          "matched": 237,
+          "matched": 206,
           "source_matched": {
-            "cldr-symbol:and": 237
+            "cldr-symbol:and": 206
           }
         },
         "U+0027": {
-          "matched": 19,
+          "matched": 17,
           "source_matched": {
-            "surface:silence": 19
+            "surface:silence": 17
           }
         },
         "U+0029": {
-          "matched": 126,
+          "matched": 114,
           "source_matched": {
-            "surface:silence": 126
+            "surface:silence": 114
           }
         },
         "U+002C": {
-          "matched": 462,
+          "matched": 406,
           "source_matched": {
-            "surface:silence": 462
+            "surface:silence": 406
           }
         },
         "U+002D": {
-          "matched": 259,
+          "matched": 224,
           "source_matched": {
-            "surface:silence": 259
+            "surface:silence": 224
           }
         },
         "U+002E": {
-          "matched": 841,
+          "matched": 763,
           "source_matched": {
-            "surface:silence": 841
+            "surface:silence": 763
           }
         },
         "U+002F": {
@@ -3732,15 +3662,15 @@
           }
         },
         "U+003A": {
-          "matched": 78,
+          "matched": 67,
           "source_matched": {
-            "surface:silence": 78
+            "surface:silence": 67
           }
         },
         "U+003B": {
-          "matched": 23,
+          "matched": 15,
           "source_matched": {
-            "surface:silence": 23
+            "surface:silence": 15
           }
         },
         "U+003F": {
@@ -3768,61 +3698,59 @@
           }
         },
         "U+2014": {
-          "matched": 9,
+          "matched": 8,
           "source_matched": {
-            "surface:silence": 9
+            "surface:silence": 8
           }
         }
       },
       "top_unmatched": [
         {
-          "count": 443,
+          "count": 405,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 443,
+            "unrecognized": 405,
             "unverbalized": 0
           },
           "spoken": "",
           "written_forms": {
-            "\"": 289,
-            "(": 134,
-            "Ī": 1,
+            "\"": 269,
+            "(": 122,
             "Ś": 1,
-            "ǀ": 1,
-            "ʻ": 4,
-            "ʼ": 2,
+            "ʻ": 2,
+            "ʼ": 1,
             "Ḳ": 1,
             "ầ": 2,
             "ẫ": 1,
             "ễ": 1,
-            "ợ": 2,
+            "ợ": 1,
             "ứ": 3,
             "ー": 1
           }
         },
         {
-          "count": 77,
+          "count": 60,
           "reasons": {
             "no_alternative_matched": 0,
-            "unrecognized": 77,
+            "unrecognized": 60,
             "unverbalized": 0
           },
           "spoken": "p p",
           "written_forms": {
-            "pp": 77
+            "pp": 60
           }
         },
         {
-          "count": 26,
+          "count": 22,
           "reasons": {
-            "no_alternative_matched": 26,
+            "no_alternative_matched": 22,
             "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "lambda",
           "written_forms": {
             "Λ": 1,
-            "λ": 25
+            "λ": 21
           }
         },
         {
@@ -3848,19 +3776,6 @@
           "written_forms": {
             "Pg": 1,
             "pg": 11
-          }
-        },
-        {
-          "count": 9,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 9,
-            "unverbalized": 0
-          },
-          "spoken": "t h",
-          "written_forms": {
-            "Th": 2,
-            "th": 7
           }
         },
         {
@@ -3890,6 +3805,19 @@
         {
           "count": 8,
           "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 8,
+            "unverbalized": 0
+          },
+          "spoken": "t h",
+          "written_forms": {
+            "Th": 1,
+            "th": 7
+          }
+        },
+        {
+          "count": 8,
+          "reasons": {
             "no_alternative_matched": 8,
             "unrecognized": 0,
             "unverbalized": 0
@@ -3900,29 +3828,16 @@
           }
         },
         {
-          "count": 6,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 6,
-            "unverbalized": 0
-          },
-          "spoken": "p t",
-          "written_forms": {
-            "Pt": 4,
-            "pt": 2
-          }
-        },
-        {
           "count": 5,
           "reasons": {
             "no_alternative_matched": 0,
             "unrecognized": 5,
             "unverbalized": 0
           },
-          "spoken": "p h",
+          "spoken": "p t",
           "written_forms": {
-            "Ph": 4,
-            "pH": 1
+            "Pt": 4,
+            "pt": 1
           }
         },
         {
@@ -3932,9 +3847,10 @@
             "unrecognized": 4,
             "unverbalized": 0
           },
-          "spoken": "c f",
+          "spoken": "p h",
           "written_forms": {
-            "cf": 4
+            "Ph": 3,
+            "pH": 1
           }
         },
         {
@@ -3948,18 +3864,6 @@
           "written_forms": {
             "Tr": 3,
             "tr": 1
-          }
-        },
-        {
-          "count": 3,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
-            "unverbalized": 0
-          },
-          "spoken": "f f",
-          "written_forms": {
-            "ff": 3
           }
         },
         {
@@ -4006,19 +3910,6 @@
             "unrecognized": 3,
             "unverbalized": 0
           },
-          "spoken": "p h d",
-          "written_forms": {
-            "PhD": 2,
-            "Phd": 1
-          }
-        },
-        {
-          "count": 3,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 3,
-            "unverbalized": 0
-          },
           "spoken": "w h",
           "written_forms": {
             "Wh": 1,
@@ -4036,44 +3927,81 @@
           "written_forms": {
             "Bcl": 2
           }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "c f",
+          "written_forms": {
+            "cf": 2
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "h r s g",
+          "written_forms": {
+            "Hrsg": 1,
+            "hrsg": 1
+          }
+        },
+        {
+          "count": 2,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 2,
+            "unverbalized": 0
+          },
+          "spoken": "p h d",
+          "written_forms": {
+            "PhD": 2
+          }
         }
       ],
-      "total": 4000,
-      "unmatched": 714,
+      "total": 3600,
+      "unmatched": 639,
       "unmatched_by_reason": {
-        "no_alternative_matched": 48,
-        "unrecognized": 666,
+        "no_alternative_matched": 44,
+        "unrecognized": 595,
         "unverbalized": 0
       }
     },
     "time": {
-      "matched": 1971,
+      "matched": 1775,
       "source_matched": {
-        "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units": 86,
-        "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US": 70,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 761,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 256,
-        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 50,
-        "icu-rbnf:%spellout-numbering+lexical:en_US": 143,
-        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 81,
-        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+surface:letters": 27,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units": 77,
+        "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US": 65,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 694,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters": 229,
+        "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 45,
+        "icu-rbnf:%spellout-numbering+lexical:en_US": 127,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering": 74,
+        "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+surface:letters": 22,
         "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 4,
-        "icu-rbnf:%spellout-numbering+lexical:en_US+surface:letters": 22,
-        "icu-rbnf:%spellout-numbering+surface:letters": 434,
-        "icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 37
+        "icu-rbnf:%spellout-numbering+lexical:en_US+surface:letters": 21,
+        "icu-rbnf:%spellout-numbering+surface:letters": 385,
+        "icu-rbnf:%spellout-numbering+surface:letters+surface:letters": 32
       },
       "sub_keys": {},
       "top_unmatched": [
         {
-          "count": 4,
+          "count": 3,
           "reasons": {
-            "no_alternative_matched": 4,
+            "no_alternative_matched": 3,
             "unrecognized": 0,
             "unverbalized": 0
           },
           "spoken": "two p m",
           "written_forms": {
-            "PM2": 4
+            "PM2": 3
           }
         },
         {
@@ -4091,18 +4019,6 @@
         {
           "count": 2,
           "reasons": {
-            "no_alternative_matched": 2,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "three a m",
-          "written_forms": {
-            "AM3": 2
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
             "no_alternative_matched": 0,
             "unrecognized": 2,
             "unverbalized": 0
@@ -4111,18 +4027,6 @@
           "written_forms": {
             "00:00 am": 1,
             "12 A M": 1
-          }
-        },
-        {
-          "count": 2,
-          "reasons": {
-            "no_alternative_matched": 2,
-            "unrecognized": 0,
-            "unverbalized": 0
-          },
-          "spoken": "twenty four hundred",
-          "written_forms": {
-            "24:00": 2
           }
         },
         {
@@ -4248,13 +4152,13 @@
         {
           "count": 1,
           "reasons": {
-            "no_alternative_matched": 0,
+            "no_alternative_matched": 1,
             "unrecognized": 0,
-            "unverbalized": 1
+            "unverbalized": 0
           },
-          "spoken": "thirteen hours forty one minutes and fifty five seconds g m t",
+          "spoken": "three a m",
           "written_forms": {
-            "13:41:55 GMT": 1
+            "AM3": 1
           }
         },
         {
@@ -4267,6 +4171,18 @@
           "spoken": "twenty four fifty seven",
           "written_forms": {
             "24: 57": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "twenty four hundred",
+          "written_forms": {
+            "24:00": 1
           }
         },
         {
@@ -4304,14 +4220,26 @@
           "written_forms": {
             "24: 22": 1
           }
+        },
+        {
+          "count": 1,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 0,
+            "unverbalized": 1
+          },
+          "spoken": "twenty three hours nine minutes and thirty four seconds g m t",
+          "written_forms": {
+            "23:09:34 GMT": 1
+          }
         }
       ],
-      "total": 2000,
-      "unmatched": 29,
+      "total": 1800,
+      "unmatched": 25,
       "unmatched_by_reason": {
-        "no_alternative_matched": 10,
+        "no_alternative_matched": 7,
         "unrecognized": 9,
-        "unverbalized": 10
+        "unverbalized": 9
       }
     }
   },
@@ -4332,7 +4260,7 @@
       "VERBATIM": "symbol"
     },
     "corpus": "google-tn:en_with_types",
-    "generated": "2026-09-24",
+    "generated": "2026-09-28",
     "license": "CC BY-SA 4.0",
     "locale": "en",
     "normalization": "Written tokens: remove trailing spaces and commas before recognition. Spoken forms and alternatives: split at characters whose Unicode general category starts with P and at whitespace recognized by str.split(), then lowercase each token independently.",
@@ -4550,18 +4478,18 @@
       ]
     },
     "row_counts": {
-      "CARDINAL": 2000,
-      "DATE": 2000,
-      "DECIMAL": 2000,
-      "DIGIT": 2000,
-      "ELECTRONIC": 2000,
-      "FRACTION": 2000,
-      "MEASURE": 2000,
-      "MONEY": 2000,
-      "ORDINAL": 2000,
-      "PUNCT": 2000,
-      "TIME": 2000,
-      "VERBATIM": 2000
+      "CARDINAL": 1800,
+      "DATE": 1800,
+      "DECIMAL": 1800,
+      "DIGIT": 1800,
+      "ELECTRONIC": 1800,
+      "FRACTION": 1800,
+      "MEASURE": 1800,
+      "MONEY": 1800,
+      "ORDINAL": 1800,
+      "PUNCT": 1800,
+      "TIME": 1800,
+      "VERBATIM": 1800
     },
     "sample_rule": {
       "first_eligible_rows_per_class_per_shard": 200,
@@ -4574,11 +4502,10 @@
         "output-00050-of-00100",
         "output-00060-of-00100",
         "output-00070-of-00100",
-        "output-00080-of-00100",
-        "output-00090-of-00100"
+        "output-00080-of-00100"
       ]
     },
-    "skipped_sentinel_rows": 2393,
+    "skipped_sentinel_rows": 2176,
     "source": "google-tn-en_with_types",
     "source_measurement": "The verbalizer deduplicates equal text in rule-set order, so a matched row is credited to the first retained source that produces its text and to the sub-key of that same reading. Source priors are disabled while measuring so the table is not measured through the ranking it drives. Shares are raw matched-source counts divided by matched rows in the selected scope, with no smoothing, confidence threshold, or other small-sample correction; each source record retains its matched count.",
     "sub_key_rules": {

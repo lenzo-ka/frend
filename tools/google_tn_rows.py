@@ -1,18 +1,23 @@
-"""What every Google-TN builder and the evaluator share: the held-out shards and the
+"""What every Google-TN builder and the evaluator share: the corpus's split and the
 running-text triple.
 
-Two shards of the en_with_types corpus are never counted by a shipped table:
+The en_with_types corpus's README splits its 100 shards into three pools, named here:
 
-* ``output-00099-of-00100``, the published test shard (Sproat & Jaitly 2016 test on
-  its first 100,000 lines), which ``tools/evaluate_google_tn.py`` reports; and
-* ``output-00095-of-00100``, the held-out shard a change is accepted and selected on
-  (``--held-out-shard``).
+* :data:`TRAINING_SHARDS`, ``output-00000-of-00100`` .. ``output-00089-of-00100``:
+  the only shards a shipped table counts;
+* :data:`RUNTIME_EVAL_SHARDS`, ``output-00090-of-00100`` .. ``output-00094-of-00100``:
+  held out, a second pool to measure on; and
+* :data:`TEST_SHARDS`, ``output-00095-of-00100`` .. ``output-00099-of-00100``: held
+  out. Shard 99 is the published test shard (Sproat & Jaitly 2016 test on its first
+  100,000 lines), which ``tools/evaluate_google_tn.py`` reports; shard 95 is the one a
+  change is accepted and selected on (``--held-out-shard``).
 
-Every builder reads its shards through :func:`training_shards`, so neither can reach
-a table however the builder slices the corpus. :func:`corpus_label` names the corpus a
-table records, from the directory the builder read. :func:`running_text` is the one
-number, separator, number predicate the evaluator scores (and the planned range builder
-will count).
+:data:`HELD_OUT_SHARDS` is the runtime-eval and test pools together. Every builder reads
+its shards through :func:`training_shards`, so no held-out shard can reach a table
+however the builder slices the corpus. :func:`corpus_label` names the corpus a table
+records, from the directory the builder read. :func:`running_text` is the one number,
+separator, number predicate the evaluator scores (and the planned range builder will
+count).
 """
 
 from __future__ import annotations
@@ -20,7 +25,39 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-HELD_OUT_SHARDS = frozenset({"output-00095-of-00100", "output-00099-of-00100"})
+
+def _pool(first: int, last: int) -> frozenset[str]:
+    return frozenset(f"output-{index:05d}-of-00100" for index in range(first, last + 1))
+
+
+# The corpus README's split: training 00-89, runtime eval 90-94, test 95-99.
+TRAINING_SHARDS = _pool(0, 89)
+RUNTIME_EVAL_SHARDS = _pool(90, 94)
+TEST_SHARDS = _pool(95, 99)
+HELD_OUT_SHARDS = RUNTIME_EVAL_SHARDS | TEST_SHARDS
+
+
+_FULL_SUFFIX = "-of-00100"
+
+
+def full_training_set(paths: Iterable[Path]) -> list[Path] | None:
+    """For the full 100-shard corpus, its training shards in order, refusing a partial
+    listing (a missing shard, or a stalled mount that lists only some): a table built
+    from fewer shards than it names would be silently wrong. ``None`` for any other
+    corpus (a fixture), whose shards are taken as found."""
+    paths = [Path(path) for path in paths]
+    if not any(path.name.endswith(_FULL_SUFFIX) for path in paths):
+        return None
+    by_name = {path.name: path for path in paths}
+    missing = sorted(TRAINING_SHARDS - by_name.keys())
+    if len(missing) == len(TRAINING_SHARDS):
+        raise FileNotFoundError("no training shards in the corpus (only held-out ones)")
+    if missing:
+        raise FileNotFoundError(
+            f"{len(missing)} training shard(s) missing, first {missing[0]}; "
+            "refusing to build from a partial corpus"
+        )
+    return [by_name[name] for name in sorted(TRAINING_SHARDS)]
 
 
 def corpus_label(corpus_dir: Path) -> str:
@@ -31,7 +68,8 @@ def corpus_label(corpus_dir: Path) -> str:
 
 
 def training_shards(paths: Iterable[Path]) -> list[Path]:
-    """``paths`` in order, less any shard whose name is in :data:`HELD_OUT_SHARDS`."""
+    """``paths`` in order, less any shard whose name is in :data:`HELD_OUT_SHARDS` (a
+    shard of another split, such as a fixture's ``output-00000-of-00002``, is kept)."""
     return [path for path in paths if Path(path).name not in HELD_OUT_SHARDS]
 
 

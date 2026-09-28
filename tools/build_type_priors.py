@@ -61,7 +61,7 @@ def _ensure_repo_importable() -> None:
 _ensure_repo_importable()
 if str(Path(__file__).resolve().parent) not in sys.path:  # tools/, for google_tn_rows
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-from google_tn_rows import corpus_label, training_shards  # noqa: E402
+from google_tn_rows import corpus_label, full_training_set, training_shards  # noqa: E402
 
 from frend.shape import is_single_uppercase  # noqa: E402
 
@@ -110,8 +110,8 @@ _GOOGLE_TN_NOTE = (
     "backfill and blend are a separate later pass. Single Unicode-Lu letter "
     "surfaces lift the digit filter and class drops so their distribution includes "
     "the corpus's LETTERS and PLAIN classifications; per-letter counts are recorded "
-    "separately; the held-out running-text (95) and published test (99) shards are not "
-    "counted"
+    "separately; only the corpus README's training shards (00-89) are counted, the "
+    "runtime-eval (90-94) and test (95-99) shards are held out"
 )
 
 _GOOGLE_TN_PROFILE: dict[str, str] = {
@@ -178,9 +178,11 @@ def _google_tn_file_pairs(path: Path) -> Iterator[tuple[str, str]]:
 
 def _google_tn_files(corpus_dir: Path) -> list[Path]:
     """The sorted ``output-NNNNN-of-NNNNN`` shards under ``corpus_dir``, less the
-    held-out shards (``tools/google_tn_rows.py``): the serial stream, the parallel
+    held-out shards 90-99 (``tools/google_tn_rows.py``): the serial stream, the parallel
     file list and a fixture build all read their shards here."""
-    files = training_shards(sorted(corpus_dir.glob("output-*-of-*")))
+    listed = sorted(corpus_dir.glob("output-*-of-*"))
+    full = full_training_set(listed)
+    files = full if full is not None else training_shards(listed)
     if not files:
         raise FileNotFoundError(
             f"no Google-TN corpus shards (output-*-of-*) under {corpus_dir}; "
