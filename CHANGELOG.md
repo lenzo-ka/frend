@@ -1,6 +1,39 @@
 # Changelog
 
 ## Unreleased
+- Read abbreviations as running text writes them. icukit's lexicon lists "Mr.", "St.",
+  "vol."; the corpus writes "mr", "st", "Vol". `frend.abbreviation_variants` derives each
+  lexicon abbreviation's period-less, ICU lower-case and ICU title-case forms (from the
+  135 surfaces ending in "." with a lowercase letter, no inner period and more than one
+  letter, so "IN", "OK" and "p." make none; a form that is itself a lexicon surface is
+  left to it) and `AbbreviationVariantDetector` reads them ("abbreviation:variant"), in
+  the evaluator's profile (`reading_detectors`). A variant is spoken as its lexicon
+  expansions and as written, and every abbreviation reading, a variant's or an exact
+  lexicon surface's ("St."), is ranked by a new measured table,
+  `data/en/abbreviation_priors.json` (`tools/build_abbreviation_priors.py`, every tenth
+  training shard): how the corpus says each key (the ICU lower case less one trailing
+  period) by its written case (lower, title, upper), blended toward the key at the spoken
+  priors' strength. The corpus writes no key with a period and 23 keys (st, dr, mr, ...)
+  never in title case, so "Mr" ranks by `mr` (mister 8,621 of 8,756). So "Mr McVeigh"
+  reads "mister mcveigh", "st Paul" "saint paul", "Vol 3" "volume three", "ltd"
+  "limited", while "no", "sat", "Mrs" and "miss" stay as written first (the corpus says
+  them so) with the expansion kept. An all-capitals form is still a letter run, spelled
+  first ("MR" m r), and is now also offered its expansions after the letters ("mister");
+  which should lead is left to context. A dotted chain is spelled in any case ("e.g." e
+  g, "j.r.r." j r r: the corpus spells every chain it writes, "e.g." 2,432 of 2,437
+  lower rows), and a chain in another case borrows the lexicon's expansions ("E.G." for
+  example, after the letters). Published first choice (shard 99) 99.05% becomes 99.16%
+  (+99 tokens: PLAIN +95, LETTERS +4), any reading 99.27% becomes 99.38%, sentences
+  90.23% become 91.30%; held-out shard 95 first choice 99.07% becomes 99.17% (+94:
+  PLAIN +89, LETTERS +5), any reading 99.28% becomes 99.39%, sentences 90.79% become
+  91.79%; no token loses its first choice or its any-reading match on either shard, and
+  running text is unchanged. ARCTIC's own profile reads the same graphs until
+  `build_graphs-P4.patch` adds the variant reader; with it, the seven "Mr"/"Mrs" prompts
+  gain their spoken reading (909 of 909 known readings), 77 graphs gain a branch, total
+  paths 4,248 become 4,586 and the largest graph stays at 216 paths.
+- Ship nothing derived from an LDC corpus: a test checks that no file under
+  `frend/data/` names an `ldc/` corpus in its provenance (kal: every `ldc/*` store id is
+  internal-only for frend).
 - Train on the corpus's own split. The en_with_types README splits its 100 shards
   training 00-89, runtime eval 90-94 and test 95-99; `tools/google_tn_rows.py` now
   names the three pools (`TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`), and

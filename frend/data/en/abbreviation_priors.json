@@ -1,0 +1,1599 @@
+{
+  "keys": {
+    "a.d": {
+      "upper": {
+        "spelled": 532
+      }
+    },
+    "a.m": {
+      "lower": {
+        "spelled": 2
+      },
+      "upper": {
+        "spelled": 391
+      }
+    },
+    "adm": {
+      "lower": {
+        "spelled": 1
+      },
+      "title": {
+        "spelled": 60
+      },
+      "upper": {
+        "spelled": 84
+      }
+    },
+    "al": {
+      "lower": {
+        "as-written": 25142
+      },
+      "title": {
+        "as-written": 7960
+      },
+      "upper": {
+        "as-written": 837,
+        "spelled": 21
+      }
+    },
+    "ala": {
+      "lower": {
+        "as-written": 37
+      },
+      "title": {
+        "as-written": 186
+      },
+      "upper": {
+        "as-written": 86
+      }
+    },
+    "approx": {
+      "lower": {
+        "as-written": 454
+      },
+      "title": {
+        "as-written": 21
+      },
+      "upper": {
+        "as-written": 1
+      }
+    },
+    "apr": {
+      "lower": {
+        "april": 47
+      },
+      "title": {
+        "april": 50
+      },
+      "upper": {
+        "april": 34,
+        "spelled": 4
+      }
+    },
+    "apt": {
+      "lower": {
+        "as-written": 62
+      },
+      "title": {
+        "as-written": 45
+      },
+      "upper": {
+        "as-written": 55,
+        "spelled": 1
+      }
+    },
+    "ariz": {
+      "lower": {
+        "as-written": 1
+      },
+      "title": {
+        "as-written": 56
+      },
+      "upper": {
+        "as-written": 1
+      }
+    },
+    "ark": {
+      "lower": {
+        "as-written": 37
+      },
+      "title": {
+        "as-written": 382
+      },
+      "upper": {
+        "as-written": 30,
+        "spelled": 1
+      }
+    },
+    "assn": {
+      "lower": {
+        "spelled": 1
+      },
+      "title": {
+        "spelled": 36
+      },
+      "upper": {
+        "spelled": 1
+      }
+    },
+    "aug": {
+      "lower": {
+        "as-written": 2
+      },
+      "title": {
+        "as-written": 125
+      },
+      "upper": {
+        "as-written": 24
+      }
+    },
+    "ave": {
+      "lower": {
+        "avenue": 183
+      },
+      "title": {
+        "as-written": 56,
+        "avenue": 149
+      },
+      "upper": {
+        "avenue": 20,
+        "spelled": 1
+      }
+    },
+    "b.c": {
+      "upper": {
+        "spelled": 578
+      }
+    },
+    "bldg": {
+      "lower": {
+        "building": 29
+      },
+      "upper": {
+        "building": 3
+      }
+    },
+    "blvd": {
+      "lower": {
+        "boulevard": 261
+      },
+      "upper": {
+        "boulevard": 3
+      }
+    },
+    "bros": {
+      "lower": {
+        "brothers": 1108
+      },
+      "title": {
+        "brothers": 161
+      },
+      "upper": {
+        "brothers": 3
+      }
+    },
+    "ca": {
+      "title": {
+        "spelled": 2
+      },
+      "upper": {
+        "spelled": 2432
+      }
+    },
+    "calif": {
+      "title": {
+        "as-written": 363
+      }
+    },
+    "capt": {
+      "lower": {
+        "as-written": 44
+      },
+      "title": {
+        "as-written": 774
+      },
+      "upper": {
+        "as-written": 16
+      }
+    },
+    "cf": {
+      "lower": {
+        "spelled": 443
+      },
+      "title": {
+        "spelled": 43
+      },
+      "upper": {
+        "spelled": 369
+      }
+    },
+    "ch": {
+      "lower": {
+        "spelled": 462
+      },
+      "title": {
+        "spelled": 649
+      },
+      "upper": {
+        "spelled": 533
+      }
+    },
+    "chas": {
+      "title": {
+        "as-written": 143
+      },
+      "upper": {
+        "as-written": 1
+      }
+    },
+    "cir": {
+      "lower": {
+        "circle": 308
+      },
+      "title": {
+        "circle": 7
+      },
+      "upper": {
+        "circle": 9,
+        "spelled": 1
+      }
+    },
+    "cmdr": {
+      "lower": {
+        "spelled": 1
+      },
+      "title": {
+        "spelled": 40
+      }
+    },
+    "co": {
+      "lower": {
+        "as-written": 11951
+      },
+      "title": {
+        "as-written": 15717
+      },
+      "upper": {
+        "spelled": 757
+      }
+    },
+    "col": {
+      "lower": {
+        "as-written": 1589,
+        "colonel": 15
+      },
+      "title": {
+        "as-written": 200,
+        "colonel": 129
+      },
+      "upper": {
+        "as-written": 11,
+        "colonel": 8,
+        "spelled": 38
+      }
+    },
+    "colo": {
+      "lower": {
+        "as-written": 4
+      },
+      "title": {
+        "as-written": 161
+      },
+      "upper": {
+        "as-written": 4
+      }
+    },
+    "conn": {
+      "lower": {
+        "as-written": 2
+      },
+      "title": {
+        "as-written": 363
+      },
+      "upper": {
+        "as-written": 3
+      }
+    },
+    "corp": {
+      "lower": {
+        "as-written": 23
+      },
+      "title": {
+        "as-written": 1629
+      },
+      "upper": {
+        "as-written": 22
+      }
+    },
+    "cpl": {
+      "lower": {
+        "corporal": 77,
+        "spelled": 3
+      },
+      "upper": {
+        "corporal": 45
+      }
+    },
+    "ct": {
+      "lower": {
+        "court": 198,
+        "spelled": 13
+      },
+      "upper": {
+        "spelled": 896
+      }
+    },
+    "dec": {
+      "lower": {
+        "as-written": 14
+      },
+      "title": {
+        "as-written": 145
+      },
+      "upper": {
+        "as-written": 104,
+        "spelled": 3
+      }
+    },
+    "del": {
+      "lower": {
+        "as-written": 7218
+      },
+      "title": {
+        "as-written": 1438
+      },
+      "upper": {
+        "as-written": 137,
+        "spelled": 6
+      }
+    },
+    "dept": {
+      "lower": {
+        "department": 575
+      },
+      "title": {
+        "department": 154
+      },
+      "upper": {
+        "department": 2
+      }
+    },
+    "dr": {
+      "lower": {
+        "doctor": 11075,
+        "drive": 142,
+        "spelled": 50
+      },
+      "upper": {
+        "doctor": 436,
+        "drive": 256,
+        "spelled": 108
+      }
+    },
+    "e.g": {
+      "lower": {
+        "as-written": 5,
+        "spelled": 2432
+      },
+      "title": {
+        "as-written": 1,
+        "spelled": 93
+      },
+      "upper": {
+        "as-written": 2,
+        "spelled": 81
+      }
+    },
+    "e.u": {
+      "upper": {
+        "spelled": 13
+      }
+    },
+    "ed": {
+      "lower": {
+        "as-written": 40829
+      },
+      "title": {
+        "as-written": 4997
+      },
+      "upper": {
+        "as-written": 225,
+        "spelled": 38
+      }
+    },
+    "eds": {
+      "lower": {
+        "spelled": 7448
+      },
+      "title": {
+        "spelled": 1117
+      },
+      "upper": {
+        "spelled": 39
+      }
+    },
+    "esq": {
+      "lower": {
+        "spelled": 31
+      },
+      "title": {
+        "spelled": 645
+      },
+      "upper": {
+        "spelled": 5
+      }
+    },
+    "etc": {
+      "lower": {
+        "other": 5176,
+        "spelled": 2
+      },
+      "title": {
+        "other": 141
+      },
+      "upper": {
+        "other": 45
+      }
+    },
+    "feb": {
+      "lower": {
+        "as-written": 74
+      },
+      "title": {
+        "as-written": 76
+      },
+      "upper": {
+        "as-written": 8,
+        "spelled": 1
+      }
+    },
+    "fig": {
+      "lower": {
+        "as-written": 256
+      },
+      "title": {
+        "as-written": 184
+      },
+      "upper": {
+        "as-written": 47
+      }
+    },
+    "fla": {
+      "lower": {
+        "spelled": 2
+      },
+      "title": {
+        "spelled": 148
+      },
+      "upper": {
+        "spelled": 16
+      }
+    },
+    "fri": {
+      "lower": {
+        "as-written": 11,
+        "friday": 2
+      },
+      "title": {
+        "as-written": 18
+      },
+      "upper": {
+        "as-written": 3
+      }
+    },
+    "ft": {
+      "lower": {
+        "spelled": 42
+      },
+      "title": {
+        "spelled": 375
+      },
+      "upper": {
+        "spelled": 188
+      }
+    },
+    "ga": {
+      "lower": {
+        "as-written": 214
+      },
+      "title": {
+        "as-written": 253
+      },
+      "upper": {
+        "as-written": 444,
+        "spelled": 24
+      }
+    },
+    "gen": {
+      "lower": {
+        "as-written": 265
+      },
+      "title": {
+        "as-written": 1099
+      },
+      "upper": {
+        "as-written": 29,
+        "spelled": 2
+      }
+    },
+    "geo": {
+      "lower": {
+        "as-written": 60
+      },
+      "title": {
+        "as-written": 287
+      },
+      "upper": {
+        "as-written": 63,
+        "spelled": 5
+      }
+    },
+    "gov": {
+      "lower": {
+        "as-written": 20
+      },
+      "title": {
+        "as-written": 409
+      },
+      "upper": {
+        "as-written": 44,
+        "spelled": 1
+      }
+    },
+    "hon": {
+      "lower": {
+        "as-written": 50
+      },
+      "title": {
+        "as-written": 1229
+      },
+      "upper": {
+        "as-written": 11
+      }
+    },
+    "hwy": {
+      "lower": {
+        "spelled": 2
+      },
+      "title": {
+        "spelled": 113
+      },
+      "upper": {
+        "spelled": 4
+      }
+    },
+    "i.e": {
+      "lower": {
+        "as-written": 5,
+        "spelled": 1663
+      },
+      "title": {
+        "as-written": 3,
+        "spelled": 13
+      },
+      "upper": {
+        "as-written": 1,
+        "spelled": 14
+      }
+    },
+    "ill": {
+      "lower": {
+        "as-written": 1996
+      },
+      "title": {
+        "as-written": 344
+      },
+      "upper": {
+        "as-written": 20
+      }
+    },
+    "inc": {
+      "lower": {
+        "as-written": 15768
+      },
+      "title": {
+        "as-written": 1204
+      },
+      "upper": {
+        "as-written": 115,
+        "spelled": 8
+      }
+    },
+    "ind": {
+      "lower": {
+        "spelled": 22
+      },
+      "title": {
+        "spelled": 118
+      },
+      "upper": {
+        "spelled": 55
+      }
+    },
+    "jan": {
+      "lower": {
+        "as-written": 29
+      },
+      "title": {
+        "as-written": 3228
+      },
+      "upper": {
+        "as-written": 22,
+        "spelled": 1
+      }
+    },
+    "jr": {
+      "lower": {
+        "junior": 7551,
+        "spelled": 4
+      },
+      "upper": {
+        "junior": 881,
+        "spelled": 5
+      }
+    },
+    "jul": {
+      "lower": {
+        "as-written": 30
+      },
+      "title": {
+        "as-written": 115
+      },
+      "upper": {
+        "spelled": 3
+      }
+    },
+    "jun": {
+      "lower": {
+        "as-written": 74
+      },
+      "title": {
+        "as-written": 582
+      },
+      "upper": {
+        "as-written": 4
+      }
+    },
+    "kan": {
+      "lower": {
+        "as-written": 120
+      },
+      "title": {
+        "as-written": 237
+      },
+      "upper": {
+        "as-written": 5
+      }
+    },
+    "ky": {
+      "upper": {
+        "spelled": 313
+      }
+    },
+    "la": {
+      "lower": {
+        "as-written": 13081
+      },
+      "title": {
+        "as-written": 13586
+      },
+      "upper": {
+        "spelled": 1727
+      }
+    },
+    "ln": {
+      "lower": {
+        "lane": 32,
+        "spelled": 10
+      },
+      "upper": {
+        "lane": 57,
+        "spelled": 17
+      }
+    },
+    "lt": {
+      "lower": {
+        "spelled": 37
+      },
+      "title": {
+        "spelled": 1848
+      },
+      "upper": {
+        "spelled": 155
+      }
+    },
+    "ltd": {
+      "lower": {
+        "limited": 10476,
+        "spelled": 46
+      },
+      "upper": {
+        "limited": 110,
+        "spelled": 2
+      }
+    },
+    "maj": {
+      "lower": {
+        "as-written": 31
+      },
+      "title": {
+        "as-written": 700
+      },
+      "upper": {
+        "as-written": 10
+      }
+    },
+    "mar": {
+      "lower": {
+        "as-written": 58
+      },
+      "title": {
+        "as-written": 746
+      },
+      "upper": {
+        "as-written": 22,
+        "spelled": 1
+      }
+    },
+    "mass": {
+      "lower": {
+        "as-written": 3539
+      },
+      "title": {
+        "as-written": 2252
+      },
+      "upper": {
+        "as-written": 24,
+        "spelled": 9
+      }
+    },
+    "max": {
+      "lower": {
+        "as-written": 131
+      },
+      "title": {
+        "as-written": 4146
+      },
+      "upper": {
+        "as-written": 157,
+        "spelled": 5
+      }
+    },
+    "md": {
+      "lower": {
+        "spelled": 47
+      },
+      "title": {
+        "spelled": 253
+      },
+      "upper": {
+        "other": 6,
+        "spelled": 2172
+      }
+    },
+    "mfg": {
+      "lower": {
+        "spelled": 1
+      },
+      "title": {
+        "spelled": 27
+      },
+      "upper": {
+        "spelled": 6
+      }
+    },
+    "mgr": {
+      "lower": {
+        "as-written": 64,
+        "spelled": 1
+      },
+      "upper": {
+        "as-written": 52
+      }
+    },
+    "mich": {
+      "lower": {
+        "as-written": 51
+      },
+      "title": {
+        "as-written": 174
+      },
+      "upper": {
+        "as-written": 1
+      }
+    },
+    "min": {
+      "lower": {
+        "as-written": 322,
+        "minute": 276
+      },
+      "title": {
+        "as-written": 603,
+        "minute": 11
+      },
+      "upper": {
+        "as-written": 9,
+        "minute": 1,
+        "spelled": 1
+      }
+    },
+    "minn": {
+      "lower": {
+        "as-written": 3
+      },
+      "title": {
+        "as-written": 81
+      },
+      "upper": {
+        "spelled": 3
+      }
+    },
+    "misc": {
+      "lower": {
+        "as-written": 7
+      },
+      "title": {
+        "as-written": 31
+      },
+      "upper": {
+        "as-written": 3
+      }
+    },
+    "miss": {
+      "lower": {
+        "as-written": 662
+      },
+      "title": {
+        "as-written": 4944
+      },
+      "upper": {
+        "as-written": 56
+      }
+    },
+    "mo": {
+      "lower": {
+        "as-written": 120
+      },
+      "title": {
+        "as-written": 668
+      },
+      "upper": {
+        "as-written": 362,
+        "spelled": 15
+      }
+    },
+    "mon": {
+      "lower": {
+        "as-written": 97
+      },
+      "title": {
+        "as-written": 254,
+        "monday": 6
+      },
+      "upper": {
+        "as-written": 19,
+        "monday": 3,
+        "spelled": 1
+      }
+    },
+    "mont": {
+      "lower": {
+        "as-written": 6
+      },
+      "title": {
+        "as-written": 440
+      },
+      "upper": {
+        "as-written": 2
+      }
+    },
+    "mr": {
+      "lower": {
+        "mister": 8059,
+        "spelled": 86
+      },
+      "upper": {
+        "mister": 562,
+        "spelled": 49
+      }
+    },
+    "mrs": {
+      "lower": {
+        "as-written": 3276,
+        "spelled": 11
+      },
+      "upper": {
+        "as-written": 21,
+        "spelled": 1
+      }
+    },
+    "ms": {
+      "lower": {
+        "as-written": 912,
+        "spelled": 66
+      },
+      "title": {
+        "as-written": 177
+      },
+      "upper": {
+        "spelled": 1101
+      }
+    },
+    "msgr": {
+      "lower": {
+        "as-written": 110,
+        "spelled": 3
+      },
+      "upper": {
+        "as-written": 1
+      }
+    },
+    "mt": {
+      "lower": {
+        "mount": 1258,
+        "mountain": 1,
+        "spelled": 79
+      },
+      "upper": {
+        "mount": 362,
+        "spelled": 66
+      }
+    },
+    "n.c": {
+      "upper": {
+        "spelled": 255
+      }
+    },
+    "n.h": {
+      "upper": {
+        "spelled": 95
+      }
+    },
+    "n.j": {
+      "upper": {
+        "spelled": 657
+      }
+    },
+    "n.m": {
+      "upper": {
+        "spelled": 80
+      }
+    },
+    "n.y": {
+      "upper": {
+        "spelled": 530
+      }
+    },
+    "neb": {
+      "title": {
+        "as-written": 27
+      },
+      "upper": {
+        "as-written": 9
+      }
+    },
+    "nev": {
+      "title": {
+        "as-written": 16
+      },
+      "upper": {
+        "as-written": 2
+      }
+    },
+    "no": {
+      "lower": {
+        "as-written": 67322,
+        "number": 1802
+      },
+      "title": {
+        "as-written": 10900,
+        "number": 947
+      },
+      "upper": {
+        "as-written": 14,
+        "number": 11,
+        "other": 223,
+        "spelled": 38
+      }
+    },
+    "nos": {
+      "lower": {
+        "as-written": 535
+      },
+      "title": {
+        "as-written": 436
+      },
+      "upper": {
+        "as-written": 64,
+        "spelled": 8
+      }
+    },
+    "nov": {
+      "lower": {
+        "november": 161
+      },
+      "title": {
+        "november": 76
+      },
+      "upper": {
+        "november": 7,
+        "spelled": 1
+      }
+    },
+    "nr": {
+      "lower": {
+        "spelled": 1052
+      },
+      "upper": {
+        "spelled": 192
+      }
+    },
+    "num": {
+      "lower": {
+        "as-written": 26
+      },
+      "title": {
+        "as-written": 43
+      },
+      "upper": {
+        "as-written": 11,
+        "spelled": 8
+      }
+    },
+    "oct": {
+      "lower": {
+        "october": 91
+      },
+      "title": {
+        "october": 101
+      },
+      "upper": {
+        "october": 30,
+        "spelled": 5
+      }
+    },
+    "okla": {
+      "title": {
+        "as-written": 26
+      }
+    },
+    "ore": {
+      "lower": {
+        "as-written": 646
+      },
+      "title": {
+        "as-written": 220
+      },
+      "upper": {
+        "as-written": 17
+      }
+    },
+    "p.m": {
+      "upper": {
+        "spelled": 189
+      }
+    },
+    "pa": {
+      "lower": {
+        "as-written": 761,
+        "spelled": 6
+      },
+      "title": {
+        "as-written": 500
+      },
+      "upper": {
+        "spelled": 2529
+      }
+    },
+    "pkwy": {
+      "lower": {
+        "parkway": 5
+      },
+      "title": {
+        "parkway": 8
+      }
+    },
+    "pl": {
+      "lower": {
+        "place": 254
+      },
+      "upper": {
+        "place": 277,
+        "spelled": 26
+      }
+    },
+    "pp": {
+      "lower": {
+        "spelled": 36810
+      },
+      "title": {
+        "spelled": 127
+      },
+      "upper": {
+        "spelled": 255
+      }
+    },
+    "pres": {
+      "lower": {
+        "as-written": 42
+      },
+      "title": {
+        "as-written": 67
+      },
+      "upper": {
+        "as-written": 4,
+        "spelled": 1
+      }
+    },
+    "prof": {
+      "lower": {
+        "professor": 972
+      },
+      "title": {
+        "professor": 209
+      },
+      "upper": {
+        "professor": 4
+      }
+    },
+    "pt": {
+      "lower": {
+        "spelled": 275
+      },
+      "title": {
+        "spelled": 514
+      },
+      "upper": {
+        "spelled": 382
+      }
+    },
+    "pvt": {
+      "lower": {
+        "private": 536,
+        "spelled": 1
+      },
+      "upper": {
+        "private": 14
+      }
+    },
+    "r.i": {
+      "upper": {
+        "spelled": 95
+      }
+    },
+    "rd": {
+      "lower": {
+        "road": 358,
+        "spelled": 13
+      },
+      "upper": {
+        "road": 415,
+        "spelled": 49
+      }
+    },
+    "rep": {
+      "lower": {
+        "as-written": 71
+      },
+      "title": {
+        "as-written": 858
+      },
+      "upper": {
+        "as-written": 20,
+        "spelled": 4
+      }
+    },
+    "rev": {
+      "lower": {
+        "as-written": 286
+      },
+      "title": {
+        "as-written": 3580
+      },
+      "upper": {
+        "as-written": 23,
+        "spelled": 3
+      }
+    },
+    "rt": {
+      "lower": {
+        "spelled": 23
+      },
+      "title": {
+        "spelled": 287
+      },
+      "upper": {
+        "spelled": 373
+      }
+    },
+    "rte": {
+      "lower": {
+        "spelled": 1
+      },
+      "title": {
+        "spelled": 5
+      },
+      "upper": {
+        "spelled": 620
+      }
+    },
+    "s.c": {
+      "upper": {
+        "spelled": 308
+      }
+    },
+    "sat": {
+      "lower": {
+        "as-written": 1103,
+        "saturday": 3
+      },
+      "title": {
+        "as-written": 74,
+        "saturday": 3
+      },
+      "upper": {
+        "as-written": 508,
+        "saturday": 22,
+        "spelled": 5
+      }
+    },
+    "sen": {
+      "lower": {
+        "as-written": 132
+      },
+      "title": {
+        "as-written": 941
+      },
+      "upper": {
+        "as-written": 21
+      }
+    },
+    "sep": {
+      "lower": {
+        "as-written": 1
+      },
+      "title": {
+        "as-written": 86
+      },
+      "upper": {
+        "as-written": 39,
+        "spelled": 2
+      }
+    },
+    "sept": {
+      "lower": {
+        "as-written": 42
+      },
+      "title": {
+        "as-written": 908
+      },
+      "upper": {
+        "as-written": 4,
+        "spelled": 1
+      }
+    },
+    "sgt": {
+      "lower": {
+        "spelled": 531
+      },
+      "upper": {
+        "spelled": 15
+      }
+    },
+    "sq": {
+      "lower": {
+        "spelled": 22,
+        "square": 1231
+      },
+      "upper": {
+        "spelled": 7,
+        "square": 27
+      }
+    },
+    "sr": {
+      "lower": {
+        "senior": 2684,
+        "spelled": 386
+      },
+      "upper": {
+        "senior": 418,
+        "spelled": 14
+      }
+    },
+    "st": {
+      "lower": {
+        "saint": 28770,
+        "spelled": 20,
+        "street": 1307
+      },
+      "upper": {
+        "saint": 270,
+        "spelled": 75,
+        "street": 170
+      }
+    },
+    "sta": {
+      "lower": {
+        "spelled": 11
+      },
+      "title": {
+        "spelled": 162
+      },
+      "upper": {
+        "spelled": 58
+      }
+    },
+    "ste": {
+      "lower": {
+        "spelled": 16
+      },
+      "title": {
+        "spelled": 160
+      },
+      "upper": {
+        "spelled": 10
+      }
+    },
+    "sun": {
+      "lower": {
+        "as-written": 2991,
+        "sunday": 29
+      },
+      "title": {
+        "as-written": 5420,
+        "sunday": 184
+      },
+      "upper": {
+        "as-written": 50
+      }
+    },
+    "tenn": {
+      "title": {
+        "as-written": 140
+      },
+      "upper": {
+        "as-written": 3
+      }
+    },
+    "ter": {
+      "lower": {
+        "as-written": 75
+      },
+      "title": {
+        "as-written": 75
+      },
+      "upper": {
+        "as-written": 61
+      }
+    },
+    "tex": {
+      "lower": {
+        "as-written": 6
+      },
+      "title": {
+        "as-written": 228
+      },
+      "upper": {
+        "as-written": 8,
+        "spelled": 1
+      }
+    },
+    "thos": {
+      "title": {
+        "spelled": 18
+      }
+    },
+    "thu": {
+      "lower": {
+        "as-written": 31,
+        "thursday": 2
+      },
+      "title": {
+        "as-written": 65,
+        "thursday": 1
+      }
+    },
+    "thurs": {
+      "lower": {
+        "thursday": 5
+      },
+      "title": {
+        "thursday": 2
+      }
+    },
+    "tue": {
+      "lower": {
+        "as-written": 12
+      },
+      "title": {
+        "as-written": 7,
+        "tuesday": 1
+      }
+    },
+    "tues": {
+      "lower": {
+        "tuesday": 5
+      },
+      "title": {
+        "tuesday": 2
+      }
+    },
+    "u.k": {
+      "upper": {
+        "spelled": 468
+      }
+    },
+    "u.n": {
+      "upper": {
+        "spelled": 294
+      }
+    },
+    "u.s": {
+      "title": {
+        "as-written": 6
+      },
+      "upper": {
+        "spelled": 30004
+      }
+    },
+    "u.s.a": {
+      "title": {
+        "spelled": 1
+      },
+      "upper": {
+        "as-written": 45,
+        "spelled": 399
+      }
+    },
+    "univ": {
+      "lower": {
+        "as-written": 3
+      },
+      "title": {
+        "as-written": 702
+      },
+      "upper": {
+        "as-written": 2
+      }
+    },
+    "va": {
+      "upper": {
+        "spelled": 534
+      }
+    },
+    "viz": {
+      "lower": {
+        "as-written": 242
+      },
+      "title": {
+        "as-written": 138
+      },
+      "upper": {
+        "as-written": 19
+      }
+    },
+    "vol": {
+      "lower": {
+        "volume": 16837
+      },
+      "title": {
+        "volume": 1430
+      },
+      "upper": {
+        "spelled": 1,
+        "volume": 25
+      }
+    },
+    "vs": {
+      "lower": {
+        "spelled": 4,
+        "versus": 8939
+      },
+      "title": {
+        "versus": 140
+      },
+      "upper": {
+        "spelled": 202
+      }
+    },
+    "vt": {
+      "lower": {
+        "spelled": 2
+      },
+      "title": {
+        "spelled": 45
+      },
+      "upper": {
+        "spelled": 273
+      }
+    },
+    "wash": {
+      "lower": {
+        "as-written": 238
+      },
+      "title": {
+        "as-written": 197
+      },
+      "upper": {
+        "as-written": 12
+      }
+    },
+    "wed": {
+      "lower": {
+        "as-written": 234
+      },
+      "title": {
+        "as-written": 88,
+        "wednesday": 2
+      },
+      "upper": {
+        "as-written": 9
+      }
+    },
+    "weds": {
+      "lower": {
+        "as-written": 61,
+        "wednesday": 1
+      },
+      "title": {
+        "as-written": 74
+      },
+      "upper": {
+        "as-written": 4
+      }
+    },
+    "wis": {
+      "lower": {
+        "as-written": 2
+      },
+      "title": {
+        "as-written": 42
+      },
+      "upper": {
+        "as-written": 89
+      }
+    },
+    "wm": {
+      "lower": {
+        "spelled": 7
+      },
+      "title": {
+        "spelled": 166
+      },
+      "upper": {
+        "spelled": 176
+      }
+    },
+    "wyo": {
+      "title": {
+        "spelled": 8
+      },
+      "upper": {
+        "spelled": 28
+      }
+    }
+  },
+  "provenance": {
+    "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "builder": "tools/build_abbreviation_priors.py",
+    "categories": "spelled when the corpus says the letters one by one (a dotted chain said as written is spelled); as-written when it says the token itself; the lexicon expansion it says; other for anything else",
+    "corpus": "google-tn:en_with_types",
+    "key": "ICU toLower(en) of the written token, one trailing period removed",
+    "license": "CC BY-SA 4.0",
+    "locale": "en",
+    "normalization": "the corpus writes no variant key with a period, and some keys (st, dr, mr, ...) in lower and upper case only; period is therefore unmeasured, and title case is measured only where the corpus writes it",
+    "shards": [
+      "output-00000-of-00100",
+      "output-00010-of-00100",
+      "output-00020-of-00100",
+      "output-00030-of-00100",
+      "output-00040-of-00100",
+      "output-00050-of-00100",
+      "output-00060-of-00100",
+      "output-00070-of-00100",
+      "output-00080-of-00100"
+    ],
+    "sources": "icukit en_US lexicon surfaces ending in '.', holding a lowercase letter, with no inner '.', folding to more than one letter; and its dotted chains of single letters with an expansion",
+    "sub_key": "written case: lower, title, upper; blended toward the key share with strength 5; a case the corpus never writes for a key has no row, and a surface in that case reads the key"
+  }
+}

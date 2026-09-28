@@ -648,7 +648,9 @@ def test_no_shipped_table_lists_a_held_out_shard():
     """Every shipped corpus table (``<locale>/*_priors.json``) names the shards it counted --
     ``provenance.shards``, or ``provenance.sample_rule.shards`` -- and none is held out."""
     tables = sorted((_REPO / "frend" / "data").glob("*/*_priors.json"))
-    assert {"type_priors.json", "spoken_priors.json"} <= {path.name for path in tables}
+    assert {"type_priors.json", "spoken_priors.json", "abbreviation_priors.json"} <= {
+        path.name for path in tables
+    }
     for path in tables:
         provenance = json.loads(path.read_text(encoding="utf-8"))["provenance"]
         shards = provenance.get("shards", provenance.get("sample_rule", {}).get("shards"))

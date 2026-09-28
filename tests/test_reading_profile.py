@@ -6,6 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
+
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 if str(_TOOLS) not in sys.path:
     sys.path.insert(0, str(_TOOLS))
@@ -53,11 +55,14 @@ def test_shared_profile_is_the_spoken_profile_plus_the_outside_readers():
             if id(detector) not in seen:
                 seen.add(id(detector))
                 spoken.append(detector)
+    from frend.abbreviation_variants import AbbreviationVariantDetector
+
     shared = reading_profile.reading_detectors("en_US")
     assert [_signature(d) for d in shared[: len(spoken)]] == [_signature(d) for d in spoken]
-    assert len(shared) == len(spoken) + 2
-    assert isinstance(shared[-2], AbbreviationDetector)
-    assert isinstance(shared[-1], LettersDetector)
+    assert len(shared) == len(spoken) + 3
+    assert isinstance(shared[-3], AbbreviationDetector)
+    assert isinstance(shared[-2], LettersDetector)
+    assert isinstance(shared[-1], AbbreviationVariantDetector)
 
 
 def _names_an_en_locale(value: object) -> bool:
@@ -81,3 +86,59 @@ def test_reading_detectors_ru_constructs_no_en_US_detector():
         if _names_an_en_locale(value)
     ]
     assert english == []
+
+
+def _paths(graph) -> list[tuple[str, ...]]:
+    """Every root-to-sink token sequence of an alignment graph, read from its wire JSON
+    (``frend:next`` relations, ``frend:token`` attributes), as ARCTIC's measure reads it."""
+    import json
+    from collections import defaultdict
+
+    from tiergraph import wire
+
+    wired = json.loads(wire.dumps(graph.graph))["graph"]
+    items = wired["tiers"][0]["items"]
+    token = [
+        next((a["lexical"] for a in item["attributes"] if a["name"] == "frend:token"), None)
+        for item in items
+    ]
+    ids = [item["durable_id"] for item in items]
+    following = defaultdict(list)
+    for relation in wired["relations"]:
+        following[relation["left"]["index"]].append(relation["right"]["index"])
+    root = ids.index("B0")
+    sink = max((i for i, d in enumerate(ids) if d.startswith("B")), key=lambda i: int(ids[i][1:]))
+    found, stack = [], [(root, ())]
+    while stack:
+        at, said = stack.pop()
+        said = said + ((token[at],) if token[at] is not None else ())
+        if at == sink:
+            found.append(said)
+        stack.extend((after, said) for after in following[at])
+    return found
+
+
+@pytest.mark.parametrize(("text", "said"), [("Mr McVeigh", "Mister"), ("Mrs Hall", "Missus")])
+def test_keep_all_path_reads_mister(text, said):
+    """ARCTIC's keep-all path (detect, resolve_choices, compose_choices, build_align_graph)
+    with the variant reader alone, as ``build_graphs-P4.patch`` adds it: the variant is a
+    branch beside the text as written. The graph counts 3 paths: the passthrough route,
+    the variant's spoken form, and its as-written form (which says what the passthrough
+    route says)."""
+    from icukit.detectors import detect
+
+    from frend import compose_choices, resolve_choices
+    from frend.abbreviation_variants import AbbreviationVariantDetector
+    from frend.align_graph import build_align_graph
+    from frend.spoken_priors import spoken_tokens
+
+    choices = compose_choices(
+        resolve_choices(detect(text, [AbbreviationVariantDetector("en_US")]), source_text=text)
+    )
+    assert said in [item.text for unit in choices.units for item in unit.alternatives]
+    graph = build_align_graph(choices)
+    assert graph.count_plan().evaluate().value == 3
+    rest = spoken_tokens(text)[1:]
+    assert sorted(_paths(graph)) == sorted(
+        [spoken_tokens(said) + rest, spoken_tokens(text), spoken_tokens(text)]
+    )

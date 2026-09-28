@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import sys
 import tomllib
 from importlib.resources import files
@@ -18,6 +19,7 @@ _REPO = Path(__file__).resolve().parents[1]
 _DATA = _REPO / "frend" / "data"
 _TOOLS = _REPO / "tools"
 _MEASURED = (
+    "abbreviation_priors",
     "acronym_priors",
     "electronic_priors",
     "spoken_priors",
@@ -128,12 +130,14 @@ def test_the_most_specific_locale_wins(tmp_path, monkeypatch):
 def test_every_loader_caches_on_the_canonical_locale():
     """Equivalent spellings share one cached table: the electronic loader hands out
     mutable dictionaries, so two copies could drift apart."""
+    from frend.abbreviation_variants import abbreviation_priors
     from frend.electronic import load_electronic_priors
     from frend.spoken_priors import load_spoken_prior_table
     from frend.type_priors import load_prior_table
     from frend.verbalize import _acronym_priors, _zero_priors
 
     loaders = (
+        abbreviation_priors,
         load_electronic_priors,
         load_prior_table,
         load_spoken_prior_table,
@@ -185,6 +189,7 @@ def _builder(name: str):
 @pytest.mark.parametrize(
     "name",
     [
+        "build_abbreviation_priors",
         "build_acronym_priors",
         "build_electronic_priors",
         "build_spoken_priors",
@@ -202,6 +207,7 @@ def test_a_builder_records_the_corpus_it_read(name):
 def test_a_locale_with_no_measured_table_gets_none():
     """No en counts stand in for a locale that has none: every measured loader says
     so, and English keeps its tables."""
+    from frend.abbreviation_variants import abbreviation_priors
     from frend.electronic import load_electronic_priors
     from frend.spoken_priors import load_spoken_prior_table, source_prior
     from frend.type_priors import load_prior_table
@@ -213,6 +219,7 @@ def test_a_locale_with_no_measured_table_gets_none():
     assert load_electronic_priors(locale="ru_RU") is None
     assert _zero_priors(locale="ru_RU") == {}
     assert _acronym_priors(locale="ru_RU") == {}
+    assert abbreviation_priors(locale="ru_RU") == {}
 
     assert source_prior("cardinal", "icu-rbnf:%spellout-numbering", locale="en_US") is not None
     assert load_prior_table(locale="en_US") is load_prior_table()
@@ -335,3 +342,47 @@ def test_a_locale_cache_holds_a_bounded_number_of_locales():
     for index in range(3 * locale_data.LOCALE_CACHE):
         load_prior_table(locale=f"xx_{chr(65 + index % 26)}{chr(65 + index // 26)}")
     assert _locale_prior_table.cache_info().currsize <= locale_data.LOCALE_CACHE
+
+
+def _names_an_ldc_corpus(value: object) -> bool:
+    """Whether a provenance value names a store id under ``ldc/`` (any case)."""
+    if isinstance(value, str):
+        return re.search(r"(?<![a-z0-9])ldc/", value.lower()) is not None
+    if isinstance(value, dict):
+        return any(_names_an_ldc_corpus(k) or _names_an_ldc_corpus(v) for k, v in value.items())
+    if isinstance(value, list):
+        return any(_names_an_ldc_corpus(item) for item in value)
+    return False
+
+
+def _provenance_of(path: Path) -> object:
+    """What a shipped data file says it came from: a JSON table's top-level fields other
+    than its counts (``provenance``, ``corpus``, ``source``, ...), or a text file's
+    comment lines."""
+    text = path.read_text(encoding="utf-8")
+    if path.suffix == ".json":
+        document = json.loads(text)
+        return {
+            key: value
+            for key, value in document.items()
+            if key in ("provenance", "corpus", "source", "sources", "license", "note")
+            or isinstance(value, str)
+        }
+    return [line for line in text.splitlines() if line.lstrip().startswith("#")]
+
+
+def test_no_shipped_data_names_an_ldc_corpus():
+    """frend ships nothing derived from an LDC corpus (kal, 2026-09-28: every ``ldc/*``
+    store id is internal-only for frend): no file under ``frend/data/`` names one in its
+    provenance. Checked against a planted ``ldc/`` corpus so the guard is known to bite."""
+    files = [path for path in sorted(_DATA.rglob("*")) if path.is_file()]
+    assert files
+    naming = [
+        str(path.relative_to(_DATA))
+        for path in files
+        if path.name != "README.md" and _names_an_ldc_corpus(_provenance_of(path))
+    ]
+    assert naming == []
+    assert _names_an_ldc_corpus({"provenance": {"corpus": "ldc/LDC93S6A"}})
+    assert _names_an_ldc_corpus({"provenance": {"shards": ["x", "LDC/wsj0/si_tr_s"]}})
+    assert not _names_an_ldc_corpus({"provenance": {"corpus": "google-tn:en_with_types"}})
