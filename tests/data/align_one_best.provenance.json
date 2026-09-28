@@ -1,4 +1,7 @@
 {
-  "baseline_commit": "7c6ef7b5e77adf9016655ee54c9fadce0ee62710",
-  "command": "cd $FREND_BASELINE_CHECKOUT && PYTHONPATH=. python -B $FREND_ALIGN_WORKTREE/tests/generate_align_one_best.py $FREND_ALIGN_WORKTREE/tests/data/align_one_best.json"
+  "code_commit": "1f5c1bf09ed31b6d89cd7017346023c14278e9e8",
+  "icukit_commit": "c2755b07e2c0adcfeb215eeab8ebe138d6edb495",
+  "type_priors_counts_sha256": "b34097ffdddc1221906af80a7c824c26c5418cd4fafd91df93b320ac98a131c5",
+  "type_priors_path": "frend/data/type_priors.json",
+  "command": "BASE=$(mktemp -d) && git -C $FREND_CHECKOUT archive 1f5c1bf09ed31b6d89cd7017346023c14278e9e8 | tar -x -C $BASE && cp $FREND_ALIGN_WORKTREE/frend/data/type_priors.json $BASE/frend/data/type_priors.json && cd $BASE && PYTHONPATH=. python -B $FREND_ALIGN_WORKTREE/tests/generate_align_one_best.py $FREND_ALIGN_WORKTREE/tests/data/align_one_best.json"
 }

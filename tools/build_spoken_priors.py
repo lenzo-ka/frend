@@ -237,10 +237,22 @@ def _alternatives(
 
 
 def _files(corpus_dir: Path) -> list[Path]:
+    """Every tenth shard, less the held-out shards: with shards missing the step can
+    land on one (00005, 00015, ..., 00095). Imported here, not at the top, because
+    ARCTIC loads this file by path without tools/ on ``sys.path`` and calls only
+    ``_detectors()``."""
+    tools = str(Path(__file__).resolve().parent)
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    from google_tn_rows import training_shards
+
     available = sorted(corpus_dir.glob("output-*-of-*"))
     if not available:
         raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
-    return available[::_SHARD_STEP]
+    chosen = training_shards(available[::_SHARD_STEP])
+    if not chosen:
+        raise FileNotFoundError(f"no training shards under {corpus_dir} (only held-out ones)")
+    return chosen
 
 
 def build_document(corpus_dir: Path) -> dict:
