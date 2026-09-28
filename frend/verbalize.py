@@ -16,6 +16,17 @@ from icukit import AbbreviationValue, DateTimeFormatter
 from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
 from icukit.measure import WIDTH_WIDE, format_measure
 
+from frend.abbreviation_variants import (
+    AS_WRITTEN_SOURCE,
+    SPELLED_SOURCE,
+    VARIANT_TYPE,
+    abbreviation_weights,
+    chain_expansions,
+    is_chain,
+    measured_case,
+    measures_spelled,
+    upper_variant_expansions,
+)
 from frend.electronic import (
     ElectronicValue,
     digit_forms,
@@ -1053,6 +1064,11 @@ def _spoken_abbreviation(value: AbbreviationValue) -> tuple[SpokenAlternative, .
     """
     if not value.expansions:
         raise NotImplementedError(f"no lexicon expansion for {value.surface!r}")
+    return _expansion_alternatives(value.expansions)
+
+
+def _expansion_alternatives(expansions: Sequence[object]) -> tuple[SpokenAlternative, ...]:
+    """Each lexicon expansion as a spoken alternative, its sense and cue in its source."""
     return _ranked(
         [
             SpokenAlternative(
@@ -1063,9 +1079,40 @@ def _spoken_abbreviation(value: AbbreviationValue) -> tuple[SpokenAlternative, .
                 + f":{expansion.sense}"
                 + (f"/{expansion.cue}" if expansion.cue else ""),
             )
-            for expansion in value.expansions
+            for expansion in expansions
         ]
     )
+
+
+def _abbreviation_ranked(
+    written: str, alternatives: tuple[SpokenAlternative, ...], locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Rank an abbreviation's readings by how the corpus says its written form.
+
+    Each reading the table measures takes its category's share from
+    ``abbreviation_priors.json`` (``abbreviation_variants.abbreviation_weights``: by the
+    token's fold, and its written case where the corpus writes that case), in place of
+    any weight it carried (the key's own evidence is narrower than an acronym's shape).
+    Measured readings lead by share; an unmeasured one follows, the token as written
+    first, since with no evidence a variant reads as it did before it was recognized.
+    """
+    weights = abbreviation_weights(written, [item.text for item in alternatives], locale=locale)
+    if weights is None:
+        weights = (None,) * len(alternatives)
+    weighted = [
+        item if weight is None else SpokenAlternative(item.text, item.provenance, weight)
+        for item, weight in zip(alternatives, weights, strict=True)
+    ]
+    order = sorted(
+        range(len(weighted)),
+        key=lambda index: (
+            weighted[index].weight is None,
+            -(weighted[index].weight or Decimal(0)),
+            weighted[index].provenance != AS_WRITTEN_SOURCE,
+            index,
+        ),
+    )
+    return tuple(weighted[index] for index in order)
 
 
 def _unspoken(detection: object, path: str) -> tuple[object, ...]:
@@ -1769,10 +1816,35 @@ def verbalize_edge(
         elif isinstance(value, AbbreviationValue):
             # A lexicon entry with no expansion ("J.R.R.", a sentence-break exception)
             # is still spelled when it is capitals; only a surface with neither fails.
-            expanded = _spoken_abbreviation(value) if value.expansions else ()
-            alternatives = _with_acronym_readings(value.surface, expanded)
+            written = str(detection.get("text", value.surface))
+            expansions = value.expansions or chain_expansions(written, locale)
+            # A dotted chain in another case than the lexicon's ("E.G.") borrows its
+            # expansions ("for example"), after the letters, as the corpus reads it.
+            expanded = _expansion_alternatives(expansions) if expansions else ()
+            if type_ == VARIANT_TYPE:
+                # A written variant ("Mr", "st", "no") may be the word it spells, so its
+                # expansions stand beside the token as written; the corpus ranks them.
+                alternatives = (*expanded, SpokenAlternative(written, AS_WRITTEN_SOURCE))
+                if measures_spelled(written, locale=locale):
+                    # A key the corpus spells ("Lt", "ch", "Rt") also reads letter by
+                    # letter; the table ranks the letters with the other readings.
+                    alternatives = (
+                        *alternatives,
+                        SpokenAlternative(spelled(written.replace(".", "")), SPELLED_SOURCE),
+                    )
+            else:
+                alternatives = _with_acronym_readings(value.surface, expanded)
+                if is_chain(written) and not written.isupper():
+                    # A dotted chain of any case is spelled ("e.g." "e g", "j.r.r." "j r
+                    # r"): the corpus spells every one it writes.
+                    alternatives = (
+                        *alternatives,
+                        SpokenAlternative(spelled(written.replace(".", "")), SPELLED_SOURCE),
+                    )
             if not alternatives:
                 raise NotImplementedError(f"no reading for {value.surface!r}")
+            if apply_source_priors:
+                alternatives = _abbreviation_ranked(written, alternatives, locale)
             key_value = value.surface
             path = "abbreviation"
         elif isinstance(value, DateTimeValue) and type_.startswith("date:"):
@@ -1802,6 +1874,24 @@ def verbalize_edge(
             path = "symbol"
         elif isinstance(value, LettersValue):
             alternatives = _spoken_letters(value)
+            if not value.suffix:
+                # A run that is a lexicon abbreviation in capitals ("MR", "DR") is also
+                # offered its expansions.
+                expansions = upper_variant_expansions(value.letters, locale)
+                alternatives = (*alternatives, *_expansion_alternatives(expansions))
+                if (
+                    expansions
+                    and apply_source_priors
+                    and measured_case(value.letters, locale=locale)
+                ):
+                    # Where the corpus measures the run in capitals ("MR": mister 562
+                    # of 611), that row ranks the expansions and the letters; a reading
+                    # it does not measure follows, its acronym weight dropped.
+                    alternatives = _abbreviation_ranked(
+                        value.letters,
+                        tuple(SpokenAlternative(a.text, a.provenance) for a in alternatives),
+                        locale,
+                    )
             key_value = value.surface
             path = "letters"
         elif isinstance(value, DigitsValue):

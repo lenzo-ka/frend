@@ -1,5 +1,6 @@
 {
   "locale": "ru",
   "schema_version": 1,
+  "source": "frend/curated",
   "forms": {}
 }

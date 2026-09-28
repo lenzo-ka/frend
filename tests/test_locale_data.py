@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import sys
 import tomllib
 from importlib.resources import files
@@ -12,12 +13,13 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from frend import locale_data
+from frend import data_sources, locale_data
 
 _REPO = Path(__file__).resolve().parents[1]
 _DATA = _REPO / "frend" / "data"
 _TOOLS = _REPO / "tools"
 _MEASURED = (
+    "abbreviation_priors",
     "acronym_priors",
     "electronic_priors",
     "spoken_priors",
@@ -128,12 +130,14 @@ def test_the_most_specific_locale_wins(tmp_path, monkeypatch):
 def test_every_loader_caches_on_the_canonical_locale():
     """Equivalent spellings share one cached table: the electronic loader hands out
     mutable dictionaries, so two copies could drift apart."""
+    from frend.abbreviation_variants import abbreviation_priors
     from frend.electronic import load_electronic_priors
     from frend.spoken_priors import load_spoken_prior_table
     from frend.type_priors import load_prior_table
     from frend.verbalize import _acronym_priors, _zero_priors
 
     loaders = (
+        abbreviation_priors,
         load_electronic_priors,
         load_prior_table,
         load_spoken_prior_table,
@@ -185,6 +189,7 @@ def _builder(name: str):
 @pytest.mark.parametrize(
     "name",
     [
+        "build_abbreviation_priors",
         "build_acronym_priors",
         "build_electronic_priors",
         "build_spoken_priors",
@@ -202,6 +207,7 @@ def test_a_builder_records_the_corpus_it_read(name):
 def test_a_locale_with_no_measured_table_gets_none():
     """No en counts stand in for a locale that has none: every measured loader says
     so, and English keeps its tables."""
+    from frend.abbreviation_variants import abbreviation_priors
     from frend.electronic import load_electronic_priors
     from frend.spoken_priors import load_spoken_prior_table, source_prior
     from frend.type_priors import load_prior_table
@@ -213,6 +219,7 @@ def test_a_locale_with_no_measured_table_gets_none():
     assert load_electronic_priors(locale="ru_RU") is None
     assert _zero_priors(locale="ru_RU") == {}
     assert _acronym_priors(locale="ru_RU") == {}
+    assert abbreviation_priors(locale="ru_RU") == {}
 
     assert source_prior("cardinal", "icu-rbnf:%spellout-numbering", locale="en_US") is not None
     assert load_prior_table(locale="en_US") is load_prior_table()
@@ -335,3 +342,142 @@ def test_a_locale_cache_holds_a_bounded_number_of_locales():
     for index in range(3 * locale_data.LOCALE_CACHE):
         load_prior_table(locale=f"xx_{chr(65 + index % 26)}{chr(65 + index // 26)}")
     assert _locale_prior_table.cache_info().currsize <= locale_data.LOCALE_CACHE
+
+
+# What an LDC corpus looks like when a provenance names it: a store id under ``ldc/``,
+# a catalog number ("LDC93S6A"), or a label such as "ldc:wsj0".
+_LDC = re.compile(r"(?<![a-z0-9])ldc(?:[/:_-]|\d{2}[a-z]\d)", re.IGNORECASE)
+
+
+def _mentions_ldc(value: object) -> bool:
+    if isinstance(value, str):
+        return _LDC.search(value) is not None
+    if isinstance(value, dict):
+        return any(_mentions_ldc(k) or _mentions_ldc(v) for k, v in value.items())
+    if isinstance(value, list):
+        return any(_mentions_ldc(item) for item in value)
+    return False
+
+
+def _refusals(name: str, document: object) -> list[str]:
+    """Why a shipped file may not ship, by what it names as its source; empty when it may.
+
+    A JSON table names its source in ``corpus`` or ``source``, at its top level or in its
+    ``provenance``; each must resolve (``data_sources.source_id``) to a declared source
+    of a class frend ships. A table naming none, an undeclared one or an ``ldc/`` one is
+    refused, and so is any provenance that mentions an LDC corpus elsewhere. A file that
+    is not JSON ships only as a declared source's vendored copy.
+    """
+    if not isinstance(document, dict):
+        vendored = {
+            str(file)
+            for entry in data_sources.SHIPPABLE_SOURCES.values()
+            for file in entry["vendored"]  # type: ignore[union-attr]
+        }
+        return [] if name in vendored else [f"{name}: not a table and no source vendors it"]
+    provenance = document.get("provenance")
+    records = [document] + ([provenance] if isinstance(provenance, dict) else [])
+    labels = [
+        (record, record[field])
+        for record in records
+        for field in ("corpus", "source")
+        if field in record
+    ]
+    if not labels:
+        return [f"{name}: names no source"]
+    refusals = []
+    for record, label in labels:
+        if not isinstance(label, str):
+            refusals.append(f"{name}: source {label!r} is not an id")
+            continue
+        source = data_sources.source_id(label, record)
+        class_ = data_sources.source_class(source)
+        if class_ not in data_sources.SHIPPABLE_CLASSES:
+            refusals.append(f"{name}: source {source!r} is {class_ or 'undeclared'}")
+    fields = {
+        key: value
+        for key, value in document.items()
+        if key in ("provenance", "corpus", "source", "sources", "license", "note")
+        or isinstance(value, str)
+    }
+    if _mentions_ldc(fields):
+        refusals.append(f"{name}: its provenance mentions an LDC corpus")
+    return refusals
+
+
+def _document(path: Path) -> object:
+    text = path.read_text(encoding="utf-8")
+    return json.loads(text) if path.suffix == ".json" else text
+
+
+def test_every_shipped_table_names_a_shippable_source():
+    """frend ships nothing derived from an LDC corpus (kal, 2026-09-28: every ``ldc/*``
+    store id is internal-only for frend), so every file under ``frend/data/`` names its
+    source by an id in the one declared list (``frend.data_sources``), of a class frend
+    ships; the README documents them and is not a table."""
+    files = [path for path in sorted(_DATA.rglob("*")) if path.is_file()]
+    assert files
+    refusals = [
+        refusal
+        for path in files
+        if path.name != "README.md"
+        for refusal in _refusals(str(PurePosixPath(path.relative_to(_DATA))), _document(path))
+    ]
+    assert refusals == []
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"provenance": {"corpus": "ldc/LDC93S6A"}},
+        {"provenance": {"corpus": "LDC93S6A"}},
+        {"provenance": {"corpus": "ldc:wsj0"}},
+        {"corpus": "ldc/wsj0"},
+        {"provenance": {"source": "nist/timit"}},
+        {"provenance": {"corpus": "google-tn:en_with_types", "shards": ["LDC/wsj0/si_tr_s"]}},
+        {"provenance": {"corpus": "google-tn:en_with_types", "note": "counts from LDC93S6A"}},
+        {"provenance": {"shards": ["output-00000-of-00100"]}},
+        {"counts": {"x": 1}},
+        {"provenance": {"corpus": "icu/"}},
+        {"provenance": {"source": "icu-reflective-generation"}},
+        {"provenance": {"corpus": ["google/tn-en_with_types"]}},
+    ],
+)
+def test_a_table_naming_no_shippable_source_is_refused(document):
+    """Planted tables the guard must refuse: an LDC id, a bare catalog number, an LDC
+    label, an undeclared id, an LDC mention beside a declared source, no source at all,
+    a bare namespace, an ICU label missing its version, a source that is not an id."""
+    assert _refusals("en/planted.json", document)
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"provenance": {"corpus": "google-tn:en_with_types"}},
+        {"provenance": {"corpus": "google/tn-en_with_types"}},
+        {"provenance": {"source": "icu-reflective-generation", "icu_version": "78.3"}},
+        {"corpus": "break-exceptions-en-curated"},
+        {"source": "frend/curated"},
+    ],
+)
+def test_a_table_naming_a_declared_source_ships(document):
+    assert _refusals("en/planted.json", document) == []
+
+
+def test_a_declared_ldc_source_is_still_internal_only():
+    assert data_sources.source_class("ldc/wsj0") == data_sources.INTERNAL_ONLY
+    assert data_sources.source_class("LDC/LDC93S6A") == data_sources.INTERNAL_ONLY
+
+
+def test_every_declared_source_has_a_license_and_a_class():
+    for source, entry in data_sources.SHIPPABLE_SOURCES.items():
+        assert entry["class"] in data_sources.LICENSE_CLASSES, source
+        assert entry["class"] != data_sources.INTERNAL_ONLY, source
+        assert entry["license"], source
+        for file in entry["vendored"]:
+            assert (_DATA / file).is_file(), (source, file)
+
+
+def test_a_text_file_ships_only_as_a_vendored_source():
+    assert _refusals("root/tlds-alpha-by-domain.txt", "# Version 1\nCOM\n") == []
+    assert _refusals("root/other.txt", "# source: google/tn-en_with_types\n")

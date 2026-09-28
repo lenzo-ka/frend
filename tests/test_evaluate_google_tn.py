@@ -92,6 +92,7 @@ def test_no_builder_reads_a_held_out_shard(tmp_path, monkeypatch):
         "build_zero_priors": _tool("build_zero_priors").build_document,
         "build_acronym_priors": _tool("build_acronym_priors").build_document,
         "build_electronic_priors": _tool("build_electronic_priors").build_document,
+        "build_abbreviation_priors": _tool("build_abbreviation_priors").build_document,
     }
     corpora = {"corpus0": _corpus(tmp_path / "c0", 0), "corpus5": _corpus(tmp_path / "c5", 5)}
 

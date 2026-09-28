@@ -18,7 +18,7 @@ Every measured table under `en/` is counted from the Google TN English corpus,
 `en_with_types.tgz`, 100 shards `output-000NN-of-00100`). Its README splits the shards
 training 00-89, runtime eval 90-94 and test 95-99, and frend keeps that split
 (`tools/google_tn_rows.py`: `TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`).
-A table counts training shards only: `type_priors.json` all 90 (00-89), the other four
+A table counts training shards only: `type_priors.json` all 90 (00-89), the other five
 every tenth (00, 10, ..., 80). The runtime-eval and test shards are held out
 (`HELD_OUT_SHARDS`) and no builder opens one. Shard 99 is the published test shard
 the evaluator reports; shard 95 is the held-out running-text shard changes are
@@ -114,6 +114,36 @@ for an acronym icukit's lexicon lists (`surface:NASA`) and for a Roman numeral i
 reads (`roman:II`, which also counts the corpus's CARDINAL and ORDINAL readings as
 `numeral`), with `*` pooling all; no corpus text is stored. The shared attribution above
 applies.
+
+## `en/abbreviation_priors.json`
+
+How the corpus says each abbreviation of icukit's lexicon as running text writes it,
+measured by `tools/build_abbreviation_priors.py` (`--check` as above). A key is the
+written token's ICU lower case with one trailing period removed (`st` for "st", "St."
+and "ST"), for each lexicon abbreviation ending in "." with a lowercase letter, no inner
+period and more than one letter, and each dotted chain of single letters with an
+expansion (`e.g`). Under the key, rows are kept by the token's written case (`lower`,
+`title`, `upper`) and counted by what the corpus says: `spelled`, `as-written`, the
+lexicon expansion ("saint"), or `other`. The corpus writes none of these keys with a
+period, and some (st, dr, mr, ...) never in title case; a case with no row reads the
+key. Only counts are stored; the shared attribution applies.
+
+## Provenance: declared sources only, nothing from LDC
+
+Every file here names what it was made from by a source id, and that id must be one
+of `frend.data_sources.SHIPPABLE_SOURCES`, each listed with its license and license
+class: `google/tn-en_with_types` (the store id; shippable-share-alike),
+`icu/<version>/<family>`, `iana/tlds-alpha-by-domain`, `lenzo/break_exceptions` and
+`frend/curated` (the hand-written forms in `lexical.json`). A JSON table names it in
+`corpus` or `source`, at its top level or in its `provenance`; the older labels the
+measured tables carry (`google-tn:en_with_types`, `icu-reflective-generation`) are
+mapped to their ids there (`SOURCE_LABELS`), so the tables keep their bytes. A file that
+is a source vendored unchanged (IANA's list) is named by its source's `vendored` entry.
+Nothing is derived from an LDC corpus: every `ldc/*` store id is internal-only for
+frend (kal, 2026-09-28), usable for evaluation and development but never in a shipped
+table, count or fixture. `tests/test_locale_data.py` refuses a file naming no source,
+an undeclared one, an `ldc/` one, or whose provenance mentions an LDC corpus anywhere
+("LDC93S6A", "ldc:wsj0").
 
 ## `en/zero_priors.json`
 

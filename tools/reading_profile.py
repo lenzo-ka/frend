@@ -2,7 +2,8 @@
 
 It is the spoken-priors recognition profile (``build_spoken_priors._detectors``),
 flattened in its kinds' order with each reader once, followed by the readers that sit
-outside the corpus kinds: icukit's abbreviation lexicon and frend's letters reader.
+outside the corpus kinds: icukit's abbreviation lexicon, frend's letters reader, and
+frend's reader of the lexicon's written variants ("Mr", "st", "Vol").
 Every reader is built for the locale asked for; none is built with a literal locale.
 The list is cached per locale (canonicalized first, so "en-US" is "en_US"), so a caller
 holds the very list the evaluator reads.
@@ -29,8 +30,8 @@ __all__ = ["reading_detectors"]
 
 
 def reading_detectors(locale: str = "en_US") -> list[object]:
-    """The readers for ``locale``: the spoken profile's, then the abbreviation and
-    letters readers. The same list object for every call with the same locale."""
+    """The readers for ``locale``: the spoken profile's, then the abbreviation, letters
+    and abbreviation-variant readers. The same list object for every call with the same locale."""
     return _profile(canonical_locale(locale))
 
 
@@ -39,6 +40,7 @@ def _profile(locale: str) -> list[object]:
     from build_spoken_priors import _detectors
     from icukit.abbreviation_recognize import AbbreviationDetector
 
+    from frend.abbreviation_variants import AbbreviationVariantDetector
     from frend.letters import LettersDetector
 
     seen, detectors = set(), []
@@ -49,4 +51,5 @@ def _profile(locale: str) -> list[object]:
                 detectors.append(detector)
     detectors.append(AbbreviationDetector(locale))
     detectors.append(LettersDetector(locale))
+    detectors.append(AbbreviationVariantDetector(locale))
     return detectors
