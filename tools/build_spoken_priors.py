@@ -249,7 +249,10 @@ def _files(corpus_dir: Path) -> list[Path]:
     available = sorted(corpus_dir.glob("output-*-of-*"))
     if not available:
         raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
-    return training_shards(available[::_SHARD_STEP])
+    chosen = training_shards(available[::_SHARD_STEP])
+    if not chosen:
+        raise FileNotFoundError(f"no training shards under {corpus_dir} (only held-out ones)")
+    return chosen
 
 
 def build_document(corpus_dir: Path) -> dict:

@@ -564,7 +564,7 @@ def test_one_best_untouched():
         "type_priors_path": "frend/data/type_priors.json",
         "command": (
             f"BASE=$(mktemp -d) && git -C $FREND_CHECKOUT archive {code_commit} "
-            "| tar -x -C $BASE && cp $FREND_ALIGN_WORKTREE/<type_priors_path> "
+            "| tar -x -C $BASE && cp $FREND_ALIGN_WORKTREE/frend/data/type_priors.json "
             "$BASE/frend/data/type_priors.json && cd $BASE && PYTHONPATH=. python -B "
             "$FREND_ALIGN_WORKTREE/tests/generate_align_one_best.py "
             "$FREND_ALIGN_WORKTREE/tests/data/align_one_best.json"

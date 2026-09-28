@@ -7,6 +7,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
@@ -133,7 +135,8 @@ def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path):
     (corpus / "output-00099-of-00100").write_text(
         "CARDINAL\t7\tseven\n<eos>\t<eos>\n", encoding="utf-8"
     )
-    lines = ["CARDINAL\t12\ttwelve"] + ["<eos>\t<eos>"] * 99_999
+    # Scored tokens on lines 1 and 100,000 (the window's last line); the triple after it.
+    lines = ["CARDINAL\t12\ttwelve"] + ["<eos>\t<eos>"] * 99_998 + ["CARDINAL\t8\teight"]
     lines += ["CARDINAL\t2\ttwo", "PUNCT\t-\tto", "CARDINAL\t5\tfive"]  # lines 100,001-100,003
     name = "output-00095-of-00100"
     (corpus / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -147,15 +150,29 @@ def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path):
     report = run("--held-out-shard", name)
     plain = run()
 
+    # The published report renders exactly as before, the held-out section after it.
+    assert evaluate._render(report).startswith(evaluate._render(plain))
     held = report.pop("held_out")
     assert report == plain
     assert held["shard"] == name
-    assert held["per_token"]["tokens"] == 1
+    assert held["per_token"]["tokens"] == 2  # a window of 99,999 or 100,001 lines is 1 or 3
     assert held["per_token"]["classes"] == {
-        "CARDINAL": {"tokens": 1, "first_choice": 1.0, "any_reading": 1.0}
+        "CARDINAL": {"tokens": 2, "first_choice": 1.0, "any_reading": 1.0}
     }
     assert held["running_text"]["triples"] == 1
     rows = held["running_text"]["rows"]
     assert [(row["separator"], row["corpus_middle"], row["count"]) for row in rows] == [
         ("-", "to", 1)
     ]
+
+
+def test_a_corpus_of_only_held_out_shards_fails_loudly(tmp_path):
+    """With nothing but the held-out shards, the spoken-family builders refuse to build
+    rather than measure nothing."""
+    _evaluator()  # puts tools/ on sys.path
+    import build_spoken_priors
+
+    for name in ("output-00095-of-00100", "output-00099-of-00100"):
+        (tmp_path / name).write_text("CARDINAL\t7\tseven\n", encoding="utf-8")
+    with pytest.raises(FileNotFoundError, match="no training shards"):
+        build_spoken_priors._files(tmp_path)

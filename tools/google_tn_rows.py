@@ -10,7 +10,8 @@ Two shards of the en_with_types corpus are never counted by a shipped table:
 
 Every builder reads its shards through :func:`training_shards`, so neither can reach
 a table however the builder slices the corpus. :func:`running_text` is the one
-number, separator, number predicate the evaluator scores and a range builder counts.
+number, separator, number predicate the evaluator scores (and the planned range builder
+will count).
 """
 
 from __future__ import annotations
