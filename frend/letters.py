@@ -5,8 +5,11 @@ abbreviation lexicon covers the acronyms it knows ("FBI", "NASA"), and this cove
 rest. A run is two or more capitals of one script standing alone ("ATM", "ÉCU",
 "СССР"), with a plural or possessive ("UFOs", "AFI's"), or one capital written as an
 initial ("S." in "Jane S. Smith"). A capital is a letter of Unicode general category
-``Lu``, and its script is ICU's; the acronym builder counts a token as a run by the
-same predicate (:func:`is_letter_run`), so it counts only what this reader matches. A
+``Lu`` with any combining marks written after it, so a decomposed run reads as its NFC
+form; its script is ICU's, resolved as UAX #24 resolves a run (a Common capital such as
+"ℂ" takes its neighbors'). The acronym builder counts a token as a run by the same
+predicate (:func:`is_letter_run`), so it counts what this reader matches, except the
+Roman numerals the reader leaves to icukit (see :func:`is_letter_run`). A
 run leaves a following period as written; an initial takes its period, as icukit's
 abbreviations do, so "S." ties "South" on span and the corpus decides (a letter, 26,596
 of 26,792 times in shard 0). Which reading comes
@@ -30,51 +33,107 @@ __all__ = [
     "LettersDetector",
     "LettersValue",
     "capital_script",
+    "capitals",
     "cv_pattern",
     "is_letter_run",
     "is_roman",
     "letter_vowels",
     "numeral_share",
+    "spelled",
 ]
 
 # A capital is a letter of general category Lu, as ICU's Unicode data has it; the
-# character class below is built from that set, so the patterns match exactly its
-# members, and a match is a run only if its capitals share one ICU script.
+# character classes below are built from ICU's sets, so the patterns match exactly their
+# members. A capital carries the combining marks (general category M) written after it,
+# so a decomposed "E\u0301CO" is one run, as its NFC form "ÉCO" is, and the match keeps
+# the text's own spans; a match is a run only if its capitals share one script.
 _CAPITALS = icu.UnicodeSet("[:Lu:]")
 _CAPITALS.freeze()
+_MARKS = icu.UnicodeSet("[:M:]")
+_MARKS.freeze()
+_NFC = icu.Normalizer2.getNFCInstance()
+# UAX #24: a Common or Inherited character takes the script of its neighbors.
+_NEUTRAL_SCRIPTS = frozenset({icu.UScriptCode.COMMON, icu.UScriptCode.INHERITED})
 
 
-def _character_class(unicode_set: icu.UnicodeSet) -> str:
+def _character_class(unicode_set: icu.UnicodeSet, *, bracket: bool = True) -> str:
     ranges = []
     for index in range(unicode_set.getRangeCount()):
         first, last = unicode_set.getRangeStart(index), unicode_set.getRangeEnd(index)
         span = re.escape(first) if first == last else f"{re.escape(first)}-{re.escape(last)}"
         ranges.append(span)
-    return "[" + "".join(ranges) + "]"
+    body = "".join(ranges)
+    return f"[{body}]" if bracket else body
 
 
 _LU = _character_class(_CAPITALS)
-_RUN = re.compile(rf"(?<![\w&'’.-])({_LU}{{2,}})(s|['’]s)?(?![\w&'’]|-\w|\.\w)")
-_INITIALS = re.compile(rf"(?<![\w&'’.-])((?:{_LU}\.)+)(?!\w)")
+_M = _character_class(_MARKS)
+_MARK_RANGES = _character_class(_MARKS, bracket=False)
+_CAPITAL = f"{_LU}{_M}*"
+_BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
+_RUN = re.compile(rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s|['’]s)?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
+_INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(?![\w{_MARK_RANGES}])")
+_INITIAL = re.compile(rf"({_CAPITAL})\.")
+
+
+def capitals(letters: str) -> tuple[str, ...] | None:
+    """The capitals of ``letters`` after NFC (ICU's Normalizer2), each with the combining
+    marks written after it ("E\u0301CO" -> "É", "C", "O"); ``None`` when a character is
+    neither a capital nor a mark on one, or it is empty."""
+    units = _letters(_NFC.normalize(letters))
+    if not units or not all(_CAPITALS.contains(unit[0]) for unit in units):
+        return None
+    return tuple(units)
+
+
+def _letters(text: str) -> list[str]:
+    # Each character with the combining marks written after it.
+    units: list[str] = []
+    for ch in text:
+        if _MARKS.contains(ch) and units:
+            units[-1] += ch
+        else:
+            units.append(ch)
+    return units
 
 
 def capital_script(letters: str) -> int | None:
-    """The ICU script code every character of ``letters`` shares when each is a capital
-    (general category ``Lu``); ``None`` when one is not, the scripts differ, or it is
-    empty. "ÉCU" is Latin, "СССР" Cyrillic; "AΒ" (Latin A, Greek Beta) is neither."""
-    scripts = set()
-    for ch in letters:
-        if not _CAPITALS.contains(ch):
-            return None
-        scripts.add(icu.Script.getScript(ord(ch)).getScriptCode())
-    return scripts.pop() if len(scripts) == 1 else None
+    """The ICU script code of a run of capitals (:func:`capitals`), resolved as UAX #24
+    resolves a run: a Common or Inherited capital ("ℂ") takes its neighbors' script, so
+    "ℂA" is Latin; "ℂℍ", all Common, is Common. ``None`` when a character is not a
+    capital or a mark on one, when two real scripts mix ("AΒ", Latin A and Greek Beta,
+    and "AℂΒ"), or it is empty. "ÉCU" is Latin, "СССР" Cyrillic."""
+    units = capitals(letters)
+    if units is None:
+        return None
+    scripts = {icu.Script.getScript(ord(unit[0])).getScriptCode() for unit in units}
+    real = scripts - _NEUTRAL_SCRIPTS
+    if len(real) > 1:
+        return None
+    return real.pop() if real else min(scripts)
 
 
 def is_letter_run(token: str) -> bool:
     """Whether ``token`` is, whole, a run of capitals this reader matches: two or more
-    capitals of one script. The acronym builder counts by this, so what it counts and
-    what the reader reads are one population."""
-    return len(token) >= 2 and capital_script(token) is not None
+    capitals (after NFC, each with its combining marks) of one script, as
+    :func:`capital_script` resolves it. The acronym builder counts by this, so what it
+    counts and what the reader matches are one population, with one exception: a bare
+    run icukit reads as a Roman numeral that the corpus reads as a number more often
+    than not ("II") is left by the reader to icukit's Roman reading, while the builder
+    counts it (under its shape keys, and under ``roman:`` keys with its numeral
+    readings)."""
+    units = capitals(token)
+    return units is not None and len(units) >= 2 and capital_script(token) is not None
+
+
+def spelled(letters: str) -> str:
+    """The run spelled letter by letter: after NFC, each capital by ICU's simple lower
+    case mapping, code point by code point (``icu.Char.tolower``), its marks kept on it.
+    "İB" is "i b", not "i ̇ b" with a free dot; "ΟΣ" is "ο σ", the letter, not the final
+    form "ς" lowering the run as a word would give; "ATM" is "a t m"."""
+    return " ".join(
+        "".join(icu.Char.tolower(ch) for ch in unit) for unit in _letters(_NFC.normalize(letters))
+    )
 
 
 def letter_vowels(locale: str = "en_US") -> frozenset[str] | None:
@@ -162,19 +221,20 @@ class LettersDetector:
     def detect(self, text: str) -> list[dict]:
         detections = []
         for chain in _INITIALS.finditer(text):
-            # "S." or a chain of initials ("J.R.R."): each letter with its period, the
-            # chain's letters in one script.
-            if capital_script(chain.group(1)[::2]) is None:
+            # "S." or a chain of initials ("J.R.R."): each letter, with its marks, and its
+            # period, the chain's letters in one script.
+            initials = list(_INITIAL.finditer(text, chain.start(), chain.end()))
+            if capital_script("".join(initial.group(1) for initial in initials)) is None:
                 continue
-            for at in range(chain.start(), chain.end(), 2):
-                letter = text[at]
+            for initial in initials:
+                at, end, letter = initial.start(), initial.end(), initial.group(1)
                 detections.append(
                     {
-                        "text": text[at : at + 2],
+                        "text": text[at:end],
                         "start": at,
-                        "end": at + 2,
+                        "end": end,
                         "type": "letters:initial",
-                        "value": LettersValue(text[at : at + 2], letter, "."),
+                        "value": LettersValue(text[at:end], letter, "."),
                         "captures": _captures(at, letter, "."),
                     }
                 )

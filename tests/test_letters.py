@@ -142,21 +142,97 @@ def _acronym_builder():
     return module
 
 
+# Tokens the builder and the reader must agree on, one by one: decomposed and
+# precomposed accents, a Common capital beside a Latin one, other scripts, and the
+# refusals (two real scripts, a non-capital, a lower case letter).
+_POPULATION = ["ÉCO", "E\u0301CO", "AB\u0301CD", "СССР", "ℂA", "ℂℍ", "AΒ", "AB漢", "ATM", "Ab"]
+
+
+def _counted(tmp_path, token: str) -> bool:
+    shard = tmp_path / token.encode("unicode_escape").decode("ascii").replace("\\", "_")
+    shard.mkdir()
+    (shard / "output-00000-of-00100").write_text(
+        f"LETTERS\t{token}\t{' '.join(token.lower())}\n<eos>\t<eos>\n", encoding="utf-8"
+    )
+    return "*" in _acronym_builder().build_document(shard)["keys"]
+
+
 def test_the_acronym_builder_counts_what_the_reader_matches(tmp_path):
     """One predicate: the builder counts a token exactly when the letters reader matches
-    it whole, so no count stands for a population the reader never ranks."""
-    tokens = ["ÉCO", "СССР", "AΒ", "AB漢", "ATM", "Ab"]
-    shard = tmp_path / "output-00000-of-00100"
-    shard.write_text(
-        "".join(f"LETTERS\t{token}\t{' '.join(token.lower())}\n" for token in tokens)
-        + "<eos>\t<eos>\n",
-        encoding="utf-8",
-    )
-    document = _acronym_builder().build_document(tmp_path)
-    counted = document["keys"].get("*", {}).get("spelled", 0)
-    matched = [token for token in tokens if _spans(token) == [("letters:run", token)]]
-    assert counted == len(matched)
-    assert matched == ["ÉCO", "СССР", "ATM"]
+    it whole, token by token, so no count stands for a population the reader never
+    ranks. A builder that counted "AΒ" and dropped "СССР" keeps the total and fails here."""
+    counted = {token for token in _POPULATION if _counted(tmp_path, token)}
+    matched = {token for token in _POPULATION if _spans(token) == [("letters:run", token)]}
+    assert counted == matched
+    assert matched == {"ÉCO", "E\u0301CO", "AB\u0301CD", "СССР", "ℂA", "ℂℍ", "ATM"}
+
+
+def test_the_builder_counts_the_numerals_the_reader_defers(tmp_path):
+    """The one stated difference: a run the corpus reads as a Roman numeral ("II") is
+    counted by the builder (under ``roman:II`` too) and left by the reader to icukit."""
+    assert _counted(tmp_path, "II")
+    assert _spans("II") == []
+
+
+# Decomposed input is one run, with exact spans (fugu P3 review, finding 1).
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("the E\u0301CO fund", [("letters:run", "E\u0301CO", 4, 8)]),
+        ("AB\u0301CD", [("letters:run", "AB\u0301CD", 0, 5)]),
+        ("E\u0301COs", [("letters:run", "E\u0301COs", 0, 5)]),
+        ("Jane E\u0301. Smith", [("letters:initial", "E\u0301.", 5, 8)]),
+        ("e\u0301AB", []),
+        ("ABe\u0301", []),
+    ],
+)
+def test_combining_marks_stay_with_their_capital(text, expected):
+    found = [(d["type"], d["text"], d["start"], d["end"]) for d in LettersDetector().detect(text)]
+    assert found == expected
+    assert all(text[start:end] == surface for _, surface, start, end in found)
+
+
+def test_a_decomposed_run_reads_as_the_precomposed_one():
+    assert _read("E\u0301CO") == _read("ÉCO")
+
+
+# Each capital is spelled by its own lower case (fugu P3 review, finding 2).
+
+
+def _letters_alternatives(text: str) -> list[str]:
+    lattice = resolve_lattice(list(detect(text, (LettersDetector(),))), source_text=text)
+    units = verbalize_lattice(lattice).best_path.units
+    return [
+        a.text for u in units if u.best.provenance != "surface:passthrough" for a in u.alternatives
+    ]
+
+
+def test_each_capital_is_spelled_by_its_own_lower_case():
+    # Not "i ̇ b" (the full lowering of İ leaves a free dot) nor "ο ς" (final sigma).
+    assert "i b" in _letters_alternatives("İB")
+    assert "ο σ" in _letters_alternatives("ΟΣ")
+    assert "e\u0301 c o".replace("e\u0301", "é") in _letters_alternatives("E\u0301CO")
+
+
+def test_english_spelled_forms_are_unchanged():
+    assert "a t m" in _letters_alternatives("ATM")
+    assert _read("UFOs")[0] == ["u f o's", "ufos"]
+    assert _read("J.R.R. Tolkien") == [["j r r"]]
+
+
+# Script runs per UAX #24: Common capitals take their neighbors' script (finding 3).
+
+
+@pytest.mark.parametrize("text", ["ℂA", "ℂℍ", "Aℂ"])
+def test_a_common_capital_takes_its_neighbors_script(text):
+    assert _spans(text) == [("letters:run", text)]
+
+
+@pytest.mark.parametrize("text", ["AΒ", "AℂΒ"])
+def test_two_real_scripts_are_still_not_one_run(text):
+    assert _spans(text) == []
 
 
 def test_the_vowels_are_the_locales():
@@ -167,6 +243,9 @@ def test_the_vowels_are_the_locales():
     assert cv_pattern("GUS") == cv_pattern("GUS", "en_US") == "cvc"
     assert letter_key("NASA") == "upper:4:v"
     assert letter_key("GWR") == "upper:3:nv"
+    # English "y" is a vowel: "MYTH" has one.
+    assert letter_key("MYTH") == "upper:4:v"
+    assert cv_pattern("MYTH") == "cvcc"
     assert cv_pattern("GUS", "ru_RU") is None
     assert letter_key("NASA", "ru_RU") == "upper:4"
 

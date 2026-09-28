@@ -26,7 +26,7 @@ from frend.electronic import (
     tld_positions,
 )
 from frend.lattice import ReadingEdge, ReadingLattice
-from frend.letters import LettersValue, cv_pattern
+from frend.letters import LettersValue, cv_pattern, spelled
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
@@ -947,22 +947,29 @@ def _spoken_ordinal(
     return _ranked([*ordinals, *_with_article(ordinals, locale)])
 
 
+# A run is read in NFC ("E\u0301CO" as "ÉCO"), a combining mark kept on its letter.
+_NFC = icu.Normalizer2.getNFCInstance()
+_MARKS = icu.UnicodeSet("[:M:]")
+_MARKS.freeze()
+
+
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
 def _spoken_letters(value: LettersValue) -> tuple[SpokenAlternative, ...]:
     """A run of capitals spelled or read as a word, weighted as an acronym is; a plural
     or possessive rides on the last letter ("UFOs" -> "u f o's", "ufos"). An initial
     ("S.") is its letter."""
-    if len(value.letters) < 2:
-        return (SpokenAlternative(value.letters.lower(), "surface:letter"),)
+    letters = _NFC.normalize(value.letters)
+    if value.suffix == ".":
+        return (SpokenAlternative(spelled(letters), "surface:letter"),)
     suffix = "'s" if value.suffix else ""
-    word = value.surface.lower()
+    word = _NFC.normalize(value.surface).lower()
     return tuple(
         SpokenAlternative(
             f"{form.text}{suffix}" if form.provenance.endswith("spelled") else word,
             form.provenance,
             form.weight,
         )
-        for form in _with_acronym_readings(value.letters, ())
+        for form in _with_acronym_readings(letters, ())
     )
 
 
@@ -998,7 +1005,7 @@ def _with_acronym_readings(
     pattern and then its shape (``letter_key``: length, vowel). icukit's long forms
     follow. A spelled form icukit already gives ("M D") takes the weight, not a copy.
     """
-    letters = "".join(ch for ch in surface if ch.isalpha())
+    letters = "".join(ch for ch in surface if ch.isalpha() or _MARKS.contains(ch))
     if len(letters) < 2 or not letters.isupper():
         return alternatives
     table = _acronym_priors()
@@ -1019,7 +1026,8 @@ def _with_acronym_readings(
             # over its shape's; a Roman numeral's number readings are not counted here.
             own = {label: table[key].get(label, 0) for label in ("spelled", "word")}
             share = blend(own, share)
-    forms = [SpokenAlternative(" ".join(letters.lower()), "measured:acronym-spelled", share)]
+    # Each capital by its own lower case ("İB" is "i b", "ΟΣ" "ο σ"), not the run's.
+    forms = [SpokenAlternative(spelled(letters), "measured:acronym-spelled", share)]
     if letters == surface:
         # A dotted surface ("U.S.") is spelled or expanded, never read as a word ("us").
         forms.append(SpokenAlternative(letters.lower(), "measured:acronym-word", 1 - share))

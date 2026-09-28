@@ -3,17 +3,20 @@
 An all-capitals token of two or more letters is spelled when the corpus files it as
 LETTERS ("FBI" "f b i") and said as written when it files it as PLAIN ("NASA"). A token
 is counted when frend's letters reader would match it whole
-(``frend.letters.is_letter_run``: capitals of general category Lu, in one ICU script),
-so the counts and the reader cover one population. The
-sampled shards are the spoken priors' (every tenth). Counts are kept by the token's
-shape (``frend.electronic.letter_key``: case, length, whether a vowel letter occurs), by
-its consonant-vowel pattern up to seven letters (``frend.letters.cv_pattern``: "cvc" is
-mostly a word, "ccc" spelled), and for an acronym icukit's lexicon lists, by its own
-surface ("NASA" is a word, "FBI" spelled; the surfaces are icukit's, not the corpus's);
-``*`` pools all. A token icukit also reads as a Roman numeral ("II", "CD") is counted a
-third way, as a numeral when the corpus files it CARDINAL or ORDINAL, under
-``roman:<surface>`` for a numeral seen at least ``_ROMAN_FLOOR`` times and ``roman:*``
-for all, so frend reads "II" as two and "CD" as letters. Only counts are stored.
+(``frend.letters.is_letter_run``: after NFC, capitals of general category Lu with their
+combining marks, in one script as UAX #24 resolves a run), so the counts and the reader
+cover one population, except that the reader leaves a bare run the corpus mostly reads
+as a Roman numeral ("II") to icukit, while this counts it, by shape and under
+``roman:``. The sampled shards are the spoken priors' (every tenth). Counts are kept by
+the token's shape (``frend.electronic.letter_key``: case, length, whether a vowel letter
+occurs), by its consonant-vowel pattern up to seven letters
+(``frend.letters.cv_pattern``: "cvc" is mostly a word, "ccc" spelled), and for an
+acronym icukit's lexicon lists, by its own surface ("NASA" is a word, "FBI" spelled; the
+surfaces are icukit's, not the corpus's); ``*`` pools all. A token icukit also reads as
+a Roman numeral ("II", "CD") is counted a third way, as a numeral when the corpus files
+it CARDINAL or ORDINAL, under ``roman:<surface>`` for a numeral seen at least
+``_ROMAN_FLOOR`` times and ``roman:*`` for all, so frend reads "II" as two and "CD" as
+letters. Only counts are stored.
 
 ``--check`` repeats the sample and compares the JSON byte for byte.
 """
@@ -25,6 +28,8 @@ import json
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
+
+import icu
 
 _REPO = Path(__file__).resolve().parents[1]
 if str(_REPO) not in sys.path:
@@ -47,6 +52,7 @@ def _lexicon_acronyms() -> frozenset[str]:
     )
 
 
+_NFC = icu.Normalizer2.getNFCInstance()
 _OUT = _REPO / "frend" / "data" / "en" / "acronym_priors.json"
 _LABELS = {"LETTERS": "spelled", "PLAIN": "word"}
 _NUMERAL = frozenset({"CARDINAL", "ORDINAL"})
@@ -64,7 +70,8 @@ def build_document(corpus_dir: Path) -> dict:
                 parts = line.rstrip("\n").split("\t")
                 if len(parts) < 3 or parts[0] not in _LABELS.keys() | _NUMERAL:
                     continue
-                written = parts[1]
+                # Keyed in NFC, as the reader reads a run: "E\u0301CO" is "ÉCO".
+                written = _NFC.normalize(parts[1])
                 if not is_letter_run(written):
                     continue
                 roman = is_roman(written)
