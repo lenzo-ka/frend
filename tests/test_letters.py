@@ -82,3 +82,12 @@ def test_a_lexicon_acronym_keeps_its_own_measure():
 def test_capitals_the_lexicon_lists_without_expansion_are_spelled():
     # icukit's lexicon lists "J.R.R." (a sentence-break exception) with no expansion.
     assert _read("J.R.R. Tolkien") == [["j r r"]]
+
+
+def test_a_chain_of_initials_reads_one_initial_at_a_time():
+    # Without icukit's abbreviation reader, the chain is frend's own: each initial alone.
+    text = "X.Q.Z. Smith"
+    lattice = resolve_lattice(list(detect(text, (LettersDetector(),))), source_text=text)
+    units = verbalize_lattice(lattice).best_path.units
+    spoken = [u.best.text for u in units if u.best.provenance != "surface:passthrough"]
+    assert spoken == ["x", "q", "z"]
