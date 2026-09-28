@@ -170,7 +170,7 @@ def measurement_sub_key(kind: str | None, detection: object) -> str | None:
     measure measurements the reading's ICU unit identifier (``per-square-kilometer``,
     ``kilometer``; ``percent`` for a percent), so a rate can learn the corpus's plural
     after "per" without every unit taking it, and date measurements the written order of
-    month and day (``month-first``, ``day-first``, else ``other``). No other kind
+    month and day (``year-first``, ``month-first``, ``day-first``, else ``other``). No other kind
     declares a sub-key, so those kinds retain kind-level shares.
     """
     if kind == "symbol":
@@ -185,12 +185,16 @@ def measurement_sub_key(kind: str | None, detection: object) -> str | None:
     if kind == "date":
         # A date with a month and a day ranks by its written order: the corpus says
         # "March 5, 2024" and "5 March 2024" differently, and the pooled shares cannot.
+        # A year written first ("2008-09-30") is its own order: the corpus says it
+        # day-first ("the thirtieth of september"), unlike a written month-first date.
         starts = {}
         for capture in detection.get("captures", ()):  # type: ignore[union-attr]
             name = getattr(capture, "name", None)
-            if name in ("month", "M", "d") and name not in starts:
-                starts["d" if name == "d" else "M"] = capture.start
+            if name in ("month", "M", "d", "y") and name not in starts:
+                starts[name if name in ("d", "y") else "M"] = capture.start
         if "M" in starts and "d" in starts:
+            if "y" in starts and starts["y"] < min(starts["M"], starts["d"]):
+                return "year-first"
             return "month-first" if starts["M"] < starts["d"] else "day-first"
         return "other"
     if kind == "measure":
