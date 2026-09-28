@@ -14,7 +14,8 @@ def _forms(text):
     (detection,) = SymbolDetector().detect(text)
     lattice = resolve_lattice([detection], source_text=text)
     edge = next(e for e in lattice.edges if e.kind == "reading")
-    unit = verbalize_edge(edge, source_text=text)
+    # The measured order, before any context tree (the symbol stands alone here).
+    unit = verbalize_edge(edge, source_text=text, rerank_by_context=False)
     assert unit.unspoken == ()
     return [normalize_spoken(a.text) for a in unit.alternatives]
 

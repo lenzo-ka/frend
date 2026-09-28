@@ -94,25 +94,46 @@ def expected(corpus_class: str, written: str, spoken: str) -> str:
 JOINERS = frozenset({"-", "–", "x", ":"})
 
 
-def running_text(sentences) -> list[tuple[str, str, str, str]]:
-    """(separator, the middle's corpus reading, joined written, joined target) for each
-    number, separator, number triple, left to right, never overlapping."""
-    found = []
+def _triples(sentences):
+    """(sentence, index of the triple's left row) for each number, separator, number
+    triple, left to right, never overlapping: the one predicate."""
     for sentence in sentences:
         at = 1
         while at < len(sentence) - 1:
             left, middle, right = sentence[at - 1], sentence[at], sentence[at + 1]
             if middle[1] in JOINERS and left[1][:1].isdigit() and right[1][:1].isdigit():
-                parts = [expected(*row) for row in (left, middle, right)]
-                found.append(
-                    (
-                        middle[1],
-                        parts[1] or "(silence)",
-                        left[1] + middle[1] + right[1],
-                        " ".join(parts),
-                    )
-                )
+                yield sentence, at - 1
                 at += 3
             else:
                 at += 1
+
+
+def running_text(sentences) -> list[tuple[str, str, str, str]]:
+    """(separator, the middle's corpus reading, joined written, joined target) for each
+    number, separator, number triple, left to right, never overlapping."""
+    found = []
+    for sentence, at in _triples(sentences):
+        left, middle, right = sentence[at : at + 3]
+        parts = [expected(*row) for row in (left, middle, right)]
+        found.append(
+            (
+                middle[1],
+                parts[1] or "(silence)",
+                left[1] + middle[1] + right[1],
+                " ".join(parts),
+            )
+        )
     return found
+
+
+def running_text_contexts(sentences) -> list[tuple[str, str]]:
+    """For each triple of :func:`running_text`, in the same order, the sentence's written
+    text before it and after it (tokens joined by one space): the running text the joined
+    triple is read in."""
+    return [
+        (
+            " ".join(row[1] for row in sentence[:at]),
+            " ".join(row[1] for row in sentence[at + 3 :]),
+        )
+        for sentence, at in _triples(sentences)
+    ]

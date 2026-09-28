@@ -27,7 +27,10 @@ classifiers = [
 # frend's tests where it can be seen, not be held back silently by a cap.
 # icukit 0.8.0 is the floor: the first release with CLDR symbol names (icukit #136).
 # OutputPlan first appears in tiergraph 0.2.3.
-dependencies = ["icukit>=0.8", "tiergraph>=0.2.3"]
+# cartlet 0.6.0 is the first release with model format 2, which the context trees
+# (data/<locale>/context/trees/*.cart) are written in; frend uses its dependency-free
+# runner (cartlet.runner) to read them.
+dependencies = ["cartlet>=0.6", "icukit>=0.8", "tiergraph>=0.2.3"]
 
 [project.urls]
 Homepage = "https://github.com/lenzo-ka/frend"
@@ -52,6 +55,10 @@ frend = [
     # Tables by locale: data/<locale>/ (en, ...) and the cross-locale data/root/.
     "data/*/*.json",
     "data/*/*.txt",
+    # The context trees and their index: data/<locale>/context/.
+    "data/*/context/*.json",
+    "data/*/context/trees/*.cart",
+    "data/*/context/trees/*.json",
     "data/README.md",
 ]
 

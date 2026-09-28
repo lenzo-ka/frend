@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -26,6 +27,16 @@ from frend.abbreviation_variants import (
     measured_case,
     measures_spelled,
     upper_variant_expansions,
+)
+from frend.context import (
+    CONTEXT_THRESHOLD,
+    ContextChoice,
+    TextContext,
+    between_numbers,
+    cldr_range_separator,
+    connector_probability,
+    connector_words,
+    rerank,
 )
 from frend.electronic import (
     ElectronicValue,
@@ -102,6 +113,8 @@ class VerbalizedUnit:
     ``unspoken`` holds every capture of the reading that no alternative speaks, so
     written material the verbalizer does not say is known here rather than lost. A
     surface fallback speaks the whole span and so leaves nothing unspoken.
+    ``context`` is what the context tree said about the alternatives' order
+    (``frend.context``), or ``None`` where no tree applies.
     """
 
     edge_id: str
@@ -110,6 +123,7 @@ class VerbalizedUnit:
     provenance: str | None
     verbalized: bool
     unspoken: tuple[object, ...] = ()
+    context: ContextChoice | None = None
 
     @property
     def best(self) -> SpokenAlternative:
@@ -1767,6 +1781,139 @@ def _spoken_relative(
     )
 
 
+RANGE_SOURCE = LEXICAL_SOURCE  # the spoken range connector is a lexical form
+
+
+def range_connector(locale: str) -> str | None:
+    """The words a range's two ends are joined by ("to"), from the lexical table's
+    ``range.connector`` "to" pattern; ``None`` when the locale has none (the feature is
+    off) or its pattern cannot be said by a separator alone."""
+    for form in (_lexical("range.connector", locale) or {}).get("range", ()):
+        if form.get("id") == "to":
+            return connector_words(str(form["pattern"]))
+    return None
+
+
+def range_separators(locale: str) -> frozenset[str]:
+    """The characters a written range is joined by: the lexical table's
+    ``range.separator`` ranges (the hyphen-minus, which CLDR writes nowhere in en) and
+    CLDR's own number-range separator (the en dash). Empty when the locale has no spoken
+    connector."""
+    if range_connector(locale) is None:
+        return frozenset()
+    written = set((_lexical("range.separator", locale) or {}).get("range", ()))
+    cldr = cldr_range_separator(locale)
+    return frozenset(written | ({cldr} if cldr else set()))
+
+
+def _range_to(context: TextContext | None, start: int, end: int, locale: str) -> str | None:
+    """The locale's range connector ("to") when ``[start, end)`` of the lattice's text
+    is a range separator with a number on either side in ``context``; else ``None``."""
+    if context is None:
+        return None
+    connector = range_connector(locale)
+    if connector is None:
+        return None
+    a, b = context.offset + start, context.offset + end
+    if context.text[a:b] not in range_separators(locale):
+        return None
+    return connector if between_numbers(context.text, a, b) else None
+
+
+def _connector_first(
+    alternatives: tuple[SpokenAlternative, ...],
+    context: TextContext,
+    start: int,
+    end: int,
+    locale: str,
+    threshold: float,
+) -> tuple[tuple[SpokenAlternative, ...], ContextChoice | None]:
+    """A separator written inside a range ("5-10", "10:30-11:45"): the standalone
+    separator's tree, read at the same place, puts the first connector reading first
+    when it gives "to" at least ``threshold``."""
+    a, b = context.offset + start, context.offset + end
+    said = connector_probability(
+        context.text, a, b, locale=locale, bos=context.bos, eos=context.eos
+    )
+    if said is None:
+        return alternatives, None
+    label, probability = said
+    at = next(
+        (i for i, item in enumerate(alternatives) if item.provenance.startswith(RANGE_SOURCE)),
+        None,
+    )
+    applied = at is not None and at > 0 and probability >= threshold
+    choice = ContextChoice(f"connector:{context.text[a:b]}", label, probability, applied)
+    if not applied:
+        return alternatives, choice
+    return (alternatives[at], *alternatives[:at], *alternatives[at + 1 :]), choice
+
+
+def _may_end_a_range(type_: str) -> bool:
+    """Whether a signed reading of this type may be a written range's right end, its
+    sign the separator ("5-10", "5-10%")."""
+    return type_.startswith(("number:cardinal", "number:int", "number:decimal", "number:percent"))
+
+
+def _connector_reading(connector: str) -> SpokenAlternative:
+    """The range connector alone, said for a separator between two numbers ("to");
+    ``connector`` is read from the lexical table (``range_connector``)."""
+    return SpokenAlternative(connector, RANGE_SOURCE)
+
+
+def _connected(
+    connector: str, right_end: Sequence[SpokenAlternative]
+) -> tuple[SpokenAlternative, ...]:
+    """The right end of a written range after the table's connector ("to ten")."""
+    return tuple(
+        SpokenAlternative(f"{connector} {item.text}", f"{RANGE_SOURCE}+{item.provenance}")
+        for item in right_end
+    )
+
+
+def _left_end_digits(context: TextContext, start: int) -> int:
+    """How many decimal digits the number just before ``start`` (the lattice's
+    coordinates) is written with, white space skipped."""
+    before = context.text[: context.offset + start].rstrip()
+    count = 0
+    while count < len(before) and before[-1 - count].isdecimal():
+        count += 1
+    return count
+
+
+def _unsigned(
+    type_: str, value: NumberValue, detection: Mapping, locale: str, *, year_first: bool
+) -> tuple[SpokenAlternative, ...]:
+    """A signed number's readings without its sign: the right end of a written range.
+
+    With ``year_first`` (the left end is written as a year is, four digits: "1990-1995",
+    "1992-93"), an integer end is read as a year first, as the corpus reads such ranges
+    ("nineteen ninety to nineteen ninety five"); until the range readers measure it
+    (the ranges plan's P6), this follows the left end's form, not a measurement.
+    """
+    decimal = abs(Decimal(value.decimal))
+    unsigned_value = dataclasses.replace(value, decimal=str(decimal))
+    unsigned_detection = {
+        **detection,
+        "captures": tuple(
+            capture
+            for capture in detection.get("captures", ())
+            if getattr(capture, "name", None) != "sign"
+        ),
+    }
+    alternatives = _spoken_number(type_, unsigned_value, unsigned_detection, locale)
+    kind = _measured_kind(type_, unsigned_value)
+    ranked = _rank_final(alternatives, kind, measurement_sub_key(kind, unsigned_detection))
+    if year_first and type_ != "number:percent" and decimal == decimal.to_integral_value():
+        seen: set[str] = set()
+        return tuple(
+            item
+            for item in (*_year_leaf(decimal, locale), *ranked)
+            if not (item.text in seen or seen.add(item.text))
+        )
+    return ranked
+
+
 def verbalize_edge(
     edge: ReadingEdge,
     *,
@@ -1774,21 +1921,51 @@ def verbalize_edge(
     locale: str = "en_US",
     supplements: CuratedSupplements | None = None,
     apply_source_priors: bool = True,
+    context: TextContext | None = None,
+    rerank_by_context: bool = True,
+    context_threshold: float = CONTEXT_THRESHOLD,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
     ``apply_source_priors=False`` is the measurement-builder mode. A builder
     cannot measure a source table through the ranking that table itself drives
-    without making the measurement circular.
+    without making the measurement circular; it reads no context either.
+
+    ``context`` is the running text around the edge (``frend.context``; by default
+    ``source_text`` itself). A range separator between two numbers ("5 - 10", "5-10")
+    is also offered the locale's range connector ("to"), and a context tree may put
+    another reading first (``frend.context.rerank``, at ``context_threshold`` or more).
+    ``rerank_by_context=False`` keeps frend's own order with the offers (the context
+    trees' builder mode).
     """
     if locale != "en_US":
         raise NotImplementedError(f"verbalization v1 supports only en_US, got {locale!r}")
+    if context is None and source_text is not None:
+        context = TextContext(source_text)
+    elif context is not None and source_text is not None:
+        placed = context.text[context.offset : context.offset + len(source_text)]
+        if placed != source_text:
+            raise ValueError("the context text does not hold the source text at its offset")
+    if not apply_source_priors:
+        context = None
     prior = edge.prior
     tier = prior.tier if prior is not None else None
     provenance = prior.provenance if prior is not None else None
+    range_span: tuple[int, int] | None = None  # a separator between numbers, said "to"?
     if edge.kind == "passthrough":
-        alternative = SpokenAlternative(_surface(edge, source_text), "surface:passthrough")
-        return VerbalizedUnit(edge.id, (alternative,), tier, provenance, True)
+        alternatives: tuple[SpokenAlternative, ...] = (
+            SpokenAlternative(_surface(edge, source_text), "surface:passthrough"),
+        )
+        choice = None
+        connector = _range_to(context, edge.start, edge.end, locale)
+        if connector is not None:
+            # A separator written inside a range ("10:30-11:45") may be said "to".
+            alternatives = (*alternatives, _connector_reading(connector))
+            if rerank_by_context:
+                alternatives, choice = _connector_first(
+                    alternatives, context, edge.start, edge.end, locale, context_threshold
+                )
+        return VerbalizedUnit(edge.id, alternatives, tier, provenance, True, context=choice)
     detection = edge.detection
     if detection is None:
         raise ValueError(f"reading edge {edge.id!r} has no detection")
@@ -1870,6 +2047,11 @@ def verbalize_edge(
                 *(SpokenAlternative(name, source) for name, source in value.names),
                 SpokenAlternative("", "surface:silence"),
             )
+            connector = _range_to(context, edge.start, edge.end, locale)
+            if connector is not None:
+                # A lone separator between two numbers ("5 - 10") may be said "to".
+                alternatives = (*alternatives, _connector_reading(connector))
+                range_span = (edge.start, edge.end)
             key_value = value.char
             path = "symbol"
         elif isinstance(value, LettersValue):
@@ -1957,7 +2139,45 @@ def verbalize_edge(
             ),
             *alternatives,
         )
-    return VerbalizedUnit(edge.id, alternatives, tier, provenance, True, _unspoken(detection, path))
+    choice = None
+    sign = _capture(detection, "sign") if path == "number" else None
+    connector = (
+        None
+        if sign is None or not _may_end_a_range(type_)
+        else _range_to(context, sign.start, sign.end, locale)
+    )
+    if range_span is not None:
+        # One question for every separator between numbers, however written: the
+        # separator's tree says whether "to" is said.
+        if rerank_by_context:
+            alternatives, choice = _connector_first(
+                alternatives, context, *range_span, locale, context_threshold
+            )
+    elif connector is not None:
+        # A range written as one word ("5-10", "1990-1995"): the sign is the range's
+        # separator, and the number its right end, said after the connector.
+        right_end = _unsigned(
+            type_, value, detection, locale, year_first=_left_end_digits(context, sign.start) == 4
+        )
+        alternatives = (*alternatives, *_connected(connector, right_end))
+        if rerank_by_context:
+            alternatives, choice = _connector_first(
+                alternatives, context, sign.start, sign.end, locale, context_threshold
+            )
+    elif context is not None and rerank_by_context:
+        alternatives, choice = rerank(
+            alternatives,
+            context.text,
+            context.offset + edge.start,
+            context.offset + edge.end,
+            locale=locale,
+            bos=context.bos,
+            eos=context.eos,
+            threshold=context_threshold,
+        )
+    return VerbalizedUnit(
+        edge.id, alternatives, tier, provenance, True, _unspoken(detection, path), choice
+    )
 
 
 def verbalize_lattice(
@@ -1965,8 +2185,13 @@ def verbalize_lattice(
     *,
     locale: str = "en_US",
     supplements: CuratedSupplements | None = None,
+    context: TextContext | None = None,
 ) -> VerbalizedLattice:
-    """Verbalize every projected path without expanding alternatives across units."""
+    """Verbalize every projected path without expanding alternatives across units.
+
+    ``context`` is the running text the lattice's source text sits in (by default the
+    source text itself): it is what the context trees read (``verbalize_edge``).
+    """
     edges = {edge.id: edge for edge in lattice.edges}
     paths = tuple(
         VerbalizedPath(
@@ -1978,6 +2203,7 @@ def verbalize_lattice(
                     source_text=lattice.source_text,
                     locale=locale,
                     supplements=supplements,
+                    context=context,
                 )
                 for edge_id in path.edge_ids
             ),

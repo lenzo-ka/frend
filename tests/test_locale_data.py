@@ -406,6 +406,11 @@ def _refusals(name: str, document: object) -> list[str]:
 
 
 def _document(path: Path) -> object:
+    if path.suffix == ".cart":
+        # A binary cartlet model names its source in its embedded metadata.
+        from cartlet.runner import read_cart_metadata
+
+        return read_cart_metadata(path.read_bytes())
     text = path.read_text(encoding="utf-8")
     return json.loads(text) if path.suffix == ".json" else text
 
