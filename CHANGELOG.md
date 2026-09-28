@@ -17,23 +17,37 @@
   never in title case, so "Mr" ranks by `mr` (mister 8,621 of 8,756). So "Mr McVeigh"
   reads "mister mcveigh", "st Paul" "saint paul", "Vol 3" "volume three", "ltd"
   "limited", while "no", "sat", "Mrs" and "miss" stay as written first (the corpus says
-  them so) with the expansion kept. An all-capitals form is still a letter run, spelled
-  first ("MR" m r), and is now also offered its expansions after the letters ("mister");
-  which should lead is left to context. A dotted chain is spelled in any case ("e.g." e
+  them so) with the expansion kept. A variant the corpus spells in its own case's row
+  (or, for a case it never writes, in any row of its key) also reads its letters, ranked
+  with the rest ("Ch 5" c h five, "Lt" l t, "Rt", "Ind", "ft": keys the corpus only
+  spells; "Mr" offers "m r" after mister); "no" does not, since the corpus spells it only
+  in capitals. An all-capitals form is still a
+  letter run, now also offered its expansions; where the corpus has a capitals row for
+  its key, that row ranks the expansions and the letters ("MR Smith" mister smith:
+  mister 562 of 611; "DR" doctor; "LT" l t), and a reading the row does not measure
+  follows. A dotted chain is spelled in any case ("e.g." e
   g, "j.r.r." j r r: the corpus spells every chain it writes, "e.g." 2,432 of 2,437
   lower rows), and a chain in another case borrows the lexicon's expansions ("E.G." for
-  example, after the letters). Published first choice (shard 99) 99.05% becomes 99.16%
-  (+99 tokens: PLAIN +95, LETTERS +4), any reading 99.27% becomes 99.38%, sentences
-  90.23% become 91.30%; held-out shard 95 first choice 99.07% becomes 99.17% (+94:
-  PLAIN +89, LETTERS +5), any reading 99.28% becomes 99.39%, sentences 90.79% become
-  91.79%; no token loses its first choice or its any-reading match on either shard, and
-  running text is unchanged. ARCTIC's own profile reads the same graphs until
-  `build_graphs-P4.patch` adds the variant reader; with it, the seven "Mr"/"Mrs" prompts
-  gain their spoken reading (909 of 909 known readings), 77 graphs gain a branch, total
-  paths 4,248 become 4,586 and the largest graph stays at 216 paths.
-- Ship nothing derived from an LDC corpus: a test checks that no file under
-  `frend/data/` names an `ldc/` corpus in its provenance (kal: every `ldc/*` store id is
-  internal-only for frend).
+  example, after the letters). Published first choice (shard 99) 99.05% becomes 99.21%
+  (+149 tokens: PLAIN +98, VERBATIM +38, LETTERS +13), any reading 99.27% becomes
+  99.43%, sentences 90.23% become 91.88%; held-out shard 95 first choice 99.07% becomes
+  99.22% (+146: PLAIN +93, VERBATIM +32, LETTERS +21), any reading 99.28% becomes 99.44%,
+  sentences 90.79% become 92.36%; no token loses its first choice or its any-reading
+  match on either shard, and running text is unchanged. ARCTIC's own profile reads the
+  same graphs until `build_graphs-P4.patch` adds the variant reader; with it, the seven
+  "Mr"/"Mrs" prompts gain their spoken reading (909 of 909 known readings), 77 graphs
+  gain a branch, total paths 4,248 become 4,602 (the letters add a fourth path to the
+  nine "Mr"/"Mrs" graphs) and the largest graph stays at 216 paths.
+- Ship only from declared sources, and nothing derived from an LDC corpus (kal: every
+  `ldc/*` store id is internal-only for frend). `frend.data_sources` is the one list of
+  sources frend ships from, each with its license and class (`google/tn-en_with_types`
+  shippable-share-alike, `icu/<version>/<family>`, IANA's domains, kal's break
+  exceptions, frend's curated forms); a test refuses any file under `frend/data/` whose
+  `corpus` or `source` does not resolve to one of them (an `ldc/` id, a catalog number
+  such as "LDC93S6A", "ldc:wsj0", an unknown id, or none), or whose provenance mentions
+  an LDC corpus anywhere. Tables keep their older labels (`google-tn:en_with_types`),
+  mapped to store ids in the list, so no measured table changes; `lexical.json` now
+  names its source, `frend/curated`.
 - Train on the corpus's own split. The en_with_types README splits its 100 shards
   training 00-89, runtime eval 90-94 and test 95-99; `tools/google_tn_rows.py` now
   names the three pools (`TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`), and

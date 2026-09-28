@@ -122,9 +122,10 @@ def _paths(graph) -> list[tuple[str, ...]]:
 def test_keep_all_path_reads_mister(text, said):
     """ARCTIC's keep-all path (detect, resolve_choices, compose_choices, build_align_graph)
     with the variant reader alone, as ``build_graphs-P4.patch`` adds it: the variant is a
-    branch beside the text as written. The graph counts 3 paths: the passthrough route,
-    the variant's spoken form, and its as-written form (which says what the passthrough
-    route says)."""
+    branch beside the text as written. The graph counts 4 paths: the passthrough route,
+    the variant's spoken form, its as-written form (which says what the passthrough route
+    says), and its letters (the corpus spells "mr" 135 times of 8,756, "mrs" 12 of
+    3,309)."""
     from icukit.detectors import detect
 
     from frend import compose_choices, resolve_choices
@@ -137,8 +138,9 @@ def test_keep_all_path_reads_mister(text, said):
     )
     assert said in [item.text for unit in choices.units for item in unit.alternatives]
     graph = build_align_graph(choices)
-    assert graph.count_plan().evaluate().value == 3
+    assert graph.count_plan().evaluate().value == 4
     rest = spoken_tokens(text)[1:]
+    letters = spoken_tokens(" ".join(text.split()[0].lower())) + rest
     assert sorted(_paths(graph)) == sorted(
-        [spoken_tokens(said) + rest, spoken_tokens(text), spoken_tokens(text)]
+        [spoken_tokens(said) + rest, spoken_tokens(text), spoken_tokens(text), letters]
     )

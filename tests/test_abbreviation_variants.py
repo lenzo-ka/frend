@@ -119,9 +119,14 @@ def test_single_letter_folds_make_no_variant(written):
     assert "abbreviation:variant" not in _types(written)
 
 
-@pytest.mark.parametrize(("written", "said"), [("LT", "l t"), ("DR", "d r"), ("MR", "m r")])
-def test_caps_variants_are_held(written, said):
-    """An all-capitals form is a letter run, spelled first; no variant reading contests it."""
+@pytest.mark.parametrize(
+    ("written", "said"),
+    [("LT", "l t"), ("DR", "doctor"), ("MR", "mister"), ("MR Smith", "mister smith")],
+)
+def test_a_capitals_run_reads_as_its_upper_row_says(written, said):
+    """An all-capitals form is a letter run, not a variant; where the corpus measures the
+    key in capitals, that row ranks its readings ("MR": mister 562 of 611, "DR": doctor
+    436 of 800, "LT": spelled 155 of 155)."""
     assert "abbreviation:variant" not in _types(written)
     assert _first(written) == said
 
@@ -131,13 +136,38 @@ def test_caps_variants_are_held(written, said):
     [("MR", ["mister"]), ("DR", ["doctor", "drive"]), ("LT", ["lieutenant"])],
 )
 def test_a_capitals_run_also_offers_its_lexicon_expansions(written, expansions):
-    """A run that is a lexicon abbreviation in capitals is offered its expansions after
-    the letters, unranked ("MR": the corpus says mister 562 of 611 upper rows, "LT" is
-    always spelled), so which leads is left to context."""
+    """A run that is a lexicon abbreviation in capitals is offered its expansions beside
+    its letters."""
     alternatives = _alternatives(written)
-    assert alternatives[0] == " ".join(written.lower())
+    assert " ".join(written.lower()) in alternatives
     for said in expansions:
-        assert said in alternatives[1:]
+        assert said in alternatives
+
+
+def test_a_capitals_run_takes_its_upper_row_weights():
+    """ "MR": mister and the letters take the upper row's shares (blended toward the key
+    as every case row is); the run read as a word, which the corpus never says for mr,
+    follows with no weight, its acronym weight dropped."""
+    from frend.abbreviation_variants import abbreviation_weights
+
+    (unit,) = _units("MR")
+    weights = {normalize_spoken(item.text): item.weight for item in unit.alternatives}
+    assert (weights["mister"], weights["m r"]) == abbreviation_weights("MR", ["Mister", "m r"])
+    assert weights["mister"] > weights["m r"]
+    assert weights["mr"] is None
+    assert normalize_spoken(unit.alternatives[-1].text) == "mr"
+
+
+def test_a_capitals_run_with_no_upper_row_keeps_the_letter_readers_order():
+    """ "PKWY" is the capitals of "Pkwy." but the corpus has no capitals row for pkwy, so
+    the letter reader's readings lead and the expansion follows, as before."""
+    from frend.abbreviation_variants import measured_case
+
+    assert measured_case("MR") and measured_case("LT")
+    assert not measured_case("PKWY")
+    alternatives = _alternatives("PKWY")
+    assert alternatives[-1] == "parkway"
+    assert alternatives[0] in ("p k w y", "pkwy")
 
 
 def test_a_capitals_run_that_is_its_own_lexicon_surface_borrows_nothing():
@@ -162,6 +192,43 @@ def test_no_before_a_digit_stays_as_written_until_context():
     """ "No 5" reads as the corpus says "No" at large; "number five" is kept for context."""
     assert _first("No 5") == "no five"
     assert "number" in _alternatives("No 5")
+
+
+@pytest.mark.parametrize(
+    ("written", "said"),
+    [("Ch 5", "c h five"), ("Ind", "i n d"), ("Rt", "r t"), ("Lt", "l t"), ("ft", "f t")],
+)
+def test_a_key_the_corpus_spells_reads_spelled(written, said):
+    """A variant whose key the corpus only spells ("ch" 1,644 of 1,644, "lt" 2,040, "ind",
+    "rt", "ft") reads its letters first, ranked by the table like its other readings;
+    the token as written and the expansions follow."""
+    assert _first(written) == said
+
+
+def test_a_measured_spelled_reading_is_offered_and_weighted():
+    """ "Mr" also offers "m r" (the corpus spells mr 135 of 8,756), weighted by its share,
+    after mister; a key the corpus never spells ("blvd") offers no letters."""
+    from frend.abbreviation_variants import abbreviation_weights, measures_spelled
+
+    (unit,) = _units("Mr")
+    weights = {normalize_spoken(item.text): item.weight for item in unit.alternatives}
+    assert weights["m r"] == abbreviation_weights("Mr", ["m r"])[0]
+    assert weights["mister"] > weights["m r"]
+    assert measures_spelled("Mr") and not measures_spelled("Blvd")
+    assert "b l v d" not in _alternatives("Blvd")
+
+
+@pytest.mark.parametrize("written", ["no", "No", "Vol"])
+def test_letters_follow_the_tokens_own_case_row(written):
+    """Letters are offered only where the token's own case row measures spelled: "no" is
+    spelled 38 times, all in capitals, and never in its lower or title rows; "Vol" is
+    spelled once, in capitals. A case with no row reads the key ("Mr": "m r")."""
+    from frend.abbreviation_variants import measures_spelled
+
+    letters = " ".join(written.lower())
+    assert not measures_spelled(written)
+    assert letters not in _alternatives(written)
+    assert measures_spelled("Mr") and "m r" in _alternatives("Mr")
 
 
 def test_exact_st_period_is_ranked_by_measure():

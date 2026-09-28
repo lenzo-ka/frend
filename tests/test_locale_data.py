@@ -13,7 +13,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
-from frend import locale_data
+from frend import data_sources, locale_data
 
 _REPO = Path(__file__).resolve().parents[1]
 _DATA = _REPO / "frend" / "data"
@@ -344,45 +344,140 @@ def test_a_locale_cache_holds_a_bounded_number_of_locales():
     assert _locale_prior_table.cache_info().currsize <= locale_data.LOCALE_CACHE
 
 
-def _names_an_ldc_corpus(value: object) -> bool:
-    """Whether a provenance value names a store id under ``ldc/`` (any case)."""
+# What an LDC corpus looks like when a provenance names it: a store id under ``ldc/``,
+# a catalog number ("LDC93S6A"), or a label such as "ldc:wsj0".
+_LDC = re.compile(r"(?<![a-z0-9])ldc(?:[/:_-]|\d{2}[a-z]\d)", re.IGNORECASE)
+
+
+def _mentions_ldc(value: object) -> bool:
     if isinstance(value, str):
-        return re.search(r"(?<![a-z0-9])ldc/", value.lower()) is not None
+        return _LDC.search(value) is not None
     if isinstance(value, dict):
-        return any(_names_an_ldc_corpus(k) or _names_an_ldc_corpus(v) for k, v in value.items())
+        return any(_mentions_ldc(k) or _mentions_ldc(v) for k, v in value.items())
     if isinstance(value, list):
-        return any(_names_an_ldc_corpus(item) for item in value)
+        return any(_mentions_ldc(item) for item in value)
     return False
 
 
-def _provenance_of(path: Path) -> object:
-    """What a shipped data file says it came from: a JSON table's top-level fields other
-    than its counts (``provenance``, ``corpus``, ``source``, ...), or a text file's
-    comment lines."""
-    text = path.read_text(encoding="utf-8")
-    if path.suffix == ".json":
-        document = json.loads(text)
-        return {
-            key: value
-            for key, value in document.items()
-            if key in ("provenance", "corpus", "source", "sources", "license", "note")
-            or isinstance(value, str)
+def _refusals(name: str, document: object) -> list[str]:
+    """Why a shipped file may not ship, by what it names as its source; empty when it may.
+
+    A JSON table names its source in ``corpus`` or ``source``, at its top level or in its
+    ``provenance``; each must resolve (``data_sources.source_id``) to a declared source
+    of a class frend ships. A table naming none, an undeclared one or an ``ldc/`` one is
+    refused, and so is any provenance that mentions an LDC corpus elsewhere. A file that
+    is not JSON ships only as a declared source's vendored copy.
+    """
+    if not isinstance(document, dict):
+        vendored = {
+            str(file)
+            for entry in data_sources.SHIPPABLE_SOURCES.values()
+            for file in entry["vendored"]  # type: ignore[union-attr]
         }
-    return [line for line in text.splitlines() if line.lstrip().startswith("#")]
+        return [] if name in vendored else [f"{name}: not a table and no source vendors it"]
+    provenance = document.get("provenance")
+    records = [document] + ([provenance] if isinstance(provenance, dict) else [])
+    labels = [
+        (record, record[field])
+        for record in records
+        for field in ("corpus", "source")
+        if field in record
+    ]
+    if not labels:
+        return [f"{name}: names no source"]
+    refusals = []
+    for record, label in labels:
+        if not isinstance(label, str):
+            refusals.append(f"{name}: source {label!r} is not an id")
+            continue
+        source = data_sources.source_id(label, record)
+        class_ = data_sources.source_class(source)
+        if class_ not in data_sources.SHIPPABLE_CLASSES:
+            refusals.append(f"{name}: source {source!r} is {class_ or 'undeclared'}")
+    fields = {
+        key: value
+        for key, value in document.items()
+        if key in ("provenance", "corpus", "source", "sources", "license", "note")
+        or isinstance(value, str)
+    }
+    if _mentions_ldc(fields):
+        refusals.append(f"{name}: its provenance mentions an LDC corpus")
+    return refusals
 
 
-def test_no_shipped_data_names_an_ldc_corpus():
+def _document(path: Path) -> object:
+    text = path.read_text(encoding="utf-8")
+    return json.loads(text) if path.suffix == ".json" else text
+
+
+def test_every_shipped_table_names_a_shippable_source():
     """frend ships nothing derived from an LDC corpus (kal, 2026-09-28: every ``ldc/*``
-    store id is internal-only for frend): no file under ``frend/data/`` names one in its
-    provenance. Checked against a planted ``ldc/`` corpus so the guard is known to bite."""
+    store id is internal-only for frend), so every file under ``frend/data/`` names its
+    source by an id in the one declared list (``frend.data_sources``), of a class frend
+    ships; the README documents them and is not a table."""
     files = [path for path in sorted(_DATA.rglob("*")) if path.is_file()]
     assert files
-    naming = [
-        str(path.relative_to(_DATA))
+    refusals = [
+        refusal
         for path in files
-        if path.name != "README.md" and _names_an_ldc_corpus(_provenance_of(path))
+        if path.name != "README.md"
+        for refusal in _refusals(str(PurePosixPath(path.relative_to(_DATA))), _document(path))
     ]
-    assert naming == []
-    assert _names_an_ldc_corpus({"provenance": {"corpus": "ldc/LDC93S6A"}})
-    assert _names_an_ldc_corpus({"provenance": {"shards": ["x", "LDC/wsj0/si_tr_s"]}})
-    assert not _names_an_ldc_corpus({"provenance": {"corpus": "google-tn:en_with_types"}})
+    assert refusals == []
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"provenance": {"corpus": "ldc/LDC93S6A"}},
+        {"provenance": {"corpus": "LDC93S6A"}},
+        {"provenance": {"corpus": "ldc:wsj0"}},
+        {"corpus": "ldc/wsj0"},
+        {"provenance": {"source": "nist/timit"}},
+        {"provenance": {"corpus": "google-tn:en_with_types", "shards": ["LDC/wsj0/si_tr_s"]}},
+        {"provenance": {"corpus": "google-tn:en_with_types", "note": "counts from LDC93S6A"}},
+        {"provenance": {"shards": ["output-00000-of-00100"]}},
+        {"counts": {"x": 1}},
+        {"provenance": {"corpus": "icu/"}},
+        {"provenance": {"source": "icu-reflective-generation"}},
+        {"provenance": {"corpus": ["google/tn-en_with_types"]}},
+    ],
+)
+def test_a_table_naming_no_shippable_source_is_refused(document):
+    """Planted tables the guard must refuse: an LDC id, a bare catalog number, an LDC
+    label, an undeclared id, an LDC mention beside a declared source, no source at all,
+    a bare namespace, an ICU label missing its version, a source that is not an id."""
+    assert _refusals("en/planted.json", document)
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"provenance": {"corpus": "google-tn:en_with_types"}},
+        {"provenance": {"corpus": "google/tn-en_with_types"}},
+        {"provenance": {"source": "icu-reflective-generation", "icu_version": "78.3"}},
+        {"corpus": "break-exceptions-en-curated"},
+        {"source": "frend/curated"},
+    ],
+)
+def test_a_table_naming_a_declared_source_ships(document):
+    assert _refusals("en/planted.json", document) == []
+
+
+def test_a_declared_ldc_source_is_still_internal_only():
+    assert data_sources.source_class("ldc/wsj0") == data_sources.INTERNAL_ONLY
+    assert data_sources.source_class("LDC/LDC93S6A") == data_sources.INTERNAL_ONLY
+
+
+def test_every_declared_source_has_a_license_and_a_class():
+    for source, entry in data_sources.SHIPPABLE_SOURCES.items():
+        assert entry["class"] in data_sources.LICENSE_CLASSES, source
+        assert entry["class"] != data_sources.INTERNAL_ONLY, source
+        assert entry["license"], source
+        for file in entry["vendored"]:
+            assert (_DATA / file).is_file(), (source, file)
+
+
+def test_a_text_file_ships_only_as_a_vendored_source():
+    assert _refusals("root/tlds-alpha-by-domain.txt", "# Version 1\nCOM\n") == []
+    assert _refusals("root/other.txt", "# source: google/tn-en_with_types\n")

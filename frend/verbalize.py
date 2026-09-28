@@ -23,6 +23,8 @@ from frend.abbreviation_variants import (
     abbreviation_weights,
     chain_expansions,
     is_chain,
+    measured_case,
+    measures_spelled,
     upper_variant_expansions,
 )
 from frend.electronic import (
@@ -1823,6 +1825,13 @@ def verbalize_edge(
                 # A written variant ("Mr", "st", "no") may be the word it spells, so its
                 # expansions stand beside the token as written; the corpus ranks them.
                 alternatives = (*expanded, SpokenAlternative(written, AS_WRITTEN_SOURCE))
+                if measures_spelled(written, locale=locale):
+                    # A key the corpus spells ("Lt", "ch", "Rt") also reads letter by
+                    # letter; the table ranks the letters with the other readings.
+                    alternatives = (
+                        *alternatives,
+                        SpokenAlternative(spelled(written.replace(".", "")), SPELLED_SOURCE),
+                    )
             else:
                 alternatives = _with_acronym_readings(value.surface, expanded)
                 if is_chain(written) and not written.isupper():
@@ -1867,11 +1876,22 @@ def verbalize_edge(
             alternatives = _spoken_letters(value)
             if not value.suffix:
                 # A run that is a lexicon abbreviation in capitals ("MR", "DR") is also
-                # offered its expansions, after the letters; which leads needs context.
-                alternatives = (
-                    *alternatives,
-                    *_expansion_alternatives(upper_variant_expansions(value.letters, locale)),
-                )
+                # offered its expansions.
+                expansions = upper_variant_expansions(value.letters, locale)
+                alternatives = (*alternatives, *_expansion_alternatives(expansions))
+                if (
+                    expansions
+                    and apply_source_priors
+                    and measured_case(value.letters, locale=locale)
+                ):
+                    # Where the corpus measures the run in capitals ("MR": mister 562
+                    # of 611), that row ranks the expansions and the letters; a reading
+                    # it does not measure follows, its acronym weight dropped.
+                    alternatives = _abbreviation_ranked(
+                        value.letters,
+                        tuple(SpokenAlternative(a.text, a.provenance) for a in alternatives),
+                        locale,
+                    )
             key_value = value.surface
             path = "letters"
         elif isinstance(value, DigitsValue):

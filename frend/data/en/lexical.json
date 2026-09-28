@@ -1,6 +1,7 @@
 {
   "locale": "en",
   "schema_version": 1,
+  "source": "frend/curated",
   "forms": {
     "range.connector": {
       "why": "No ICU/CLDR resource walked gives en a spoken range connector. CLDR writes only the separator: root NumberElements/latn/miscPatterns/range '{0}–{1}' and calendar/gregorian/intervalFormats/fallback '{0} – {1}' (ICU 78.3). Resources searched with no spoken connector: RBNF spellout/ordinal/duration, ICUDATA-unit, ICUDATA-lang, en NumberElements, fields, listPattern (dualplan-ranges 03, (N)); and calendar/gregorian in root, en and en_US, walked by tests/test_lexical_forms.py::test_calendar_walk_finds_no_en_range_connector: its intervalFormats patterns hold no literal word, and the words the subtree does hold join other things, not a range's two ends ('at' in DateTimePatterns%atTime and %relative, \"{1} 'at' {0}\"; 'week' and 'of' in availableFormats MMMMW and yw, \"'week' W 'of' MMMM\"). Which pattern is said is for the corpus to measure, not for this table",

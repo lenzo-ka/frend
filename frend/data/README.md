@@ -128,12 +128,22 @@ lexicon expansion ("saint"), or `other`. The corpus writes none of these keys wi
 period, and some (st, dr, mr, ...) never in title case; a case with no row reads the
 key. Only counts are stored; the shared attribution applies.
 
-## Provenance: nothing from LDC ships
+## Provenance: declared sources only, nothing from LDC
 
-Nothing under `frend/data/` is derived from an LDC corpus: every `ldc/*` store id is
-internal-only for frend (kal, 2026-09-28), usable for evaluation and development but
-never in a shipped table, count or fixture. `tests/test_locale_data.py` checks that no
-file here names an `ldc/` corpus in its provenance.
+Every file here names what it was made from by a source id, and that id must be one
+of `frend.data_sources.SHIPPABLE_SOURCES`, each listed with its license and license
+class: `google/tn-en_with_types` (the store id; shippable-share-alike),
+`icu/<version>/<family>`, `iana/tlds-alpha-by-domain`, `lenzo/break_exceptions` and
+`frend/curated` (the hand-written forms in `lexical.json`). A JSON table names it in
+`corpus` or `source`, at its top level or in its `provenance`; the older labels the
+measured tables carry (`google-tn:en_with_types`, `icu-reflective-generation`) are
+mapped to their ids there (`SOURCE_LABELS`), so the tables keep their bytes. A file that
+is a source vendored unchanged (IANA's list) is named by its source's `vendored` entry.
+Nothing is derived from an LDC corpus: every `ldc/*` store id is internal-only for
+frend (kal, 2026-09-28), usable for evaluation and development but never in a shipped
+table, count or fixture. `tests/test_locale_data.py` refuses a file naming no source,
+an undeclared one, an `ldc/` one, or whose provenance mentions an LDC corpus anywhere
+("LDC93S6A", "ldc:wsj0").
 
 ## `en/zero_priors.json`
 

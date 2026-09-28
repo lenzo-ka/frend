@@ -18,9 +18,12 @@ title case, each with and without the period, and these are read by
 :class:`AbbreviationVariantDetector`. A variant that is itself a lexicon surface is
 dropped (that surface is read as the lexicon has it), and so is the source. The ICU
 upper case is not detected here: an all-capitals variant ("LT", "DR") is a letter run,
-which the letters reader spells, right for most of them today; the run is also offered
-the source's expansions ("MR" Mister), unranked, and which should lead is left to
-context (:func:`upper_variant_expansions`).
+which the letters reader spells; the run is also offered the source's expansions ("MR"
+Mister, :func:`upper_variant_expansions`), and where the corpus has a capitals row for
+its key (:func:`measured_case`), that row ranks the expansions and the letters ("MR":
+mister 562 of 611). A variant the corpus spells in its own case's row, or in any row
+of its key when that case has none (:func:`measures_spelled`: "Lt", "ch", "Rt"), also
+reads its letters; "no" does not (spelled only in capitals).
 
 **Dotted chains.** A chain of single letters each with its period ("e.g.", "E.G.",
 "j.r.r.") is spelled whatever its case; one whose ICU lower case is a lexicon chain
@@ -64,7 +67,9 @@ __all__ = [
     "chain_sources",
     "fold_key",
     "is_chain",
+    "measured_case",
     "measured_keys",
+    "measures_spelled",
     "upper_variant_expansions",
     "variant_sources",
     "variant_surfaces",
@@ -350,6 +355,27 @@ def abbreviation_priors(*, locale: str = "en_US") -> Mapping[str, Mapping[str, M
 def _priors_for(locale: str) -> Mapping[str, Mapping[str, Mapping[str, int]]]:
     table = measured_table("abbreviation_priors", locale)
     return {} if table is None else table["keys"]
+
+
+def measures_spelled(written: str, *, locale: str = "en_US") -> bool:
+    """Whether the corpus says ``written`` spelled in its own case's row ("Lt": 1,848 of
+    1,848 title rows; "ft" 42 lower), so its letters are a reading. A case the corpus
+    has no row for reads the key's rows ("Mr": title is never written, and mr is spelled
+    135 times of 8,756); a case row with no spelled count offers none, whatever another
+    case says ("no": spelled only in capitals, never in its 69,124 lower-case rows)."""
+    rows = abbreviation_priors(locale=locale).get(fold_key(written, locale), {})
+    case = rows.get(written_case(written, locale) or "")
+    if case:
+        return bool(case.get(SPELLED))
+    return any(counts.get(SPELLED) for counts in rows.values())
+
+
+def measured_case(written: str, *, locale: str = "en_US") -> bool:
+    """Whether the corpus has a row for ``written``'s key in ``written``'s own case
+    ("MR": the upper row, mister 562 of 611)."""
+    case = written_case(written, locale)
+    rows = abbreviation_priors(locale=locale).get(fold_key(written, locale), {})
+    return case is not None and bool(rows.get(case))
 
 
 def abbreviation_weights(
