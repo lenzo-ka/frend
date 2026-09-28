@@ -36,7 +36,7 @@ from frend.electronic import (  # noqa: E402
 )
 from frend.spoken_priors import normalize_spoken  # noqa: E402
 
-_OUT = _REPO / "frend" / "data" / "electronic_priors.json"
+_OUT = _REPO / "frend" / "data" / "en" / "electronic_priors.json"
 
 
 def _align(written: str, spoken: str):
@@ -100,6 +100,8 @@ def build_document(corpus_dir: Path) -> dict:
     return {
         "provenance": {
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+            "locale": "en",
+            "corpus": "google-tn:en_with_types",
             "license": "CC BY-SA 4.0",
             "shards": [path.name for path in files],
             "rows": rows,

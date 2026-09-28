@@ -14,7 +14,7 @@ from frend import resolve_lattice
 from frend.verbalize import _zero_key, verbalize_lattice
 
 _DETECTORS = (FlexibleNumberDetector("en_US"), FlexibleTimeDetector("en_US"))
-_TABLE = Path(__file__).resolve().parents[1] / "frend" / "data" / "zero_priors.json"
+_TABLE = Path(__file__).resolve().parents[1] / "frend" / "data" / "en" / "zero_priors.json"
 
 
 def _first(text: str) -> str:

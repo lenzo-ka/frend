@@ -561,10 +561,10 @@ def test_one_best_untouched():
         "type_priors_counts_sha256": (
             "b34097ffdddc1221906af80a7c824c26c5418cd4fafd91df93b320ac98a131c5"
         ),
-        "type_priors_path": "frend/data/type_priors.json",
+        "type_priors_path": "frend/data/en/type_priors.json",
         "command": (
             f"BASE=$(mktemp -d) && git -C $FREND_CHECKOUT archive {code_commit} "
-            "| tar -x -C $BASE && cp $FREND_ALIGN_WORKTREE/frend/data/type_priors.json "
+            "| tar -x -C $BASE && cp $FREND_ALIGN_WORKTREE/frend/data/en/type_priors.json "
             "$BASE/frend/data/type_priors.json && cd $BASE && PYTHONPATH=. python -B "
             "$FREND_ALIGN_WORKTREE/tests/generate_align_one_best.py "
             "$FREND_ALIGN_WORKTREE/tests/data/align_one_best.json"

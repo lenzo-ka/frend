@@ -5761,8 +5761,10 @@
   },
   "provenance": {
     "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus; CC BY-SA 4.0",
+    "corpus": "google-tn:en_with_types",
     "generated": "2026-09-28",
     "license": "CC BY-SA 4.0",
+    "locale": "en",
     "note": "Raw shape->class counts over the Google/Sproat en_with_types text-normalization corpus. Only surfaces containing at least one Unicode-Nd digit are counted (the numeric-TN focus; the PLAIN alphabetic mass is dropped). Runtime derives P(class|shape) and n(shape); no smoothing, no ratios stored. Classes measure/telephone/address/digit are counted into each shape's total even though no reading type maps to them yet, so n(shape) reflects the full attested competition; the reflective ICU-generated shape backfill and blend are a separate later pass. Single Unicode-Lu letter surfaces lift the digit filter and class drops so their distribution includes the corpus's LETTERS and PLAIN classifications; per-letter counts are recorded separately; the held-out running-text (95) and published test (99) shards are not counted",
     "shards": [
       "output-00000-of-00100",

@@ -128,6 +128,8 @@ def test_google_provenance_profile():
     build = _load_build_tool()
     prov = build._build("google-tn", _FIX, 1)["provenance"]
     assert prov["source"] == "google-tn-en_with_types"
+    assert prov["locale"] == "en"
+    assert prov["corpus"] == "google-tn:en_with_types"
     assert prov["license"] == "CC BY-SA 4.0"
     assert prov["attribution"].startswith("derived from Sproat & Jaitly")
     assert prov["generated"] == "2026-09-28"

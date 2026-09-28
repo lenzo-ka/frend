@@ -2,7 +2,7 @@
 
 ICU has no link recognition, so the span shape is frend's own: a scheme URL
 ("http://..."), a "www." address, an email address, or a bare domain whose last label
-is a top-level domain in IANA's list (vendored as ``data/tlds-alpha-by-domain.txt``).
+is a top-level domain in IANA's list (vendored as ``data/root/tlds-alpha-by-domain.txt``).
 Every host must pass ICU's IDNA processing (UTS #46 with STD3 rules). Only maximal
 spans are emitted: a domain inside a URL or an email address is not a reading of its
 own.
@@ -10,13 +10,12 @@ own.
 A reading's value is the token split into runs of letters, digits and single other
 characters. How each run is said -- a letter run as a word or spelled, a digit run as
 a cardinal, a year or digit by digit, a separator by its name -- is measured from the
-corpus (``data/electronic_priors.json``, built by ``tools/build_electronic_priors.py``);
+corpus (``data/en/electronic_priors.json``, built by ``tools/build_electronic_priors.py``);
 nothing here decides it.
 """
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass
 from decimal import Decimal
@@ -25,6 +24,8 @@ from importlib.resources import files
 
 import icu
 from icukit.detectors import Capture
+
+from frend.locale_data import measured_table
 
 __all__ = [
     "ElectronicDetector",
@@ -36,7 +37,7 @@ __all__ = [
     "top_level_domains",
 ]
 
-_DATA = files("frend").joinpath("data")
+_ROOT_DATA = files("frend").joinpath("data", "root")
 
 # Blending strength for a sparse key toward its parent, as for spoken-prior sub-keys.
 PRIOR_STRENGTH = 5
@@ -52,7 +53,7 @@ _CLOSERS = {")": "(", "]": "[", "}": "{"}
 
 @cache
 def _tld_lines() -> tuple[str, ...]:
-    text = _DATA.joinpath("tlds-alpha-by-domain.txt").read_text(encoding="ascii")
+    text = _ROOT_DATA.joinpath("tlds-alpha-by-domain.txt").read_text(encoding="ascii")
     return tuple(text.splitlines())
 
 
@@ -235,8 +236,10 @@ def digit_key(run: str) -> str:
 
 
 @cache
-def load_electronic_priors() -> dict:
-    return json.loads(_DATA.joinpath("electronic_priors.json").read_text(encoding="utf-8"))
+def load_electronic_priors(*, locale: str = "en_US") -> dict | None:
+    """The locale's measured electronic table (``data/<locale>/electronic_priors.json``),
+    or ``None`` when the locale has none."""
+    return measured_table("electronic_priors", locale)
 
 
 def _blend(counts: dict[str, int], parent: dict[str, Decimal]) -> dict[str, Decimal]:

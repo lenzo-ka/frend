@@ -19,7 +19,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-_OUT = _REPO / "frend" / "data" / "spoken_priors.json"
+_OUT = _REPO / "frend" / "data" / "en" / "spoken_priors.json"
 _BUILD_DATE = "2026-09-24"
 _SHARD_STEP = 10
 _ROWS_PER_CLASS_PER_SHARD = 200
@@ -369,6 +369,8 @@ def build_document(corpus_dir: Path) -> dict:
     return {
         "provenance": {
             "source": "google-tn-en_with_types",
+            "locale": "en",
+            "corpus": "google-tn:en_with_types",
             "license": "CC BY-SA 4.0",
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "generated": _BUILD_DATE,

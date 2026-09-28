@@ -49,14 +49,9 @@ include = ["frend*"]
 [tool.setuptools.package-data]
 frend = [
     "py.typed",
-    "data/type_priors.json",
-    "data/spoken_priors.json",
-    "data/icu_shape_backfill.json",
-    "data/electronic_priors.json",
-    "data/acronym_priors.json",
-    "data/zero_priors.json",
-    "data/tlds-alpha-by-domain.txt",
-    "data/exceptions/*.json",
+    # Tables by locale: data/<locale>/ (en, ...) and the cross-locale data/root/.
+    "data/*/*.json",
+    "data/*/*.txt",
     "data/README.md",
 ]
 

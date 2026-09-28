@@ -1015,12 +1015,14 @@
   },
   "provenance": {
     "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
+    "corpus": "google-tn:en_with_types",
     "keys": {
       "digits": "digit_key(run); * pools all",
       "letters": "letter_key(run), or tld:<domain> for a top-level domain; * pools all",
       "separators": "the written character"
     },
     "license": "CC BY-SA 4.0",
+    "locale": "en",
     "rows": 53257,
     "rows_aligned": 49001,
     "shards": [
