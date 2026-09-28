@@ -64,14 +64,15 @@ def canonical_locale(locale: str) -> str:
         return ROOT
     if not _WELL_FORMED.fullmatch(locale):
         raise ValueError(f"not a locale tag: {locale!r}")
-    subtags = [tag.lower() for tag in re.split(r"[-_]", locale)]
-    if len(set(subtags)) != len(subtags):
-        # BCP 47 allows no repeated variant ("en_US_POSIX_POSIX").
-        raise ValueError(f"not a locale tag: {locale!r}")
-    if subtags[0] == "und":
+    if re.split(r"[-_]", locale)[0].lower() == "und":
         # CLDR's root locale is "und" (ICU's base name for it is empty).
         return ROOT
-    canonical = icu.Locale(locale.replace("-", "_")).getBaseName()
+    parsed = icu.Locale(locale.replace("-", "_"))
+    variants = [variant for variant in parsed.getVariant().split("_") if variant]
+    if len(set(variants)) != len(variants):
+        # BCP 47 allows no repeated variant ("en_US_POSIX_POSIX").
+        raise ValueError(f"not a locale tag: {locale!r}")
+    canonical = parsed.getBaseName()
     if not _CANONICAL.fullmatch(canonical):
         raise ValueError(f"not a locale tag: {locale!r}")
     return canonical

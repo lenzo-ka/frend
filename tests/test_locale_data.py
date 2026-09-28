@@ -323,8 +323,8 @@ def test_und_is_cldrs_root(tag):
     assert locale_data.locale_chain(tag) == ("root",)
 
 
-@pytest.mark.parametrize("tag", ["en_US_POSIX_POSIX", "en-us-US"])
-def test_a_repeated_subtag_is_refused(tag):
+@pytest.mark.parametrize("tag", ["en_US_POSIX_POSIX", "en-US-posix-POSIX"])
+def test_a_repeated_variant_is_refused(tag):
     with pytest.raises(ValueError):
         locale_data.canonical_locale(tag)
 
