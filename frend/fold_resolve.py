@@ -31,9 +31,13 @@ from it.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+import heapq
+from bisect import bisect_left
+from collections.abc import Callable, Mapping, Sequence
+from contextlib import AbstractContextManager
 from dataclasses import dataclass, replace
-from decimal import Decimal
+from decimal import Context, Decimal, getcontext, localcontext
+from math import prod
 from typing import Any, cast
 
 from tiergraph import (
@@ -56,7 +60,7 @@ from tiergraph import (
     TierDeclaration,
     XsdType,
 )
-from tiergraph.semiring import COUNTING, PATH
+from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
 from frend.shape import shape
 from frend.type_priors import (
@@ -353,19 +357,33 @@ def _candidates(detections: Sequence[Detection]) -> tuple[list[Candidate], int]:
 
 def build_lattice(
     detections: Sequence[Detection],
+    *,
+    boundaries_only: bool = False,
 ) -> tuple[Graph, tuple[ItemRef, ...], dict[str, int]]:
     """Build the position lattice for ``detections``. Returns the graph, the
     root refs (``p0``), and a map from a candidate item's durable id to the
-    index of the detection it stands for (skip edges are absent from the map)."""
+    index of the detection it stands for (skip edges are absent from the map).
+
+    With ``boundaries_only``, the positions are only ``0``, the lattice's end and the
+    candidates' starts and ends, and one skip edge joins each to the next. Text no
+    candidate bounds is passed in one way whatever its length, so the covers, their
+    count and their order are the same, over a lattice whose size follows the
+    candidates rather than the text (a long URL is one skip, not one per character).
+    The candidate weights are unchanged: they are computed from the real spans."""
     cands, span_end = _candidates(detections)
+    if boundaries_only:
+        points = sorted({0, span_end} | {c.start for c in cands} | {c.end for c in cands})
+    else:
+        points = list(range(span_end + 1))
+    at = {point: index for index, point in enumerate(points)}
 
     pos_items = tuple(
-        Item(f"p{p}", (AttributeValue(_WEIGHT, XsdType.DECIMAL, "0"),)) for p in range(span_end + 1)
+        Item(f"p{p}", (AttributeValue(_WEIGHT, XsdType.DECIMAL, "0"),)) for p in range(len(points))
     )
 
-    # candidates tier = real detections + unit skip edges. Durable ids are
-    # distinct across both kinds ("c{i}" vs "skip{p}") and across the position
-    # tier ("p{n}"), so a witness path is unambiguous to decode.
+    # candidates tier = real detections + skip edges. Durable ids are distinct
+    # across both kinds ("c{i}" vs "skip{p}") and across the position tier
+    # ("p{n}"), so a witness path is unambiguous to decode.
     cand_items: list[Item] = []
     offers: list[RelationInstance] = []
     spans: list[RelationInstance] = []
@@ -378,9 +396,9 @@ def build_lattice(
         spans.append(RelationInstance(_SPANS, ref, ItemRef(_POS, end)))
 
     for cand in cands:
-        add(f"c{cand.index}", cand.start, cand.end, cand.weight)
+        add(f"c{cand.index}", at[cand.start], at[cand.end], cand.weight)
         id_to_index[f"c{cand.index}"] = cand.index
-    for p in range(span_end):
+    for p in range(len(points) - 1):
         add(f"skip{p}", p, p + 1, Decimal(0))
 
     graph = Graph(
@@ -437,14 +455,42 @@ _COVER_TRANSITIONS = (
 )
 
 
+def _exact_digits(graph: Graph) -> int:
+    """The decimal digits a fold over ``graph`` needs to stay exact.
+
+    A cover's cost is a sum of at most one weight per position, so its magnitude is
+    below the largest weight times the number of positions. The weights are exact
+    mixed-radix integers (:func:`_candidates`) whose size grows with the square of
+    the lattice's furthest span end; Decimal arithmetic rounds past the context's
+    precision (28 digits by default), which would merge distinct geometries."""
+    positions, candidates = graph.tiers
+    largest = max(
+        (
+            abs(int(Decimal(attribute.lexical)))
+            for item in candidates.items
+            for attribute in item.attributes
+        ),
+        default=0,
+    )
+    return len(str(largest * max(len(positions.items), 1))) + 2
+
+
+def _exact(graph: Graph) -> AbstractContextManager[Context]:
+    """A decimal context precise enough for every fold over ``graph``."""
+    context = getcontext().copy()
+    context.prec = max(context.prec, _exact_digits(graph))
+    return localcontext(context)
+
+
 def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
     """Count the covers the lattice admits, exactly, without ranking any of them.
 
     The same lattice and transitions as the ranked fold, over ``COUNTING``: every
     item lifts to one, so a position sums its candidates' counts and a candidate
     carries its end position's. This is linear in the lattice, where the ranked fold
-    pays for every witness it keeps, so the cover bound can be checked before any
-    witness is ranked."""
+    pays for every witness it keeps, so the count is known before any witness is
+    ranked. It is an exact int however large (2**96 and more); nothing converts it
+    to a float or sizes anything by it."""
     fold = FoldDeclaration(
         "cover-count",
         graph,
@@ -454,7 +500,35 @@ def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
         _COVER_TRANSITIONS,
         roots=roots,
     )
-    return cast(int, fold.run().value)
+    with _exact(graph):
+        return cast(int, fold.run().value)
+
+
+# The ranked fold's geometry, with every cover at the best geometry counted: the
+# first component picks the least cost exactly as PATH's does, and on a tie the
+# covers' counts add.
+_TOP_LEVEL = LexicographicSemiring(DECIMAL_TROPICAL, COUNTING)
+
+
+def _count_top_level(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
+    """Count the covers of the best geometry level, exactly, without ranking any.
+
+    The ranked fold's lattice and transitions over ``(cost, count)``: an item lifts
+    to its PATH cost with a count of one, alternatives keep the least cost and add
+    the counts of those that tie at it, and a requirement adds costs and multiplies
+    counts. The count is the size of the top level the ranked fold would have to
+    emit whole, known before it emits any; like the total, it is an exact int."""
+    fold = FoldDeclaration(
+        "top-level-count",
+        graph,
+        AttributeValuation("weight", _WEIGHT, (_POS, _CAND)),
+        _TOP_LEVEL,
+        lambda value, _label: (-cast(Decimal, value), 1),
+        _COVER_TRANSITIONS,
+        roots=roots,
+    )
+    with _exact(graph):
+        return cast(tuple[Decimal, int], fold.run().value)[1]
 
 
 def _fold_covers(
@@ -484,7 +558,8 @@ def _fold_covers(
         output_cap=output_cap,
         ranked_output=True,
     )
-    result = fold.run()
+    with _exact(graph):
+        result = fold.run()
     scored: list[tuple[Decimal, tuple[Detection, ...]]] = []
     for value, labels in result.ranked_witnesses or ():
         indices = [id_to_index[label] for label in labels if label in id_to_index]
@@ -503,14 +578,27 @@ def _cover_score(cover: Sequence[Detection]) -> CoverScore:
 
 # Whole geometry levels are wanted, never a ranked prefix that ends inside one:
 # canonical ``s*`` selection needs the top level whole, and the cover list and the
-# margin need every level down to the one holding their last cover. A lattice
-# admitting more covers than this bound is refused, as it was when every cover was
-# ranked, so a result never depends on how far past the bound it lies. A prefix
-# returned as though it were complete is the failure to avoid; it looks exactly
-# like an answer.
-_COVER_ENUMERATION_CAP = 1 << 16
-
-
+# margin need every level down to the one holding their last cover. A prefix
+# returned as though it were complete is the failure to avoid; it looks exactly like
+# an answer, so a level is used only once it is shown whole.
+#
+# The sentence is resolved per component of overlapping spans (``_components``), so
+# this applies to one component's lattice. Its total covers are not bounded: they
+# are counted exactly, as an int that may be astronomically large, never converted
+# to a float and never sizing anything. What the ranked fold must emit whole is
+# bounded instead, since its cost grows with the witnesses it keeps (about 4x in
+# time and memory for every doubling of a tied top level). The component's top level
+# is counted exactly first and refused past this bound, before any witness is
+# ranked; a request that would still have to widen past it to show a lower needed
+# level whole is refused too.
+#
+# Set from a measurement: over 3.57M sentences of the runtime-eval shards 90-94 no
+# component's top level held more than 4 covers (p99.99 3), and a tied top level of
+# 256 costs about 0.2 s and 17 MB to rank whole (tiergraph 0.4.1), 1,024 about 1.3 s
+# and 100 MB, 4,096 about 8 s and 530 MB: 64 times the largest observed, at a cost
+# that stays interactive.
+_RANKED_LEVEL_BOUND = 256
+#
 # The ranked fold's first request when fewer covers are needed than the lattice
 # admits. Its cost grows with the witnesses it keeps (measured on tiergraph 0.4.0:
 # 0.4 s for 64 witnesses of a 3,240-cover sentence, 17 s for all of them), so it
@@ -520,41 +608,213 @@ _FIRST_RANKED_REQUEST = 16
 
 def _gather_top_geometry(
     detections: Sequence[Detection],
-    needed: int = _COVER_ENUMERATION_CAP,
+    needed: int,
 ) -> tuple[list[tuple[Decimal, tuple[Detection, ...]]], int]:
     """Return every cover of the best geometry levels, in the fold's ranked order,
     each paired with the fold's own witness value, and the count of all covers.
 
-    The covers are counted exactly first, without ranking any; past the bound this
-    refuses. Within it, the returned levels are whole and are the fewest that
-    together hold at least ``needed`` covers (every cover when the lattice admits no
-    more than that). The fold ranks by geometry, and each geometry level is one
-    witness value, so a level is shown whole by a ranked witness after it with a
-    greater value: the fold's order is ascending and exact, so nothing of the level
-    lies beyond that witness. Until the fold emits one, it is asked for four times as
-    many, up to the count itself. Whole levels are what canonical selection reads:
-    the top level for ``s*`` and ambiguity, and the ``needed`` best covers of the
-    cover order, whose first key is geometry."""
-    graph, roots, id_to_index = build_lattice(detections)
+    See :func:`_gather_levels`, which also returns the first cover past them."""
+    scored, count, _beyond = _gather_levels(detections, needed)
+    return scored, count
+
+
+def _gather_levels(
+    detections: Sequence[Detection],
+    needed: int,
+    *,
+    boundaries_only: bool = False,
+) -> tuple[list[tuple[Decimal, tuple[Detection, ...]]], int, tuple[Detection, ...] | None]:
+    """Return the whole best geometry levels in the fold's ranked order, the count of
+    all covers, and the first cover past the returned levels (``None`` when they are
+    every cover).
+
+    The covers are counted exactly first, without ranking any; the total is never
+    bounded and only caps each ranked request. The top level is counted exactly next,
+    and past ``_RANKED_LEVEL_BOUND`` this refuses before ranking anything; a widening
+    that would pass the bound refuses too. The returned levels are whole and are
+    the fewest that together hold at least ``needed`` covers (every cover when the
+    lattice admits no more than that). The fold ranks by geometry, and each geometry
+    level is one witness value, so a level is shown whole by a ranked witness after it
+    with a greater value: the fold's order is ascending and exact, so nothing of the
+    level lies beyond that witness. That witness is the best cover of the next level,
+    returned so a caller can read the next geometry without ranking that level. Until
+    the fold emits one, it is asked for four times as many, up to the count itself.
+    ``boundaries_only`` builds the lattice over candidate boundaries only
+    (:func:`build_lattice`): the same covers, in a lattice sized by the candidates."""
+    graph, roots, id_to_index = build_lattice(detections, boundaries_only=boundaries_only)
     if not id_to_index:
-        return [], 1
+        return [], 1, None
     count = _count_covers(graph, roots)
-    if count > _COVER_ENUMERATION_CAP:
+    top = _count_top_level(graph, roots)
+    if top > _RANKED_LEVEL_BOUND:
         raise ValueError(
-            f"cover enumeration reached the {_COVER_ENUMERATION_CAP} witness bound over "
-            f"{len(detections)} detections, so the top geometry level cannot be shown "
-            "complete and canonical selection would run over a prefix"
+            f"the top geometry level holds {top} covers (of {count} in all) over "
+            f"{len(detections)} detections, past the {_RANKED_LEVEL_BOUND} the ranked "
+            "fold is allowed to emit whole, so canonical selection cannot be shown "
+            "complete and would run over a prefix"
         )
-    request = min(count, max(needed, _FIRST_RANKED_REQUEST))
+    # One witness past the ``needed`` shows at once whether the level holding the
+    # last needed cover ends there. The bound limits the top level's size (above) and
+    # how far the level holding the last needed cover may run past it, never the
+    # number of covers asked for.
+    ceiling = needed + _RANKED_LEVEL_BOUND + 1
+    request = min(count, max(needed + 1, _FIRST_RANKED_REQUEST))
     while True:
         scored, truncated = _fold_covers(detections, graph, roots, id_to_index, request)
         if not truncated:
-            return scored, count
+            return scored, count, None
         # A PATH witness value is (cost, paths); the cost alone is the geometry.
         last_level = scored[needed - 1][0][0]
         if scored[-1][0][0] != last_level:
-            return [entry for entry in scored if entry[0][0] <= last_level], count
-        request = min(count, request * 4)
+            whole = [entry for entry in scored if entry[0][0] <= last_level]
+            return whole, count, scored[len(whole)][1]
+        # A level is shown whole by one witness past it, so ``ceiling`` witnesses
+        # show whole levels holding one fewer covers.
+        if request >= ceiling:
+            raise ValueError(
+                f"the geometry level holding cover {needed} of the cover order runs more than "
+                f"{_RANKED_LEVEL_BOUND} covers past it (of {count} covers over "
+                f"{len(detections)} detections), past what the ranked fold is allowed "
+                "to emit whole, so the cover list cannot be shown complete and would "
+                "be a prefix"
+            )
+        request = min(count, request * 4, ceiling)
+
+
+# A component admitting at most this many covers is enumerated directly in Python;
+# a larger one is gathered by the tiergraph fold (count first, top level bounded).
+_DIRECT_ENUMERATION_MAX = 512
+
+
+def _components(candidates: Sequence[Candidate]) -> list[list[Candidate]]:
+    """Split the candidates into components of mutually overlapping spans.
+
+    A cut falls only at a position no candidate crosses, so every cover of the
+    sentence is exactly one local cover of each component (the empty one included),
+    chosen independently, and the components lie in text order."""
+    components: list[list[Candidate]] = []
+    end = -1
+    for candidate in sorted(candidates, key=lambda c: (c.start, c.end, c.index)):
+        if not components or candidate.start >= end:
+            components.append([])
+        components[-1].append(candidate)
+        end = max(end, candidate.end)
+    return components
+
+
+def _count_local(candidates: Sequence[Candidate]) -> int:
+    """Count a component's local covers (non-overlapping subsets), exactly."""
+    ordered = sorted(candidates, key=lambda c: (c.start, c.end, c.index))
+    starts = [c.start for c in ordered]
+    counts = [1] * (len(ordered) + 1)
+    for i in range(len(ordered) - 1, -1, -1):
+        counts[i] = counts[i + 1] + counts[bisect_left(starts, ordered[i].end, i + 1)]
+    return counts[0]
+
+
+def _enumerate_local(candidates: Sequence[Candidate]) -> list[tuple[Detection, ...]]:
+    """Every local cover of a component, each in span order, the empty one included."""
+    ordered = sorted(candidates, key=lambda c: (c.start, c.end, c.index))
+    found: list[tuple[Detection, ...]] = []
+    chosen: list[Detection] = []
+
+    def extend(i: int, free_from: int) -> None:
+        if i == len(ordered):
+            found.append(tuple(chosen))
+            return
+        extend(i + 1, free_from)
+        candidate = ordered[i]
+        if candidate.start >= free_from:
+            chosen.append(candidate.detection)
+            extend(i + 1, candidate.end)
+            chosen.pop()
+
+    extend(0, 0)
+    return found
+
+
+@dataclass(frozen=True)
+class _Local:
+    """One component's local covers in cover order: a prefix of whole geometry
+    levels holding at least the covers asked for (every cover when ``complete``),
+    the count of all of them, and the geometry of the level after the top."""
+
+    covers: tuple[tuple[Detection, ...], ...]
+    count: int
+    top_size: int
+    second_geometry: tuple[int, int, int]
+
+
+def _resolve_component(
+    candidates: Sequence[Candidate],
+    needed: int,
+    cover_key: Callable[[tuple[Detection, ...]], tuple],
+) -> _Local:
+    count = _count_local(candidates)
+    if count <= _DIRECT_ENUMERATION_MAX:
+        covers = sorted(_enumerate_local(candidates), key=cover_key)
+        beyond = None
+    else:
+        offset = min(c.start for c in candidates)
+        originals = [c.detection for c in candidates]
+        proxies = [
+            {
+                "start": int(d["start"]) - offset,
+                "end": int(d["end"]) - offset,
+                "captures": d.get("captures", ()),
+            }
+            for d in originals
+        ]
+        back = {id(proxy): original for proxy, original in zip(proxies, originals, strict=True)}
+        scored, _count, beyond_proxy = _gather_levels(proxies, needed, boundaries_only=True)
+        covers = sorted(
+            (tuple(back[id(d)] for d in cover) for _value, cover in scored), key=cover_key
+        )
+        beyond = None if beyond_proxy is None else tuple(back[id(d)] for d in beyond_proxy)
+    top_geometry = _geometry_rank(covers[0])
+    top_size = sum(1 for cover in covers if _geometry_rank(cover) == top_geometry)
+    below = covers[top_size] if top_size < len(covers) else beyond
+    # A component has a candidate, so its empty cover lies strictly below the top.
+    assert below is not None
+    return _Local(tuple(covers), count, top_size, _geometry_rank(below))
+
+
+def _merged_covers(
+    locals_: Sequence[_Local],
+    n: int,
+    cover_key: Callable[[tuple[Detection, ...]], tuple],
+) -> list[tuple[Detection, ...]]:
+    """The ``n`` best sentence covers in cover order, drawn lazily from the
+    components' ordered local covers without forming their product.
+
+    A sentence cover is one local cover per component, concatenated in text order,
+    and it is ordered by the same ``cover_key`` as any cover. Advancing one component
+    to its next local cover never lowers that key: a worse local geometry worsens the
+    summed geometry, and an equal one keeps that component's part of the signature,
+    ranks and content keys the same length, so the concatenation orders as the part
+    does. A best-first walk over index vectors therefore yields covers in exact key
+    order, and it visits at most ``n`` covers and their successors."""
+
+    def cover(vector: tuple[int, ...]) -> tuple[Detection, ...]:
+        return tuple(d for c, i in enumerate(vector) for d in locals_[c].covers[i])
+
+    start = (0,) * len(locals_)
+    first = cover(start)
+    heap: list[tuple[tuple, tuple[int, ...], tuple[Detection, ...]]] = [
+        (cover_key(first), start, first)
+    ]
+    seen = {start}
+    found: list[tuple[Detection, ...]] = []
+    while heap and len(found) < n:
+        _key, vector, best = heapq.heappop(heap)
+        found.append(best)
+        for c in range(len(vector)):
+            following = vector[:c] + (vector[c] + 1,) + vector[c + 1 :]
+            if following[c] < len(locals_[c].covers) and following not in seen:
+                seen.add(following)
+                candidate = cover(following)
+                heapq.heappush(heap, (cover_key(candidate), following, candidate))
+    return found
 
 
 def _resolve_sources(
@@ -736,24 +996,6 @@ class _Selection:
     truncated: bool
 
 
-def _margin(ordered: Sequence[tuple[Detection, ...]]) -> CoverMargin:
-    """Coverage advantage of the top cover over the runner-up.
-
-    The runner-up is simply the second cover in ranked order: its geometry is the
-    top geometry when the top level holds two-or-more covers (a dead ``(0, 0, 0)``
-    tie), and the best strictly-worse geometry otherwise. Purely geometric; the
-    prior never enters here."""
-    if len(ordered) < 2:
-        return CoverMargin(0, 0, 0)
-    top = _cover_score(ordered[0])
-    second = _cover_score(ordered[1])
-    return CoverMargin(
-        top.coverage - second.coverage,
-        second.span_count - top.span_count,
-        top.capture_count - second.capture_count,
-    )
-
-
 def _select(
     detections: Sequence[Detection],
     sources: Sequence[FeatureSource],
@@ -776,8 +1018,8 @@ def _select(
     geometry level, so they do not depend on ``n``; ``n`` only caps the legacy
     ``covers`` list, which additionally ranks the lower geometry levels."""
     corpus = _corpus_source(sources)
-    scored, cover_count = _gather_top_geometry(detections, max(n, 2))
-    if not scored:
+    candidates = _candidates(detections)[0]
+    if not candidates:
         # No valid candidates: the sole reading is the empty cover.
         return _Selection(
             (),
@@ -793,23 +1035,17 @@ def _select(
             False,
         )
 
-    covers = [cover for _value, cover in scored]
-    best_geo = min(_geometry_rank(cover) for cover in covers)
-    top = [cover for cover in covers if _geometry_rank(cover) == best_geo]
-
-    # Rank the structurally maximal-capture readings at every span occupied by any
-    # gathered cover, so
-    # both the per-span resolution (over s*) and the legacy cover ordering can index
-    # into a stable ranking. Reading sets are gathered from ALL detections at each
-    # span, independent of the fold's emission order or the requested n, so the
-    # per-span view over s* is complete.
+    # Rank the structurally maximal-capture readings at every span a cover can
+    # occupy, so both the per-span resolution (over s*) and the cover ordering can
+    # index into a stable ranking. Reading sets are gathered from ALL detections at
+    # each span, independent of any cover, so the per-span view over s* is complete.
     all_span_readings: dict[tuple[int, int], list[_RankedReading]] = {}
     span_readings: dict[tuple[int, int], list[_RankedReading]] = {}
     span_sequence = (
         ((int(det["start"]), int(det["end"])) for det in detections)
         if collect_edge_priors
         # Every valid candidate lies on some cover, so these are the spans of all covers.
-        else ((candidate.start, candidate.end) for candidate in _candidates(detections)[0])
+        else ((candidate.start, candidate.end) for candidate in candidates)
     )
     spans_to_rank = dict.fromkeys(span_sequence)
     for span in spans_to_rank:
@@ -823,9 +1059,40 @@ def _select(
             if len(reading.detection.get("captures", ())) == max_capture_count
         ]
 
-    signatures = sorted({_span_signature(cover) for cover in top})
-    structural_ambiguous = len(signatures) > 1
-    s_star = signatures[0]
+    # Rank the covers deterministically: geometry first (never touched by the prior),
+    # then span signature, then each reading's per-span rank (so the per-span winners
+    # sort first within a signature), then a canonical content key.
+    def cover_key(cover: tuple[Detection, ...]) -> tuple:
+        geometry = _geometry_rank(cover)
+        ranks: list[int] = []
+        for det in cover:
+            span = (int(det["start"]), int(det["end"]))
+            order = [_content_key(r.detection) for r in span_readings[span]]
+            key = _content_key(det)
+            ranks.append(order.index(key) if key in order else len(order))
+        return (
+            geometry,
+            _span_signature(cover),
+            tuple(ranks),
+            tuple(_content_key(d) for d in cover),
+        )
+
+    # Each component of mutually overlapping spans is resolved alone; a sentence
+    # cover is one local cover of each. The top geometry level is the product of the
+    # components' top levels (geometry adds, and a sum is least only where every
+    # part is), so it is read per component and never formed.
+    locals_ = [_resolve_component(component, n, cover_key) for component in _components(candidates)]
+
+    # Within a component's top level every cover has the same span count, so the
+    # signatures there have one length and the least sentence signature is the
+    # components' least ones in text order.
+    s_star_parts: list[tuple[tuple[int, int], ...]] = []
+    structural_ambiguous = False
+    for local in locals_:
+        signatures = sorted({_span_signature(cover) for cover in local.covers[: local.top_size]})
+        structural_ambiguous = structural_ambiguous or len(signatures) > 1
+        s_star_parts.append(signatures[0])
+    s_star = tuple(span for part in s_star_parts for span in part)
 
     span_resolutions: list[SpanResolution] = []
     semantic_ambiguous = False
@@ -843,32 +1110,26 @@ def _select(
             )
         )
     # s_star is a sorted tuple of spans, so the winners are already in span order.
-    # This is precisely the all-rank-0 cover of s*, so it is also ranked_covers[0].
+    # This is precisely the all-rank-0 cover of s*, so it is also ordered[0].
     best = tuple(sr.winner for sr in span_resolutions)
     ambiguous = structural_ambiguous or semantic_ambiguous
 
-    # Rank the covers deterministically: geometry first (never touched by the prior),
-    # then span signature, then each reading's per-span rank (so the per-span winners
-    # sort first within a signature), then a canonical content key. Capped at n.
-    def cover_key(cover: tuple[Detection, ...]) -> tuple:
-        geometry = _geometry_rank(cover)
-        ranks: list[int] = []
-        for det in cover:
-            span = (int(det["start"]), int(det["end"]))
-            order = [_content_key(r.detection) for r in span_readings[span]]
-            key = _content_key(det)
-            ranks.append(order.index(key) if key in order else len(order))
-        return (
-            geometry,
-            _span_signature(cover),
-            tuple(ranks),
-            tuple(_content_key(d) for d in cover),
-        )
+    # The runner-up shares the top geometry when the top level holds two or more
+    # covers; otherwise it is the top with the one component that loses least moved
+    # to its next level. In rank terms that loss is exactly the margin's triple.
+    if prod(local.top_size for local in locals_) > 1:
+        margin = CoverMargin(0, 0, 0)
+    else:
+        losses = []
+        for local in locals_:
+            top_rank = _geometry_rank(local.covers[0])
+            losses.append(
+                tuple(b - t for b, t in zip(local.second_geometry, top_rank, strict=True))
+            )
+        margin = CoverMargin(*min(losses))
 
-    ordered = sorted(covers, key=cover_key)
-    margin = _margin(ordered)
-    truncated = cover_count > n
-    ordered = ordered[:n]
+    ordered = _merged_covers(locals_, n, cover_key)
+    truncated = prod(local.count for local in locals_) > n
     edge_priors = (
         tuple(
             next(

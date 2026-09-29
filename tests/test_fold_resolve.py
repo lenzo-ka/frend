@@ -7,6 +7,8 @@ fragments and keep the date, and keep the currency over the bare decimal.
 
 from __future__ import annotations
 
+import random
+
 import pytest
 from icukit.detectors import detect
 from icukit.recognize import (
@@ -23,7 +25,7 @@ from frend.fold_resolve import CoverMargin, CoverScore, resolve, resolve_cover
 # captures/value; these use no captures.
 def _det(start: int, end: int, type_: str, captures=()) -> dict:
     return {
-        "text": "x" * (end - start),
+        "text": "x" * min(end - start, 8),
         "start": start,
         "end": end,
         "type": type_,
@@ -239,46 +241,6 @@ def test_nbest_ordered_by_coverage_then_parsimony():
         assert _score(res.best) == scores[0]
 
 
-def test_enumeration_refuses_rather_than_returning_a_prefix(monkeypatch):
-    """REGRESSION: a truncated enumeration is refused, not returned as complete.
-
-    The resolver asks the fold for more witnesses than any practical input
-    produces and relies on the fold's own truncation flag to know the answer is
-    whole. If that bound were ever reached, returning what came back would hand
-    canonical selection a prefix that looks exactly like a complete answer --
-    which is the failure the single call replaced a cap-doubling loop to avoid.
-
-    The cap is lowered here rather than a pathological input constructed, because
-    the condition under test is the response to truncation, not the size at which
-    it occurs.
-    """
-    monkeypatch.setattr(fold_resolve, "_COVER_ENUMERATION_CAP", 1)
-    detections = [
-        _det(0, 4, "date"),
-        _det(0, 2, "number"),
-        _det(2, 4, "number"),
-        _det(0, 1, "number"),
-        _det(1, 4, "number"),
-    ]
-    with pytest.raises(ValueError) as caught:
-        resolve_cover(detections)
-    message = str(caught.value)
-    assert "witness bound" in message
-    assert "prefix" in message
-
-
-def test_refusal_is_decided_by_the_count_before_any_witness_is_ranked(monkeypatch):
-    """Past the bound, the ranked fold is never run: the exact count refuses first."""
-    monkeypatch.setattr(fold_resolve, "_COVER_ENUMERATION_CAP", 1)
-
-    def ranked(*_args, **_kwargs):
-        raise AssertionError("the ranked fold ran past the cover bound")
-
-    monkeypatch.setattr(fold_resolve, "_fold_covers", ranked)
-    with pytest.raises(ValueError, match="witness bound"):
-        resolve_cover([_det(0, 2, "number"), _det(0, 1, "number")])
-
-
 def test_cover_count_matches_the_ranked_enumeration():
     """The counting fold admits exactly the covers the ranked fold enumerates, and
     within the bound the ranked fold is asked for exactly that many."""
@@ -393,33 +355,314 @@ def test_single_best_margin_reads_the_level_below_a_lone_top_cover(monkeypatch):
     assert prefix == resolve(detections, n=1)
 
 
-def test_cover_bound_admits_its_count_and_refuses_one_past_it(monkeypatch):
-    """A lattice with exactly the bound's number of covers is resolved; lower the
-    bound by one and the same lattice is refused."""
-    detections = _lone_top_cover()
+def _tied_universe_past_the_old_bound() -> list[dict]:
+    # The tied universe (7,776 covers, 32 of them sharing the top geometry) beside
+    # four adjacent unit candidates, each taken or skipped: 7,776 * 2**4 = 124,416
+    # covers, past the 65,536 at which the resolver used to refuse.
+    return _tied_universe() + [_det(i, i + 1, "number") for i in range(15, 19)]
+
+
+@pytest.mark.parametrize("n", [1, 33])
+def test_past_the_old_cover_bound_resolves_as_the_complete_enumeration(monkeypatch, n):
+    """No cover bound refuses: a lattice admitting 124,416 covers resolves, and to
+    exactly what ranking every one of them gives -- best, covers, margin, flags and
+    ``truncated``, which the exact count decides."""
+    detections = _tied_universe_past_the_old_bound()
+    graph, roots, _ids = fold_resolve.build_lattice(detections)
+    assert fold_resolve._count_covers(graph, roots) == 7_776 * 2**4 > 1 << 16
+    prefix = _selection(detections, n)
+    assert prefix.truncated is True
+    monkeypatch.setattr(fold_resolve, "_FIRST_RANKED_REQUEST", 1 << 30)
+    assert prefix == _selection(detections, n)
+
+
+def test_an_astronomical_lattice_resolves_by_whole_levels(monkeypatch):
+    """Ninety-six adjacent unit candidates, each taken or skipped, admit 2**96 covers
+    (the spaced-Cyrillic sentence's count) and one of them at the best geometry. The
+    count is an exact int, never a float nor clamped, and it is what the gathering
+    returns; the ranked fold is asked only for the witnesses the top levels need (the
+    lone full cover, then the 96 that drop one unit, shown whole by a witness past
+    them), never a request sized by the count."""
+    detections = [_det(i, i + 1, "number") for i in range(96)]
     graph, roots, _ids = fold_resolve.build_lattice(detections)
     count = fold_resolve._count_covers(graph, roots)
-    monkeypatch.setattr(fold_resolve, "_COVER_ENUMERATION_CAP", count)
-    assert resolve_cover(detections).best == (detections[0],)
-    monkeypatch.setattr(fold_resolve, "_COVER_ENUMERATION_CAP", count - 1)
-    with pytest.raises(ValueError, match="witness bound"):
-        resolve_cover(detections)
+    assert type(count) is int and count == 2**96
+    assert fold_resolve._count_top_level(graph, roots) == 1
+
+    requests = []
+    ranked = fold_resolve._fold_covers
+
+    def recording(detections, graph, roots, id_to_index, output_cap):
+        requests.append(output_cap)
+        return ranked(detections, graph, roots, id_to_index, output_cap)
+
+    monkeypatch.setattr(fold_resolve, "_fold_covers", recording)
+    assert fold_resolve._gather_top_geometry(detections, 2)[1] == 2**96
+    assert requests == [16, 64, 256]
+    assert resolve_cover(detections).best == tuple(detections)
+    assert _selection(detections, 1).truncated is True
 
 
-def test_a_real_lattice_past_the_bound_is_refused_before_ranking(monkeypatch):
-    """Seventeen adjacent unit candidates, each taken or skipped independently,
-    admit 2**17 = 131,072 covers -- twice the real bound, not a lowered one. The
-    exact count refuses it, and no witness is ranked on the way."""
-    detections = [_det(i, i + 1, "number") for i in range(17)]
+def test_top_level_count_is_the_top_level_of_the_complete_enumeration():
+    """The top-level count is exactly how many covers the complete enumeration puts at
+    its best geometry, on a tied level and on a lone top cover."""
+    for detections, expected in ((_tied_universe(), 32), (_lone_top_cover(), 1)):
+        graph, roots, _ids = fold_resolve.build_lattice(detections)
+        scored = _complete_enumeration(detections)
+        best = scored[0][0][0]
+        assert sum(value[0] == best for value, _cover in scored) == expected
+        assert fold_resolve._count_top_level(graph, roots) == expected
+
+
+def _tied_chain(k: int) -> list[dict]:
+    # Two-code-point spans starting at every position of 2k, each read two ways: one
+    # component (every span overlaps the next), whose top level is the k disjoint
+    # spans tiling the text, 2**k ways.
+    detections = []
+    for start in range(2 * k - 1):
+        detections += [_det(start, start + 2, "number"), _det(start, start + 2, "date")]
+    return detections
+
+
+def test_top_level_bound_admits_its_size_and_refuses_one_past_it(monkeypatch):
+    """A component's top level of exactly the bound's size resolves; lower the bound
+    by one and the same lattice is refused, by the count, before any witness is
+    ranked."""
+    detections = _tied_chain(3)
     graph, roots, _ids = fold_resolve.build_lattice(detections)
-    assert fold_resolve._count_covers(graph, roots) == 2**17 > fold_resolve._COVER_ENUMERATION_CAP
+    assert fold_resolve._count_top_level(graph, roots) == 8
+    monkeypatch.setattr(fold_resolve, "_DIRECT_ENUMERATION_MAX", 0)
+    monkeypatch.setattr(fold_resolve, "_RANKED_LEVEL_BOUND", 8)
+    assert resolve(detections, n=1).best
+    monkeypatch.setattr(fold_resolve, "_RANKED_LEVEL_BOUND", 7)
 
     def ranked(*_args, **_kwargs):
-        raise AssertionError("the ranked fold ran past the cover bound")
+        raise AssertionError("the ranked fold ran past the top-level bound")
 
     monkeypatch.setattr(fold_resolve, "_fold_covers", ranked)
-    with pytest.raises(ValueError, match="witness bound"):
+    with pytest.raises(ValueError, match="top geometry level holds 8 covers"):
+        resolve(detections, n=1)
+
+
+def test_a_real_tied_top_level_past_the_bound_is_refused_before_ranking(monkeypatch):
+    """One component whose top level holds 2**17 covers -- twice the real bound, not
+    a lowered one. The top-level count refuses it, and no witness is ranked."""
+    detections = _tied_chain(17)
+    candidates, _end = fold_resolve._candidates(detections)
+    assert len(fold_resolve._components(candidates)) == 1
+    graph, roots, _ids = fold_resolve.build_lattice(detections)
+    assert fold_resolve._count_top_level(graph, roots) == 2**17 > fold_resolve._RANKED_LEVEL_BOUND
+
+    def ranked(*_args, **_kwargs):
+        raise AssertionError("the ranked fold ran past the top-level bound")
+
+    monkeypatch.setattr(fold_resolve, "_fold_covers", ranked)
+    with pytest.raises(ValueError, match=f"holds {2**17} covers"):
         resolve_cover(detections)
+
+
+def test_tied_top_levels_in_separate_components_are_never_formed(monkeypatch):
+    """Seventeen disjoint spans, each read two ways, put 2**17 covers at the best
+    geometry, but as seventeen components of two: each is enumerated alone, the
+    ranked fold never runs, and the sentence resolves."""
+    detections = []
+    for block in range(17):
+        detections += [_det(2 * block, 2 * block + 1, "number")]
+        detections += [_det(2 * block, 2 * block + 1, "date")]
+    graph, roots, _ids = fold_resolve.build_lattice(detections)
+    assert fold_resolve._count_top_level(graph, roots) == 2**17
+
+    def ranked(*_args, **_kwargs):
+        raise AssertionError("the ranked fold ran on a small component")
+
+    monkeypatch.setattr(fold_resolve, "_fold_covers", ranked)
+    resolution = resolve(detections, n=3)
+    assert len(resolution.best) == 17 and resolution.semantic_ambiguous
+    assert resolution.margin == CoverMargin(0, 0, 0)
+    assert _selection(detections, 3).truncated is True
+
+
+def test_widening_past_the_bound_for_a_lower_level_is_refused(monkeypatch):
+    """The top level fits, but the cover list needs the next level too, and that level
+    runs more than the bound past the last cover asked for: refused, not a prefix.
+    The chain's two best levels hold 16 and 80 covers."""
+    monkeypatch.setattr(fold_resolve, "_DIRECT_ENUMERATION_MAX", 0)
+    monkeypatch.setattr(fold_resolve, "_RANKED_LEVEL_BOUND", 64)
+    assert len(resolve(_tied_chain(4), n=16).covers) == 16
+    assert len(resolve(_tied_chain(4), n=32).covers) == 32
+    with pytest.raises(ValueError, match="holding cover 31 of the cover order runs more than 64"):
+        resolve(_tied_chain(4), n=31)
+
+
+def _whole_sentence(monkeypatch, detections, n):
+    """The selection as one lattice: a single component, gathered by the ranked fold
+    and sorted whole, as the resolver ran before components."""
+    with monkeypatch.context() as patched:
+        patched.setattr(fold_resolve, "_components", lambda candidates: [list(candidates)])
+        patched.setattr(fold_resolve, "_DIRECT_ENUMERATION_MAX", 0)
+        return _selection(detections, n)
+
+
+def _every_cover(detections) -> list[tuple]:
+    """Every non-overlapping subset of the valid spans, each in span order: a plain
+    recursion that shares nothing with the resolver's components or folds."""
+    valid = sorted(
+        (d for d in detections if 0 <= int(d["start"]) < int(d["end"])),
+        key=lambda d: (int(d["start"]), int(d["end"])),
+    )
+    covers: list[tuple] = []
+
+    def extend(index, free_from, chosen):
+        if index == len(valid):
+            covers.append(tuple(chosen))
+            return
+        extend(index + 1, free_from, chosen)
+        if int(valid[index]["start"]) >= free_from:
+            extend(index + 1, int(valid[index]["end"]), [*chosen, valid[index]])
+
+    extend(0, 0, [])
+    return covers
+
+
+def _oracle_margin(ordered) -> CoverMargin:
+    """The top cover's advantage over the second in the full cover order."""
+    if len(ordered) < 2:
+        return CoverMargin(0, 0, 0)
+    top, second = (fold_resolve._cover_score(cover) for cover in ordered[:2])
+    return CoverMargin(
+        top.coverage - second.coverage,
+        second.span_count - top.span_count,
+        top.capture_count - second.capture_count,
+    )
+
+
+def _assert_matches_every_cover_sorted(detections, n):
+    """The selection against the definition, computed independently: every cover
+    enumerated, sorted whole by the cover order (geometry, span signature, per-span
+    reading rank, content key), and the top level, s*, flags, margin, cover list and
+    truncation read off that list, as the resolver did before components."""
+    context = fold_resolve.ResolveContext(None, tuple(detections))
+    order = {}
+    for span in {(int(d["start"]), int(d["end"])) for d in detections}:
+        at_span = [d for d in detections if (int(d["start"]), int(d["end"])) == span]
+        ranked = fold_resolve._rank_span_readings(at_span, (), context, None)
+        most = max(len(d.get("captures", ())) for d in at_span)
+        order[span] = [
+            fold_resolve._content_key(r.detection)
+            for r in ranked
+            if len(r.detection.get("captures", ())) == most
+        ]
+
+    def key(cover):
+        score = fold_resolve._cover_score(cover)
+        ranks = []
+        for d in cover:
+            keys = order[(int(d["start"]), int(d["end"]))]
+            content = fold_resolve._content_key(d)
+            ranks.append(keys.index(content) if content in keys else len(keys))
+        return (
+            (-score.coverage, score.span_count, -score.capture_count),
+            tuple((int(d["start"]), int(d["end"])) for d in cover),
+            tuple(ranks),
+            tuple(fold_resolve._content_key(d) for d in cover),
+        )
+
+    ordered = sorted(_every_cover(detections), key=key)
+    top = [cover for cover in ordered if key(cover)[0] == key(ordered[0])[0]]
+    signatures = sorted({key(cover)[1] for cover in top})
+    selection = _selection(detections, n)
+    assert selection.covers == tuple(ordered[:n])
+    assert selection.best == ordered[0]
+    assert selection.margin == _oracle_margin(ordered)
+    assert selection.truncated is (len(ordered) > n)
+    assert selection.structural_ambiguous is (len(signatures) > 1)
+    assert tuple((span.start, span.end) for span in selection.spans) == signatures[0]
+
+
+def _random_universe(rng: random.Random) -> list[dict]:
+    """A random candidate universe: a few clusters of overlapping spans, separated by
+    uncovered gaps or touching, with repeated geometry across clusters (so top levels
+    and runner-up losses tie across components), two-way readings at some spans, a
+    motif whose best covers differ in span signature at one geometry (structural
+    ambiguity), and now and then a cluster wide enough to be gathered by the fold."""
+    detections: list[dict] = []
+    at = rng.randrange(0, 3)
+    shapes = [rng.choice([(0, 2), (1, 3), (0, 1), (0, 3), (2, 3)]) for _ in range(3)]
+    for _cluster in range(rng.randrange(1, 5)):
+        wide = rng.random() < 0.15
+        width = rng.randrange(6, 10) if wide else rng.randrange(2, 6)
+        spans = set()
+        for _ in range(rng.randrange(8, 13) if wide else rng.randrange(1, 6)):
+            start = rng.randrange(0, width)
+            spans.add((start, rng.randrange(start + 1, min(width, start + 4) + 1)))
+        if rng.random() < 0.5:
+            spans |= {(s, e) for s, e in shapes if e <= width}
+        if width >= 3 and rng.random() < 0.3:
+            spans = {(s, e) for s, e in spans if e - s < 3}
+            spans |= {(0, 1), (1, 3), (0, 2), (2, 3)}
+        for start, end in sorted(spans):
+            captures = tuple(range(rng.choice([0, 0, 1])))
+            detections.append(_det(at + start, at + end, "number", captures))
+            if rng.random() < 0.4:
+                detections.append(_det(at + start, at + end, "date", captures))
+        at += width + rng.choice([0, 0, 1, 2])
+    return detections
+
+
+@pytest.mark.parametrize("seed", range(60))
+def test_components_resolve_as_the_whole_sentence(monkeypatch, seed):
+    """Resolving each component alone and assembling gives exactly the whole-sentence
+    selection -- best, s*, spans, flags, margin, the cover list and its priors, and
+    ``truncated`` -- against the ranked fold over the whole lattice and against
+    every cover enumerated and sorted whole, for several n."""
+    detections = fold_resolve._dedupe(_random_universe(random.Random(seed)))
+    candidates, _end = fold_resolve._candidates(detections)
+    total = fold_resolve._count_local(candidates)
+    for n in (1, 2, 3, 8, 50):
+        split = _selection(detections, n)
+        assert split == _whole_sentence(monkeypatch, detections, n)
+        if total <= 20_000:
+            _assert_matches_every_cover_sorted(detections, n)
+    if len(fold_resolve._components(candidates)) > 1:
+        direct = _selection(detections, 8)
+        with monkeypatch.context() as patched:
+            patched.setattr(fold_resolve, "_DIRECT_ENUMERATION_MAX", 0)
+            assert _selection(detections, 8) == direct
+
+
+def test_the_random_universes_split_and_tie_across_components():
+    """The equivalence above is not vacuous: the random universes split into several
+    components; top levels and runner-up losses tie across components; some are
+    structurally ambiguous; some components admit more covers than the smallest
+    ranked-fold lattices do; and most are small enough to check against every
+    cover."""
+    seen = {"split": 0, "tied": 0, "loss_tied": 0, "structural": 0, "folded": 0, "brute": 0}
+
+    def key(cover):
+        return (fold_resolve._geometry_rank(cover), fold_resolve._span_signature(cover))
+
+    for seed in range(60):
+        detections = fold_resolve._dedupe(_random_universe(random.Random(seed)))
+        candidates = fold_resolve._candidates(detections)[0]
+        components = fold_resolve._components(candidates)
+        locals_ = [fold_resolve._resolve_component(c, 2, key) for c in components]
+        losses = [
+            tuple(
+                b - t
+                for b, t in zip(
+                    local.second_geometry, fold_resolve._geometry_rank(local.covers[0]), strict=True
+                )
+            )
+            for local in locals_
+        ]
+        seen["split"] += len(components) > 1
+        seen["tied"] += sum(local.top_size > 1 for local in locals_) > 1
+        seen["loss_tied"] += len(losses) > 1 and losses.count(min(losses)) > 1
+        seen["structural"] += _selection(detections, 1).structural_ambiguous
+        seen["folded"] += any(fold_resolve._count_local(c) > 64 for c in components)
+        seen["brute"] += fold_resolve._count_local(candidates) <= 20_000
+    assert seen["split"] >= 45 and seen["tied"] >= 15 and seen["loss_tied"] >= 8
+    assert seen["structural"] >= 5 and seen["folded"] >= 3 and seen["brute"] >= 50
 
 
 @pytest.mark.parametrize(
@@ -448,3 +691,69 @@ def test_fold_cost_and_geometry_rank_correspond_one_to_one(detections):
     pairs = {(value[0], fold_resolve._geometry_rank(cover)) for value, cover in scored}
     assert len(pairs) == len({cost for cost, _rank in pairs}) == len({r for _c, r in pairs})
     assert sorted(pairs) == sorted(pairs, key=lambda pair: pair[1])
+
+
+@pytest.mark.parametrize("seed", range(20))
+def test_a_lattice_over_boundaries_only_gathers_the_same_levels(seed):
+    """Positions only at candidate boundaries, one skip between neighbors: the same
+    count, top level and ranked levels as the lattice with a position per code point,
+    on a lattice several times smaller where text runs unbounded."""
+    detections = fold_resolve._dedupe(_random_universe(random.Random(seed)))
+    detections += [_det(40, 90, "electronic"), _det(40, 60, "number"), _det(70, 90, "number")]
+
+    def levels(scored_count_beyond):
+        # A witness value is (cost, paths); the paths name positions and skips,
+        # which differ by construction, so the cost and the decoded cover are kept.
+        scored, count, beyond = scored_count_beyond
+        return [(value[0], cover) for value, cover in scored], count, beyond
+
+    full = levels(fold_resolve._gather_levels(detections, 8))
+    compact = levels(fold_resolve._gather_levels(detections, 8, boundaries_only=True))
+    assert compact == full
+    graph, roots, _ids = fold_resolve.build_lattice(detections, boundaries_only=True)
+    whole, whole_roots, _ids = fold_resolve.build_lattice(detections)
+    assert fold_resolve._count_covers(graph, roots) == fold_resolve._count_covers(
+        whole, whole_roots
+    )
+    assert fold_resolve._count_top_level(graph, roots) == fold_resolve._count_top_level(
+        whole, whole_roots
+    )
+    assert 2 * len(graph.tiers[0].items) < len(whole.tiers[0].items)
+
+
+def _chain(k: int, offset: int = 0) -> list[dict]:
+    # k two-code-point spans, each overlapping the next: one component whose covers
+    # (Fibonacci in k) pass the direct-enumeration limit well before k = 14.
+    return [_det(offset + i, offset + i + 2, "number") for i in range(k)]
+
+
+def test_a_cover_list_past_the_bound_is_answered_on_a_folded_component():
+    """The bound limits a folded component's top level, never the n asked for: n=300
+    on a 14-span chain (987 covers, gathered by the ranked fold, a top level of 8) is
+    the first 300 covers of the full cover order, as main gave."""
+    detections = _chain(14)
+    candidates, _end = fold_resolve._candidates(detections)
+    assert fold_resolve._count_local(candidates) == 987 > fold_resolve._DIRECT_ENUMERATION_MAX
+    graph, roots, _ids = fold_resolve.build_lattice(detections)
+    assert fold_resolve._count_top_level(graph, roots) == 8
+    for n in (256, 257, 300):
+        _assert_matches_every_cover_sorted(detections, n)
+    assert len(resolve(detections, n=300).covers) == 300
+
+
+def test_folds_stay_exact_however_long_the_spans():
+    """One span of 10**30 over ten of 10**29, each read two ways: weights near 10**60,
+    past Decimal's default 28 digits. Rounded, the long span's cost ties with the
+    1,024 ten-span covers and the top level reads 1,025 (refused). The folds run in
+    a context wide enough to keep them apart: the top level is the long span alone,
+    nine spans ahead of the runner-up."""
+    unit = 10**29
+    detections = [_det(0, 10 * unit, "number")]
+    for i in range(10):
+        detections += [_det(i * unit, (i + 1) * unit, kind) for kind in ("number", "date")]
+    graph, roots, _ids = fold_resolve.build_lattice(detections, boundaries_only=True)
+    assert fold_resolve._count_covers(graph, roots) == 3**10 + 1
+    assert fold_resolve._count_top_level(graph, roots) == 1
+    selection = _selection(detections, 1)
+    assert selection.best == (detections[0],)
+    assert selection.margin == CoverMargin(coverage=0, span_count=9, capture_count=0)
