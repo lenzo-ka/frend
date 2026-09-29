@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Raised the tiergraph floor to `tiergraph>=0.4.1`, whose ranked fold keeps only the
+  top k when multiplying single paths: the same ranked output, faster.
 - Read spaced letters of another script as one span. Which scripts are "another"
   now comes from ICU through icukit, not a hand-written list: the locale's likely
   script (`add_likely_subtags`: `en_US` -> `Latn`), its exemplar characters' scripts
