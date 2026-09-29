@@ -80,16 +80,19 @@ def test_a_word_is_no_run_and_does_not_join_its_neighbors():
     ]
 
 
-def test_a_run_reads_by_transliteration_names_as_written_and_silence():
-    text = "Θ Α"
-    (detection,) = SymbolDetector().detect(text)
-    assert detection["value"].transform == "Greek-Latin"
+def _run_unit(text, locale="en_US"):
+    (detection,) = SymbolDetector(locale).detect(text)
     lattice = resolve_lattice([detection], source_text=text)
     edge = next(e for e in lattice.edges if e.kind == "reading")
-    unit = verbalize_edge(edge, source_text=text, rerank_by_context=False)
+    return detection, verbalize_edge(edge, source_text=text, rerank_by_context=False)
+
+
+def test_a_run_reads_by_transliteration_names_as_written_and_silence():
+    detection, unit = _run_unit("Θ Α")
+    assert detection["value"].transform == "Greek-Latin; Latin-ASCII"
     readings = {(a.text, a.provenance) for a in unit.alternatives}
     assert readings == {
-        ("th a", "icu-transliteration:Greek-Latin"),
+        ("th a", "icu-transliteration:Greek-Latin; Latin-ASCII"),
         ("theta alpha", "icu-name:letter"),
         ("Θ Α", "surface:as-written"),
         ("", "surface:silence"),
@@ -98,11 +101,98 @@ def test_a_run_reads_by_transliteration_names_as_written_and_silence():
     assert unit.alternatives[0].text == "theta alpha"
 
 
+def test_a_cyrillic_run_is_silent_first_as_its_lone_letters_are():
+    _, unit = _run_unit("Т Е С Т")
+    assert unit.alternatives[0].text == ""
+    assert ("t e s t", "icu-transliteration:Cyrillic-Latin; Latin-ASCII") in {
+        (a.text, a.provenance) for a in unit.alternatives
+    }
+
+
+@pytest.mark.parametrize(
+    ("text", "spoken"),
+    [("ж з", "z z"), ("風 雨", "feng yu"), ("Ё Щ", "e s")],
+)
+def test_a_latin_transliteration_holds_only_ascii_letters(text, spoken):
+    (detection,) = SymbolDetector().detect(text)
+    readings = {source: name for name, source in detection["value"].names}
+    transliterated = next(v for k, v in readings.items() if k.startswith("icu-transliteration"))
+    assert transliterated == spoken
+    assert transliterated.isascii()
+
+
 def test_the_transform_is_one_icu_lists_else_any():
     from frend.symbols import transform_id
 
-    assert transform_id("Cyrl", "en_US") in ("Cyrillic-Latin", "Cyrl-Latn")
-    assert transform_id("Latn", "ru") in ("Latin-Cyrillic", "Latn-Cyrl")
+    assert transform_id("Cyrl", "en_US") == "Cyrillic-Latin; Latin-ASCII"
+    assert transform_id("Latn", "ru") == "Latin-Cyrillic"
+
+
+def test_a_run_joins_only_letters_of_one_script():
+    detections = SymbolDetector().detect("Т Α")
+    assert [(d["type"], d["text"]) for d in detections] == [
+        ("symbol:letter", "Т"),
+        ("symbol:letter", "Α"),
+    ]
+    detections = SymbolDetector().detect("а б Θ Α")
+    assert [(d["type"], d["text"]) for d in detections] == [
+        ("symbol:script-run", "а б"),
+        ("symbol:script-run", "Θ Α"),
+    ]
+
+
+@pytest.mark.parametrize(
+    ("text", "letters"),
+    [("Т Е С Т5", ["Т", "Е", "С"]), ("xА Б В", ["Б", "В"])],
+)
+def test_a_run_touching_a_word_keeps_its_letters_one_by_one(text, letters):
+    detections = SymbolDetector().detect(text)
+    assert [(d["type"], d["text"]) for d in detections] == [
+        ("symbol:letter", letter) for letter in letters
+    ]
+
+
+@pytest.mark.parametrize("text", ["Т\nЕ", "Т  Е", "Т\tЕ"])
+def test_a_run_joins_across_one_space_only(text):
+    detections = SymbolDetector().detect(text)
+    assert [d["type"] for d in detections] == ["symbol:letter", "symbol:letter"]
+
+
+@pytest.mark.parametrize(
+    ("text", "names", "spoken"),
+    [
+        ("А́ Б", "a be", "a b"),
+        ("й́ к", "short i ka", "j k"),
+        ("ά β", "alpha with tonos beta", "a b"),
+    ],
+)
+def test_a_run_names_its_letters_without_their_marks(text, names, spoken):
+    (detection,) = SymbolDetector().detect(text)
+    readings = {source.split(":")[0]: name for name, source in detection["value"].names}
+    assert readings["icu-name"] == names
+    assert readings["icu-transliteration"] == spoken
+
+
+def test_a_locale_naming_no_script_writes_its_language_s_scripts():
+    """Serbian is written in Cyrillic and Latin: "sr" reads neither as another script."""
+    from frend.symbols import locale_scripts
+
+    assert {"Cyrl", "Latn"} <= set(locale_scripts("sr"))
+    assert "Latn" not in locale_scripts("sr_Cyrl")
+    assert SymbolDetector("sr").detect("A B") == []
+    assert SymbolDetector("sr").detect("А Б") == []
+
+
+def test_a_lone_latin_letter_reads_as_written_in_any_locale():
+    assert SymbolDetector("ru").detect("A") == []
+    assert SymbolDetector("sr_Cyrl").detect("A") == []
+
+
+def test_a_transliteration_outside_the_locale_scripts_is_dropped():
+    """ICU's Any-Hira leaves Greek as Greek; ja reads no Greek, so no such reading."""
+    (detection,) = SymbolDetector("ja_JP").detect("α β")
+    sources = [source for _, source in detection["value"].names]
+    assert not any(source.startswith("icu-transliteration") for source in sources)
 
 
 def test_spaced_letters_resolve_as_one_choice():

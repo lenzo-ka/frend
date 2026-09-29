@@ -91,15 +91,37 @@ def _short(name: str) -> str | None:
     return None
 
 
+def _other_writings(locale: str) -> tuple[str, ...]:
+    """Where the locale names no script, the scripts of ICU's locales for its language
+    that do ("sr" -> sr_Cyrl, sr_Latn): the language is written in each."""
+    from icukit.locale import list_locales
+
+    parsed = icu.Locale(locale)
+    if parsed.getScript():
+        return ()
+    language = parsed.getLanguage()
+    return tuple(
+        sorted(
+            {
+                icu.Locale(name).getScript()
+                for name in list_locales()
+                if icu.Locale(name).getLanguage() == language and icu.Locale(name).getScript()
+            }
+        )
+    )
+
+
 @cache
 def locale_scripts(locale: str) -> tuple[str, ...]:
     """The locale's scripts as ICU short names, its likely script first: likely subtags'
-    script, then its exemplar characters' (icukit), then Common and Inherited."""
+    script, then its exemplar characters' (icukit), then, where the locale names no
+    script, the scripts its language's other ICU locales name (``sr`` -> Latn too), then
+    Common and Inherited."""
     from icukit.locale import add_likely_subtags, get_locale_scripts
 
     scripts: list[str] = []
     likely = icu.Locale(add_likely_subtags(locale)).getScript()
-    for name in (likely, *get_locale_scripts(locale)):
+    for name in (likely, *get_locale_scripts(locale), *_other_writings(locale)):
         code = _short(name) if name else None
         if code and code not in scripts:
             scripts.append(code)
@@ -116,13 +138,27 @@ def _foreign(char: str, locale: str) -> bool:
     return icu.Char.isalpha(char) and _script(char) not in locale_scripts(locale)
 
 
+_LATIN = icu.Script(icu.UScriptCode.LATIN).getShortName()
+
+
+def _lone_foreign(char: str, locale: str) -> bool:
+    """A lone letter read by name: out of the locale's scripts and, as before runs were
+    gated by locale, not Latin (a lone Latin letter reads as written in every locale)."""
+    return _foreign(char, locale) and _script(char) != _LATIN
+
+
+@cache
+def _available() -> frozenset[str]:
+    from icukit.transliterator import list_transliterators
+
+    return frozenset(list_transliterators())
+
+
 @cache
 def _transforms() -> dict[tuple[str, str], tuple[str, ...]]:
     """ICU's available transform ids without a variant, by (source, target) short script."""
-    from icukit.transliterator import list_transliterators
-
     table: dict[tuple[str, str], list[str]] = {}
-    for transform in list_transliterators():
+    for transform in sorted(_available()):
         if "/" in transform or transform.count("-") != 1:
             continue
         source, target = transform.split("-")
@@ -142,6 +178,10 @@ def transform_id(script: str, locale: str) -> str | None:
         for target in targets:
             ids = _transforms().get((source, target))
             if ids:
+                # ICU's Latin keeps its diacritics ("ž", "ē"); Latin-ASCII folds them to
+                # the letters a Latin locale spells with.
+                if target == _LATIN and "Latin-ASCII" in _available():
+                    return f"{ids[0]}; Latin-ASCII"
                 return ids[0]
     return None
 
@@ -182,7 +222,7 @@ def symbol_names(char: str, locale: str = "en_US") -> tuple[tuple[str, str], ...
     cldr = _cldr_names(locale).get(char, ())
     if cldr:
         return tuple((name, f"cldr-symbol:{name}") for name in cldr)
-    letter = _letter_name(char) if _foreign(char, locale) else None
+    letter = _letter_name(char) if _lone_foreign(char, locale) else None
     return ((letter, LETTER_NAME_SOURCE),) if letter else ()
 
 
@@ -191,7 +231,7 @@ def _speakable(char: str, locale: str) -> bool:
         return False
     if char in _cldr_names(locale):
         return True
-    return _foreign(char, locale)
+    return _lone_foreign(char, locale)
 
 
 def _standalone(text: str, start: int, end: int) -> bool:
@@ -216,13 +256,21 @@ def _groups(text: str, locale: str) -> list[tuple[int, int]]:
 
 
 def _runs(text: str, locale: str) -> list[tuple[int, int]]:
-    """(start, end) per run of two or more single out-of-script letters one space apart
-    ("Т Е С Т"). A word of another script ("αβ", "Москва") is no run: it stays as written."""
+    """(start, end) per run of two or more single out-of-script letters of one script, one
+    space (" ") apart ("Т Е С Т"). A word of another script ("αβ", "Москва") is no run: it
+    stays as written."""
     runs: list[tuple[int, int]] = []
     chain: list[tuple[int, int]] = []
     for start, end in [*_groups(text, locale), (len(text) + 2, len(text) + 2)]:
         single = sum(not _MARKS.contains(ch) for ch in text[start:end]) == 1
-        if single and chain and start == chain[-1][1] + 1 and text[chain[-1][1]].isspace():
+        joins = (
+            single
+            and chain
+            and start == chain[-1][1] + 1
+            and text[chain[-1][1]] == " "
+            and _script(text[start]) == _script(text[chain[0][0]])
+        )
+        if joins:
             chain.append((start, end))
             continue
         if len(chain) > 1:
@@ -240,16 +288,22 @@ def run_readings(
     from frend.letters import spelled
 
     readings: list[tuple[str, str]] = []
+    # The letters without the marks written on them: composed where Unicode composes
+    # ("й" stays "й"), and any mark left over ("А́", "й́") dropped.
+    base = "".join(ch for ch in _NFC.normalize(text) if not _MARKS.contains(ch))
     transform = transform_id(script, locale)
     if transform is not None:
-        written = _transliterator(transform).transliterate(text)
+        written = _transliterator(transform).transliterate(base)
         # Letters set apart are said one by one, each as ICU writes it in the locale's
         # script ("Θ" -> "th"), lower-cased as the locale spells; a word is said whole.
         units = [spelled(unit).replace(" ", "") for unit in written.split()]
         spoken = " ".join(unit for unit in units if any(_lettered(ch) for ch in unit))
-        if spoken.strip():
+        scripts = locale_scripts(locale)
+        # A transform that leaves letters outside the locale's scripts ("α" through
+        # Any-Hira) gives the locale nothing it reads.
+        if spoken.strip() and all(_script(ch) in scripts for ch in spoken if _lettered(ch)):
             readings.append((spoken, f"{TRANSLITERATION_SOURCE}:{transform}"))
-    names = [_letter_name(char) for char in _NFC.normalize(text) if not char.isspace()]
+    names = [_letter_name(char) for char in base if not char.isspace()]
     if names and all(names):
         readings.append((" ".join(names), LETTER_NAME_SOURCE))  # type: ignore[arg-type]
     readings.append((text, AS_WRITTEN_SOURCE))
@@ -266,9 +320,10 @@ class SymbolDetector:
         detections = []
         in_runs: set[int] = set()
         for start, end in _runs(text, self.locale):
-            in_runs.update(range(start, end))
             if not _standalone(text, start, end):
+                # A run touching a word is no unit; its letters read one by one, as before.
                 continue
+            in_runs.update(range(start, end))
             surface = text[start:end]
             script = _script(surface[0])
             transform, names = run_readings(surface, script, self.locale)
