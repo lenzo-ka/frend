@@ -32,10 +32,27 @@ every record's origin checked to be training shards, 00 to 89) and, reproducibly
    (``.json`` where a tree does not fit ``.cart``'s string table). A problem whose
    every example keeps frend's first choice ships no tree: it could never change one.
 
+**Range problems** (the ranges plan's P6) come from their own stored set, with its own
+receipt and fingerprint (``--range-examples``; derived by ``--derive-range-examples``
+from P7's example shards 05, 15, ..., 85): every corpus triple the range rules can emit
+on (``frend.ranges.emit_relevant``) and that is no punctuation dash
+(``frend.ranges.punctuation_dash``), rejoined as written ("1883-1975") with its sentence
+either side, and the corpus's reading of the three tokens. Each is read as the evaluator
+reads a triple (the joined text alone, its sentence as context; the range table orders
+its readings, no tree reorders them); where one range span reads the whole triple, the
+example's problem is ``range:<separator class>``, its labels the span's joint sources,
+and its label the source of the first reading that says the corpus's. At most 60,000 per
+problem, drawn with the seed (a generator of its own, so the main set's draws are
+unchanged); trained over families B, F, W, C and R (``frend.context.
+range_example_features``), with the main set's frequent words. The main set, its
+frequent words and its trees are exactly as they are without the range set.
+
 Writes ``index.json`` (provenance, the frequent words, the connectors, and each tree's
 file, size and label counts) and ``trees/`` beside ``festival_classes.json``, which is
 curated and not written here. ``--check`` rebuilds into a temporary directory and
-compares every file byte for byte.
+compares every file byte for byte, and every tree decoded (its feature names, nodes and
+leaf distributions); ``--check`` without ``--range-examples`` compares the main set's
+trees only (``--no-range-examples``).
 
 Run with frend's interpreter and cartlet importable (``cartlet>=0.6``).
 """
@@ -82,6 +99,12 @@ DASHES = frozenset({"-", "–"})
 _ANY_CAP = 64  # combinations tried per record, as the evaluator tries per token
 _MOUNT_TIMEOUT = "900"
 _FILES = ("receipt.json", "examples.jsonl.gz", "dash_examples.jsonl.gz")
+_RANGE_FILES = ("receipt.json", "range_examples.jsonl.gz")
+RANGE_EXAMPLES_ROOT = Path("/Volumes/k02/processed/frend/google/tn-en_with_types/p6-range-examples")
+DEFAULT_RANGE_EXAMPLES = RANGE_EXAMPLES_ROOT / "548d6f67beab4223"
+RANGE_DERIVATION = "frend/google/tn-en_with_types/p6-range-examples"
+# P7's example shards, the range set's too.
+RANGE_SHARDS = tuple(f"output-{index:05d}-of-00100" for index in range(5, 90, 10))
 
 
 # ---------------------------------------------------------------------------------------
@@ -101,6 +124,27 @@ def fetch_examples(source: Path, cache: Path) -> tuple[Path, dict]:
             )
     receipt = json.loads((cache / "receipt.json").read_text(encoding="utf-8"))
     for name in _FILES[1:]:
+        digest = hashlib.sha256((cache / name).read_bytes()).hexdigest()
+        if digest != receipt["artifacts"][name]:
+            raise SystemExit(f"{name}: sha256 {digest} is not the receipt's")
+    held_out = sorted(set(receipt["inputs"]) - TRAINING_SHARDS)
+    if held_out:
+        raise SystemExit(f"receipt.json: inputs outside the training shards: {held_out}")
+    return cache, receipt
+
+
+def fetch_range_examples(source: Path, cache: Path) -> tuple[Path, dict]:
+    """Copy the range set's files into ``cache`` (bounded by ``timeout``) and check each
+    against its receipt; refuse a receipt with inputs outside the training shards."""
+    cache.mkdir(parents=True, exist_ok=True)
+    for name in _RANGE_FILES:
+        local = cache / name
+        if not local.exists():
+            subprocess.run(
+                ["timeout", _MOUNT_TIMEOUT, "cp", str(source / name), str(local)], check=True
+            )
+    receipt = json.loads((cache / "receipt.json").read_text(encoding="utf-8"))
+    for name in _RANGE_FILES[1:]:
         digest = hashlib.sha256((cache / name).read_bytes()).hexdigest()
         if digest != receipt["artifacts"][name]:
             raise SystemExit(f"{name}: sha256 {digest} is not the receipt's")
@@ -238,6 +282,17 @@ def _is_connector(edge, text: str, offset: int) -> bool:
     return sign is not None and _range_to(context, sign.start, sign.end, "en_US") is not None
 
 
+def _rule_ordered_connector(edge, text: str, offset: int) -> bool:
+    """A lone ratio separator (":") between numbers, offered "to" by rule (R12)."""
+    from frend.context import TextContext
+    from frend.verbalize import _is_ratio_separator, _range_to
+
+    context = TextContext(text, offset)
+    return _is_ratio_separator(context, edge.start, edge.end, "en_US") and (
+        _range_to(context, edge.start, edge.end, "en_US") is not None
+    )
+
+
 def derive(record) -> tuple[str, list[dict]]:
     """(outcome, span examples) for one stored record."""
     from frend.context import TextContext, distinct_readings, problem_labels
@@ -259,7 +314,12 @@ def derive(record) -> tuple[str, list[dict]]:
     for edge_id in lattice.best_path.edge_ids:
         edge = edges[edge_id]
         unit = verbalize_edge(edge, source_text=token, context=context, rerank_by_context=False)
-        distinct = [unit.alternatives[i] for i in distinct_readings(unit.alternatives)]
+        alternatives = unit.alternatives
+        if _rule_ordered_connector(edge, text, offset):
+            # A lone ":" between numbers is offered "to" by rule (R12), ordered by the
+            # range table, never by a tree: it is no label here.
+            alternatives = tuple(a for a in alternatives if a.provenance != "lexical:en_US")
+        distinct = [alternatives[i] for i in distinct_readings(alternatives)]
         units.append((edge, distinct))
     options = [[(i, a) for i, a in enumerate(distinct)] for _, distinct in units]
     chosen = None
@@ -297,6 +357,69 @@ def _derive_chunk(records):
     return [derive(record) for record in records]
 
 
+def _range_text(record) -> tuple[str, int]:
+    head = f"{record['L']} " if record["L"] else ""
+    tail = f" {record['R']}" if record["R"] else ""
+    return f"{head}{record['tok']}{tail}", len(head)
+
+
+def derive_range(record) -> tuple[str, list[dict]]:
+    """(outcome, examples) for one stored range record: the joined triple read as the
+    evaluator reads it, its sentence as context, with the range table's order and no
+    tree; one example where a single range span reads the whole triple."""
+    from frend.context import TextContext, distinct_sources, range_problem
+    from frend.ranges import RangeValue
+    from frend.spoken_priors import normalize_spoken
+    from frend.verbalize import verbalize_edge
+
+    token = record["tok"]
+    gold = normalize_spoken(record["gold"])
+    text, offset = _range_text(record)
+    context = TextContext(text, offset, bos=record["bos"], eos=record["eos"])
+    lattice = _lattice(token)
+    edges = {edge.id: edge for edge in lattice.edges}
+    path = [edges[edge_id] for edge_id in lattice.best_path.edge_ids]
+    if len(path) != 1 or not isinstance(
+        (path[0].detection or {}).get("value") if path[0].detection is not None else None,
+        RangeValue,
+    ):
+        return "no-range-span", []
+    edge = path[0]
+    if (edge.start, edge.end) != (0, len(token)):
+        return "no-range-span", []
+    unit = verbalize_edge(edge, source_text=token, context=context, rerank_by_context=False)
+    alternatives = unit.alternatives
+    label = next((a.provenance for a in alternatives if normalize_spoken(a.text) == gold), None)
+    if label is None:
+        return "form-not-offered", []
+    distinct = distinct_sources(alternatives)
+    if len(distinct) < 2:
+        return "one-source", []
+    value = edge.detection["value"]
+    first = alternatives[distinct[0]]
+    return "examples", [
+        {
+            "problem": range_problem(value.separator_class),
+            "label": label,
+            "first": first.provenance,
+            "w0": None if first.weight is None else float(first.weight),
+            "text": text,
+            "start": offset + edge.start,
+            "end": offset + edge.end,
+            "bos": record["bos"],
+            "eos": record["eos"],
+            "src": record["src"],
+            "separator": value.separator,
+            "left": str(value.left[0].get("text", "")),
+            "right": str(value.right[0].get("text", "")),
+        }
+    ]
+
+
+def _derive_range_chunk(records):
+    return [derive_range(record) for record in records]
+
+
 def _words_chunk(examples):
     from frend.context import BOS, EOS, PAD, _lower, _word_class, neighbor_words
 
@@ -321,6 +444,18 @@ def problem_id(problem: str) -> str:
     return hashlib.sha1(problem.encode("utf-8")).hexdigest()[:12]
 
 
+def _range_row(ex, frequent, curated) -> dict:
+    """A range example's features (families B, F, W, C and R)."""
+    from frend.context import range_example_features
+    from frend.ranges import RangeValue
+
+    value = RangeValue(({"text": ex["left"]},), ex["separator"], "range", ({"text": ex["right"]},))
+    return range_example_features(
+        ex["text"], ex["start"], ex["end"], value, first=ex["first"], first_weight=ex["w0"],
+        locale=LOCALE, frequent=frequent, curated=curated, bos=ex["bos"], eos=ex["eos"],
+    )  # fmt: skip
+
+
 def _train(job) -> tuple[str, str, bytes, dict]:
     """Featurize one problem's examples and train its tree: (problem, file name, bytes,
     info)."""
@@ -330,21 +465,24 @@ def _train(job) -> tuple[str, str, bytes, dict]:
     from frend.context import NUMERIC_FEATURES, features
 
     problem, examples, frequent, curated, fingerprint = job
-    rows = [
-        features(
-            ex["text"],
-            ex["start"],
-            ex["end"],
-            first=ex["first"],
-            first_weight=ex["w0"],
-            locale=LOCALE,
-            frequent=frequent,
-            curated=curated,
-            bos=ex["bos"],
-            eos=ex["eos"],
-        )
-        for ex in examples
-    ]
+    if problem.startswith("range:"):
+        rows = [_range_row(ex, frequent, curated) for ex in examples]
+    else:
+        rows = [
+            features(
+                ex["text"],
+                ex["start"],
+                ex["end"],
+                first=ex["first"],
+                first_weight=ex["w0"],
+                locale=LOCALE,
+                frequent=frequent,
+                curated=curated,
+                bos=ex["bos"],
+                eos=ex["eos"],
+            )
+            for ex in examples
+        ]
     names = list(rows[0])
     specs = [
         {"name": n, "dtype": "float", "type": "num"}
@@ -391,7 +529,135 @@ def _train(job) -> tuple[str, str, bytes, dict]:
 # ---------------------------------------------------------------------------------------
 
 
-def build(examples_dir: Path, out: Path, *, workers: int, cache: Path, log=print) -> dict:
+def derive_range_examples(corpus_dir: Path, dest: Path, log=print) -> dict:
+    """Write the range example set to ``dest``: every range triple of P7's example shards
+    that the range rules can emit on and that is no punctuation dash, joined as written
+    with its sentence either side and the corpus's reading; a receipt names each input
+    shard's sha256, the file's, and the set's fingerprint."""
+    from google_tn_rows import expected, range_triple_positions
+
+    from frend.ranges import emit_relevant, punctuation_dash
+
+    corpus_dir = Path(corpus_dir)
+    inputs, records, counts = {}, [], Counter()
+    scratch = tempfile.TemporaryDirectory()
+    for name in RANGE_SHARDS:
+        if name not in TRAINING_SHARDS:
+            raise SystemExit(f"{name} is not a training shard")
+        # A local copy first, bounded by ``timeout`` (the mount can stall).
+        local = Path(scratch.name) / name
+        subprocess.run(
+            ["timeout", _MOUNT_TIMEOUT, "cp", str(corpus_dir / name), str(local)], check=True
+        )
+        try:
+            inputs[name] = hashlib.sha256(local.read_bytes()).hexdigest()
+            sentences, current = [], []
+            with local.open(encoding="utf-8") as handle:
+                for line in handle:
+                    parts = line.rstrip("\n").split("\t")
+                    if parts[0] == "<eos>":
+                        if current:
+                            sentences.append(current)
+                        current = []
+                        continue
+                    if len(parts) >= 3:
+                        current.append((parts[0], parts[1], parts[2]))
+            if current:
+                sentences.append(current)
+        finally:
+            local.unlink()
+        index_of = {id(sentence): i for i, sentence in enumerate(sentences)}
+        for sentence, at in range_triple_positions(sentences):
+            left, middle, right = sentence[at : at + 3]
+            if punctuation_dash(left, middle, right):
+                counts["punctuation_dash"] += 1
+                continue
+            if not emit_relevant(left[1], middle[1], right[1], LOCALE):
+                counts["not_emittable"] += 1
+                continue
+            counts["kept"] += 1
+            records.append(
+                {
+                    "tok": left[1] + middle[1] + right[1],
+                    "L": " ".join(row[1] for row in sentence[:at]),
+                    "R": " ".join(row[1] for row in sentence[at + 3 :]),
+                    "gold": " ".join(expected(*row) for row in (left, middle, right)),
+                    "bos": True,
+                    "eos": True,
+                    "src": f"{name}:{index_of[id(sentence)]}:{at}",
+                }
+            )
+        log(f"{name}: {dict(counts)}")
+    scratch.cleanup()
+    refuse_held_out(records)
+    dest.mkdir(parents=True, exist_ok=True)
+    body = "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in records).encode("utf-8")
+    blob = gzip.compress(body, mtime=0)
+    digest = hashlib.sha256(blob).hexdigest()
+    fingerprint = hashlib.sha256(
+        json.dumps({"derivation": RANGE_DERIVATION, "inputs": inputs, "artifact": digest},
+                   sort_keys=True).encode("utf-8")
+    ).hexdigest()[:16]  # fmt: skip
+    target = dest / fingerprint
+    target.mkdir(parents=True, exist_ok=True)
+    (target / "range_examples.jsonl.gz").write_bytes(blob)
+    receipt = {
+        "derivation": RANGE_DERIVATION,
+        "purpose": (
+            "P6 range trees' training examples: range triples of P7's example shards "
+            "(tools/google_tn_rows.range_triple_positions) passing R1-R3 "
+            "(frend.ranges.emit_relevant) and kept by R6 (frend.ranges.punctuation_dash), "
+            "joined as written, with the sentence either side and the corpus's reading"
+        ),
+        "source": {"id": "google-tn:en_with_types", "license": "CC BY-SA 4.0"},
+        "inputs": inputs,
+        "counts": dict(sorted(counts.items())),
+        "artifacts": {"range_examples.jsonl.gz": digest},
+        "fingerprint": fingerprint,
+        "builder": "tools/build_context_trees.py --derive-range-examples",
+    }
+    (target / "receipt.json").write_text(json.dumps(receipt, indent=1) + "\n", encoding="utf-8")
+    return receipt
+
+
+def _range_trees(range_examples: Path, range_cache: Path, workers: int, log) -> tuple:
+    """The range problems' kept examples, their outcomes, and the set's receipt."""
+    local, receipt = fetch_range_examples(range_examples, range_cache)
+    records = list(_records(local / "range_examples.jsonl.gz"))
+    refuse_held_out(records)
+    order = sorted(range(len(records)), key=lambda i: (records[i]["tok"], records[i]["src"]))
+    chunks = [[records[i] for i in order[at : at + 2000]] for at in range(0, len(order), 2000)]
+    outcomes = Counter()
+    by_problem: dict[str, list[dict]] = defaultdict(list)
+    started = time.time()
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        for results in pool.map(_derive_range_chunk, chunks):
+            for outcome, examples in results:
+                outcomes[outcome] += 1
+                for ex in examples:
+                    by_problem[ex["problem"]].append(ex)
+    log(f"range examples derived in {time.time() - started:.0f}s: {dict(sorted(outcomes.items()))}")
+    rng = random.Random(SEED)  # the range set's own draws
+    kept, seen = {}, {}
+    for problem in sorted(by_problem):
+        examples = sorted(by_problem[problem], key=lambda ex: (ex["src"], ex["start"]))
+        seen[problem] = len(examples)
+        if len(examples) > CAP:
+            examples = sorted(rng.sample(examples, CAP), key=lambda ex: (ex["src"], ex["start"]))
+        kept[problem] = examples
+    return kept, seen, outcomes, receipt, local
+
+
+def build(
+    examples_dir: Path,
+    out: Path,
+    *,
+    workers: int,
+    cache: Path,
+    log=print,
+    range_examples: Path | None = None,
+    range_cache: Path | None = None,
+) -> dict:
     local, receipt = fetch_examples(examples_dir, cache)
     fingerprint = receipt["fingerprint"]
     main = [r for r in _records(local / "examples.jsonl.gz") if r["tok"] not in DASHES]
@@ -443,6 +709,20 @@ def build(examples_dir: Path, out: Path, *, workers: int, cache: Path, log=print
         for p in kept
         if len(kept[p]) >= MIN_EXAMPLES and all(ex["label"] == ex["first"] for ex in kept[p])
     )
+    ranged = None
+    if range_examples is not None:
+        ranged = _range_trees(
+            range_examples, range_cache or cache.parent / "range-examples", workers, log
+        )
+        range_kept, range_seen, range_outcomes, range_receipt, range_local = ranged
+        seen.update(range_seen)
+        jobs += [
+            (problem, range_kept[problem], frozenset(frequent_words), curated,
+             range_receipt["fingerprint"])
+            for problem in sorted(range_kept)
+            if len(range_kept[problem]) >= MIN_EXAMPLES
+            and any(ex["label"] != ex["first"] for ex in range_kept[problem])
+        ]  # fmt: skip
     jobs.sort(key=lambda job: -len(job[1]))
     trees = {}
     blobs = {}
@@ -482,6 +762,20 @@ def build(examples_dir: Path, out: Path, *, workers: int, cache: Path, log=print
         written = sorted(connectors)[0]
         for separator in sorted(range_separators(LOCALE) - connectors.keys()):
             connectors[separator] = {**connectors[written], "read_as": written}
+    if ranged is not None:
+        from frend.context import FAMILIES
+        from frend.ranges import load_range_priors
+
+        table = load_range_priors(LOCALE)
+        relevance = dict(table.provenance.get("relevance", {})) if table is not None else {}
+        for problem, info in trees.items():
+            if problem.startswith("range:"):
+                info["families"] = list(FAMILIES)
+                info["examples_fingerprint"] = range_receipt["fingerprint"]
+                info["relevance"] = {
+                    "joint": relevance.get("joint"),
+                    "dropped_filter": relevance.get("dropped_filter"),
+                }
     index = {
         "locale": "en",
         "schema_version": 1,
@@ -515,6 +809,28 @@ def build(examples_dir: Path, out: Path, *, workers: int, cache: Path, log=print
         },
         "frequent_words": frequent_words,
         "connectors": dict(sorted(connectors.items())),
+        **(
+            {
+                "range_examples": {
+                    "derivation": range_receipt["derivation"],
+                    "fingerprint": range_receipt["fingerprint"],
+                    "shards": sorted(range_receipt["inputs"]),
+                    "receipt_sha256": hashlib.sha256(
+                        (range_local / "receipt.json").read_bytes()
+                    ).hexdigest(),
+                    "files_sha256": {
+                        name: range_receipt["artifacts"][name] for name in _RANGE_FILES[1:]
+                    },
+                    "records": sum(range_outcomes.values()),
+                    "outcomes": dict(sorted(range_outcomes.items())),
+                    "problems": {p: range_seen[p] for p in sorted(range_seen)},
+                    "cap_per_problem": CAP,
+                    "seed": SEED,
+                }
+            }
+            if ranged is not None
+            else {}
+        ),
         "trees": {problem: trees[problem] for problem in sorted(trees)},
     }
     out.mkdir(parents=True, exist_ok=True)
@@ -530,7 +846,21 @@ def build(examples_dir: Path, out: Path, *, workers: int, cache: Path, log=print
     return index
 
 
-def _compare(built: Path, shipped: Path) -> list[str]:
+def _decoded(path: Path):
+    """A tree file decoded: cartlet's model (feature names, decision nodes, leaves, leaf
+    distributions) for ``.cart``, the parsed document for ``.json``."""
+    blob = path.read_bytes()
+    if path.suffix == ".cart":
+        from cartlet.runner import Predictor
+
+        return Predictor(blob).model
+    return json.loads(blob)
+
+
+def _compare(built: Path, shipped: Path, *, only: set[str] | None = None) -> list[str]:
+    """The files that differ between two tree directories, byte for byte, and every tree
+    that differs decoded (marked ``(decoded)``); ``only`` limits the comparison to those
+    relative paths."""
     differences = []
     names = {
         str(p.relative_to(root))
@@ -538,11 +868,25 @@ def _compare(built: Path, shipped: Path) -> list[str]:
         for p in root.rglob("*")
         if p.is_file() and p.name != "festival_classes.json"
     }
+    if only is not None:
+        names &= only
     for name in sorted(names):
         a, b = built / name, shipped / name
         if not a.exists() or not b.exists() or a.read_bytes() != b.read_bytes():
             differences.append(name)
+        if a.exists() and b.exists() and name.startswith("trees/"):
+            if _decoded(a) != _decoded(b):
+                differences.append(f"{name} (decoded)")
     return differences
+
+
+def _main_set_files(index: dict) -> set[str]:
+    """The tree files of the main set's problems (every problem but ``range:*``)."""
+    return {
+        entry["file"]
+        for problem, entry in index["trees"].items()
+        if not problem.startswith("range:")
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -552,21 +896,61 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cache", type=Path, default=None, help="local copy of the set")
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--check", action="store_true", help="rebuild and compare byte for byte")
+    parser.add_argument(
+        "--range-examples",
+        type=Path,
+        default=DEFAULT_RANGE_EXAMPLES,
+        help="the range example set (its directory)",
+    )
+    parser.add_argument(
+        "--no-range-examples",
+        action="store_true",
+        help="build (or --check) the main set alone, with no range problems",
+    )
+    parser.add_argument("--range-cache", type=Path, default=None, help="local copy of it")
+    parser.add_argument(
+        "--derive-range-examples",
+        type=Path,
+        default=None,
+        metavar="CORPUS_DIR",
+        help="derive the range example set from CORPUS_DIR (written under its fingerprint)",
+    )
     args = parser.parse_args(argv)
+    if args.derive_range_examples is not None:
+        receipt = derive_range_examples(args.derive_range_examples, RANGE_EXAMPLES_ROOT)
+        print(json.dumps({k: receipt[k] for k in ("fingerprint", "counts")}))
+        return 0
+    if args.no_range_examples:
+        args.range_examples = None
     with tempfile.TemporaryDirectory() as scratch:
         cache = args.cache or Path(scratch) / "examples"
+        range_cache = args.range_cache or Path(scratch) / "range-examples"
         if args.check:
             built = Path(scratch) / "context"
             built.mkdir()
             shutil.copy2(args.out / "festival_classes.json", built / "festival_classes.json")
-            build(args.examples, built, workers=args.workers, cache=cache)
-            differences = _compare(built, args.out)
+            build(
+                args.examples, built, workers=args.workers, cache=cache,
+                range_examples=args.range_examples, range_cache=range_cache,
+            )  # fmt: skip
+            only = None
+            if args.range_examples is None:
+                # The main set alone: its trees, byte for byte and decoded.
+                shipped = json.loads((args.out / "index.json").read_text(encoding="utf-8"))
+                only = _main_set_files(shipped) | {
+                    str(p.relative_to(built)) for p in (built / "trees").iterdir()
+                }
+            differences = _compare(built, args.out, only=only)
             if differences:
                 print(f"--check: {len(differences)} files differ, first {differences[:5]}")
                 return 1
-            print(f"--check: {args.out} matches a rebuild byte for byte")
+            scope = "the main set's trees" if only is not None else "every file"
+            print(f"--check: {args.out} matches a rebuild ({scope}), bytes and decoded trees")
             return 0
-        index = build(args.examples, args.out, workers=args.workers, cache=cache)
+        index = build(
+            args.examples, args.out, workers=args.workers, cache=cache,
+            range_examples=args.range_examples, range_cache=range_cache,
+        )  # fmt: skip
         print(json.dumps(index["provenance"]["problems"]))
     return 0
 

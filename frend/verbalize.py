@@ -37,6 +37,7 @@ from frend.context import (
     connector_probability,
     connector_words,
     rerank,
+    rerank_range,
 )
 from frend.electronic import (
     ElectronicValue,
@@ -50,7 +51,16 @@ from frend.electronic import (
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import LettersValue, cv_pattern, spelled
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
-from frend.ranges import RangeValue, from_icukit
+from frend.ranges import (
+    RangeValue,
+    digit_groups,
+    from_icukit,
+    load_range_priors,
+    range_class_key,
+    range_separator_classes,
+    range_sub_key,
+    written_sub_key,
+)
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
@@ -1808,34 +1818,8 @@ def range_separators(locale: str) -> frozenset[str]:
     return frozenset(written | ({cldr} if cldr else set()))
 
 
-def _digit_groups(text: str, start: int, end: int, separators: frozenset[str]) -> list[int]:
-    """The lengths of the ASCII digit groups joined, with no white space, by separators
-    through ``text[start:end]``, left to right ("978-1-234" at its first "-": [3, 1, 3])."""
-    left: list[int] = []
-    at = start
-    while True:
-        first = at
-        while first > 0 and text[first - 1] in "0123456789":
-            first -= 1
-        if first == at:
-            break
-        left.append(at - first)
-        if first == 0 or text[first - 1] not in separators:
-            break
-        at = first - 1
-    right: list[int] = []
-    at = end
-    while True:
-        last = at
-        while last < len(text) and text[last] in "0123456789":
-            last += 1
-        if last == at:
-            break
-        right.append(last - at)
-        if last == len(text) or text[last] not in separators:
-            break
-        at = last + 1
-    return [*reversed(left), *right]
+# The digit groups a separator joins (``frend.ranges.digit_groups``, R3's chain).
+_digit_groups = digit_groups
 
 
 def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) -> bool:
@@ -1850,19 +1834,81 @@ def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) 
 def _range_to(context: TextContext | None, start: int, end: int, locale: str) -> str | None:
     """The locale's range connector ("to") when ``[start, end)`` of the lattice's text
     is a range separator with a number on either side in ``context``, spaced alike on
-    both sides, and not inside an identifier's digit groups; else ``None``."""
+    both sides, and not inside an identifier's digit groups; else ``None``.
+
+    The range class ("-", "–") is #43's; a lone ratio separator (":", spaced) between
+    numbers is offered "to" too (R12), where the range table emits its neighbors' sub-key (E:
+    "10 : 30" is a clock's, and says no "to")."""
     if context is None:
         return None
     connector = range_connector(locale)
     if connector is None:
         return None
     a, b = context.offset + start, context.offset + end
-    separators = range_separators(locale)
-    if context.text[a:b] not in separators:
+    written = context.text[a:b]
+    ratio = range_separator_classes(locale).get("ratio", frozenset())
+    if written in range_separators(locale):
+        separators = range_separators(locale)
+    elif written in ratio:
+        separators = ratio
+    else:
         return None
     if not between_numbers(context.text, a, b):
         return None
-    return None if _is_identifier(context.text, a, b, separators) else connector
+    if _is_identifier(context.text, a, b, separators):
+        return None
+    if written in ratio and not (
+        _spaced(context.text, a, b) and _lone_ratio_emits(context.text, a, b, written, locale)
+    ):
+        # R12 is for a lone ":" (spaced, or a corpus token read alone); a joined one is
+        # a range span's, or no range ("20:2008's").
+        return None
+    return connector
+
+
+def _spaced(text: str, start: int, end: int) -> bool:
+    return text[start - 1 : start].isspace() and text[end : end + 1].isspace()
+
+
+def _lone_ratio_emits(text: str, start: int, end: int, separator: str, locale: str) -> bool:
+    """E for a lone ratio separator: the sub-key of the numbers either side of it."""
+    table = load_range_priors(locale)
+    if table is None:
+        return False
+    before = text[:start].rstrip()
+    after = text[end:].lstrip()
+    left = re.search(r"[0-9]+$", before)
+    right = re.match(r"[0-9]+", after)
+    if left is None or right is None:
+        return False
+    return table.emits(written_sub_key("ratio", left.group(0), separator, right.group(0), locale))
+
+
+def _is_ratio_separator(context: TextContext | None, start: int, end: int, locale: str) -> bool:
+    if context is None:
+        return False
+    written = context.text[context.offset + start : context.offset + end]
+    return written in range_separator_classes(locale).get("ratio", frozenset())
+
+
+def _lone_ratio_first(
+    alternatives: tuple[SpokenAlternative, ...], locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """R12: a lone ":" between numbers says "to" first where the range table's ratio
+    class shares say "to" more often than nothing (``connector_share``)."""
+    table = load_range_priors(locale)
+    if table is None:
+        return alternatives
+    said, silent = table.connector_share("ratio", "to"), table.connector_share("ratio", "silent")
+    if said is None or silent is None or said <= silent:
+        return alternatives
+    at = next(
+        (i for i, item in enumerate(alternatives) if item.provenance.startswith(RANGE_SOURCE)),
+        None,
+    )
+    if not at:
+        return alternatives
+    return (alternatives[at], *alternatives[:at], *alternatives[at + 1 :])
 
 
 def _connector_first(
@@ -2059,30 +2105,67 @@ def _range_end(
     return tuple((item, kind) for item in alternatives)
 
 
-def _spoken_range(
+def _measured_end(
+    detection: Mapping, locale: str, *, bare: bool, apply_source_priors: bool
+) -> tuple[tuple[SpokenAlternative, str], ...]:
+    """One end's readings labeled as the range table counts them (``_range_end`` without
+    the interim year rule), each with its kind:
+
+    - R11: a cardinal said digit by digit (``%spellout-cardinal``: "05" "o five") is kind
+      ``digits``;
+    - R8: a plain whole end (``number:decimal``, no unit, integral) also offers its year
+      readings (``%spellout-numbering-year``, and their "o" forms), kind ``date``,
+      ranked as frend ranks a year alone; an end written with four digits labels a
+      reading that is also its year reading ``date`` ("two thousand seven"), so a range
+      of years has one source."""
+    items = [
+        (item, "digits" if kind == "cardinal" and "%spellout-cardinal" in item.provenance else kind)
+        for item, kind in _range_end(
+            detection, locale, bare=bare, year=False, apply_source_priors=apply_source_priors
+        )
+    ]
+    value = detection.get("value")
+    if (
+        str(detection.get("type")) == "number:decimal"
+        and not detection.get("writes_unit")
+        and isinstance(value, NumberValue)
+    ):
+        try:
+            amount = Decimal(value.decimal)
+        except InvalidOperation:
+            amount = None
+        if amount is not None and amount == amount.to_integral_value() and amount >= 0:
+            years = tuple(
+                item for item in _year_leaf(amount, locale) if "numbering-year" in item.provenance
+            )
+            if apply_source_priors:
+                years = _rank_final(years, "date", None)
+            written = str(detection.get("text", ""))
+            if len(written) == 4 and set(written) <= set("0123456789"):
+                year_texts = {item.text for item in years}
+                items = [
+                    (item, "date" if item.text in year_texts else kind) for item, kind in items
+                ]
+            own = {item.text for item, _ in items}
+            items += [(item, "date") for item in years if item.text not in own]
+    return tuple(items)
+
+
+def _range_candidates(
     value: RangeValue,
     locale: str,
     *,
     apply_source_priors: bool,
     patterns: Sequence[Mapping] | None = None,
-) -> tuple[SpokenAlternative, ...]:
-    """Speak a range: each end's readings, joined by each connector pattern the locale's
-    lexical table gives the range's class (``range.connector``: "{0} to {1}", "{0} {1}").
+    measured: bool,
+    placements_out: list[int] | None = None,
+) -> list[SpokenAlternative]:
+    """Every reading of a range, in P5's order (how far each is from the first reading
+    of its end and from the first pattern), uncapped and not deduplicated.
 
-    - The readings are ordered by how far each is from the first reading of its end and
-      from the first pattern, and capped at ``_RANGE_CAP``. No range share is measured
-      yet (the ranges plan's P6), so each end keeps its own kind's measured order.
-    - A four-digit left end reads both ends as years first ("1990–95": "nineteen ninety
-      to ninety-five"), as the hyphen does ("1990-95"; ``_year_first``): interim, until
-      the ranges plan's P6 measures it.
-    - A unit or currency written on one end only ("$5–10") is said in place and also
-      moved to the end ("five dollars to ten", "five to ten dollars"): unmeasured.
-    - A pattern slot with a case and a gender is said by ``_fill_slot``, or the pattern
-      is not said.
-    - Each reading's source is ``range:<left kind>+<connector id>+<right kind>``.
-
-    ``patterns`` replaces the locale's connector patterns (a test's fixture).
-    """
+    ``measured`` labels the ends as the range table counts them (``_measured_end``: R8,
+    R11); otherwise the interim four-digit-year rule of #43 and #44 applies (a four-digit
+    left end reads both plain ends as years first, ``_year_first``)."""
     if patterns is None:
         connectors = _lexical("range.connector", locale) or {}
         patterns = tuple(connectors.get(value.separator_class, ()))
@@ -2092,7 +2175,7 @@ def _spoken_range(
     plain = all(
         end.get("type") == "number:decimal" and not end.get("writes_unit") for end in (left, right)
     )
-    year = plain and _written_digits(left) == 4
+    year = not measured and plain and _written_digits(left) == 4
     left_unit, right_unit = bool(left.get("writes_unit")), bool(right.get("writes_unit"))
     placements = [(False, False)]
     if left_unit != right_unit:
@@ -2100,10 +2183,18 @@ def _spoken_range(
         placements = list(dict.fromkeys([(not left_unit, not right_unit), (True, False)]))
     candidates: list[tuple[tuple[int, ...], SpokenAlternative]] = []
     for placement, (bare_left, bare_right) in enumerate(placements):
-        ends = [
-            _range_end(end, locale, bare=bare, year=year, apply_source_priors=apply_source_priors)
-            for end, bare in ((left, bare_left), (right, bare_right))
-        ]
+        if measured:
+            ends = [
+                _measured_end(end, locale, bare=bare, apply_source_priors=apply_source_priors)
+                for end, bare in ((left, bare_left), (right, bare_right))
+            ]
+        else:
+            ends = [
+                _range_end(
+                    end, locale, bare=bare, year=year, apply_source_priors=apply_source_priors
+                )
+                for end, bare in ((left, bare_left), (right, bare_right))
+            ]
         for number, pattern in enumerate(patterns):
             template = str(pattern["pattern"])
             slots = pattern.get("slots") or {}
@@ -2127,7 +2218,93 @@ def _spoken_range(
                     order = (i + j + number + placement, number, placement, i, j)
                     candidates.append((order, SpokenAlternative(said, source)))
     candidates.sort(key=lambda item: item[0])
-    return _ranked([item for _, item in candidates])[:_RANGE_CAP]
+    if placements_out is not None:
+        placements_out.extend(order[2] for order, _ in candidates)
+    return [item for _, item in candidates]
+
+
+def _capped_by_placement(
+    candidates: Sequence[SpokenAlternative], placements: Sequence[int]
+) -> tuple[SpokenAlternative, ...]:
+    """P5's order capped at ``_RANGE_CAP``, keeping each unit placement's first reading
+    (it replaces the last readings the cap would keep)."""
+    seen: set[str] = set()
+    distinct = []
+    for item, placement in zip(candidates, placements, strict=True):
+        if item.text not in seen:
+            seen.add(item.text)
+            distinct.append((item, placement))
+    leads = {}
+    for index, (_, placement) in enumerate(distinct):
+        leads.setdefault(placement, index)
+    missing = [index for index in leads.values() if index >= _RANGE_CAP]
+    kept = [i for i in range(min(len(distinct), _RANGE_CAP - len(missing)))] + missing
+    return tuple(distinct[i][0] for i in sorted(kept))
+
+
+def _money_range(value: RangeValue) -> bool:
+    return any(
+        str(end.get("type", "")).startswith("number:currency")
+        for end in (*value.left, *value.right)
+    )
+
+
+def _spoken_range(
+    value: RangeValue,
+    locale: str,
+    *,
+    apply_source_priors: bool,
+    patterns: Sequence[Mapping] | None = None,
+    sub_key: str | None = None,
+) -> tuple[SpokenAlternative, ...]:
+    """Speak a range: each end's readings, joined by each connector pattern the locale's
+    lexical table gives the range's class (``range.connector``: "{0} to {1}", "{0} {1}").
+
+    - With the locale's range table (``frend.ranges.load_range_priors``): each end is
+      labeled as the table counts it (R8, R11; ``_measured_end``), and with
+      ``apply_source_priors`` the readings are stably sorted by J's share of their joint
+      source at ``sub_key`` (``RangePriorTable.lookup``: blended toward the class row),
+      each measured reading carrying its share as its weight; unmeasured sources follow
+      in P5's order. A range with a currency end keeps P5's order (R10: the corpus says
+      no money range to measure once its punctuation dashes are set aside). Builder mode
+      (``apply_source_priors=False``) keeps P5's order and carries no weight.
+    - With no table, #43's and #44's reading, unchanged: P5's order, and a four-digit
+      left end reads both plain ends as years first (``_year_first``).
+    - A unit or currency written on one end only ("$5–10") is said in place and also
+      moved to the end ("five dollars to ten", "five to ten dollars").
+    - A pattern slot with a case and a gender is said by ``_fill_slot``, or the pattern
+      is not said.
+    - Each reading's source is ``range:<left kind>+<connector id>+<right kind>``; at most
+      ``_RANGE_CAP`` readings, after the sort.
+
+    ``patterns`` replaces the locale's connector patterns (a test's fixture).
+    """
+    table = load_range_priors(locale)
+    placements: list[int] = []
+    candidates = _range_candidates(
+        value,
+        locale,
+        apply_source_priors=apply_source_priors,
+        patterns=patterns,
+        measured=table is not None,
+        placements_out=placements,
+    )
+    if table is not None and _money_range(value):
+        # R10: both unit placements stay offered under the cap ("$5-10": "five dollars
+        # to ten" and "five to ten dollars"), in P5's order.
+        return _capped_by_placement(candidates, placements)
+    if table is not None and apply_source_priors:
+        cls = range_class_key(value.separator_class)
+        weighted = []
+        for item in candidates:
+            measurement = table.lookup(cls, item.provenance, sub_key)
+            weighted.append(
+                item
+                if measurement is None
+                else SpokenAlternative(item.text, item.provenance, measurement.share)
+            )
+        candidates = weighted
+    return _ranked(candidates)[:_RANGE_CAP]
 
 
 def verbalize_edge(
@@ -2177,6 +2354,8 @@ def verbalize_edge(
         if connector is not None:
             # A separator written inside a range ("10:30-11:45") may be said "to".
             alternatives = (*alternatives, _connector_reading(connector))
+            if _is_ratio_separator(context, edge.start, edge.end, locale):
+                alternatives = _lone_ratio_first(alternatives, locale)
             if rerank_by_context:
                 alternatives, choice = _connector_first(
                     alternatives, context, edge.start, edge.end, locale, context_threshold
@@ -2188,12 +2367,16 @@ def verbalize_edge(
     type_ = str(detection["type"])
     value = detection["value"]
     try:
-        ranged = from_icukit(detection)
+        # A range written in running text ("5-10", "16:79", "3x4"; ``RangeDetector``), or
+        # one ICU writes ("1990–1995", "5–10 km", "May 3 – 5, 2020"): each end read as
+        # that value alone, joined by the locale's connector patterns.
+        ranged = detection if isinstance(value, RangeValue) else from_icukit(detection)
         if ranged is not None:
-            # A range ICU writes ("1990–1995", "5–10 km", "May 3 – 5, 2020"): each end
-            # read as that value alone, joined by the locale's connector patterns.
             alternatives = _spoken_range(
-                ranged["value"], locale, apply_source_priors=apply_source_priors
+                ranged["value"],
+                locale,
+                apply_source_priors=apply_source_priors,
+                sub_key=range_sub_key(ranged),
             )
             if not alternatives:
                 raise NotImplementedError(f"no spoken connector for {type_!r} in {locale!r}")
@@ -2377,7 +2560,10 @@ def verbalize_edge(
     )
     if range_span is not None:
         # One question for every separator between numbers, however written: the
-        # separator's tree says whether "to" is said.
+        # separator's tree says whether "to" is said (a lone ":" has no tree; the range
+        # table's ratio class orders it, R12).
+        if _is_ratio_separator(context, *range_span, locale):
+            alternatives = _lone_ratio_first(alternatives, locale)
         if rerank_by_context:
             alternatives, choice = _connector_first(
                 alternatives, context, *range_span, locale, context_threshold
@@ -2392,6 +2578,20 @@ def verbalize_edge(
         if rerank_by_context:
             alternatives, choice = _connector_first(
                 alternatives, context, sign.start, sign.end, locale, context_threshold
+            )
+    elif path == "range" and load_range_priors(locale) is not None:
+        # A range's readings are one problem per separator class (``range:<class>``):
+        # its tree may put another joint source first.
+        if context is not None and rerank_by_context:
+            alternatives, choice = rerank_range(
+                alternatives,
+                context.text,
+                context.offset + edge.start,
+                context.offset + edge.end,
+                ranged["value"],
+                locale=locale,
+                bos=context.bos,
+                eos=context.eos,
             )
     elif context is not None and rerank_by_context:
         alternatives, choice = rerank(

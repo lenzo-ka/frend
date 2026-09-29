@@ -663,3 +663,74 @@ def test_partial_date_alternatives_are_never_cut(monkeypatch):
     )
     unit = compose_choices(resolve_choices([detection], source_text="2024")).units[0]
     assert {a.text for a in extra} <= {a.text for a in unit.alternatives}
+
+
+# ------------------------------------------------------------------ range spans (P6)
+
+
+def _range_choices(text):
+    import sys as _sys
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+    from icukit.detectors import detect
+    from reading_profile import reading_detectors
+
+    from frend.lattice import compose_choices, resolve_choices
+
+    lattice = resolve_choices(list(detect(text, reading_detectors("en_US"))), source_text=text)
+    return compose_choices(lattice)
+
+
+def test_range_edge_is_scored_in_the_align_graph():
+    """The range span is a reading edge scored by E's measurement; with no scored mate at
+    its exact span its log weight is 0."""
+    from frend.ranges import load_range_priors
+
+    choices = _range_choices("29:46")
+    graph = build_align_graph(choices)
+    (edge,) = [
+        e
+        for e in choices.lattice.edges
+        if e.kind == "reading" and e.detection["type"] == "range:ratio"
+    ]
+    weight = graph.items[edge.id].weight
+    positives, negatives = load_range_priors("en_US").emission("ratio:2+2")
+    assert weight.scored is True and weight.reason == "measured"
+    assert weight.log_weight == 0.0
+    assert weight.p == Decimal(positives) / (positives + negatives)
+
+
+def test_connector_choice_is_unit_weight():
+    """CHAR (align_graph's own rule, kal's ruling C, unchanged by P6): which connector
+    is said is no plan factor; every form exit under the range reading carries unit
+    weight."""
+    choices = _range_choices("29:46")
+    graph = build_align_graph(choices)
+    (edge,) = [
+        e
+        for e in choices.lattice.edges
+        if e.kind == "reading" and e.detection["type"] == "range:ratio"
+    ]
+    forms = [
+        item for item in graph.items.values() if item.reading_id == edge.id and item.id != edge.id
+    ]
+    assert forms
+    assert all(item.weight.scored is False for item in forms)
+
+
+def test_builder_mode_carries_no_range_weight():
+    """Builder mode (no source priors): P5's order, and no reading carries a weight."""
+    from frend.verbalize import verbalize_edge
+
+    choices = _range_choices("1990-1995")
+    (edge,) = [
+        e
+        for e in choices.lattice.edges
+        if e.kind == "reading" and e.detection["type"] == "range:dash"
+    ]
+    unit = verbalize_edge(edge, source_text="1990-1995", apply_source_priors=False)
+    assert all(a.weight is None for a in unit.alternatives)
+    assert (
+        normalize_spoken(unit.alternatives[0].text)
+        == "one thousand nine hundred ninety to one thousand nine hundred ninety five"
+    )

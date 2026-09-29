@@ -3,7 +3,9 @@
 It is the spoken-priors recognition profile (``build_spoken_priors._detectors``),
 flattened in its kinds' order with each reader once, followed by the readers that sit
 outside the corpus kinds: icukit's abbreviation lexicon, frend's letters reader, and
-frend's reader of the lexicon's written variants ("Mr", "st", "Vol").
+frend's reader of the lexicon's written variants ("Mr", "st", "Vol"), and last frend's
+reader of ranges written in running text ("5-10"), whose ends every reader before it
+reads.
 Every reader is built for the locale asked for; none is built with a literal locale.
 The list is cached per locale (canonicalized first, so "en-US" is "en_US"), so a caller
 holds the very list the evaluator reads.
@@ -30,8 +32,9 @@ __all__ = ["reading_detectors"]
 
 
 def reading_detectors(locale: str = "en_US") -> list[object]:
-    """The readers for ``locale``: the spoken profile's, then the abbreviation, letters
-    and abbreviation-variant readers. The same list object for every call with the same locale."""
+    """The readers for ``locale``: the spoken profile's, then the abbreviation, letters,
+    abbreviation-variant and written-range readers. The same list object for every call
+    with the same locale."""
     return _profile(canonical_locale(locale))
 
 
@@ -42,6 +45,7 @@ def _profile(locale: str) -> list[object]:
 
     from frend.abbreviation_variants import AbbreviationVariantDetector
     from frend.letters import LettersDetector
+    from frend.ranges import RangeDetector
 
     seen, detectors = set(), []
     for group in _detectors(locale).values():
@@ -52,4 +56,8 @@ def _profile(locale: str) -> list[object]:
     detectors.append(AbbreviationDetector(locale))
     detectors.append(LettersDetector(locale))
     detectors.append(AbbreviationVariantDetector(locale))
+    # A range written in running text ("5-10", "16:79", "3x4"), its ends read by every
+    # reader above (``frend.ranges.RangeDetector``; none where the locale has no range
+    # table).
+    detectors.append(RangeDetector(locale, endpoints=tuple(detectors)))
     return detectors

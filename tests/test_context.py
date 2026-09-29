@@ -77,21 +77,33 @@ def test_a_separator_between_numbers_reads_to_where_the_tree_says_so(text, said)
 
 def test_to_is_offered_beside_silence_and_minus():
     """The connector joins the readings frend already offers: silence and the symbol's
-    names for a lone hyphen, the signed number for one written inside a range."""
-    lone = {a.text for a in _unit("pages 5 - 10 of", "-").alternatives}
-    assert {"", "to", "minus"} <= lone
-    inside = {a.text for a in _unit("pages 5-10 of", "-10").alternatives}
-    assert {"minus ten", "to ten"} <= inside
-    assert all(
-        a.provenance.startswith("lexical:en_US")
-        for a in _unit("pages 5-10 of", "-10").alternatives
-        if a.text.startswith("to ")
-    )
+    names for a lone hyphen (the corpus token read alone, its sentence as context); a
+    range written in the text is one span, offered "to" and the silent form."""
+    (lone,) = _token_units("pages 5", "-", "10 of")
+    assert {"", "to", "minus"} <= {a.text for a in lone.alternatives}
+    inside = _unit("pages 5-10 of", "5-10").alternatives
+    assert {"five to ten", "five ten"} <= {a.text for a in inside}
+    assert all(a.provenance.startswith("range:") for a in inside)
 
 
 def test_a_separator_not_between_numbers_offers_no_connector():
     assert "to" not in {a.text for a in _unit("well - known", "-").alternatives}
     assert "to" not in {a.text for a in _unit("the 5 - fold", "-").alternatives}
+
+
+def _token_units(before: str, token: str, after: str):
+    """``token``'s units read alone with its sentence as context (the evaluator's view)."""
+    from reading_profile import reading_detectors
+
+    from frend.context import TextContext
+
+    head = f"{before} " if before else ""
+    tail = f" {after}" if after else ""
+    detections = list(detect(token, reading_detectors("en_US")))
+    return verbalize_lattice(
+        resolve_lattice(detections, source_text=token),
+        context=TextContext(f"{head}{token}{tail}", len(head)),
+    ).best_path.units
 
 
 def _token_in_sentence(before: str, token: str, after: str):
@@ -193,9 +205,11 @@ def test_a_locale_without_the_connector_offers_none(monkeypatch):
     from frend import verbalize as verbalize_module
     from frend.context import connector_words
     from frend.locale_data import lexical_forms
+    from frend.ranges import RangeDetector
 
     assert verbalize_module.range_connector("en_US") == "to"
     assert verbalize_module.range_separators("en_US") == frozenset({"-", "–"})
+    assert RangeDetector("ru_RU").detect("5-10") == []
     assert connector_words("от {0} до {1}") is None
     ru = dict(lexical_forms("ru_RU"))
     monkeypatch.setattr(verbalize_module, "_lexical_for", lambda locale: ru)
@@ -305,6 +319,11 @@ def test_features_read_the_text_by_offsets():
 
 
 def test_a_locale_without_trees_keeps_frends_order(no_context_trees):
+    """With no trees, frend's own order: the range table's for a range written in the
+    text ("5 - 10" is one span, J's ``dash:1+2`` leader "to"), and the lone hyphen's
+    silence first, "to" offered, for the corpus token read alone."""
     assert _said("It was rated 4.0 out of five.") == "it was rated four point o out of five"
-    assert _said("pages 5 - 10 of the book") == "pages five ten of the book"
-    assert "to" in {a.text for a in _unit("pages 5 - 10 of", "-").alternatives}
+    assert _said("pages 5 - 10 of the book") == "pages five to ten of the book"
+    (lone,) = _token_units("pages 5", "-", "10 of the book")
+    assert lone.best.text == ""
+    assert "to" in {a.text for a in lone.alternatives}

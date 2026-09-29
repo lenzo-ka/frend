@@ -19,7 +19,8 @@ Every measured table under `en/` is counted from the Google TN English corpus,
 training 00-89, runtime eval 90-94 and test 95-99, and frend keeps that split
 (`tools/google_tn_rows.py`: `TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`).
 A table counts training shards only: `type_priors.json` all 90 (00-89), the other five
-every tenth (00, 10, ..., 80). The runtime-eval and test shards are held out
+every tenth (00, 10, ..., 80), and `range_priors.json` both (its emit counts all 90, its
+reading counts every tenth). The runtime-eval and test shards are held out
 (`HELD_OUT_SHARDS`) and no builder opens one. Shard 99 is the published test shard
 the evaluator reports; shard 95 is the held-out running-text shard changes are
 accepted on (`--held-out-shard`); 90-94 are a second held-out pool.
@@ -172,7 +173,34 @@ lexical feature off. `range.connector`'s "to" pattern and `range.separator`'s ra
 are read by the range connector (a separator between two numbers is also offered "to";
 see `en/context/`); `range.connector`'s `range` patterns ("to" and silent) join the two
 ends of a range ICU writes (`frend.ranges`: icukit's number, measure and date-interval
-range readers); the rest of `range.*` is held for frend's own range reader.
+range readers); `range.separator`'s classes (range "-", ratio ":", dimension "x" and
+"×") and each class's `range.connector` patterns are frend's own range reader's
+(`frend.ranges.RangeDetector`, "5-10", "16:79", "3x4"; see `en/range_priors.json`).
+
+## `en/range_priors.json`
+
+The range table, measured by `tools/build_range_priors.py` (`--check` as above), read by
+`frend.ranges` for a range written in running text ("5-10", "5 - 10", "16:79", "3x4",
+"5-10 kg"). Rules decide the candidate span (R1-R4, R6, R7 in `frend.ranges`); the table
+holds only what is trained:
+
+- `readings` (E, the emit decision), over all 90 training shards: per emit key (the
+  separator class, `dash` pooling "-" and the en dash, then the two ends' ASCII digit
+  lengths, `ratio:clock` where icukit's `time:flexible` reads the span, else `other`)
+  and per class, the corpus triples the rules can emit on (`range`) against the single
+  corpus tokens of that written shape by class (`single_token`: a TELEPHONE "555-1212",
+  a TIME "10:30"). A span is emitted where `range` is at least `EMIT_RATIO` times the
+  singles; a key never observed reads its class.
+- `kinds` (J, the joint reading prior), over every tenth training shard, in the spoken
+  priors' schema per class and sub-key (`4+2:0` for a right end written with a leading
+  zero): the joint source (`range:<left kind>+<connector>+<right kind>`) of the first
+  builder-mode reading that says the corpus's reading of the triple.
+- `provenance.relevance`: what each part counts, and what it sets apart: triples no rule
+  can emit on, and the punctuation dash (kal's ruling A: a "-" said as nothing after a
+  year-shaped cardinal or beside money, "1994 - 95", "$15,000 - $25,000", is no range
+  reading and is counted nowhere).
+
+Only counts are stored; the shared attribution applies.
 
 ## `en/context/`
 
@@ -193,6 +221,14 @@ against its receipt) and compares byte for byte, so it needs the kalman mount.
   problem, read also for a separator written inside a range, "5-10"; the en dash,
   which the set never writes between numbers, reads the hyphen's), and every tree's
   file, hash, size and label counts.
+- The range problems (`range:range`, `range:ratio`, `range:dimension`; the ranges
+  plan's P6) are trained from their own stored set
+  (`frend/google/tn-en_with_types/p6-range-examples/548d6f67beab4223`, derived by
+  `--derive-range-examples` from the same shards 05, ..., 85: every range triple the
+  rules can emit on, less the punctuation dashes, with its sentence either side), with
+  the range family of features added; `index.json`'s `range_examples` names that set,
+  and each range tree its fingerprint. The main set's trees are built exactly as
+  without it (`--check --no-range-examples` compares them alone).
 - `trees/<id>.cart`: the trees, cartlet model format 2, each naming its source and the
   set's fingerprint in its metadata; read with cartlet's dependency-free runner.
 - `festival_classes.json`: Festival's hand-curated lists (`lib/tokenpos.scm`: regnal

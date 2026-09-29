@@ -8,6 +8,7 @@ import hashlib
 import importlib.util
 import json
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -172,3 +173,88 @@ def test_the_shipped_trees_name_the_example_set_they_were_trained_on():
     for entry in index["trees"].values():
         blob = (_CONTEXT / entry["file"]).read_bytes()
         assert hashlib.sha256(blob).hexdigest() == entry["sha256"]
+
+
+def _range_set(root: Path, *, shard: str = "00005", count: int = 60) -> Path:
+    """A stored range set of ``count`` records (enough for a range tree: at least
+    ``MIN_EXAMPLES``), "to" after "pages" and silent after "score", its receipt hashing
+    it."""
+    root.mkdir()
+    records = []
+    for index in range(count):
+        said = index % 2 == 0
+        left, right = index + 1, index + 5
+        from frend.spoken_priors import normalize_spoken
+        from frend.verbalize import _number_leaf
+
+        words = [normalize_spoken(_number_leaf(Decimal(n), "cardinal", "en_US")[0].text)
+                 for n in (left, right)]  # fmt: skip
+        records.append(
+            {
+                "tok": f"{left}-{right}",
+                "L": "pages" if said else "score",
+                "R": "of the book",
+                "gold": f"{words[0]} to {words[1]}" if said else f"{words[0]} {words[1]}",
+                "bos": True,
+                "eos": True,
+                "src": f"output-{shard}-of-00100:{index}:1",
+            }
+        )
+    body = "".join(json.dumps(r) + "\n" for r in records).encode("utf-8")
+    blob = gzip.compress(body, mtime=0)
+    (root / "range_examples.jsonl.gz").write_bytes(blob)
+    receipt = {
+        "derivation": "frend/google/tn-en_with_types/p6-range-examples",
+        "inputs": {"output-00005-of-00100": "0" * 64},
+        "artifacts": {"range_examples.jsonl.gz": hashlib.sha256(blob).hexdigest()},
+        "fingerprint": "beadbeadbeadbead",
+    }
+    (root / "receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
+    return root
+
+
+def test_range_problems_are_trained():
+    """The shipped index holds a tree for each separator class's range problem, each
+    naming the range set's own fingerprint and relevance; the main set's fingerprint is
+    unchanged."""
+    index = json.loads((_CONTEXT / "index.json").read_text(encoding="utf-8"))
+    for problem in ("range:range", "range:ratio", "range:dimension"):
+        entry = index["trees"][problem]
+        assert entry["examples_fingerprint"] == index["range_examples"]["fingerprint"]
+        assert entry["relevance"]["dropped_filter"].startswith("punctuation_dash:")
+        assert "R" in entry["families"]
+    assert index["provenance"]["examples"]["fingerprint"] == "d1fcf656b9eb98dc"
+    assert index["range_examples"]["fingerprint"] != "d1fcf656b9eb98dc"
+
+
+def test_range_examples_refuse_held_out(tmp_path):
+    """A validly hashed range set whose record comes from shard 95 is refused."""
+    builder = _builder()
+    examples = _example_set(tmp_path / "set")
+    ranged = _range_set(tmp_path / "range", shard="00095")
+    with pytest.raises(SystemExit, match="output-00095-of-00100"):
+        builder.build(
+            examples, _out(tmp_path / "a"), workers=1, cache=tmp_path / "c",
+            range_examples=ranged, range_cache=tmp_path / "rc", log=lambda _: None,
+        )  # fmt: skip
+
+
+def test_the_range_set_leaves_the_main_trees_as_they_are(tmp_path):
+    """A build with a range set writes the main set's trees byte for byte as a build
+    without it (the range problems draw with a generator of their own and do not reach
+    the frequent words)."""
+    builder = _builder()
+    examples = _example_set(tmp_path / "set")
+    plain = _out(tmp_path / "a")
+    ranged_out = _out(tmp_path / "b")
+    index = builder.build(examples, plain, workers=1, cache=tmp_path / "c1", log=lambda _: None)
+    builder.build(
+        examples, ranged_out, workers=1, cache=tmp_path / "c2", log=lambda _: None,
+        range_examples=_range_set(tmp_path / "range"), range_cache=tmp_path / "rc",
+    )  # fmt: skip
+    files = {entry["file"] for entry in index["trees"].values()}
+    assert builder._compare(ranged_out, plain, only=files) == []
+    ranged_index = json.loads((ranged_out / "index.json").read_text(encoding="utf-8"))
+    # The range set does train a tree here (so its draws and words are exercised).
+    assert "range:range" in ranged_index["trees"]
+    assert ranged_index["frequent_words"] == index["frequent_words"]

@@ -17,25 +17,66 @@ and "5, 2020" on the right.
 
 The approximately readings icukit builds beside the ranges ("~3", "~3 km") are not
 ranges and are never read here (:func:`icu_range_readers` leaves them out).
+
+**Ranges written in running text** ("5-10", "5 - 10", "16:79", "3x4", "5-10 kg",
+"$15,000-$25,000", "10:30-11:45"), which ICU writes nowhere: :class:`RangeDetector` reads
+each as one span, ``range:dash``, ``range:ratio`` or ``range:dimension``, whose value is a
+:class:`RangeValue`. What is a rule and what is trained is kept apart:
+
+* **Rules** (stated, tested, never trained): the span's shape (R1: a ``range.separator``
+  of the lexical table, or CLDR's en dash, with an ASCII digit before it and an ASCII
+  digit, or a currency sign and one, after it), its spacing (R2: joined or spaced alike
+  on both sides), no chain (R3: three or more digit groups are an identifier), the
+  clock (R4a: a ratio that icukit's ``time:flexible`` reads whole is ``ratio:clock``),
+  the sub-key (R4b, :func:`range_sub_key`), the punctuation dash (R6,
+  :func:`punctuation_dash`: the corpus's dash read as nothing is no range reading), and
+  the end types (R7: numbers, percents, currency amounts, measures other than durations,
+  and times, each the whole side: not glued to a word or, through a punctuation mark,
+  to another number).
+* **Trained**: whether a span is emitted at all (E, :meth:`RangePriorTable.emits`: a
+  sub-key's range triples against the single corpus tokens of its written shape, over
+  the 90 training shards) and how its readings are ordered (J,
+  :meth:`RangePriorTable.lookup`: the joint source the corpus says, per sub-key, blended
+  toward its class). Both are ``data/<locale>/range_priors.json``
+  (``tools/build_range_priors.py``); a locale without it emits no span, and the hyphen
+  path of frend #43 reads what it always read.
 """
 
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Mapping
+import unicodedata
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Literal
+from decimal import Decimal
+from functools import lru_cache
+from types import MappingProxyType
+from typing import Any, Literal
 
 import icu
 from icukit.detectors import Capture, DateTimeValue, NumberValue
 
+from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
+
 __all__ = [
+    "EMIT_RATIO",
     "ICU_RANGE_TYPE",
+    "RANGE_SUB_KEY_STRENGTH",
+    "RANGE_TYPES",
+    "RangeDetector",
+    "RangePriorTable",
     "RangeValue",
     "date_interval_readers",
+    "emit_relevant",
     "from_icukit",
     "has_icu_ranges",
     "icu_range_readers",
+    "load_range_priors",
+    "punctuation_dash",
+    "range_class_key",
+    "range_separator_classes",
+    "range_sub_key",
+    "written_sub_key",
 ]
 
 ICU_RANGE_TYPE = "range:icu"
@@ -372,3 +413,696 @@ def _end_detection(
         "value": DateTimeValue(fields, point.calendar),
         "captures": tuple(captures),
     }
+
+
+# --------------------------------------------------------------------------------------
+# Ranges written in running text (the ranges plan's P6).
+
+# The span type of each separator class.
+RANGE_TYPES = MappingProxyType(
+    {"range": "range:dash", "ratio": "range:ratio", "dimension": "range:dimension"}
+)
+# A class as the range table keys it: the range class ("-" and the en dash pooled) is
+# "dash".
+_CLASS_KEYS = MappingProxyType({"range": "dash", "ratio": "ratio", "dimension": "dimension"})
+_CLASS_OF_KEY = MappingProxyType({key: cls for cls, key in _CLASS_KEYS.items()})
+
+# E: a sub-key is emitted as a span when its range triples are at least this many times
+# its single corpus tokens of the same written shape. Stage 2 (the runtime-eval shards
+# 90-94) found no value better than this beyond noise (0.5: +2 of 65,392 triples).
+EMIT_RATIO = Decimal(1)
+# E: a sub-key's own row decides only with at least this many observations (range
+# triples and single tokens); a sparser one reads its class row.
+RANGE_MIN_N = 50
+# J: how many credited rows the class row's share is worth when a sub-key's share is
+# blended toward it (as the spoken priors' SUB_KEY_PRIOR_STRENGTH). Stage 2 found no
+# better value beyond noise (1: +7 of 65,392).
+RANGE_SUB_KEY_STRENGTH = Decimal(5)
+
+# R7: the readings a range's end may be, each the whole side. A duration ("10:30") is no
+# end, and neither is another range or an approximately reading.
+_END_TYPES = (
+    "number:cardinal",
+    "number:int",
+    "number:decimal",
+    "number:percent",
+    "number:currency:",
+    "measure:",
+    "time:",
+)
+_ASCII_DIGITS = frozenset("0123456789")
+# How far each side is read for an end (cut back to white space, so no word is split).
+_END_REACH = 48
+
+
+def range_class_key(separator_class: str) -> str:
+    """The range table's key for a separator class: ``dash`` for the range class (the
+    hyphen and CLDR's en dash pooled), else the class itself."""
+    return _CLASS_KEYS[separator_class]
+
+
+def range_separator_classes(locale: str) -> Mapping[str, frozenset[str]]:
+    """R1's separators by class: the lexical table's ``range.separator`` (``range``:
+    "-", ``ratio``: ":", ``dimension``: "x", "×"), plus CLDR's own number-range
+    separator (the en dash) in the range class. Empty for a locale whose table has no
+    ``range.connector`` (nothing to say a range with)."""
+    return _separator_classes(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _separator_classes(locale: str) -> Mapping[str, frozenset[str]]:
+    from frend.context import cldr_range_separator
+
+    forms = lexical_forms(locale)
+    connectors = (forms.get("range.connector") or {}).get("value") or {}
+    written = (forms.get("range.separator") or {}).get("value") or {}
+    out: dict[str, frozenset[str]] = {}
+    for cls in RANGE_TYPES:
+        separators = set(written.get(cls, ()))
+        if cls == "range":
+            cldr = cldr_range_separator(locale)
+            if cldr:
+                separators.add(cldr)
+        if separators and connectors.get(cls):
+            out[cls] = frozenset(separators)
+    return MappingProxyType(out)
+
+
+def _class_of(separator: str, classes: Mapping[str, frozenset[str]]) -> str | None:
+    return next((cls for cls, members in classes.items() if separator in members), None)
+
+
+def digit_groups(text: str, start: int, end: int, separators: frozenset[str]) -> list[int]:
+    """The lengths of the ASCII digit groups joined, with no white space, by separators
+    through ``text[start:end]``, left to right ("978-1-234" at its first "-": [3, 1, 3])."""
+    left: list[int] = []
+    at = start
+    while True:
+        first = at
+        while first > 0 and text[first - 1] in _ASCII_DIGITS:
+            first -= 1
+        if first == at:
+            break
+        left.append(at - first)
+        if first == 0 or text[first - 1] not in separators:
+            break
+        at = first - 1
+    right: list[int] = []
+    at = end
+    while True:
+        last = at
+        while last < len(text) and text[last] in _ASCII_DIGITS:
+            last += 1
+        if last == at:
+            break
+        right.append(last - at)
+        if last == len(text) or text[last] not in separators:
+            break
+        at = last + 1
+    return [*reversed(left), *right]
+
+
+def chain_length(text: str, at: int, separators: frozenset[str]) -> int:
+    """R3: how many ASCII digit groups the separator at ``text[at]`` chains, each link a
+    separator of the class spaced as this one is (joined, or spaced on both sides):
+    "978-1-234" 3, "1 - 2 - 3" 3, "5-10" 2."""
+    spaced = text[at - 1 : at].isspace()
+
+    def link(sep_at: int) -> bool:
+        before = text[sep_at - 1 : sep_at].isspace()
+        after = text[sep_at + 1 : sep_at + 2].isspace()
+        return before == after == spaced
+
+    def digits_left(end: int) -> int:
+        start = end
+        while start > 0 and text[start - 1] in _ASCII_DIGITS:
+            start -= 1
+        return start
+
+    def digits_right(start: int) -> int:
+        end = start
+        while end < len(text) and text[end] in _ASCII_DIGITS:
+            end += 1
+        return end
+
+    count = 0
+    sep = at
+    while True:  # leftward
+        end = sep
+        while end > 0 and text[end - 1].isspace():
+            end -= 1
+        start = digits_left(end)
+        if start == end:
+            break
+        count += 1
+        prev = start
+        while prev > 0 and text[prev - 1].isspace():
+            prev -= 1
+        if prev == 0 or text[prev - 1] not in separators or not link(prev - 1):
+            break
+        sep = prev - 1
+    sep = at
+    while True:  # rightward
+        start = sep + 1
+        while start < len(text) and text[start].isspace():
+            start += 1
+        end = digits_right(start)
+        if start == end:
+            break
+        count += 1
+        nxt = end
+        while nxt < len(text) and text[nxt].isspace():
+            nxt += 1
+        if nxt >= len(text) or text[nxt] not in separators or not link(nxt):
+            break
+        sep = nxt
+    return count
+
+
+def _starts_an_amount(text: str) -> bool:
+    """R1's right side: an ASCII digit, or a currency sign (General_Category ``Sc``)
+    followed by one ("$10")."""
+    if text[:1] in _ASCII_DIGITS:
+        return True
+    return len(text) > 1 and unicodedata.category(text[0]) == "Sc" and text[1] in _ASCII_DIGITS
+
+
+def emit_relevant(
+    left_written: str, separator: str, right_written: str, locale: str = "en_US"
+) -> bool:
+    """R1-R3 on a corpus triple (its ends as written tokens, joined as running text
+    writes them): the separator is one of the locale's, the left token ends in an ASCII
+    digit, the right starts with one (or a currency sign and one), and the joined text
+    is no chain of three or more digit groups. Relevance for E and J: a triple these
+    rules cannot emit on is no evidence about either."""
+    classes = range_separator_classes(locale)
+    cls = _class_of(separator, classes)
+    if cls is None or not left_written or left_written[-1] not in _ASCII_DIGITS:
+        return False
+    if not _starts_an_amount(right_written):
+        return False
+    joined = left_written + separator + right_written
+    return chain_length(joined, len(left_written), classes[cls]) < 3
+
+
+_YEAR_SHAPED = re.compile(r"[12][0-9]{3}")
+
+
+def punctuation_dash(left: Sequence[str], middle: Sequence[str], right: Sequence[str]) -> bool:
+    """R6 (kal's ruling A): whether a corpus triple's dash is punctuation, not a range.
+    Each row is (class, written, spoken). True when the middle is a ``VERBATIM`` or
+    ``PUNCT`` "-" or "–" said as nothing (``sil``), and either the left end is a
+    ``CARDINAL`` written as a year ("1994 - 95", read "one thousand nine hundred ninety
+    four ninety five") or either end is ``MONEY`` ("$15,000 - $25,000", silent). Such a
+    triple is no range reading and is dropped from the range table's and range trees'
+    training data."""
+    if middle[1] not in ("-", "–") or middle[0] not in ("VERBATIM", "PUNCT") or middle[2] != "sil":
+        return False
+    if left[0] == "CARDINAL" and _YEAR_SHAPED.fullmatch(left[1]) is not None:
+        return True
+    return "MONEY" in (left[0], right[0])
+
+
+_GROUPED = re.compile(r"[0-9]{1,3}(?:,[0-9]{3})+")
+
+
+def _ungrouped(text: str) -> str:
+    """ASCII digits grouped by commas in threes, without the commas ("1,000" "1000")."""
+    return text.replace(",", "") if _GROUPED.fullmatch(text) else text
+
+
+def _sub_key(cls: str, left: str, right: str, clock: bool) -> str:
+    """R4a/R4b: ``<class>:clock`` for a clock, ``<class>:<L>+<R>`` (ASCII digit lengths;
+    ``:0`` added for a right end of two or more digits written with a leading zero)
+    where both ends are ASCII digits only (grouping commas not counted), else
+    ``<class>:other``."""
+    key = _CLASS_KEYS[cls]
+    if clock:
+        return f"{key}:clock"
+    # A number grouped by commas counts its digits ("1,000-2,000" is dash:4+4).
+    left, right = _ungrouped(left), _ungrouped(right)
+    if left and right and set(left) <= _ASCII_DIGITS and set(right) <= _ASCII_DIGITS:
+        lead0 = ":0" if len(right) > 1 and right.startswith("0") else ""
+        return f"{key}:{len(left)}+{len(right)}{lead0}"
+    return f"{key}:other"
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _time_reader(locale: str):
+    from icukit.recognize import FlexibleTimeDetector
+
+    return FlexibleTimeDetector(locale)
+
+
+@lru_cache(maxsize=1 << 14)
+def is_clock(text: str, locale: str = "en_US") -> bool:
+    """R4a: whether icukit's ``time:flexible`` reads ``text`` whole ("10:30"; not "16:79").
+    Which strings are clocks is ICU's knowledge, not the range table's."""
+    return any(
+        found["start"] == 0 and found["end"] == len(text)
+        for found in _time_reader(canonical_locale(locale)).detect(text)
+    )
+
+
+def written_sub_key(cls: str, left: str, separator: str, right: str, locale: str = "en_US") -> str:
+    """R4a/R4b for a range written ``left``, ``separator``, ``right`` of class ``cls``
+    (``range``, ``ratio``, ``dimension``): a ratio icukit reads as a clock is
+    ``ratio:clock``."""
+    clock = cls == "ratio" and is_clock(f"{left}{separator}{right}", locale)
+    return _sub_key(cls, left, right, clock)
+
+
+def range_sub_key(detection: Mapping) -> str:
+    """The range table's sub-key for a range reading (R4a, R4b): the one its detector
+    recorded, else derived from its ends' written text (``range:icu``: the range class,
+    pooled with the hyphen as ``dash``)."""
+    recorded = detection.get("sub_key")
+    if recorded:
+        return str(recorded)
+    value = detection["value"]
+    left = str(value.left[0].get("text", "")) if value.left else ""
+    right = str(value.right[0].get("text", "")) if value.right else ""
+    return _sub_key(value.separator_class, left, right, clock=False)
+
+
+def emit_key(sub_key: str) -> str:
+    """The key E is counted and read by: the sub-key without R4b's leading-zero mark (a
+    single corpus token's shape is its digit lengths)."""
+    return sub_key.removesuffix(":0")
+
+
+# --------------------------------------------------------------------------------------
+# The range table.
+
+
+@dataclass(frozen=True)
+class _Joint:
+    matched: int
+    sources: Mapping[str, int]
+
+
+class RangePriorTable:
+    """``data/<locale>/range_priors.json``: E (``readings``: range triples against single
+    tokens, per emit key and per class) and J (``kinds``: the credited joint sources per
+    class and sub-key)."""
+
+    def __init__(self, document: Mapping[str, Any]) -> None:
+        readings = document.get("readings")
+        kinds = document.get("kinds")
+        if not isinstance(readings, Mapping) or not isinstance(kinds, Mapping):
+            raise ValueError("a range table needs readings and kinds")
+        rows: dict[str, tuple[int, int]] = {}
+        for key, row in readings.items():
+            positives = row.get("range")
+            singles = row.get("single_token")
+            if not isinstance(positives, int) or positives < 0 or not isinstance(singles, Mapping):
+                raise ValueError(f"readings.{key} must hold range and single_token counts")
+            if any(not isinstance(n, int) or n < 0 for n in singles.values()):
+                raise ValueError(f"readings.{key}.single_token counts must be nonnegative")
+            rows[str(key)] = (positives, sum(singles.values()))
+        self._readings = MappingProxyType(rows)
+        joint: dict[str, tuple[_Joint, Mapping[str, _Joint]]] = {}
+        for cls, record in kinds.items():
+            sources = dict(record.get("source_matched", {}))
+            matched = record.get("matched")
+            if matched != sum(sources.values()):
+                raise ValueError(f"kinds.{cls}: source counts must sum to matched")
+            sub_keys = {}
+            for sub_key, sub in (record.get("sub_keys") or {}).items():
+                sub_sources = dict(sub.get("source_matched", {}))
+                if sub.get("matched") != sum(sub_sources.values()):
+                    raise ValueError(f"kinds.{cls}.sub_keys.{sub_key}: counts must sum")
+                sub_keys[f"{cls}:{sub_key}"] = _Joint(sub["matched"], MappingProxyType(sub_sources))
+            joint[str(cls)] = (
+                _Joint(matched, MappingProxyType(sources)),
+                MappingProxyType(sub_keys),
+            )
+        self._kinds = MappingProxyType(joint)
+        self.provenance = MappingProxyType(dict(document.get("provenance", {})))
+
+    def emission(self, sub_key: str) -> tuple[int, int] | None:
+        """E's row for ``sub_key``: (range triples, single tokens) of its emit key, or of
+        its class where the key has fewer than ``RANGE_MIN_N`` observations; ``None``
+        without either."""
+        key = emit_key(sub_key)
+        row = self._readings.get(key)
+        if row is None or sum(row) < RANGE_MIN_N:
+            # A key never observed, or seen too rarely to decide ("dash:4+10", 4 and 0),
+            # reads its class row.
+            row = self._readings.get(key.split(":", 1)[0])
+        return row
+
+    def emits(self, sub_key: str) -> bool:
+        """E: whether a span is emitted for ``sub_key``: its range triples are at least
+        ``EMIT_RATIO`` times its single tokens (a key never observed reads its class)."""
+        row = self.emission(sub_key)
+        if row is None:
+            return False
+        positives, negatives = row
+        return positives > 0 and Decimal(positives) >= EMIT_RATIO * Decimal(negatives)
+
+    def reading_prior(self, detection: Mapping):
+        """The range span's reading prior: E's ``p = range / (range + single)`` over
+        ``n = range + single`` for its sub-key (``None`` for any other reading)."""
+        from frend.type_priors import ReadingPrior
+
+        if not str(detection.get("type", "")).startswith("range:"):
+            return None
+        sub_key = range_sub_key(detection)
+        row = self.emission(sub_key)
+        if row is None:
+            return ReadingPrior("range", sub_key, None, None, False, "unsupported", "unsupported")
+        positives, negatives = row
+        n = positives + negatives
+        if n == 0 or positives == 0:
+            return ReadingPrior("range", sub_key, None, n or None, False, "measured", "measured")
+        return ReadingPrior(
+            "range", sub_key, Decimal(positives) / Decimal(n), n, True, "measured", "measured"
+        )
+
+    def lookup(self, cls: str, source: str, sub_key: str | None = None):
+        """J: ``source``'s share of the credited rows of class ``cls`` (``dash``,
+        ``ratio``, ``dimension``), blended at ``sub_key`` toward the class share by
+        ``RANGE_SUB_KEY_STRENGTH`` (the spoken priors' blend); ``None`` when measured at
+        neither level. A sub-key never observed reads its class row."""
+        from frend.spoken_priors import SourceMeasurement
+
+        entry = self._kinds.get(cls)
+        if entry is None:
+            return None
+        whole, sub_keys = entry
+        kind_share = (
+            Decimal(whole.sources[source]) / Decimal(whole.matched)
+            if source in whole.sources and whole.matched
+            else None
+        )
+        sub = sub_keys.get(sub_key) if sub_key is not None else None
+        if sub is None:
+            return (
+                None if kind_share is None else SourceMeasurement(whole.sources[source], kind_share)
+            )
+        count = sub.sources.get(source, 0)
+        if count == 0 and kind_share is None:
+            return None
+        strength = RANGE_SUB_KEY_STRENGTH
+        share = (Decimal(count) + strength * (kind_share or Decimal(0))) / (
+            Decimal(sub.matched) + strength
+        )
+        return SourceMeasurement(count, share)
+
+    def connector_share(self, cls: str, connector: str) -> Decimal | None:
+        """The class row's share of the sources joined by ``connector`` ("to", "silent"):
+        R12's order for a lone ":" between numbers."""
+        entry = self._kinds.get(cls)
+        if entry is None or not entry[0].matched:
+            return None
+        whole = entry[0]
+        said = sum(n for source, n in whole.sources.items() if f"+{connector}+" in source)
+        return Decimal(said) / Decimal(whole.matched)
+
+
+def load_range_priors(locale: str = "en_US") -> RangePriorTable | None:
+    """``locale``'s range table (``data/<locale>/range_priors.json``, along the chain,
+    never root), or ``None`` when it has none: no span is emitted, and ranges read as
+    frend #43 reads them."""
+    return _range_priors(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _range_priors(locale: str) -> RangePriorTable | None:
+    document = measured_table("range_priors", locale)
+    return None if document is None else RangePriorTable(document)
+
+
+# --------------------------------------------------------------------------------------
+# The detector.
+
+
+class _Omitted:
+    pass
+
+
+_OMITTED = _Omitted()
+
+
+def _span_captures(
+    text: str, start: int, left: Mapping, at: int, separator: str, right_at: int, right: Mapping
+) -> tuple[Capture, ...]:
+    """A range span's captures, in the span's own text: each end's own captures (or the
+    end whole), named ``start`` and ``end``, and the separator. A range is as structured
+    as its ends and its separator (a cover's capture count ranks it against a reading
+    of the same extent, "3x4" as letter-and-digit runs)."""
+
+    def side(end: Mapping, name: str, base: int) -> list[Capture]:
+        own = [
+            Capture(name, base + c.start, base + c.end, c.text)
+            for c in end.get("captures", ())
+            if isinstance(getattr(c, "start", None), int)
+        ]
+        written = str(end.get("text", ""))
+        return own or [Capture(name, base, base + len(written), written)]
+
+    return (
+        *side(left, "start", 0),
+        Capture("separator", at - start, at - start + len(separator), separator),
+        *side(right, "end", right_at - start),
+    )
+
+
+def _whole_before(text: str, at: int) -> bool:
+    """R7's whole side, on the left: an end starting at ``at`` is not the tail of a word
+    or of another number ("x5", "1/4" before ":81")."""
+    if at == 0:
+        return True
+    before = text[at - 1]
+    if before.isalnum():
+        return False
+    return before.isspace() or not text[at - 2 : at - 1].isdigit()
+
+
+def _whole_after(text: str, at: int) -> bool:
+    """R7's whole side, on the right: an end stopping at ``at`` is not the head of a word
+    or of another number ("5th", "19" before "/28")."""
+    if at == len(text):
+        return True
+    after = text[at]
+    if after.isalnum():
+        return False
+    return after.isspace() or not text[at + 1 : at + 2].isdigit()
+
+
+def _is_end_type(type_: str) -> bool:
+    if type_.startswith("measure:duration") or type_.endswith((":range", ":approximately")):
+        return False
+    return type_.startswith(_END_TYPES)
+
+
+class RangeDetector:
+    """A range written in running text, both ends in the text ("5-10", "5 - 10", "16:79",
+    "3x4", "5-10 kg", "$15,000-$25,000"): one span, typed by its separator's class
+    (``range:dash``, ``range:ratio``, ``range:dimension``), its value a
+    :class:`RangeValue` of one end each, read by ``endpoints`` (the reading profile's
+    own readers). R1-R4 and R7 are its rules; E (the locale's range table) decides
+    whether a span is emitted. A locale without a table emits nothing."""
+
+    type = "range"
+    group = "range"
+
+    def __init__(
+        self,
+        locale: str = "en_US",
+        endpoints: Sequence[object] = (),
+        *,
+        table: RangePriorTable | None | _Omitted = _OMITTED,
+    ) -> None:
+        self.locale = canonical_locale(locale)
+        self.endpoints = tuple(endpoints)
+        self._table = table
+        self._ends: dict[str, Mapping | None] = {}
+
+    @property
+    def table(self) -> RangePriorTable | None:
+        if isinstance(self._table, _Omitted):
+            return load_range_priors(self.locale)
+        return self._table
+
+    # -- ends
+
+    def _read(self, text: str) -> list:
+        from icukit.detectors import detect
+
+        return list(detect(text, self.endpoints)) if text.strip() else []
+
+    def end(self, text: str) -> Mapping | None:
+        """``text`` read whole as a range's end (R7): the first reading, in icukit's
+        order, that covers it and is an end type; ``None`` where none does. A plain
+        number also carries its written number read whole (``number``), so its written
+        digits are said ("05": "o five")."""
+        if text in self._ends:
+            return self._ends[text]
+        found = None
+        for reading in self._read(text):
+            type_ = str(reading["type"])
+            if reading["start"] == 0 and reading["end"] == len(text) and _is_end_type(type_):
+                found = {
+                    "type": type_,
+                    "text": text,
+                    "start": 0,
+                    "end": len(text),
+                    "value": reading["value"],
+                    "captures": tuple(reading.get("captures", ())),
+                    "writes_unit": _writes_unit(text),
+                }
+                if type_ == "number:decimal":
+                    found["number"] = _read_whole(text, "number:decimal", self.locale)
+                break
+        self._ends[text] = found
+        return found
+
+    def _left_end(self, text: str, at: int) -> tuple[int, Mapping] | None:
+        """The longest end reading of ``text`` that ends at ``at`` and is its whole side
+        (not the tail of a longer word)."""
+        low = max(0, at - _END_REACH)
+        window = text[low:at]
+        if low > 0:
+            space = re.search(r"\s", window)
+            if space is None:
+                return None
+            low += space.end()
+            window = text[low:at]
+        starts = sorted(
+            {
+                low + r["start"]
+                for r in self._read(window)
+                if r["end"] == len(window) and _is_end_type(str(r["type"]))
+            }
+        )
+        for start in starts:
+            if not _whole_before(text, start):
+                continue
+            end = self.end(text[start:at])
+            if end is not None:
+                return start, end
+        return None
+
+    def _right_end(self, text: str, at: int) -> tuple[int, Mapping] | None:
+        """The longest end reading of ``text`` that starts at ``at`` and is its whole side
+        (not the head of a longer word)."""
+        high = min(len(text), at + _END_REACH)
+        window = text[at:high]
+        if high < len(text):
+            spaces = [m.start() for m in re.finditer(r"\s", window)]
+            if not spaces:
+                return None
+            window = window[: spaces[-1]]
+        ends = sorted(
+            {
+                at + r["end"]
+                for r in self._read(window)
+                if r["start"] == 0 and _is_end_type(str(r["type"]))
+            },
+            reverse=True,
+        )
+        for stop in ends:
+            if not _whole_after(text, stop):
+                continue
+            end = self.end(text[at:stop])
+            if end is not None:
+                return stop, end
+        return None
+
+    def sub_key(self, cls: str, left: str, separator: str, right: str) -> str:
+        """R4a/R4b for a span's written ends."""
+        return written_sub_key(cls, left, separator, right, self.locale)
+
+    # -- spans
+
+    def candidates(self, text: str) -> list[dict]:
+        """Every span R1-R3 and R7 allow in ``text``, before E: each with its sub-key."""
+        classes = range_separator_classes(self.locale)
+        if not classes:
+            return []
+        found = []
+        for at, char in enumerate(text):
+            cls = _class_of(char, classes)
+            if cls is None:
+                continue
+            left_edge = at
+            while left_edge > 0 and text[left_edge - 1].isspace():
+                left_edge -= 1
+            right_edge = at + 1
+            while right_edge < len(text) and text[right_edge].isspace():
+                right_edge += 1
+            # R1: an ASCII digit before, an ASCII digit (or a currency sign and one) after.
+            if left_edge == 0 or text[left_edge - 1] not in _ASCII_DIGITS:
+                continue
+            if not _starts_an_amount(text[right_edge : right_edge + 2]):
+                continue
+            # R2: joined or spaced alike on both sides ("10 -5" writes a signed number).
+            if (left_edge < at) != (right_edge > at + 1):
+                continue
+            # R3: a chain of three or more digit groups is an identifier, joined or
+            # spaced ("1-2-3", "1 - 2 - 3", "2008 - 09 - 30").
+            if chain_length(text, at, classes[cls]) >= 3:
+                continue
+            left = self._left_end(text, left_edge)
+            right = self._right_end(text, right_edge)
+            if left is None or right is None:
+                continue
+            (start, left_end), (stop, right_end) = left, right
+            left_end, right_end = self.carried(left_end, right_end)
+            sub_key = self.sub_key(cls, left_end["text"], char, right_end["text"])
+            found.append(
+                {
+                    "type": RANGE_TYPES[cls],
+                    "start": start,
+                    "end": stop,
+                    "text": text[start:stop],
+                    "value": RangeValue((left_end,), char, cls, (right_end,)),
+                    "captures": _span_captures(
+                        text, start, left_end, at, char, right_edge, right_end
+                    ),
+                    "sub_key": sub_key,
+                }
+            )
+        return found
+
+    def carried(self, left: Mapping, right: Mapping) -> tuple[Mapping, Mapping]:
+        """R10: a currency written on the left end only ("$5-10") is the right end's too,
+        so the range can say it in place and at the end ("five dollars to ten", "five
+        to ten dollars"): the right end, still written "10", is read as the currency
+        amount it is. Any other pair is unchanged."""
+        if not str(left["type"]).startswith("number:currency") or right["type"] != "number:decimal":
+            return left, right
+        sign = re.match(r"\D*", str(left["text"])).group(0)
+        if not sign or not any(unicodedata.category(char) == "Sc" for char in sign):
+            return left, right
+        amount = self.end(sign + str(right["text"]))
+        if amount is None or not str(amount["type"]).startswith("number:currency"):
+            return left, right
+        offset = len(sign)
+        return left, {
+            **amount,
+            "text": right["text"],
+            "end": len(str(right["text"])),
+            "captures": tuple(
+                Capture(c.name, c.start - offset, c.end - offset, c.text, c.value)
+                for c in amount["captures"]
+                if c.start >= offset
+            ),
+            "writes_unit": False,
+            "number": right.get("number"),
+        }
+
+    def ends(self, left: str, right: str) -> tuple[Mapping, Mapping] | None:
+        """A corpus triple's ends read as the detector reads them (the range builders)."""
+        left_end, right_end = self.end(left), self.end(right)
+        if left_end is None or right_end is None:
+            return None
+        return self.carried(left_end, right_end)
+
+    def detect(self, text: str) -> list[dict]:
+        table = self.table
+        if table is None:
+            return []
+        return [found for found in self.candidates(text) if table.emits(found["sub_key"])]

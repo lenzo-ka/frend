@@ -1,6 +1,55 @@
 # Changelog
 
 ## Unreleased
+- Read a range written in running text as one span, measured. `frend.ranges.
+  RangeDetector` (last in the reading profile, its ends read by every reader before it)
+  reads "5-10", "5 - 10", "16:79", "3x4", "5-10 kg", "$15,000-$25,000" and "10:30-11:45"
+  as one reading, `range:dash`, `range:ratio` or `range:dimension`, said by
+  `_spoken_range` as ICU's ranges are (each end as frend reads it alone, joined by the
+  lexical table's connector patterns: "to"/silent, "by"/"x"). Rules and training are
+  kept apart. **Rules**, stated and tested: the span's shape (R1: a `range.separator`
+  or CLDR's en dash, an ASCII digit before it and an ASCII digit or a currency sign and
+  one after it), its spacing (R2, #43's), no chain of three or more digit groups (R3),
+  the clock (R4a: a ratio icukit's `time:flexible` reads whole is `ratio:clock`), the
+  sub-key (R4b: class, then digit lengths, `:0` for a right end written with a leading
+  zero), the end types (R7: numbers, percents, currency amounts, measures but durations,
+  times, each the whole side, not glued to a word or another number), year labels (R8:
+  a plain whole end also offers its year readings, and a four-digit end's reading that
+  is its year is labeled `date`), money (R10: P5's order and both unit placements; a
+  currency written on the left is the right end's too, "five to ten dollars"), digits
+  (R11: said digit by digit is kind `digits`, "2020-05" "twenty twenty to o five"), and
+  a lone spaced ":" between numbers offered "to" (R12). **Trained**
+  (`frend/data/en/range_priors.json`, `tools/build_range_priors.py`, `--check`): E,
+  whether a span is emitted (a sub-key's range triples, over all 90 training shards,
+  against the single corpus tokens of its written shape: 1,041,287 against 87,071; 50
+  sub-keys are single-led and emit nothing, `ratio:clock` 37 against 56,396 and
+  `dash:3+4` 31 against 4,004 among them), and J, the order of its readings (the joint
+  source the corpus says, `range:<left kind>+<connector>+<right kind>`, over every tenth
+  training shard, 102,684 credited, blended per sub-key toward its class): "1990-1995"
+  "nineteen ninety to nineteen ninety five", "1992-93" "nineteen ninety two to ninety
+  three". kal's ruling A: a corpus dash said as nothing after a year-shaped cardinal or
+  beside money is punctuation, not a range reading, and is counted nowhere (121,241
+  triples, recorded in the provenance). Where no span is emitted (no table, a rule or E
+  declines) #43's joined path reads the text unchanged (R9). ICU's own ranges follow
+  the same table ("1990–95" is now measured, no longer the interim year-first rule, which
+  stays only where a locale has no table). The span's prior is E's measurement
+  (`CorpusPrior`/`BlendedPrior(range_table=...)`); the connector said stays unit weight
+  in the alignment graph. Three new context trees, `range:range`, `range:ratio` and
+  `range:dimension`, choose among a span's joint sources over a new feature family R
+  (separator, digit counts, leading zero, spacing) at `RANGE_CONTEXT_THRESHOLD`; they
+  are trained from their own stored set (`p6-range-examples/548d6f67beab4223`, its own
+  receipt and fingerprint), so the 107 existing trees keep their bytes
+  (`build_context_trees.py --check --no-range-examples`, bytes and decoded trees).
+  `EMIT_RATIO` 1, `RANGE_SUB_KEY_STRENGTH` 5 and `RANGE_CONTEXT_THRESHOLD` 0.7 are the
+  plan's: tuning on the runtime-eval shards 90-94 gained nothing beyond noise. A sub-key
+  seen fewer than 50 times reads its class row for E; a number grouped by commas keys by
+  its digits ("1,000-2,000" is `dash:4+4`); a chain spaced alike ("1 - 2 - 3", "2008 -
+  09 - 30") is no range, and the builders skip corpus chain fragments.
+  Held-out shard 95: running text 11,083 of 13,167 first (#46: 6,711), per token 91,846
+  of 92,425 (99.374%; #46 99.361%), sentences 93.757% (#46 93.625%). Published shard 99:
+  running text 11,120 of 13,154 (#46 6,748), per token 99.339% (#46 99.327%), sentences
+  93.047% (#46 92.915%). Nothing of ARCTIC's
+  1,320 prompts is range-shaped.
 - Resolve faster, with the same answers. The resolver counts a lattice's covers
   exactly first (the same fold over tiergraph's `COUNTING`, linear in the lattice) and
   refuses past the 65,536 bound at once, where it used to rank for minutes before
