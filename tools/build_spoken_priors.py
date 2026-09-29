@@ -31,6 +31,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from frend.electronic import ElectronicDetector, decode_letter_notation  # noqa: E402
+from frend.ranges import date_interval_readers, icu_range_readers  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
 from frend.symbols import SymbolDetector  # noqa: E402
 from frend.written_forms import WrittenFormsDetector  # noqa: E402
@@ -181,12 +182,29 @@ def _detectors(locale: str = "en_US"):
         FlexibleCompactDetector(locale, "short"),
     )
     cardinals = numbers + (LetterNameDetector(locale), SingleLetterWordDetector(locale))
+    measure = (
+        FlexiblePercentDetector(locale),
+        *(FlexibleMeasureDetector(locale, unit) for unit in _MEASURE_UNITS),
+        *(FlexibleMixedMeasureDetector(locale, mixed) for mixed in _MIXED_MEASURES),
+    )
+    money = tuple(
+        detector
+        for code in _CURRENCIES
+        for detector in (
+            FlexibleCurrencyDetector(locale, code),
+            FlexibleCurrencyNameDetector(locale, code),
+        )
+    )
+    # The ranges ICU writes join the kinds of their ends, and no other kind: icukit's
+    # range readers over each kind's amount readers ("5–10", "10–15 kg", "$5–10"; the
+    # approximately readers left out), and its date-interval readers ("1990–1995") with
+    # the dates. Each is empty on an icukit without range readers (0.8.0 on PyPI).
     return {
-        "cardinal": (*cardinals, written),
+        "cardinal": (*cardinals, written, *icu_range_readers(locale, cardinals)),
         "digit": (FlexibleNumberDetector(locale), written),
         "symbol": (SymbolDetector(locale),),
         "decimal": numbers,
-        "date": (*dates.detectors, written),
+        "date": (*dates.detectors, *date_interval_readers(locale), written),
         "fraction": (FlexibleFractionDetector(locale),),
         "ordinal": (FlexibleOrdinalDetector(locale), FlexibleNumberDetector(locale), runs),
         "time": (
@@ -196,19 +214,8 @@ def _detectors(locale: str = "en_US"):
             written,
         ),
         "electronic": (ElectronicDetector(locale),),
-        "measure": (
-            FlexiblePercentDetector(locale),
-            *(FlexibleMeasureDetector(locale, unit) for unit in _MEASURE_UNITS),
-            *(FlexibleMixedMeasureDetector(locale, mixed) for mixed in _MIXED_MEASURES),
-        ),
-        "money": tuple(
-            detector
-            for code in _CURRENCIES
-            for detector in (
-                FlexibleCurrencyDetector(locale, code),
-                FlexibleCurrencyNameDetector(locale, code),
-            )
-        ),
+        "measure": (*measure, *icu_range_readers(locale, measure)),
+        "money": (*money, *icu_range_readers(locale, money)),
     }
 
 

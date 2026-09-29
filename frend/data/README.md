@@ -170,7 +170,9 @@ was checked. Forms emitted into a reading carry the source `lexical:en_US`, the 
 measured tables count them under. A locale with no forms (`ru/lexical.json`) has each
 lexical feature off. `range.connector`'s "to" pattern and `range.separator`'s ranges
 are read by the range connector (a separator between two numbers is also offered "to";
-see `en/context/`); the rest of `range.*` is held for the range readers.
+see `en/context/`); `range.connector`'s `range` patterns ("to" and silent) join the two
+ends of a range ICU writes (`frend.ranges`: icukit's number, measure and date-interval
+range readers); the rest of `range.*` is held for frend's own range reader.
 
 ## `en/context/`
 

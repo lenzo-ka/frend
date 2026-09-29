@@ -23,14 +23,18 @@ def _evaluator():
 
 
 def _signature(detector) -> tuple:
-    """A reader's class and its plain settings: two builds of one profile compare equal."""
+    """A reader's class and its plain public settings: two builds of one profile compare
+    equal. Private attributes are left out: a reader may fill a lazy cache once it has
+    read something (icukit's range readers set ``_bare`` on first use), which says
+    nothing about how it was built."""
     return (
         type(detector).__name__,
         tuple(
             sorted(
                 (key, repr(value))
                 for key, value in vars(detector).items()
-                if isinstance(value, (str, int, float, bool, type(None)))
+                if not key.startswith("_")
+                and isinstance(value, (str, int, float, bool, type(None)))
             )
         ),
     )

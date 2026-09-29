@@ -4301,7 +4301,8 @@
           "FlexibleCompactDetector",
           "LetterNameDetector",
           "SingleLetterWordDetector",
-          "WrittenFormsDetector"
+          "WrittenFormsDetector",
+          "FlexibleNumberRangeDetector"
         ],
         "date": [
           "DateDetector",
@@ -4311,6 +4312,22 @@
           "FlexibleTextDateDetector",
           "PluralNumeralDetector",
           "AlphanumericRunsDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
+          "FlexibleDateIntervalDetector",
           "WrittenFormsDetector"
         ],
         "decimal": [
@@ -4379,7 +4396,9 @@
           "FlexibleMeasureDetector",
           "FlexibleMeasureDetector",
           "FlexibleMixedMeasureDetector",
-          "FlexibleMixedMeasureDetector"
+          "FlexibleMixedMeasureDetector",
+          "FlexibleNumberRangeDetector",
+          "FlexibleNumberRangeDetector"
         ],
         "money": [
           "FlexibleCurrencyDetector",
@@ -4403,7 +4422,8 @@
           "FlexibleCurrencyDetector",
           "FlexibleCurrencyNameDetector",
           "FlexibleCurrencyDetector",
-          "FlexibleCurrencyNameDetector"
+          "FlexibleCurrencyNameDetector",
+          "FlexibleNumberRangeDetector"
         ],
         "ordinal": [
           "FlexibleOrdinalDetector",
