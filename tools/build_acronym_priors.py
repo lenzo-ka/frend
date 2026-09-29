@@ -102,9 +102,7 @@ def build_document(corpus_dir: Path, *, inputs=None) -> dict:
             "locale": "en",
             "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
-            "shards": [
-                path.relative_path if inputs is not None else path.name for path in files
-            ],
+            "shards": [path.relative_path if inputs is not None else path.name for path in files],
             "rule": (
                 "all-capitals letter tokens of two or more letters: LETTERS spelled, PLAIN word"
             ),
@@ -144,9 +142,7 @@ def main(argv: list[str] | None = None) -> int:
         pools=tuple(args.pools),
         root=corpus_dir,
     )
-    write_verification_receipt(
-        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
-    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     rendered = _render(build_document(corpus_dir, inputs=verified))
     if args.check:
         current = args.out.read_text(encoding="utf-8") if args.out.exists() else ""

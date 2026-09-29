@@ -41,6 +41,7 @@ def _register_receipt(fingerprint: str, receipt: Mapping[str, object]) -> None:
     """Register a validated canonical receipt for ancestry checks."""
     _RECEIPT_INDEX[fingerprint] = receipt
 
+
 INTERNAL_ONLY = "internal-only"
 # The shared license classes (conventions item 3, with kal's R2 ruling).
 LICENSE_CLASSES = ("shippable", "shippable-share-alike", "derived-shippable", INTERNAL_ONLY)

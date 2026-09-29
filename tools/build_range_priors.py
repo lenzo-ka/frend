@@ -311,8 +311,7 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
             "sample_rule": {
                 "rule": "full_training_set(corpus)[::10], as tools/build_spoken_priors.py",
                 "shards": [
-                    path.relative_path if inputs is not None else path.name
-                    for path in sample_paths
+                    path.relative_path if inputs is not None else path.name for path in sample_paths
                 ],
             },
             "unit": (
@@ -392,9 +391,7 @@ def main(argv: list[str] | None = None) -> int:
         pools=tuple(args.pools),
         root=corpus_dir,
     )
-    write_verification_receipt(
-        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
-    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     text = render(build_document(corpus_dir, args.jobs, inputs=verified))
     if args.check:
         shipped = args.out.read_text(encoding="utf-8") if args.out.exists() else None

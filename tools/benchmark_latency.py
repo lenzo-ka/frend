@@ -185,10 +185,7 @@ def _run(args: argparse.Namespace) -> int:
     command = [
         sys.executable,
         "-c",
-        (
-            "import runpy; "
-            f"runpy.run_path({str(Path(__file__).resolve())!r}, run_name='__main__')"
-        ),
+        (f"import runpy; runpy.run_path({str(Path(__file__).resolve())!r}, run_name='__main__')"),
         "--_worker",
         "--subject-root",
         str(subject),

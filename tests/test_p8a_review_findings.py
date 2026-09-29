@@ -59,9 +59,7 @@ def test_evaluator_rows_require_a_verified_input():
     """F2: a raw caller-selected path cannot cross the evaluator's row-opening boundary."""
     evaluator = _tool("evaluate_google_tn")
     rogue = Path("/wrong-store/output-00095-of-00100")
-    with patch.object(
-        Path, "open", return_value=io.StringIO("PLAIN\tFAKE\t<self>\n<eos>\n")
-    ):
+    with patch.object(Path, "open", return_value=io.StringIO("PLAIN\tFAKE\t<self>\n<eos>\n")):
         with pytest.raises((TypeError, ValueError), match="verified"):
             evaluator._rows(rogue)
 
@@ -131,9 +129,7 @@ def test_spanish_era_does_not_fabricate_letter_names():
 def test_english_em_dash_population_is_frozen_for_builder_and_evaluator():
     """F6: the frozen English builder and evaluator both exclude an em-dash triple."""
     rows = _tool("google_tn_rows")
-    sentences = [
-        [("CARDINAL", "5", "five"), ("PUNCT", "—", "sil"), ("CARDINAL", "10", "ten")]
-    ]
+    sentences = [[("CARDINAL", "5", "five"), ("PUNCT", "—", "sil"), ("CARDINAL", "10", "ten")]]
     assert list(rows.range_triples(sentences)) == []
     assert rows.running_text(sentences) == []
 

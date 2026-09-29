@@ -50,8 +50,14 @@ def test_range_candidate_inventory_reaches_frozen_categories():
     sentences = []
     for (separator, middle_class, middle_spoken), count in expected.items():
         sentences.extend(
-            [[("CARDINAL", "5", "пяти"), (middle_class, separator, middle_spoken),
-              ("CARDINAL", "10", "десяти")]] * count
+            [
+                [
+                    ("CARDINAL", "5", "пяти"),
+                    (middle_class, separator, middle_spoken),
+                    ("CARDINAL", "10", "десяти"),
+                ]
+            ]
+            * count
         )
     found = Counter(
         (item.separator, item.middle[0], item.middle[2]) for item in range_candidates(sentences)
@@ -144,9 +150,7 @@ def test_verified_inputs_reject_wrong_identity(tmp_path, monkeypatch):
     assert verified[0].sha256 == digest
     (root / name).write_bytes(b"wrong")
     with pytest.raises(ValueError, match="catalog pins"):
-        corpus_inputs.verified_inputs(
-            source, [root / name], locale="en_US", pools=("training",)
-        )
+        corpus_inputs.verified_inputs(source, [root / name], locale="en_US", pools=("training",))
     renamed = root / "output-00095-of-00100"
     renamed.write_bytes(good)
     with pytest.raises(ValueError, match="requested pools"):

@@ -477,9 +477,7 @@ def main(argv: list[str] | None = None) -> int:
         pools=tuple(args.pools),
         root=corpus_dir,
     )
-    write_verification_receipt(
-        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
-    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     rendered = _render(build_document(corpus_dir, inputs=verified))
     if args.check:
         if not args.out.exists() or args.out.read_text(encoding="utf-8") != rendered:

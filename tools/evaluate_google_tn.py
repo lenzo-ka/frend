@@ -373,9 +373,7 @@ def main(argv: list[str] | None = None) -> int:
         pools=tuple(args.pools),
         root=corpus_dir,
     )
-    write_verification_receipt(
-        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
-    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     inputs = {item.relative_path: item for item in verified}
     report = evaluate(inputs, args.workers, args.held_out_shard, locale=args.locale)
     print(_render(report))

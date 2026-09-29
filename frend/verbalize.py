@@ -90,6 +90,7 @@ def lexical_source(locale: str) -> str:
 def _lexical_source(locale: str) -> str:
     return f"lexical:{locale}"
 
+
 # Every form ICU and CLDR do not give, and the corpus says, is a hand-written lexical
 # form: it lives with its reason in ``data/<locale>/lexical.json`` and is read here by
 # key. A locale with no table has no lexical forms, and each feature that needs one is
@@ -1314,9 +1315,7 @@ def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
         words = item.text.replace("-", " ").split(" ")
         if said.keys() & set(words):
             text = " ".join(said.get(word, word) for word in words)
-            forms.append(
-                SpokenAlternative(text, f"{item.provenance}+{lexical_source(locale)}")
-            )
+            forms.append(SpokenAlternative(text, f"{item.provenance}+{lexical_source(locale)}"))
     return _ranked(forms)
 
 
@@ -1793,9 +1792,7 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
         ]
         extended.sort(key=lambda item: -item[0])
         beam = extended[:ELECTRONIC_BEAM]
-    source = (
-        f"{ELECTRONIC_SOURCE}+{lexical_source(locale)}" if unmeasured else ELECTRONIC_SOURCE
-    )
+    source = f"{ELECTRONIC_SOURCE}+{lexical_source(locale)}" if unmeasured else ELECTRONIC_SOURCE
     return tuple(
         SpokenAlternative(" ".join(words), source, probability) for probability, words in beam
     )
@@ -1879,6 +1876,7 @@ class RangeConnector:
     words: str
     slots: tuple[RangeSlot, ...]
     provenance: str
+
 
 def range_connector(locale: str) -> RangeConnector | None:
     """The words a range's two ends are joined by ("to"), from the lexical table's

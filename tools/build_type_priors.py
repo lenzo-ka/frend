@@ -364,9 +364,7 @@ def _build(corpus: str, corpus_dir: Path | None, jobs: int | None, *, inputs=Non
             **_GOOGLE_TN_PROFILE,
         )
     path = Path(corpus)
-    counts, letters = _build_google_tn_material(
-        path, 1 if jobs is None else jobs, inputs=inputs
-    )
+    counts, letters = _build_google_tn_material(path, 1 if jobs is None else jobs, inputs=inputs)
     profile = {**_GOOGLE_TN_PROFILE, "source": f"google-tn-en_with_types:{path}"}
     return build_document(
         [],
@@ -413,8 +411,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     directory = (
-        Path(args.corpus_dir) if args.corpus == "google-tn" and args.corpus_dir else
-        _default_corpus_dir() if args.corpus == "google-tn" else Path(args.corpus)
+        Path(args.corpus_dir)
+        if args.corpus == "google-tn" and args.corpus_dir
+        else _default_corpus_dir()
+        if args.corpus == "google-tn"
+        else Path(args.corpus)
     )
     from corpus_inputs import verified_inputs, write_verification_receipt
 
@@ -425,9 +426,7 @@ def main(argv: list[str] | None = None) -> int:
         pools=tuple(args.pools),
         root=directory,
     )
-    write_verification_receipt(
-        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
-    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     document = _build(args.corpus, args.corpus_dir, args.jobs, inputs=verified)
     rendered = _serialize(document)
 

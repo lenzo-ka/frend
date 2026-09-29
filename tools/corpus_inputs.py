@@ -108,9 +108,7 @@ def verified_inputs(
     if expected_locale is None:
         raise ValueError(f"source {source_id!r} has no declared locale")
     if locale != expected_locale:
-        raise ValueError(
-            f"source {source_id!r} is declared for {expected_locale}, not {locale}"
-        )
+        raise ValueError(f"source {source_id!r} is declared for {expected_locale}, not {locale}")
     entry = _entry(source_id)
     split = CORPUS_SPLITS.get(source_id)
     if split is None:

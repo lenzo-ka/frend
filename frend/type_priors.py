@@ -468,9 +468,7 @@ class BlendedPrior:
         # Omitted: the default table. ``None``: this locale has no measured table, so
         # no measured tier -- only the cross-locale ICU backfill (read from ``root``).
         self.locale = canonical_locale(locale)
-        self.measured = (
-            load_prior_table(locale=self.locale) if measured is _OMITTED else measured
-        )
+        self.measured = load_prior_table(locale=self.locale) if measured is _OMITTED else measured
         self.range_table = _range_table(range_table, self.locale)
         self.backfill = backfill if backfill is not None else load_icu_backfill_table()
         self.class_prior = (

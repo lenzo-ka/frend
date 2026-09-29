@@ -269,9 +269,7 @@ def _shares(counts: dict[str, int]) -> dict[str, Decimal]:
     return {key: Decimal(value) / total for key, value in counts.items()} if total else {}
 
 
-def letter_probabilities(
-    run: str, *, tld: bool, locale: str = "en_US"
-) -> dict[str, Decimal]:
+def letter_probabilities(run: str, *, tld: bool, locale: str = "en_US") -> dict[str, Decimal]:
     """P(word) and P(spelled) for a letter run: its shape blended toward all runs,
     and a top-level domain's own evidence blended toward its shape."""
     document = load_electronic_priors(locale=locale)

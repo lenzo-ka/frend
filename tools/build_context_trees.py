@@ -88,6 +88,8 @@ SOURCE = "google/tn-en_with_types"
 
 def _range_denominators(sentences):
     return range_candidate_denominators(sentences)
+
+
 LOCALE = "en_US"
 DEFAULT_EXAMPLES = Path(
     "/Volumes/k02/processed/frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc"
