@@ -133,9 +133,12 @@ key. Only counts are stored; the shared attribution applies.
 Every file here names what it was made from by a source id, and that id must be one
 of `frend.data_sources.SHIPPABLE_SOURCES`, each listed with its license and license
 class: `google/tn-en_with_types` (the store id; shippable-share-alike),
-`icu/<version>/<family>`, `iana/tlds-alpha-by-domain`, `lenzo/break_exceptions` and
-`frend/curated` (the hand-written forms in `lexical.json`). A JSON table names it in
-`corpus` or `source`, at its top level or in its `provenance`; the older labels the
+`icu/<version>/<family>`, `iana/tlds-alpha-by-domain`, `lenzo/break_exceptions`,
+`frend/curated` (the hand-written forms in `lexical.json`) and `festvox/festival`
+(Festival's curated word lists, `en/context/festival_classes.json`, which carries
+Festival's notice as its license asks). A JSON table names it in `corpus` or `source`,
+at its top level or in its `provenance`; a binary context tree (`.cart`) names it in its
+embedded metadata; the older labels the
 measured tables carry (`google-tn:en_with_types`, `icu-reflective-generation`) are
 mapped to their ids there (`SOURCE_LABELS`), so the tables keep their bytes. A file that
 is a source vendored unchanged (IANA's list) is named by its source's `vendored` entry.
@@ -165,5 +168,39 @@ table per locale, loaded through `frend.locale_data.lexical_forms`. Each entry u
 `forms` holds its `value` and `why`: the reason it is hand-written, stating only what
 was checked. Forms emitted into a reading carry the source `lexical:en_US`, the key the
 measured tables count them under. A locale with no forms (`ru/lexical.json`) has each
-lexical feature off. `range.connector`, `range.separator` and `letter.vowels` are held
-for the range and letters readers and are not yet read.
+lexical feature off. `range.connector`'s "to" pattern and `range.separator`'s ranges
+are read by the range connector (a separator between two numbers is also offered "to";
+see `en/context/`); the rest of `range.*` is held for the range readers.
+
+## `en/context/`
+
+The context trees (`frend.context`): which of a span's readings the running text
+around it favors. `tools/build_context_trees.py` trains one cartlet decision tree per
+reading-choice problem (a problem is the sorted labels of a span's readings) from P7's
+stored example set on kalman (`frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc`:
+training shards 05, 15, ..., 85, disjoint from the shards the other tables count; every
+token where frend offers two or more readings, labeled by the reading the corpus says,
+at most 30,000 per problem, seed 20260928, and every lone "-" with its spoken form).
+Seeded and reproducible: `--check` rebuilds from the stored set (each file checked
+against its receipt) and compares byte for byte, so it needs the kalman mount.
+
+- `index.json`: provenance (the corpus, the set's fingerprint, receipt and file
+  hashes, the training parameters), the 200 frequent words (the words most often
+  within two of a training span that no other class claims: Flite's frequent-word
+  class, learned here rather than copied), the connectors (the lone separator's
+  problem, read also for a separator written inside a range, "5-10"; the en dash,
+  which the set never writes between numbers, reads the hyphen's), and every tree's
+  file, hash, size and label counts.
+- `trees/<id>.cart`: the trees, cartlet model format 2, each naming its source and the
+  set's fingerprint in its metadata; read with cartlet's dependency-free runner.
+- `festival_classes.json`: Festival's hand-curated lists (`lib/tokenpos.scm`: regnal
+  names, king-like titles, section words), unchanged, with Festival's notice. Curated,
+  not built.
+
+The trees' features are Flite's number-tree features (the span's length, a day-of-
+month number, the class of the words at -2..+2 with ICU's month and weekday names),
+ICU's Word_Break, General_Category and Script of three characters either side, the
+Festival classes, and frend's own first choice and its weight. A tree's top reading
+replaces frend's first choice only at probability 0.7 or more. The trees hold only
+split values and label counts (and the frequent words); no corpus text. The shared
+attribution above applies.

@@ -365,7 +365,7 @@ def _refusals(name: str, document: object) -> list[str]:
     A JSON table names its source in ``corpus`` or ``source``, at its top level or in its
     ``provenance``; each must resolve (``data_sources.source_id``) to a declared source
     of a class frend ships. A table naming none, an undeclared one or an ``ldc/`` one is
-    refused, and so is any provenance that mentions an LDC corpus elsewhere. A file that
+    refused, and so is any document that mentions an LDC corpus anywhere. A file that
     is not JSON ships only as a declared source's vendored copy.
     """
     if not isinstance(document, dict):
@@ -394,18 +394,19 @@ def _refusals(name: str, document: object) -> list[str]:
         class_ = data_sources.source_class(source)
         if class_ not in data_sources.SHIPPABLE_CLASSES:
             refusals.append(f"{name}: source {source!r} is {class_ or 'undeclared'}")
-    fields = {
-        key: value
-        for key, value in document.items()
-        if key in ("provenance", "corpus", "source", "sources", "license", "note")
-        or isinstance(value, str)
-    }
-    if _mentions_ldc(fields):
-        refusals.append(f"{name}: its provenance mentions an LDC corpus")
+    # The whole document, every key and value at any depth: an LDC mention may sit in
+    # any metadata ("inputs", "derivation"), not only the named provenance fields.
+    if _mentions_ldc(document):
+        refusals.append(f"{name}: it mentions an LDC corpus")
     return refusals
 
 
 def _document(path: Path) -> object:
+    if path.suffix == ".cart":
+        # A binary cartlet model names its source in its embedded metadata.
+        from cartlet.runner import read_cart_metadata
+
+        return read_cart_metadata(path.read_bytes())
     text = path.read_text(encoding="utf-8")
     return json.loads(text) if path.suffix == ".json" else text
 
@@ -436,6 +437,9 @@ def test_every_shipped_table_names_a_shippable_source():
         {"provenance": {"source": "nist/timit"}},
         {"provenance": {"corpus": "google-tn:en_with_types", "shards": ["LDC/wsj0/si_tr_s"]}},
         {"provenance": {"corpus": "google-tn:en_with_types", "note": "counts from LDC93S6A"}},
+        # A mention nested in top-level metadata no named field holds.
+        {"source": "google/tn-en_with_types", "inputs": {"ldc/LDC93S6A": "checksum"}},
+        {"source": "google/tn-en_with_types", "derivation": {"from": ["ldc:wsj0"]}},
         {"provenance": {"shards": ["output-00000-of-00100"]}},
         {"counts": {"x": 1}},
         {"provenance": {"corpus": "icu/"}},
@@ -445,7 +449,8 @@ def test_every_shipped_table_names_a_shippable_source():
 )
 def test_a_table_naming_no_shippable_source_is_refused(document):
     """Planted tables the guard must refuse: an LDC id, a bare catalog number, an LDC
-    label, an undeclared id, an LDC mention beside a declared source, no source at all,
+    label, an undeclared id, an LDC mention beside a declared source (in its provenance
+    or nested in other metadata), no source at all,
     a bare namespace, an ICU label missing its version, a source that is not an id."""
     assert _refusals("en/planted.json", document)
 

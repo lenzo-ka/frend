@@ -7,13 +7,15 @@ token of that set through frend's pipeline -- recognition with the spoken-priors
 profile, icukit's abbreviations, URLs and frend's written forms; resolution; speech --
 and compares frend's FIRST choice with the corpus's spoken form, per class, overall and
 per sentence, so the numbers sit beside theirs. It also reports whether ANY reading
-frend offers matches, for context.
+frend offers matches, for context. Each token is read alone, with its sentence's
+written text either side as its context (``frend.context``: the context trees and the
+range connector read it), as running text would give it.
 
 Scoring: both sides are normalized as the spoken priors normalize (lowercase,
 punctuation as space); ``<self>`` expects the written token, ``sil`` expects nothing,
 and ELECTRONIC's per-letter notation is joined first. One difference remains and is
-stated in the report: frend reads each token alone, where the published models see
-the sentence around it.
+stated in the report: frend reads each token alone (with its sentence as context), where
+the published models read the sentence whole.
 
 Only counts are printed and written; no corpus text.
 """
@@ -61,14 +63,28 @@ def _joined(texts_and_passthrough) -> str:
     return out
 
 
-def _score(row: tuple[str, str, str]) -> tuple[str, bool, bool]:
-    corpus_class, written, spoken = row
-    first, any_ = _score_text(written, _expected(corpus_class, written, spoken))
+def _score(item: tuple[tuple[str, str, str], str, str]) -> tuple[str, bool, bool]:
+    (corpus_class, written, spoken), before, after = item
+    first, any_ = _score_text(written, _expected(corpus_class, written, spoken), before, after)
     return corpus_class, first, any_
 
 
-def _score_text(written: str, target: str) -> tuple[bool, bool]:
-    """Whether frend's first reading of ``written``, and whether any reading, says ``target``."""
+def _in_context(written: str, before: str, after: str):
+    """The sentence ``written`` is read in: its written neighbors, one space between
+    tokens, as frend's context trees read running text (``frend.context``)."""
+    from frend.context import TextContext
+
+    head = f"{before} " if before else ""
+    tail = f" {after}" if after else ""
+    return TextContext(f"{head}{written}{tail}", len(head))
+
+
+def _score_text(written: str, target: str, before: str = "", after: str = "") -> tuple[bool, bool]:
+    """Whether frend's first reading of ``written``, and whether any reading, says ``target``.
+
+    ``written`` is read alone, as a token of its sentence, and ``before`` and ``after``
+    (the sentence's written text either side) are its context.
+    """
     from icukit.detectors import detect
 
     from frend import resolve_lattice
@@ -78,19 +94,24 @@ def _score_text(written: str, target: str) -> tuple[bool, bool]:
     target = normalize_spoken(target)
     try:
         detections = list(detect(written, _detectors())) if written.strip() else []
-        verbalized = verbalize_lattice(resolve_lattice(detections, source_text=written))
+        verbalized = verbalize_lattice(
+            resolve_lattice(detections, source_text=written),
+            context=_in_context(written, before, after),
+        )
     except Exception:  # noqa: BLE001 - a crash is a miss, counted, not hidden
         return target == normalize_spoken(written), False
 
-    def passthrough(unit) -> bool:
-        return unit.best.provenance == "surface:passthrough"
+    def passthrough(alternative) -> bool:
+        return alternative.provenance == "surface:passthrough"
 
     best = verbalized.best_path
-    first = normalize_spoken(_joined((unit.best.text, passthrough(unit)) for unit in best.units))
+    first = normalize_spoken(
+        _joined((unit.best.text, passthrough(unit.best)) for unit in best.units)
+    )
     if first == target:
         return True, True
     for path in verbalized.paths:
-        options = [[(a.text, passthrough(unit)) for a in unit.alternatives] for unit in path.units]
+        options = [[(a.text, passthrough(a)) for a in unit.alternatives] for unit in path.units]
         for combination in islice(product(*options), _ANY_CAP):
             if normalize_spoken(_joined(combination)) == target:
                 return False, True
@@ -102,9 +123,11 @@ def _score_text(written: str, target: str) -> tuple[bool, bool]:
 _running_text = google_tn_rows.running_text
 
 
-def _score_joined(item: tuple[str, str, str, str]) -> tuple[str, str, bool, bool]:
-    separator, middle, written, target = item
-    return (separator, middle, *_score_text(written, target))
+def _score_joined(
+    item: tuple[tuple[str, str, str, str], tuple[str, str]],
+) -> tuple[str, str, bool, bool]:
+    (separator, middle, written, target), (before, after) = item
+    return (separator, middle, *_score_text(written, target, before, after))
 
 
 def _rows(corpus_dir: Path, name: str = _TEST_FILE, limit: int | None = _TEST_LINES):
@@ -138,7 +161,15 @@ def _map(function, items, workers: int, chunksize: int) -> list:
 def _per_token(sentences, workers: int) -> dict:
     """First-choice, any-reading and whole-sentence accuracy over every token of
     ``sentences``, overall and per class."""
-    rows = [row for sentence in sentences for row in sentence]
+    rows = [
+        (
+            row,
+            " ".join(r[1] for r in sentence[:index]),
+            " ".join(r[1] for r in sentence[index + 1 :]),
+        )
+        for sentence in sentences
+        for index, row in enumerate(sentence)
+    ]
     results = _map(_score, rows, workers, 256)
     by_class: dict[str, Counter] = defaultdict(Counter)
     for corpus_class, first, any_ in results:
@@ -174,7 +205,10 @@ def _per_token(sentences, workers: int) -> dict:
 def _running_text_rows(sentences, workers: int) -> list[dict]:
     """Each number, separator, number triple of ``sentences`` rejoined as written and
     scored, grouped by separator and the corpus's reading of it."""
-    joined_results = _map(_score_joined, _running_text(sentences), workers, 16)
+    items = list(
+        zip(_running_text(sentences), google_tn_rows.running_text_contexts(sentences), strict=True)
+    )
+    joined_results = _map(_score_joined, items, workers, 16)
     by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
     for separator, middle, first, any_ in joined_results:
         by_joint[(separator, middle)]["n"] += 1
@@ -222,7 +256,10 @@ def evaluate(corpus_dir: Path, workers: int, held_out_shard: str | None = None) 
         },
         "classes": per_token["classes"],
         "running_text": _running_text_rows(sentences, workers),
-        "note": "frend reads each token alone; the published models see its sentence",
+        "note": (
+            "frend reads each token alone, its sentence as context; "
+            "the published models read the sentence whole"
+        ),
     }
     if held_out_shard is not None:
         report["held_out"] = _held_out(corpus_dir, held_out_shard, workers)

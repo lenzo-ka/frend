@@ -188,8 +188,9 @@ def test_words_stay_words_first(written, said):
     assert _first(written) == said
 
 
-def test_no_before_a_digit_stays_as_written_until_context():
-    """ "No 5" reads as the corpus says "No" at large; "number five" is kept for context."""
+def test_no_before_a_digit_stays_as_written_until_context(no_context_trees):
+    """ "No 5" reads as the corpus says "No" at large; "number five" is kept for context
+    (``test_context.py``: the context tree reads "number five" before a digit)."""
     assert _first("No 5") == "no five"
     assert "number" in _alternatives("No 5")
 

@@ -30,6 +30,7 @@ from frend import compose_choices, resolve_choices
 from frend import verbalize as verbalize_module
 from frend.electronic import ElectronicDetector, digit_forms
 from frend.locale_data import lexical_forms
+from frend.symbols import SymbolDetector
 from frend.written_forms import WrittenFormsDetector
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -37,9 +38,9 @@ _DATA = _REPO / "frend" / "data"
 _PACKAGE = _REPO / "frend"
 _LEXICAL = "lexical:en_US"
 
-# Forms that sit in the table unread until a later change reads them: the range
-# connector and separators (the range readers).
-_UNREAD = frozenset({"range.connector", "range.separator"})
+# Forms that sit in the table unread until a later change reads them: none since P7
+# read the range connector and the hyphen separator.
+_UNREAD = frozenset()
 
 
 def _tables() -> dict[str, dict]:
@@ -566,6 +567,8 @@ _CONSUMERS = [
     ("clock.oclock", "5pm", [FlexibleTimeDetector("en_US")], "five o'clock p m"),
     ("clock.hundred", "20:00", [FlexibleTimeDetector("en_US")], "twenty hundred"),
     ("possessive.suffix", "II's", [FlexibleNumberDetector("en_US")], "two's"),
+    ("range.connector", "5-10", [FlexibleNumberDetector("en_US")], "to ten"),
+    ("range.separator", "5 - 10", [FlexibleNumberDetector("en_US"), SymbolDetector()], "to"),
     (
         "separator.words",
         "jane@example.org",
@@ -786,6 +789,31 @@ _GOLDEN = {
             ),
         ],
     ],
+    ("range.connector", "5-10"): [
+        [("five", "icu-rbnf:%spellout-numbering")],
+        [
+            ("minus ten", "icu-rbnf:%spellout-numbering"),
+            ("to ten", "lexical:en_US+icu-rbnf:%spellout-numbering"),
+            ("to one o", "lexical:en_US+icu-rbnf:%spellout-cardinal+lexical:en_US"),
+            ("to one zero", "lexical:en_US+icu-rbnf:%spellout-cardinal"),
+        ],
+    ],
+    ("range.separator", "5 - 10"): [
+        [("five", "icu-rbnf:%spellout-numbering")],
+        [
+            ("", "surface:silence"),
+            ("to", "lexical:en_US"),
+            ("hyphen-minus", "cldr-symbol:hyphen-minus"),
+            ("dash", "cldr-symbol:dash"),
+            ("hyphen", "cldr-symbol:hyphen"),
+            ("minus", "cldr-symbol:minus"),
+        ],
+        [
+            ("ten", "icu-rbnf:%spellout-numbering"),
+            ("one o", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
+            ("one zero", "icu-rbnf:%spellout-cardinal"),
+        ],
+    ],
     ("zero.digit", "6 0"): [
         [
             ("six o", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
@@ -808,7 +836,9 @@ _GOLDEN_DIGIT_FORMS = {
 
 
 @pytest.mark.parametrize(("key", "text", "detectors", "form"), _CONSUMERS)
-def test_each_lexical_reading_is_emitted_as_before(key, text, detectors, form):
+def test_each_lexical_reading_is_emitted_as_before(key, text, detectors, form, no_context_trees):
+    """Each form is emitted as before, in frend's own order (no context tree reorders
+    it here; ``test_context.py`` covers the trees)."""
     emitted = [
         [(item.text, item.provenance) for item in unit.alternatives]
         for unit in _units(text, detectors)

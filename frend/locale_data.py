@@ -30,6 +30,7 @@ __all__ = [
     "canonical_locale",
     "lexical_forms",
     "locale_chain",
+    "measured_directory",
     "measured_table",
     "root_table",
 ]
@@ -120,6 +121,21 @@ def measured_table(name: str, locale: str) -> dict | None:
     if resource is None:
         return None
     return json.loads(resource.read_text(encoding="utf-8"))
+
+
+def measured_directory(name: str, locale: str) -> Traversable | None:
+    """The measured data directory ``name`` for ``locale`` (``data/<locale>/<name>/``,
+    such as the context trees), or ``None`` when its chain has none; like a measured
+    table, never read from ``root``."""
+    if not name or "/" in name or "\\" in name or name.startswith("."):
+        raise ValueError(f"not a directory name: {name!r}")
+    for tag in locale_chain(locale):
+        if tag == ROOT:
+            break
+        resource = _data().joinpath(tag, name)
+        if resource.is_dir():
+            return resource
+    return None
 
 
 def root_table(name: str) -> dict:
