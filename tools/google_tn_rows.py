@@ -16,8 +16,8 @@ The en_with_types corpus's README splits its 100 shards into three pools, named 
 its shards through :func:`training_shards`, so no held-out shard can reach a table
 however the builder slices the corpus. :func:`corpus_label` names the corpus a table
 records, from the directory the builder read. :func:`running_text` is the one number,
-separator, number predicate the evaluator scores (and the planned range builder will
-count).
+separator, number predicate the evaluator scores; :func:`range_triples` is the wider
+one the range builders count (a left token that ends in a digit, such as "$15,000").
 """
 
 from __future__ import annotations
@@ -137,3 +137,35 @@ def running_text_contexts(sentences) -> list[tuple[str, str]]:
         )
         for sentence, at in _triples(sentences)
     ]
+
+
+def range_triple_positions(sentences):
+    """(sentence, index of the triple's left row) for each triple of
+    :func:`range_triples`, in the same order."""
+    for sentence in sentences:
+        at = 1
+        while at < len(sentence) - 1:
+            left, middle, right = sentence[at - 1], sentence[at], sentence[at + 1]
+            if (
+                middle[1] in JOINERS
+                and left[1][-1:] in _ASCII_DIGITS
+                and any(char in _ASCII_DIGITS for char in right[1])
+            ):
+                yield sentence, at - 1
+                at += 3
+            else:
+                at += 1
+
+
+_ASCII_DIGITS = frozenset("0123456789")
+
+
+def range_triples(sentences):
+    """(left, middle, right) corpus rows, each (class, written, spoken), for each triple
+    whose left written token ends in an ASCII digit, whose middle is a joiner and whose
+    right written token holds an ASCII digit; left to right, never overlapping. A
+    superset of :func:`running_text`'s predicate (the evaluator's, unchanged): it also
+    reaches "$15,000 - $25,000" and "Oct. 29, 1951 - April 28, 1953", which the range
+    rules then judge (``frend.ranges.emit_relevant``)."""
+    for sentence, at in range_triple_positions(sentences):
+        yield tuple(sentence[at : at + 3])

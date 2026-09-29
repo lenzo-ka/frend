@@ -63,10 +63,15 @@ def test_shared_profile_is_the_spoken_profile_plus_the_outside_readers():
 
     shared = reading_profile.reading_detectors("en_US")
     assert [_signature(d) for d in shared[: len(spoken)]] == [_signature(d) for d in spoken]
-    assert len(shared) == len(spoken) + 3
-    assert isinstance(shared[-3], AbbreviationDetector)
-    assert isinstance(shared[-2], LettersDetector)
-    assert isinstance(shared[-1], AbbreviationVariantDetector)
+    from frend.ranges import RangeDetector
+
+    assert len(shared) == len(spoken) + 4
+    assert isinstance(shared[-4], AbbreviationDetector)
+    assert isinstance(shared[-3], LettersDetector)
+    assert isinstance(shared[-2], AbbreviationVariantDetector)
+    # The written-range reader is last, its ends read by every reader before it.
+    assert isinstance(shared[-1], RangeDetector)
+    assert list(shared[-1].endpoints) == shared[:-1]
 
 
 def _names_an_en_locale(value: object) -> bool:

@@ -651,8 +651,11 @@ def test_no_shipped_table_lists_a_held_out_shard():
     assert {"type_priors.json", "spoken_priors.json", "abbreviation_priors.json"} <= {
         path.name for path in tables
     }
+    assert "range_priors.json" in {path.name for path in tables}
     for path in tables:
         provenance = json.loads(path.read_text(encoding="utf-8"))["provenance"]
         shards = provenance.get("shards", provenance.get("sample_rule", {}).get("shards"))
         assert shards, path.name
         assert set(shards).isdisjoint(_HELD_OUT), path.name
+        # A table counted over two scopes (the range table's E) names both.
+        assert set(provenance.get("emit_shards", ())).isdisjoint(_HELD_OUT), path.name

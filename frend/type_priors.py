@@ -437,6 +437,16 @@ class _Omitted:
 _OMITTED = _Omitted()
 
 
+def _range_table(range_table: Any):
+    """Omitted: the default locale's range table (``frend.ranges.load_range_priors``);
+    ``None``: no range prior."""
+    if range_table is _OMITTED:
+        from frend.ranges import load_range_priors
+
+        return load_range_priors()
+    return range_table
+
+
 class BlendedPrior:
     """Measured-first prior with ICU backfill only for corpus-silent shapes."""
 
@@ -447,10 +457,12 @@ class BlendedPrior:
         *,
         class_prior: Mapping[str, Decimal | int] | None = None,
         class_prior_source: str | None = None,
+        range_table: Any = _OMITTED,
     ):
         # Omitted: the default table. ``None``: this locale has no measured table, so
         # no measured tier -- only the cross-locale ICU backfill (read from ``root``).
         self.measured = load_prior_table() if measured is _OMITTED else measured
+        self.range_table = _range_table(range_table)
         self.backfill = backfill if backfill is not None else load_icu_backfill_table()
         self.class_prior = (
             None
@@ -475,6 +487,8 @@ class BlendedPrior:
 
     def reading_prior(self, detection: Detection) -> ReadingPrior | None:
         type_ = str(detection.get("type", ""))
+        if type_.startswith("range:") and self.range_table is not None:
+            return self.range_table.reading_prior(detection)
         classes = corpus_classes(type_)
         shape_key = shape(str(detection.get("text", "")))
         group = corpus_group(type_) or type_.partition(":")[0] or shape_key
@@ -511,12 +525,19 @@ class BlendedPrior:
 class CorpusPrior:
     """The Layer-2 feature source: a base-rate log-weight per supported reading."""
 
-    def __init__(self, table: PriorTable | None | _Omitted = _OMITTED):
+    def __init__(
+        self, table: PriorTable | None | _Omitted = _OMITTED, *, range_table: Any = _OMITTED
+    ):
         # Omitted: the default table. ``None``: this locale has no table, so no prior.
         self._table = load_prior_table() if table is _OMITTED else table
+        # A range span's prior is the range table's (E: range triples against single
+        # tokens of its written shape; ``frend.ranges.RangePriorTable``).
+        self.range_table = _range_table(range_table)
 
     def reading_prior(self, detection: Detection) -> ReadingPrior | None:
         """Expose the decomposed :class:`ReadingPrior`, or ``None`` for no support."""
+        if str(detection.get("type", "")).startswith("range:") and self.range_table is not None:
+            return self.range_table.reading_prior(detection)
         if self._table is None:
             return None
         return self._table.reading_prior(detection)

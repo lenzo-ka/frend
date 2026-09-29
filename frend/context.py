@@ -22,6 +22,9 @@ corpus's own tokens:
 * ``C`` -- Festival's hand-curated classes (``festival/lib/tokenpos.scm``: regnal names,
   king-like titles, section words), read from ``data/<locale>/context/festival_classes.json``.
 * ``B`` -- frend's own first choice (its label) and that choice's weight.
+* ``R`` -- a range's own shape, for the range problems only (``range_features``): its
+  separator, each end's ASCII digit count, whether the right end is written with a
+  leading zero, and whether the separator is spaced.
 
 **Ranking** (``rerank``): the tree's top reading replaces frend's first choice only
 when the tree gives it probability of at least :data:`CONTEXT_THRESHOLD`; otherwise the
@@ -34,6 +37,11 @@ range separator between two numbers, spaced alike on both sides ("5 - 10", "5-10
 as the locale's spoken range connector, from the lexical table's ``range.connector``
 pattern ("{0} to {1}"; ``frend.verbalize`` reads the table); a locale without the form
 gets no such reading.
+
+**Range problems** (``rerank_range``): a range span's readings are one problem per
+separator class (``range:range``, ``range:ratio``, ``range:dimension``), labeled by their
+joint sources; the tree's top source replaces frend's first only at
+:data:`RANGE_CONTEXT_THRESHOLD` or more.
 
 The trees and their data are measured per locale (``data/<locale>/context/``); a locale
 with none has no context ranking, and every reading keeps frend's own order.
@@ -56,6 +64,7 @@ from frend.spoken_priors import normalize_spoken
 
 __all__ = [
     "CONTEXT_THRESHOLD",
+    "RANGE_CONTEXT_THRESHOLD",
     "ContextChoice",
     "ContextModel",
     "TextContext",
@@ -68,13 +77,21 @@ __all__ = [
     "problem_labels",
     "cldr_range_separator",
     "connector_words",
+    "range_features",
+    "range_problem",
     "rerank",
+    "rerank_range",
 ]
 
 # A tree's top reading overrides frend's first choice only at this probability or more
 # (P7 stage A, swept 0.6 to 0.9 on held-out shard 95: at 0.7 losses fall from 36 to 11
 # while most gains stay).
 CONTEXT_THRESHOLD = 0.7
+# A range tree's top joint source overrides frend's first only at this probability or
+# more: its own constant, tuned for the ensemble's running text on the runtime-eval
+# shards 90-94 (the ranges plan's P6, stage 2): 0.6 reads 55,397 of 65,392 triples first,
+# 0.7 (the plan's starting value) 55,381.
+RANGE_CONTEXT_THRESHOLD = 0.6
 
 # Characters of running text read on either side of a span: enough for three words and
 # three characters; a cut is moved to white space so no word is split by it.
@@ -86,8 +103,8 @@ _WORDS_RIGHT = 2
 BOS, EOS, PAD = "<BOS>", "<EOS>", "<PAD>"
 
 # The feature families and the numeric features among them (the rest are categories).
-FAMILIES = ("B", "F", "W", "C")
-NUMERIC_FEATURES = frozenset({"b_w0", "f_ndig"})
+FAMILIES = ("B", "F", "W", "C", "R")
+NUMERIC_FEATURES = frozenset({"b_w0", "f_ndig", "r_ldig", "r_rdig"})
 
 
 @dataclass(frozen=True)
@@ -476,6 +493,129 @@ def rerank(
         return alternatives, choice
     chosen = distinct[labels.index(label)]
     return (alternatives[chosen], *alternatives[:chosen], *alternatives[chosen + 1 :]), choice
+
+
+def range_problem(separator_class: str) -> str:
+    """The problem a range span's readings pose: one per separator class."""
+    return f"range:{separator_class}"
+
+
+_ASCII = frozenset("0123456789")
+
+
+def range_features(separator: str, left: str, right: str, spaced: bool) -> dict[str, Any]:
+    """Family R: a range's separator (``r_sep``), each end's ASCII digit count
+    (``r_ldig``, ``r_rdig``; -1 for an end that is not ASCII digits only), whether the
+    right end is written with a leading zero and two or more digits (``r_lead0``: "05"),
+    and whether the separator is spaced (``r_spaced``)."""
+
+    def digits(text: str) -> float:
+        return float(len(text)) if text and set(text) <= _ASCII else -1.0
+
+    return {
+        "r_sep": separator,
+        "r_ldig": digits(left),
+        "r_rdig": digits(right),
+        "r_lead0": "1" if len(right) > 1 and set(right) <= _ASCII and right[0] == "0" else "0",
+        "r_spaced": "1" if spaced else "0",
+    }
+
+
+def _range_shape(value: Any) -> tuple[str, str, str, bool]:
+    left = str(value.left[0].get("text", "")) if value.left else ""
+    right = str(value.right[0].get("text", "")) if value.right else ""
+    return value.separator, left, right, False
+
+
+def distinct_sources(alternatives: Sequence[Any]) -> list[int]:
+    """Indices of the first alternative of each provenance, in frend's order: a range
+    tree's labels are joint sources, not texts."""
+    seen: set[str] = set()
+    out = []
+    for index, alternative in enumerate(alternatives):
+        if alternative.provenance in seen:
+            continue
+        seen.add(alternative.provenance)
+        out.append(index)
+    return out
+
+
+def rerank_range(
+    alternatives: Sequence[Any],
+    text: str,
+    start: int,
+    end: int,
+    value: Any,
+    *,
+    locale: str = "en_US",
+    bos: bool = True,
+    eos: bool = True,
+    threshold: float | None = None,
+) -> tuple[tuple[Any, ...], ContextChoice | None]:
+    """A range span's readings (``value`` a ``RangeValue``) with its class's tree's top
+    joint source first, when the tree gives it at least ``threshold``
+    (:data:`RANGE_CONTEXT_THRESHOLD` by default); otherwise unchanged. The problem is
+    ``range:<separator class>``; its labels are the span's distinct sources in frend's
+    order."""
+    alternatives = tuple(alternatives)
+    if threshold is None:
+        threshold = RANGE_CONTEXT_THRESHOLD
+    model = context_model(locale)
+    if model is None:
+        return alternatives, None
+    distinct = distinct_sources(alternatives)
+    if len(distinct) < 2:
+        return alternatives, None
+    problem = range_problem(value.separator_class)
+    tree = model.tree(problem)
+    if tree is None:
+        return alternatives, None
+    labels = [alternatives[index].provenance for index in distinct]
+    first = alternatives[distinct[0]]
+    values = range_example_features(
+        text, start, end, value, first=labels[0], first_weight=first.weight,
+        locale=locale, model=model, bos=bos, eos=eos,
+    )  # fmt: skip
+    top = _top(tree.distribution(values), labels)
+    if top is None:
+        return alternatives, None
+    label, probability = top
+    applied = label != labels[0] and probability >= threshold
+    choice = ContextChoice(problem, label, probability, applied)
+    if not applied:
+        return alternatives, choice
+    chosen = distinct[labels.index(label)]
+    return (alternatives[chosen], *alternatives[:chosen], *alternatives[chosen + 1 :]), choice
+
+
+def range_example_features(
+    text: str,
+    start: int,
+    end: int,
+    value: Any,
+    *,
+    first: str,
+    first_weight: Decimal | float | None,
+    locale: str = "en_US",
+    model: ContextModel | None = None,
+    frequent: frozenset[str] | None = None,
+    curated: Mapping[str, frozenset[str]] | None = None,
+    bos: bool = True,
+    eos: bool = True,
+) -> dict[str, Any]:
+    """Every feature of a range span (families B, F, W, C and R)."""
+    if model is not None:
+        frequent, curated = model.frequent, model.curated
+    out = features(
+        text, start, end, first=first, first_weight=first_weight, locale=locale,
+        frequent=frequent or frozenset(), curated=curated, bos=bos, eos=eos,
+    )  # fmt: skip
+    separator, left, right, _ = _range_shape(value)
+    span = text[start:end]
+    at = span.find(separator, len(left))
+    spaced = at > 0 and (span[at - 1].isspace() or span[at + 1 : at + 2].isspace())
+    out.update(range_features(separator, left, right, spaced))
+    return out
 
 
 def connector_probability(

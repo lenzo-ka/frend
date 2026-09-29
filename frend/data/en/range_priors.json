@@ -1,0 +1,2068 @@
+{
+ "locale": "en",
+ "schema_version": 1,
+ "provenance": {
+  "locale": "en",
+  "corpus": "google-tn:en_with_types",
+  "shards": [
+   "output-00000-of-00100",
+   "output-00010-of-00100",
+   "output-00020-of-00100",
+   "output-00030-of-00100",
+   "output-00040-of-00100",
+   "output-00050-of-00100",
+   "output-00060-of-00100",
+   "output-00070-of-00100",
+   "output-00080-of-00100"
+  ],
+  "emit_shards": [
+   "output-00000-of-00100",
+   "output-00001-of-00100",
+   "output-00002-of-00100",
+   "output-00003-of-00100",
+   "output-00004-of-00100",
+   "output-00005-of-00100",
+   "output-00006-of-00100",
+   "output-00007-of-00100",
+   "output-00008-of-00100",
+   "output-00009-of-00100",
+   "output-00010-of-00100",
+   "output-00011-of-00100",
+   "output-00012-of-00100",
+   "output-00013-of-00100",
+   "output-00014-of-00100",
+   "output-00015-of-00100",
+   "output-00016-of-00100",
+   "output-00017-of-00100",
+   "output-00018-of-00100",
+   "output-00019-of-00100",
+   "output-00020-of-00100",
+   "output-00021-of-00100",
+   "output-00022-of-00100",
+   "output-00023-of-00100",
+   "output-00024-of-00100",
+   "output-00025-of-00100",
+   "output-00026-of-00100",
+   "output-00027-of-00100",
+   "output-00028-of-00100",
+   "output-00029-of-00100",
+   "output-00030-of-00100",
+   "output-00031-of-00100",
+   "output-00032-of-00100",
+   "output-00033-of-00100",
+   "output-00034-of-00100",
+   "output-00035-of-00100",
+   "output-00036-of-00100",
+   "output-00037-of-00100",
+   "output-00038-of-00100",
+   "output-00039-of-00100",
+   "output-00040-of-00100",
+   "output-00041-of-00100",
+   "output-00042-of-00100",
+   "output-00043-of-00100",
+   "output-00044-of-00100",
+   "output-00045-of-00100",
+   "output-00046-of-00100",
+   "output-00047-of-00100",
+   "output-00048-of-00100",
+   "output-00049-of-00100",
+   "output-00050-of-00100",
+   "output-00051-of-00100",
+   "output-00052-of-00100",
+   "output-00053-of-00100",
+   "output-00054-of-00100",
+   "output-00055-of-00100",
+   "output-00056-of-00100",
+   "output-00057-of-00100",
+   "output-00058-of-00100",
+   "output-00059-of-00100",
+   "output-00060-of-00100",
+   "output-00061-of-00100",
+   "output-00062-of-00100",
+   "output-00063-of-00100",
+   "output-00064-of-00100",
+   "output-00065-of-00100",
+   "output-00066-of-00100",
+   "output-00067-of-00100",
+   "output-00068-of-00100",
+   "output-00069-of-00100",
+   "output-00070-of-00100",
+   "output-00071-of-00100",
+   "output-00072-of-00100",
+   "output-00073-of-00100",
+   "output-00074-of-00100",
+   "output-00075-of-00100",
+   "output-00076-of-00100",
+   "output-00077-of-00100",
+   "output-00078-of-00100",
+   "output-00079-of-00100",
+   "output-00080-of-00100",
+   "output-00081-of-00100",
+   "output-00082-of-00100",
+   "output-00083-of-00100",
+   "output-00084-of-00100",
+   "output-00085-of-00100",
+   "output-00086-of-00100",
+   "output-00087-of-00100",
+   "output-00088-of-00100",
+   "output-00089-of-00100"
+  ],
+  "sample_rule": {
+   "rule": "full_training_set(corpus)[::10], as tools/build_spoken_priors.py",
+   "shards": [
+    "output-00000-of-00100",
+    "output-00010-of-00100",
+    "output-00020-of-00100",
+    "output-00030-of-00100",
+    "output-00040-of-00100",
+    "output-00050-of-00100",
+    "output-00060-of-00100",
+    "output-00070-of-00100",
+    "output-00080-of-00100"
+   ]
+  },
+  "unit": "tools/google_tn_rows.range_triples: a written token ending in an ASCII digit, a joiner, a written token holding one; a superset of the evaluator's running_text triple",
+  "single_token": "a single corpus token written <ASCII digits><separator><ASCII digits>, counted by its class",
+  "sub_key_rules": "R4a/R4b (frend.ranges): the class (dash: '-' and the en dash pooled; ratio; dimension), then '<L>+<R>' ASCII digit lengths when both ends are ASCII digits only, ':0' added for a right end of two or more digits written with a leading zero; 'ratio:clock' where icukit's time:flexible reads the written span whole; else 'other'. E reads the key without ':0'",
+  "credit": "the joint source (range:<left kind>+<connector id>+<right kind>) of the first builder-mode reading (P5's order, no priors; ends labeled by R8 and R11) whose normalized text equals the triple's corpus reading",
+  "emission": "RangeDetector emits a span where range >= EMIT_RATIO x single_token for the sub-key's emit key; a key never observed reads its class row",
+  "relevance": {
+   "emit": "range_triples passing R1-R3 on the 90 training shards, R6 rows dropped; negatives: single tokens <digits><sep><digits> by class",
+   "joint": "range_triples passing R1-R3 and R7 on the sample shards, R6 rows dropped; credited by the first matching builder-mode candidate",
+   "dropped_filter": "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said 'sil', and (left CARDINAL written [12][0-9]{3} or a MONEY end)",
+   "wider_not_counted": {
+    "not_emittable": 23305,
+    "punctuation_dash": 122942
+   },
+   "joint_outcomes": {
+    "credited": 104592,
+    "error": 9,
+    "no_end": 1708,
+    "not_emittable": 2316,
+    "punctuation_dash": 12109,
+    "unmatched": 47
+   }
+  },
+  "builder": "tools/build_range_priors.py"
+ },
+ "readings": {
+  "dash": {
+   "range": 905009,
+   "single_token": {
+    "TELEPHONE": 30468
+   }
+  },
+  "dash:1+1": {
+   "range": 99319,
+   "single_token": {}
+  },
+  "dash:1+2": {
+   "range": 33478,
+   "single_token": {}
+  },
+  "dash:1+3": {
+   "range": 15089,
+   "single_token": {}
+  },
+  "dash:1+4": {
+   "range": 498,
+   "single_token": {}
+  },
+  "dash:1+5": {
+   "range": 34,
+   "single_token": {}
+  },
+  "dash:1+6": {
+   "range": 16,
+   "single_token": {}
+  },
+  "dash:1+7": {
+   "range": 8,
+   "single_token": {}
+  },
+  "dash:1+8": {
+   "range": 2,
+   "single_token": {}
+  },
+  "dash:10+10": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:10+3": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:11+1": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:11+2": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dash:11+4": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:12+1": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:12+4": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:13+4": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:13+5": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 3
+   }
+  },
+  "dash:2+1": {
+   "range": 21771,
+   "single_token": {
+    "TELEPHONE": 136
+   }
+  },
+  "dash:2+10": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:2+2": {
+   "range": 112704,
+   "single_token": {
+    "TELEPHONE": 929
+   }
+  },
+  "dash:2+3": {
+   "range": 12356,
+   "single_token": {
+    "TELEPHONE": 692
+   }
+  },
+  "dash:2+4": {
+   "range": 1711,
+   "single_token": {
+    "TELEPHONE": 536
+   }
+  },
+  "dash:2+5": {
+   "range": 17,
+   "single_token": {
+    "TELEPHONE": 2027
+   }
+  },
+  "dash:2+6": {
+   "range": 1,
+   "single_token": {
+    "TELEPHONE": 433
+   }
+  },
+  "dash:2+7": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 41
+   }
+  },
+  "dash:2+8": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 14
+   }
+  },
+  "dash:2+9": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 5
+   }
+  },
+  "dash:3+1": {
+   "range": 9111,
+   "single_token": {
+    "TELEPHONE": 63
+   }
+  },
+  "dash:3+10": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 8626
+   }
+  },
+  "dash:3+11": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:3+12": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 4
+   }
+  },
+  "dash:3+13": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 6
+   }
+  },
+  "dash:3+14": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 88
+   }
+  },
+  "dash:3+2": {
+   "range": 17203,
+   "single_token": {
+    "TELEPHONE": 78
+   }
+  },
+  "dash:3+3": {
+   "range": 123709,
+   "single_token": {
+    "TELEPHONE": 231
+   }
+  },
+  "dash:3+4": {
+   "range": 54,
+   "single_token": {
+    "TELEPHONE": 4004
+   }
+  },
+  "dash:3+5": {
+   "range": 2,
+   "single_token": {
+    "TELEPHONE": 215
+   }
+  },
+  "dash:3+6": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 78
+   }
+  },
+  "dash:3+7": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 85
+   }
+  },
+  "dash:3+8": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 6
+   }
+  },
+  "dash:3+9": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:4+1": {
+   "range": 9572,
+   "single_token": {
+    "TELEPHONE": 30
+   }
+  },
+  "dash:4+10": {
+   "range": 4,
+   "single_token": {
+    "TELEPHONE": 4
+   }
+  },
+  "dash:4+17": {
+   "range": 2,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:4+2": {
+   "range": 40391,
+   "single_token": {
+    "TELEPHONE": 68
+   }
+  },
+  "dash:4+3": {
+   "range": 3611,
+   "single_token": {
+    "TELEPHONE": 873
+   }
+  },
+  "dash:4+4": {
+   "range": 336153,
+   "single_token": {
+    "TELEPHONE": 8772
+   }
+  },
+  "dash:4+5": {
+   "range": 325,
+   "single_token": {
+    "TELEPHONE": 84
+   }
+  },
+  "dash:4+6": {
+   "range": 452,
+   "single_token": {
+    "TELEPHONE": 37
+   }
+  },
+  "dash:4+7": {
+   "range": 23,
+   "single_token": {
+    "TELEPHONE": 6
+   }
+  },
+  "dash:4+8": {
+   "range": 69,
+   "single_token": {
+    "TELEPHONE": 10
+   }
+  },
+  "dash:4+9": {
+   "range": 3,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:5+1": {
+   "range": 18,
+   "single_token": {
+    "TELEPHONE": 10
+   }
+  },
+  "dash:5+12": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dash:5+2": {
+   "range": 58,
+   "single_token": {
+    "TELEPHONE": 9
+   }
+  },
+  "dash:5+3": {
+   "range": 2,
+   "single_token": {
+    "TELEPHONE": 409
+   }
+  },
+  "dash:5+4": {
+   "range": 10,
+   "single_token": {
+    "TELEPHONE": 570
+   }
+  },
+  "dash:5+5": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 842
+   }
+  },
+  "dash:5+6": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 21
+   }
+  },
+  "dash:5+7": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:6+1": {
+   "range": 1,
+   "single_token": {
+    "TELEPHONE": 17
+   }
+  },
+  "dash:6+2": {
+   "range": 34,
+   "single_token": {
+    "TELEPHONE": 39
+   }
+  },
+  "dash:6+3": {
+   "range": 1,
+   "single_token": {
+    "TELEPHONE": 95
+   }
+  },
+  "dash:6+4": {
+   "range": 1,
+   "single_token": {
+    "TELEPHONE": 46
+   }
+  },
+  "dash:6+5": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 3
+   }
+  },
+  "dash:6+6": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 61
+   }
+  },
+  "dash:6+7": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:7+1": {
+   "range": 7,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:7+2": {
+   "range": 7,
+   "single_token": {
+    "TELEPHONE": 22
+   }
+  },
+  "dash:7+3": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 20
+   }
+  },
+  "dash:7+4": {
+   "range": 1,
+   "single_token": {
+    "TELEPHONE": 13
+   }
+  },
+  "dash:7+6": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:7+7": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 5
+   }
+  },
+  "dash:8+1": {
+   "range": 2,
+   "single_token": {
+    "TELEPHONE": 1
+   }
+  },
+  "dash:8+2": {
+   "range": 2,
+   "single_token": {}
+  },
+  "dash:8+3": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 16
+   }
+  },
+  "dash:8+4": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 33
+   }
+  },
+  "dash:8+5": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:8+6": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:8+7": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 2
+   }
+  },
+  "dash:8+8": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 6
+   }
+  },
+  "dash:9+1": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 9
+   }
+  },
+  "dash:9+4": {
+   "range": 0,
+   "single_token": {
+    "TELEPHONE": 5
+   }
+  },
+  "dash:other": {
+   "range": 67175,
+   "single_token": {}
+  },
+  "dimension": {
+   "range": 10970,
+   "single_token": {}
+  },
+  "dimension:1+1": {
+   "range": 3254,
+   "single_token": {}
+  },
+  "dimension:1+16": {
+   "range": 2,
+   "single_token": {}
+  },
+  "dimension:1+2": {
+   "range": 1040,
+   "single_token": {}
+  },
+  "dimension:1+3": {
+   "range": 1075,
+   "single_token": {}
+  },
+  "dimension:1+4": {
+   "range": 87,
+   "single_token": {}
+  },
+  "dimension:1+5": {
+   "range": 26,
+   "single_token": {}
+  },
+  "dimension:1+6": {
+   "range": 7,
+   "single_token": {}
+  },
+  "dimension:1+7": {
+   "range": 20,
+   "single_token": {}
+  },
+  "dimension:1+8": {
+   "range": 23,
+   "single_token": {}
+  },
+  "dimension:1+9": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:2+1": {
+   "range": 342,
+   "single_token": {}
+  },
+  "dimension:2+2": {
+   "range": 1189,
+   "single_token": {}
+  },
+  "dimension:2+3": {
+   "range": 65,
+   "single_token": {}
+  },
+  "dimension:2+4": {
+   "range": 33,
+   "single_token": {}
+  },
+  "dimension:3+1": {
+   "range": 34,
+   "single_token": {}
+  },
+  "dimension:3+2": {
+   "range": 149,
+   "single_token": {}
+  },
+  "dimension:3+3": {
+   "range": 618,
+   "single_token": {}
+  },
+  "dimension:3+4": {
+   "range": 12,
+   "single_token": {}
+  },
+  "dimension:4+1": {
+   "range": 14,
+   "single_token": {}
+  },
+  "dimension:4+2": {
+   "range": 51,
+   "single_token": {}
+  },
+  "dimension:4+3": {
+   "range": 195,
+   "single_token": {}
+  },
+  "dimension:4+4": {
+   "range": 230,
+   "single_token": {}
+  },
+  "dimension:5+1": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:5+3": {
+   "range": 4,
+   "single_token": {}
+  },
+  "dimension:5+4": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:5+5": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:6+1": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:6+2": {
+   "range": 2,
+   "single_token": {}
+  },
+  "dimension:6+3": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:8+2": {
+   "range": 1,
+   "single_token": {}
+  },
+  "dimension:other": {
+   "range": 2491,
+   "single_token": {}
+  },
+  "ratio": {
+   "range": 145548,
+   "single_token": {
+    "TIME": 56603
+   }
+  },
+  "ratio:1+1": {
+   "range": 14209,
+   "single_token": {}
+  },
+  "ratio:1+10": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:1+13": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:1+15": {
+   "range": 14,
+   "single_token": {}
+  },
+  "ratio:1+16": {
+   "range": 2,
+   "single_token": {}
+  },
+  "ratio:1+2": {
+   "range": 2411,
+   "single_token": {}
+  },
+  "ratio:1+3": {
+   "range": 10666,
+   "single_token": {}
+  },
+  "ratio:1+4": {
+   "range": 3316,
+   "single_token": {}
+  },
+  "ratio:1+5": {
+   "range": 568,
+   "single_token": {}
+  },
+  "ratio:1+6": {
+   "range": 3210,
+   "single_token": {}
+  },
+  "ratio:1+7": {
+   "range": 12,
+   "single_token": {}
+  },
+  "ratio:1+8": {
+   "range": 5,
+   "single_token": {}
+  },
+  "ratio:2+1": {
+   "range": 12359,
+   "single_token": {}
+  },
+  "ratio:2+10": {
+   "range": 2,
+   "single_token": {}
+  },
+  "ratio:2+13": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:2+15": {
+   "range": 9,
+   "single_token": {}
+  },
+  "ratio:2+16": {
+   "range": 2,
+   "single_token": {}
+  },
+  "ratio:2+2": {
+   "range": 12025,
+   "single_token": {
+    "TIME": 207
+   }
+  },
+  "ratio:2+3": {
+   "range": 23278,
+   "single_token": {}
+  },
+  "ratio:2+4": {
+   "range": 3333,
+   "single_token": {}
+  },
+  "ratio:2+5": {
+   "range": 184,
+   "single_token": {}
+  },
+  "ratio:2+6": {
+   "range": 404,
+   "single_token": {}
+  },
+  "ratio:2+7": {
+   "range": 29,
+   "single_token": {}
+  },
+  "ratio:2+8": {
+   "range": 13,
+   "single_token": {}
+  },
+  "ratio:3+1": {
+   "range": 2996,
+   "single_token": {}
+  },
+  "ratio:3+15": {
+   "range": 6,
+   "single_token": {}
+  },
+  "ratio:3+2": {
+   "range": 3953,
+   "single_token": {}
+  },
+  "ratio:3+3": {
+   "range": 8189,
+   "single_token": {}
+  },
+  "ratio:3+4": {
+   "range": 1646,
+   "single_token": {}
+  },
+  "ratio:3+5": {
+   "range": 135,
+   "single_token": {}
+  },
+  "ratio:3+6": {
+   "range": 138,
+   "single_token": {}
+  },
+  "ratio:3+7": {
+   "range": 17,
+   "single_token": {}
+  },
+  "ratio:3+8": {
+   "range": 35,
+   "single_token": {}
+  },
+  "ratio:3+9": {
+   "range": 16,
+   "single_token": {}
+  },
+  "ratio:4+1": {
+   "range": 4706,
+   "single_token": {}
+  },
+  "ratio:4+10": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:4+11": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:4+19": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:4+2": {
+   "range": 11918,
+   "single_token": {}
+  },
+  "ratio:4+3": {
+   "range": 10784,
+   "single_token": {}
+  },
+  "ratio:4+4": {
+   "range": 1587,
+   "single_token": {}
+  },
+  "ratio:4+5": {
+   "range": 62,
+   "single_token": {}
+  },
+  "ratio:4+6": {
+   "range": 392,
+   "single_token": {}
+  },
+  "ratio:4+7": {
+   "range": 9,
+   "single_token": {}
+  },
+  "ratio:4+8": {
+   "range": 62,
+   "single_token": {}
+  },
+  "ratio:5+1": {
+   "range": 31,
+   "single_token": {}
+  },
+  "ratio:5+2": {
+   "range": 15,
+   "single_token": {}
+  },
+  "ratio:5+3": {
+   "range": 5,
+   "single_token": {}
+  },
+  "ratio:5+4": {
+   "range": 505,
+   "single_token": {}
+  },
+  "ratio:5+5": {
+   "range": 6,
+   "single_token": {}
+  },
+  "ratio:5+6": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:6+1": {
+   "range": 2,
+   "single_token": {}
+  },
+  "ratio:6+2": {
+   "range": 9,
+   "single_token": {}
+  },
+  "ratio:6+3": {
+   "range": 15,
+   "single_token": {}
+  },
+  "ratio:6+4": {
+   "range": 4,
+   "single_token": {}
+  },
+  "ratio:6+5": {
+   "range": 2,
+   "single_token": {}
+  },
+  "ratio:6+6": {
+   "range": 3,
+   "single_token": {}
+  },
+  "ratio:7+1": {
+   "range": 4,
+   "single_token": {}
+  },
+  "ratio:7+2": {
+   "range": 17,
+   "single_token": {}
+  },
+  "ratio:7+3": {
+   "range": 17,
+   "single_token": {}
+  },
+  "ratio:7+4": {
+   "range": 3,
+   "single_token": {}
+  },
+  "ratio:7+5": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:7+7": {
+   "range": 5,
+   "single_token": {}
+  },
+  "ratio:8+1": {
+   "range": 3,
+   "single_token": {}
+  },
+  "ratio:8+2": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:8+3": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:8+4": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:8+8": {
+   "range": 3,
+   "single_token": {}
+  },
+  "ratio:9+1": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:clock": {
+   "range": 58,
+   "single_token": {
+    "TIME": 56396
+   }
+  },
+  "ratio:other": {
+   "range": 12127,
+   "single_token": {}
+  }
+ },
+ "kinds": {
+  "dash": {
+   "total": 89616,
+   "matched": 89575,
+   "unmatched": 41,
+   "source_matched": {
+    "range:cardinal+to+cardinal": 41810,
+    "range:date+to+date": 33621,
+    "range:date+to+cardinal": 5108,
+    "range:cardinal+silent+cardinal": 2451,
+    "range:cardinal+to+measure": 2256,
+    "range:decimal+to+cardinal": 1846,
+    "range:date+to+measure": 496,
+    "range:date+to+digits": 484,
+    "range:cardinal+silent+digits": 480,
+    "range:decimal+to+measure": 234,
+    "range:decimal+to+decimal": 167,
+    "range:time+to+time": 144,
+    "range:cardinal+to+time": 126,
+    "range:cardinal+silent+date": 120,
+    "range:cardinal+to+decimal": 60,
+    "range:digits+silent+measure": 41,
+    "range:digits+silent+digits": 31,
+    "range:decimal+silent+digits": 22,
+    "range:digits+silent+cardinal": 14,
+    "range:decimal+silent+date": 13,
+    "range:date+silent+cardinal": 11,
+    "range:date+silent+decimal": 8,
+    "range:digits+silent+date": 7,
+    "range:time+silent+cardinal": 5,
+    "range:time+silent+digits": 5,
+    "range:date+to+time": 4,
+    "range:cardinal+silent+decimal": 3,
+    "range:cardinal+silent+measure": 3,
+    "range:decimal+silent+cardinal": 3,
+    "range:cardinal+silent+time": 1,
+    "range:digits+silent+decimal": 1
+   },
+   "sub_keys": {
+    "1+1": {
+     "matched": 9822,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 9806,
+      "range:cardinal+silent+cardinal": 16
+     }
+    },
+    "1+2": {
+     "matched": 3368,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 3344,
+      "range:cardinal+silent+cardinal": 22,
+      "range:cardinal+silent+digits": 2
+     }
+    },
+    "1+2:0": {
+     "matched": 78,
+     "source_matched": {
+      "range:cardinal+silent+digits": 78
+     }
+    },
+    "1+3": {
+     "matched": 1529,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1516,
+      "range:cardinal+silent+cardinal": 9,
+      "range:cardinal+silent+digits": 4
+     }
+    },
+    "1+3:0": {
+     "matched": 10,
+     "source_matched": {
+      "range:cardinal+silent+digits": 10
+     }
+    },
+    "1+4": {
+     "matched": 43,
+     "source_matched": {
+      "range:cardinal+silent+date": 29,
+      "range:cardinal+silent+digits": 14
+     }
+    },
+    "1+4:0": {
+     "matched": 5,
+     "source_matched": {
+      "range:cardinal+silent+digits": 5
+     }
+    },
+    "1+5": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 2
+     }
+    },
+    "1+5:0": {
+     "matched": 4,
+     "source_matched": {
+      "range:cardinal+silent+digits": 4
+     }
+    },
+    "1+6": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "1+6:0": {
+     "matched": 3,
+     "source_matched": {
+      "range:cardinal+silent+digits": 3
+     }
+    },
+    "2+1": {
+     "matched": 2134,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2100,
+      "range:cardinal+silent+cardinal": 33,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "2+2": {
+     "matched": 11211,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 8940,
+      "range:cardinal+silent+cardinal": 2268,
+      "range:cardinal+silent+digits": 2,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "2+2:0": {
+     "matched": 110,
+     "source_matched": {
+      "range:cardinal+silent+digits": 78,
+      "range:cardinal+silent+cardinal": 31,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "2+3": {
+     "matched": 1252,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1236,
+      "range:cardinal+silent+cardinal": 7,
+      "range:cardinal+silent+digits": 7,
+      "range:digits+silent+cardinal": 2
+     }
+    },
+    "2+3:0": {
+     "matched": 55,
+     "source_matched": {
+      "range:cardinal+silent+digits": 52,
+      "range:digits+silent+digits": 3
+     }
+    },
+    "2+4": {
+     "matched": 99,
+     "source_matched": {
+      "range:cardinal+silent+date": 87,
+      "range:cardinal+silent+digits": 5,
+      "range:cardinal+silent+cardinal": 4,
+      "range:digits+silent+date": 2,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "2+4:0": {
+     "matched": 80,
+     "source_matched": {
+      "range:cardinal+silent+digits": 79,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "3+1": {
+     "matched": 925,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 913,
+      "range:cardinal+silent+cardinal": 11,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "3+2": {
+     "matched": 1669,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1659,
+      "range:cardinal+silent+cardinal": 9,
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "3+2:0": {
+     "matched": 72,
+     "source_matched": {
+      "range:cardinal+silent+digits": 70,
+      "range:digits+silent+digits": 2
+     }
+    },
+    "3+3": {
+     "matched": 12307,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 12296,
+      "range:cardinal+silent+cardinal": 8,
+      "range:cardinal+silent+digits": 3
+     }
+    },
+    "3+3:0": {
+     "matched": 60,
+     "source_matched": {
+      "range:cardinal+silent+digits": 59,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "3+4": {
+     "matched": 5,
+     "source_matched": {
+      "range:cardinal+silent+date": 4,
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "4+1": {
+     "matched": 917,
+     "source_matched": {
+      "range:date+to+cardinal": 913,
+      "range:digits+silent+cardinal": 3,
+      "range:cardinal+silent+cardinal": 1
+     }
+    },
+    "4+2": {
+     "matched": 3681,
+     "source_matched": {
+      "range:date+to+cardinal": 3667,
+      "range:date+silent+cardinal": 8,
+      "range:digits+silent+cardinal": 3,
+      "range:cardinal+silent+cardinal": 2,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "4+2:0": {
+     "matched": 335,
+     "source_matched": {
+      "range:date+to+digits": 322,
+      "range:digits+silent+digits": 11,
+      "range:cardinal+silent+digits": 2
+     }
+    },
+    "4+3": {
+     "matched": 307,
+     "source_matched": {
+      "range:date+to+cardinal": 300,
+      "range:date+silent+cardinal": 3,
+      "range:digits+silent+cardinal": 3,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "4+3:0": {
+     "matched": 93,
+     "source_matched": {
+      "range:date+to+digits": 91,
+      "range:digits+silent+digits": 2
+     }
+    },
+    "4+4": {
+     "matched": 33774,
+     "source_matched": {
+      "range:date+to+date": 33621,
+      "range:date+to+cardinal": 147,
+      "range:digits+silent+date": 5,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "4+4:0": {
+     "matched": 52,
+     "source_matched": {
+      "range:date+to+digits": 51,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "4+5": {
+     "matched": 20,
+     "source_matched": {
+      "range:date+to+cardinal": 20
+     }
+    },
+    "4+5:0": {
+     "matched": 12,
+     "source_matched": {
+      "range:date+to+digits": 12
+     }
+    },
+    "4+6": {
+     "matched": 46,
+     "source_matched": {
+      "range:date+to+cardinal": 46
+     }
+    },
+    "4+6:0": {
+     "matched": 5,
+     "source_matched": {
+      "range:date+to+digits": 5
+     }
+    },
+    "4+7": {
+     "matched": 2,
+     "source_matched": {
+      "range:date+to+cardinal": 2
+     }
+    },
+    "4+8": {
+     "matched": 7,
+     "source_matched": {
+      "range:date+to+cardinal": 7
+     }
+    },
+    "4+8:0": {
+     "matched": 3,
+     "source_matched": {
+      "range:date+to+digits": 3
+     }
+    },
+    "5+1": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 2
+     }
+    },
+    "5+2": {
+     "matched": 1,
+     "source_matched": {
+      "range:digits+silent+digits": 1
+     }
+    },
+    "5+2:0": {
+     "matched": 2,
+     "source_matched": {
+      "range:digits+silent+digits": 2
+     }
+    },
+    "5+4": {
+     "matched": 1,
+     "source_matched": {
+      "range:digits+silent+digits": 1
+     }
+    },
+    "6+2:0": {
+     "matched": 1,
+     "source_matched": {
+      "range:digits+silent+digits": 1
+     }
+    },
+    "other": {
+     "matched": 5470,
+     "source_matched": {
+      "range:cardinal+to+measure": 2256,
+      "range:decimal+to+cardinal": 1846,
+      "range:date+to+measure": 496,
+      "range:decimal+to+measure": 234,
+      "range:decimal+to+decimal": 167,
+      "range:time+to+time": 144,
+      "range:cardinal+to+time": 126,
+      "range:cardinal+to+decimal": 60,
+      "range:digits+silent+measure": 41,
+      "range:cardinal+silent+cardinal": 26,
+      "range:decimal+silent+digits": 22,
+      "range:decimal+silent+date": 13,
+      "range:date+silent+decimal": 8,
+      "range:date+to+cardinal": 6,
+      "range:time+silent+cardinal": 5,
+      "range:time+silent+digits": 5,
+      "range:date+to+time": 4,
+      "range:cardinal+silent+decimal": 3,
+      "range:cardinal+silent+measure": 3,
+      "range:decimal+silent+cardinal": 3,
+      "range:cardinal+silent+time": 1,
+      "range:digits+silent+decimal": 1
+     }
+    }
+   }
+  },
+  "dimension": {
+   "total": 1127,
+   "matched": 1125,
+   "unmatched": 2,
+   "source_matched": {
+    "range:cardinal+by+cardinal": 818,
+    "range:cardinal+by+measure": 139,
+    "range:cardinal+letter+cardinal": 35,
+    "range:decimal+letter+measure": 30,
+    "range:cardinal+letter+digits": 29,
+    "range:decimal+letter+cardinal": 26,
+    "range:cardinal+letter+decimal": 18,
+    "range:decimal+letter+decimal": 18,
+    "range:decimal+letter+date": 4,
+    "range:time+letter+cardinal": 3,
+    "range:date+by+cardinal": 2,
+    "range:date+letter+date": 1,
+    "range:decimal+letter+digits": 1,
+    "range:digits+letter+digits": 1
+   },
+   "sub_keys": {
+    "1+1": {
+     "matched": 321,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 302,
+      "range:cardinal+letter+cardinal": 19
+     }
+    },
+    "1+2": {
+     "matched": 90,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 82,
+      "range:cardinal+letter+cardinal": 7,
+      "range:cardinal+letter+digits": 1
+     }
+    },
+    "1+2:0": {
+     "matched": 26,
+     "source_matched": {
+      "range:cardinal+letter+digits": 26
+     }
+    },
+    "1+3": {
+     "matched": 143,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 142,
+      "range:cardinal+letter+cardinal": 1
+     }
+    },
+    "1+4": {
+     "matched": 3,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 3
+     }
+    },
+    "1+4:0": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+letter+digits": 2
+     }
+    },
+    "1+6": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 1
+     }
+    },
+    "2+1": {
+     "matched": 34,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 32,
+      "range:cardinal+letter+cardinal": 2
+     }
+    },
+    "2+2": {
+     "matched": 109,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 107,
+      "range:cardinal+letter+cardinal": 2
+     }
+    },
+    "2+3": {
+     "matched": 4,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 2,
+      "range:cardinal+letter+cardinal": 2
+     }
+    },
+    "2+4": {
+     "matched": 5,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 5
+     }
+    },
+    "3+1": {
+     "matched": 4,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 2,
+      "range:cardinal+letter+cardinal": 2
+     }
+    },
+    "3+2": {
+     "matched": 18,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 18
+     }
+    },
+    "3+3": {
+     "matched": 72,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 72
+     }
+    },
+    "3+4": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 1
+     }
+    },
+    "4+2": {
+     "matched": 3,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 2,
+      "range:date+by+cardinal": 1
+     }
+    },
+    "4+3": {
+     "matched": 16,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 15,
+      "range:date+by+cardinal": 1
+     }
+    },
+    "4+4": {
+     "matched": 25,
+     "source_matched": {
+      "range:cardinal+by+cardinal": 23,
+      "range:date+letter+date": 1,
+      "range:digits+letter+digits": 1
+     }
+    },
+    "other": {
+     "matched": 248,
+     "source_matched": {
+      "range:cardinal+by+measure": 139,
+      "range:decimal+letter+measure": 30,
+      "range:decimal+letter+cardinal": 26,
+      "range:cardinal+letter+decimal": 18,
+      "range:decimal+letter+decimal": 18,
+      "range:cardinal+by+cardinal": 9,
+      "range:decimal+letter+date": 4,
+      "range:time+letter+cardinal": 3,
+      "range:decimal+letter+digits": 1
+     }
+    }
+   }
+  },
+  "ratio": {
+   "total": 13896,
+   "matched": 13892,
+   "unmatched": 4,
+   "source_matched": {
+    "range:cardinal+to+cardinal": 12348,
+    "range:date+to+cardinal": 700,
+    "range:decimal+silent+cardinal": 216,
+    "range:cardinal+silent+cardinal": 174,
+    "range:cardinal+to+date": 141,
+    "range:cardinal+silent+digits": 116,
+    "range:date+to+date": 51,
+    "range:cardinal+silent+money": 38,
+    "range:digits+silent+cardinal": 27,
+    "range:date+silent+cardinal": 16,
+    "range:cardinal+silent+measure": 12,
+    "range:cardinal+silent+date": 9,
+    "range:date+silent+money": 8,
+    "range:date+silent+digits": 6,
+    "range:digits+silent+date": 6,
+    "range:date+silent+measure": 5,
+    "range:digits+silent+digits": 4,
+    "range:cardinal+silent+decimal": 2,
+    "range:cardinal+silent+time": 2,
+    "range:date+silent+decimal": 2,
+    "range:decimal+silent+date": 2,
+    "range:decimal+silent+decimal": 2,
+    "range:decimal+silent+measure": 1,
+    "range:money+silent+cardinal": 1,
+    "range:money+silent+digits": 1,
+    "range:money+silent+measure": 1,
+    "range:money+silent+money": 1
+   },
+   "sub_keys": {
+    "1+1": {
+     "matched": 1395,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1351,
+      "range:cardinal+silent+cardinal": 44
+     }
+    },
+    "1+13": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "1+15": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "1+2": {
+     "matched": 275,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 268,
+      "range:cardinal+silent+cardinal": 7
+     }
+    },
+    "1+3": {
+     "matched": 1033,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1026,
+      "range:cardinal+silent+cardinal": 7
+     }
+    },
+    "1+3:0": {
+     "matched": 15,
+     "source_matched": {
+      "range:cardinal+silent+digits": 15
+     }
+    },
+    "1+4": {
+     "matched": 291,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 257,
+      "range:cardinal+to+date": 28,
+      "range:cardinal+silent+date": 6
+     }
+    },
+    "1+4:0": {
+     "matched": 5,
+     "source_matched": {
+      "range:cardinal+silent+digits": 5
+     }
+    },
+    "1+5": {
+     "matched": 63,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 63
+     }
+    },
+    "1+5:0": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "1+6": {
+     "matched": 321,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 321
+     }
+    },
+    "1+6:0": {
+     "matched": 7,
+     "source_matched": {
+      "range:cardinal+silent+digits": 7
+     }
+    },
+    "1+7": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2
+     }
+    },
+    "2+1": {
+     "matched": 1240,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1216,
+      "range:cardinal+silent+cardinal": 18,
+      "range:digits+silent+cardinal": 6
+     }
+    },
+    "2+10": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "2+15": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "2+2": {
+     "matched": 1086,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1072,
+      "range:cardinal+silent+cardinal": 13,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "2+2:0": {
+     "matched": 36,
+     "source_matched": {
+      "range:cardinal+silent+digits": 36
+     }
+    },
+    "2+3": {
+     "matched": 2345,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2324,
+      "range:cardinal+silent+cardinal": 17,
+      "range:digits+silent+cardinal": 4
+     }
+    },
+    "2+3:0": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "2+4": {
+     "matched": 329,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 296,
+      "range:cardinal+to+date": 26,
+      "range:digits+silent+date": 4,
+      "range:cardinal+silent+date": 2,
+      "range:cardinal+silent+cardinal": 1
+     }
+    },
+    "2+4:0": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+silent+digits": 2
+     }
+    },
+    "2+5": {
+     "matched": 15,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 14,
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "2+6": {
+     "matched": 16,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 16
+     }
+    },
+    "2+6:0": {
+     "matched": 22,
+     "source_matched": {
+      "range:cardinal+silent+digits": 22
+     }
+    },
+    "2+7": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "2+8": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2
+     }
+    },
+    "3+1": {
+     "matched": 312,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 300,
+      "range:cardinal+silent+cardinal": 10,
+      "range:digits+silent+cardinal": 2
+     }
+    },
+    "3+2": {
+     "matched": 365,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 326,
+      "range:cardinal+silent+cardinal": 38,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "3+2:0": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "3+3": {
+     "matched": 807,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 777,
+      "range:cardinal+silent+digits": 14,
+      "range:cardinal+silent+cardinal": 12,
+      "range:digits+silent+cardinal": 4
+     }
+    },
+    "3+3:0": {
+     "matched": 3,
+     "source_matched": {
+      "range:cardinal+silent+digits": 3
+     }
+    },
+    "3+4": {
+     "matched": 165,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 151,
+      "range:cardinal+to+date": 11,
+      "range:cardinal+silent+digits": 1,
+      "range:digits+silent+date": 1,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "3+5": {
+     "matched": 11,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 11
+     }
+    },
+    "3+6": {
+     "matched": 11,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 11
+     }
+    },
+    "3+6:0": {
+     "matched": 6,
+     "source_matched": {
+      "range:cardinal+silent+digits": 6
+     }
+    },
+    "3+7": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2
+     }
+    },
+    "3+8": {
+     "matched": 3,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "3+9": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "4+1": {
+     "matched": 428,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 334,
+      "range:date+to+cardinal": 90,
+      "range:date+silent+cardinal": 3,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "4+2": {
+     "matched": 1174,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 884,
+      "range:date+to+cardinal": 280,
+      "range:date+silent+cardinal": 8,
+      "range:digits+silent+cardinal": 2
+     }
+    },
+    "4+2:0": {
+     "matched": 3,
+     "source_matched": {
+      "range:date+silent+digits": 2,
+      "range:cardinal+silent+digits": 1
+     }
+    },
+    "4+3": {
+     "matched": 1062,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 761,
+      "range:date+to+cardinal": 297,
+      "range:date+silent+cardinal": 3,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "4+3:0": {
+     "matched": 5,
+     "source_matched": {
+      "range:date+silent+digits": 3,
+      "range:digits+silent+digits": 2
+     }
+    },
+    "4+4": {
+     "matched": 164,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 75,
+      "range:date+to+date": 51,
+      "range:cardinal+to+date": 19,
+      "range:date+to+cardinal": 16,
+      "range:date+silent+cardinal": 1,
+      "range:digits+silent+date": 1,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "4+5": {
+     "matched": 3,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2,
+      "range:date+to+cardinal": 1
+     }
+    },
+    "4+6": {
+     "matched": 29,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 28,
+      "range:date+to+cardinal": 1
+     }
+    },
+    "4+7": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1,
+      "range:date+silent+cardinal": 1
+     }
+    },
+    "4+8": {
+     "matched": 8,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 4,
+      "range:date+to+cardinal": 4
+     }
+    },
+    "4+8:0": {
+     "matched": 1,
+     "source_matched": {
+      "range:date+silent+digits": 1
+     }
+    },
+    "5+1": {
+     "matched": 5,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 3,
+      "range:cardinal+silent+cardinal": 1,
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "5+2": {
+     "matched": 2,
+     "source_matched": {
+      "range:digits+silent+cardinal": 2
+     }
+    },
+    "5+4": {
+     "matched": 59,
+     "source_matched": {
+      "range:cardinal+to+date": 34,
+      "range:cardinal+to+cardinal": 24,
+      "range:cardinal+silent+date": 1
+     }
+    },
+    "5+5": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "6+1": {
+     "matched": 1,
+     "source_matched": {
+      "range:digits+silent+cardinal": 1
+     }
+    },
+    "6+2": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 1,
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "7+2": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 2
+     }
+    },
+    "7+3": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "8+1": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "8+2": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "clock": {
+     "matched": 5,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 5
+     }
+    },
+    "other": {
+     "matched": 739,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 411,
+      "range:decimal+silent+cardinal": 216,
+      "range:cardinal+silent+money": 38,
+      "range:cardinal+to+date": 23,
+      "range:cardinal+silent+measure": 12,
+      "range:date+to+cardinal": 11,
+      "range:date+silent+money": 8,
+      "range:date+silent+measure": 5,
+      "range:cardinal+silent+decimal": 2,
+      "range:cardinal+silent+time": 2,
+      "range:date+silent+decimal": 2,
+      "range:decimal+silent+date": 2,
+      "range:decimal+silent+decimal": 2,
+      "range:decimal+silent+measure": 1,
+      "range:money+silent+cardinal": 1,
+      "range:money+silent+digits": 1,
+      "range:money+silent+measure": 1,
+      "range:money+silent+money": 1
+     }
+    }
+   }
+  }
+ }
+}
