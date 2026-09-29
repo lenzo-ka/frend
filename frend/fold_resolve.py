@@ -414,16 +414,19 @@ def _span_signature(cover: Sequence[Detection]) -> tuple[tuple[int, int], ...]:
 def _geometry_rank(cover: Sequence[Detection]) -> tuple[int, int, int]:
     """The geometry equivalence class: ``(-coverage, span_count, -capture_count)``.
 
-    This is a COARSENING of the fold's own witness value, not a restatement of it.
-    The fold ranks by a weight that varies per position and candidate, so two covers
-    can share this rank and still carry different fold values -- grouping by the
-    fold value instead splits classes that structural ambiguity is defined over,
-    which is what makes two span signatures at one geometry a structural ambiguity
-    rather than a ranking. Measured: doing so drops structural ambiguity and changes
-    a resolved winner.
+    Under the weight encoding of :func:`_candidates`, this rank and the fold's
+    witness cost correspond one to one, in the same order. A cover's cost is
+    ``-(coverage * span_radix * capture_radix - span_count * capture_radix +
+    capture_count)``, and the bounds argued at the end of :func:`_candidates` --
+    captures strictly below ``capture_radix``, spans at most ``span_end`` -- make
+    that a mixed-radix numeral whose digits are exactly this triple. So two covers
+    share a cost exactly when they share this rank, and the lower cost is the
+    better rank. The level-whole gathering in :func:`_gather_top_geometry` relies
+    on this: it reads a geometry level's boundary off the fold's cost.
 
-    Ordering agrees with the fold's, so the ranked emission is still in this order;
-    only equality is coarser."""
+    It is recomputed from the cover rather than read off the cost because the
+    triple is what callers compare and report; the encoding is what keeps the two
+    in agreement, and a test holds them to it."""
     score = _cover_score(cover)
     return (-score.coverage, score.span_count, -score.capture_count)
 

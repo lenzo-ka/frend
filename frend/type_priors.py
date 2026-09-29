@@ -224,7 +224,13 @@ class ResolveContext:
 
 @runtime_checkable
 class FeatureSource(Protocol):
-    """Produces the named log-weight features a single reading earns."""
+    """Produces the named log-weight features a single reading earns.
+
+    ``features()`` must be pure: its result is a function of ``detection`` and
+    ``context`` alone. A source keeps no state across calls, and its results must
+    not depend on the order in which readings are asked about -- the resolver
+    evaluates readings in whatever order its selection needs, and that order is
+    not part of this contract."""
 
     def features(
         self, detection: Detection, context: ResolveContext
