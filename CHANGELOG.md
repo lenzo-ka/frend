@@ -11,29 +11,34 @@
   number, the class of the words at -2..+2: numeric, number, ICU's month and weekday
   names for the locale, one of 200 frequent words learned from the training data, or
   other), ICU's Word_Break, General_Category and Script of three characters either side
-  (frend-local until icukit's class-like package exists), Festival's hand-curated
-  regnal names, titles and section words (`festvox/festival`, now a declared source),
-  and frend's own first choice and its weight. `tools/build_context_trees.py` trains
-  107 cartlet trees (3,065 nodes, 512 KB of `.cart`; every tree fits `.cart`)
-  reproducibly from P7's stored example set (training shards 05, 15, ..., 85; `--check`
-  rebuilds byte for byte) into `data/en/context/`, read with cartlet's dependency-free
-  runner (`cartlet>=0.6`, a new dependency). A range separator between two numbers is
-  also offered the lexical table's range connector: a lone "-" or "–" ("5 - 10") reads
-  "to" beside silence and its names, and one written inside a range ("5-10",
-  "1990-1995", "10:30-11:45", "5–10") reads "{left} to {right}" beside the minus (the
-  right end read as a year when the left is written as one); the separator's tree,
-  trained on the corpus's lone hyphens between numbers, decides, and a locale without
-  the form offers nothing. `verbalize_edge` and `verbalize_lattice` take a `context`
-  (`TextContext`: the running text a piece was read from; by default its own source
-  text), and a unit records what its tree said (`VerbalizedUnit.context`). The
-  evaluator reads each token with its sentence as context. Held-out shard 95: first
-  choice 99.22% becomes 99.36% (+145, 21 lost: PLAIN +92, LETTERS +21, DIGIT +6,
-  DECIMAL +4, MEASURE +4, PUNCT -9), sentences 92.36% become 93.61%, running text
-  193 of 13,167 becomes 6,711 ("-" read "to": 0 becomes 6,523 of 9,448); published
-  shard 99: 99.21% becomes 99.32%, sentences 91.88% become 92.91%, running text 175 of
-  13,154 becomes 6,748. ARCTIC's own profile reads the same paths: 909 of 909 known
-  readings with `build_graphs-P4.patch`, total paths 4,602, largest graph 216; four
-  graphs reorder a reading.
+  (frend-local until icukit's class-like package exists), Festival's hand-curated regnal
+  names, titles and section words (`festvox/festival`, now a declared source), and
+  frend's own first choice and its weight. `tools/build_context_trees.py` trains 107
+  cartlet trees (3,065 nodes, 512 KB of `.cart`; every tree fits `.cart`) reproducibly
+  from P7's stored example set (training shards 05, 15, ..., 85; `--check` rebuilds byte
+  for byte) into `data/en/context/`, read with cartlet's dependency-free runner
+  (`cartlet>=0.6`, a new dependency). A range separator between two numbers is also
+  offered the lexical table's range connector: a lone "-" or "–" ("5 - 10") reads "to"
+  beside silence and its names, and one written inside a range ("5-10", "1990-1995",
+  "10:30-11:45", "5–10") reads "{left} to {right}" beside the minus (the right end read
+  as a year when the left is written as one); the separator's tree, trained on the
+  corpus's lone hyphens between numbers, decides, and a locale without the form offers
+  nothing. "To" is offered only between ASCII digits, with the separator spaced alike on
+  both sides ("5-10", "5 - 10"; not the signed number in "values 10 -5"), and never
+  between an identifier's digit groups: a chain of three or more ("978-1-234-56789-7",
+  "1-800-555-1212") or a phone number's "555-1212" shape. The tree builder refuses a
+  stored set whose receipt names, or whose records come from, a shard outside the
+  training shards (00 to 89), cached copies included. `verbalize_edge` and
+  `verbalize_lattice` take a `context` (`TextContext`: the running text a piece was read
+  from; by default its own source text), and a unit records what its tree said
+  (`VerbalizedUnit.context`). The evaluator reads each token with its sentence as
+  context. Held-out shard 95: first choice 99.22% becomes 99.36% (+145, 19 lost: PLAIN
+  +92, LETTERS +21, DIGIT +6, CARDINAL +4, DECIMAL +4, MEASURE +4, PUNCT -9), sentences
+  92.36% become 93.63%, running text 193 of 13,167 becomes 6,711 ("-" read "to": 0
+  becomes 6,523 of 9,448); published shard 99: 99.21% becomes 99.33% (+132, 24 lost),
+  sentences 91.88% become 92.91%, running text 175 of 13,154 becomes 6,748. ARCTIC's own
+  profile reads the same paths: 909 of 909 known readings with `build_graphs-P4.patch`,
+  total paths 4,602, largest graph 216; four graphs reorder a reading.
 - Read abbreviations as running text writes them. icukit's lexicon lists "Mr.", "St.",
   "vol."; the corpus writes "mr", "st", "Vol". `frend.abbreviation_variants` derives each
   lexicon abbreviation's period-less, ICU lower-case and ICU title-case forms (from the

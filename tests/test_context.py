@@ -94,6 +94,99 @@ def test_a_separator_not_between_numbers_offers_no_connector():
     assert "to" not in {a.text for a in _unit("the 5 - fold", "-").alternatives}
 
 
+def _token_in_sentence(before: str, token: str, after: str):
+    """``token`` read alone with its sentence as context, as the evaluator reads a
+    corpus token: (its first reading, every reading any of its units offers)."""
+    from reading_profile import reading_detectors
+
+    from frend.context import TextContext
+
+    head = f"{before} " if before else ""
+    tail = f" {after}" if after else ""
+    detections = list(detect(token, reading_detectors("en_US")))
+    verbalized = verbalize_lattice(
+        resolve_lattice(detections, source_text=token),
+        context=TextContext(f"{head}{token}{tail}", len(head)),
+    )
+    first = ""
+    offered = set()
+    for unit in verbalized.best_path.units:
+        best = unit.best
+        first += best.text if best.provenance == "surface:passthrough" else f" {best.text} "
+        offered |= {a.text for a in unit.alternatives}
+    return normalize_spoken(first), offered
+
+
+def _offers_to(offered) -> bool:
+    return any(text == "to" or text.startswith("to ") for text in offered)
+
+
+@pytest.mark.parametrize(
+    ("before", "token", "after"),
+    [
+        # A phone number's local shape, three digits then four (e273c24: "five hundred
+        # fifty five to one thousand two hundred twelve", the tree at 0.76).
+        ("Call", "555-1212", "now"),
+        ("Phone:", "555-1234", ""),
+        # A chain of digit groups: an ISBN (e273c24: "to" at its first hyphen, p=1.0)
+        # and a phone number with its area code.
+        ("ISBN", "978-1-234-56789-7", ""),
+        ("Call", "1-800-555-1212", "now"),
+    ],
+)
+def test_an_identifiers_digit_groups_are_no_range(before, token, after):
+    """A hyphen between an identifier's digit groups is no range separator: no "to" is
+    offered, in running text or for the token read in its sentence."""
+    first, offered = _token_in_sentence(before, token, after)
+    assert not _offers_to(offered), (first, offered)
+    assert " to " not in f" {first} "
+    text = " ".join(part for part in (before, token, after) if part)
+    assert " to " not in f" {_said(text)} "
+    running = {a.text for unit in _verbalized(text).best_path.units for a in unit.alternatives}
+    assert not _offers_to(running)
+
+
+@pytest.mark.parametrize(
+    ("before", "token", "after"),
+    [
+        # A signed number after a number, the sign spaced on one side only (e273c24:
+        # "values ten to five and three", p=1.0; "pages five to ten").
+        ("values 10", "-5", "and 3"),
+        ("pages 5", "-10", ""),
+    ],
+)
+def test_a_sign_spaced_on_one_side_is_no_range(before, token, after):
+    """A range's separator is spaced alike on both sides ("5-10", "5 - 10"): a sign
+    spaced before only writes a signed number, and is offered no "to"."""
+    first, offered = _token_in_sentence(before, token, after)
+    assert not _offers_to(offered), (first, offered)
+    assert " to " not in f" {first} "
+    text = f"{before} {token} {after}".strip()
+    assert " to " not in f" {_said(text)} "
+
+
+@pytest.mark.parametrize(
+    ("text", "said"),
+    [
+        ("pages 5-10", "pages five to ten"),
+        ("pages 5 - 10", "pages five to ten"),
+    ],
+)
+def test_a_separator_spaced_alike_on_both_sides_still_reads_to(text, said):
+    assert _said(text) == said
+
+
+def test_digits_frend_does_not_read_are_no_range_ends():
+    """Arabic-Indic digits pass through unread, so the hyphen between them is offered no
+    "to" (e273c24: "٥ to ١ ٠", the tree at 0.88); for now only ASCII digits end a range."""
+    first, offered = _token_in_sentence("pages", "٥-١٠", "")
+    assert not _offers_to(offered), (first, offered)
+    running = {
+        a.text for unit in _verbalized("pages ٥-١٠").best_path.units for a in unit.alternatives
+    }
+    assert not _offers_to(running)
+
+
 def test_a_locale_without_the_connector_offers_none(monkeypatch):
     """With the Russian table (no forms) the feature is off: no connector, no separator,
     no "to" anywhere; a pattern with words outside its ends is not said by a separator."""

@@ -29,7 +29,8 @@ order is frend's. Nothing else changes: weights stay what they were (a measured 
 stays ranking metadata, and the alignment graph keeps every spoken form at unit weight).
 
 **Ranges** (``connector_words``, ``cldr_range_separator``, ``between_numbers``): a
-range separator between two numbers ("5 - 10", "5-10", "10:30-11:45") is also offered
+range separator between two numbers, spaced alike on both sides ("5 - 10", "5-10",
+"10:30-11:45"; not "10 -5"), is also offered
 as the locale's spoken range connector, from the lexical table's ``range.connector``
 pattern ("{0} to {1}"; ``frend.verbalize`` reads the table); a locale without the form
 gets no such reading.
@@ -550,9 +551,19 @@ def _cldr_range_separator(locale: str) -> str | None:
     return None
 
 
+_ASCII_DIGITS = frozenset("0123456789")
+
+
 def between_numbers(text: str, start: int, end: int) -> bool:
     """Whether the nearest characters before and after ``text[start:end]`` that are not
-    white space are both decimal digits ("5 - 10", "5-10", "10:30-11:45")."""
-    before = text[:start].rstrip()
-    after = text[end:].lstrip()
-    return bool(before) and before[-1].isdecimal() and bool(after) and after[0].isdecimal()
+    white space are both ASCII digits, with the separator spaced alike on both sides:
+    joined ("5-10", "10:30-11:45") or spaced ("5 - 10"). A sign spaced on one side only
+    ("10 -5", "5 -10") writes a signed number after a number, not a range. Digits of
+    another script are not read here, so they are no range ends (for now)."""
+    before = text[:start]
+    after = text[end:]
+    left = before.rstrip()
+    right = after.lstrip()
+    if not (left and right and left[-1] in _ASCII_DIGITS and right[0] in _ASCII_DIGITS):
+        return False
+    return (len(left) == len(before)) == (len(right) == len(after))

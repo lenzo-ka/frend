@@ -29,7 +29,7 @@ def _builder():
     return module
 
 
-def _dash(index: int, gold: str, left: str, right: str) -> dict:
+def _dash(index: int, gold: str, left: str, right: str, shard: str = "00005") -> dict:
     return {
         "problem": "dash+to",
         "label": "to" if gold else "silence",
@@ -39,18 +39,20 @@ def _dash(index: int, gold: str, left: str, right: str) -> dict:
         "R": [right, "of"],
         "bos": True,
         "eos": False,
-        "src": f"output-00005-of-00100:{index}:2",
+        "src": f"output-{shard}-of-00100:{index}:2",
     }
 
 
-def _example_set(root: Path) -> Path:
+def _example_set(root: Path, *, shard: str = "00005", inputs: str | None = None) -> Path:
     """A tiny stored set: sixty lone hyphens between numbers, said "to" after "pages"
-    and nothing after "score", and a few main records."""
+    and nothing after "score", and a few main records. ``shard`` names the records'
+    origin and ``inputs`` the receipt's (``shard`` unless given); the receipt hashes the
+    files either way."""
     root.mkdir()
     dashes = []
     for index in range(60):
         said = index % 2 == 0
-        record = _dash(index, "to" if said else "", str(index + 1), str(index + 5))
+        record = _dash(index, "to" if said else "", str(index + 1), str(index + 5), shard)
         if not said:
             record["L"] = ["score", str(index + 1)]
         dashes.append(record)
@@ -63,10 +65,10 @@ def _example_set(root: Path) -> Path:
             "R": ["said"],
             "bos": True,
             "eos": True,
-            "src": "output-00005-of-00100:100:1",
+            "src": f"output-{shard}-of-00100:100:1",
         },
         # A main-set dash is left out: the dash set replaces it.
-        {**_dash(200, "", "1", "2"), "label": "surface:silence"},
+        {**_dash(200, "", "1", "2", shard), "label": "surface:silence"},
     ]
     del main[1]["gold"]
     files = {}
@@ -77,7 +79,7 @@ def _example_set(root: Path) -> Path:
         files[name] = hashlib.sha256(blob).hexdigest()
     receipt = {
         "derivation": "frend/google/tn-en_with_types/p7-examples",
-        "inputs": {"output-00005-of-00100": "0" * 64},
+        "inputs": {f"output-{inputs or shard}-of-00100": "0" * 64},
         "artifacts": files,
         "fingerprint": "feedfacefeedface",
     }
@@ -124,6 +126,34 @@ def test_a_set_that_is_not_its_receipts_is_refused(tmp_path):
     (examples / "dash_examples.jsonl.gz").write_bytes(gzip.compress(b"{}\n", mtime=0))
     with pytest.raises(SystemExit, match="sha256"):
         builder.build(examples, _out(tmp_path / "a"), workers=1, cache=tmp_path / "c")
+
+
+def test_a_validly_hashed_set_from_a_held_out_shard_is_refused(tmp_path):
+    """Shard 95 is held out: a set whose receipt names it is refused, however well its
+    files match the receipt."""
+    builder = _builder()
+    examples = _example_set(tmp_path / "set", shard="00095")
+    with pytest.raises(SystemExit, match="output-00095-of-00100"):
+        builder.build(examples, _out(tmp_path / "a"), workers=1, cache=tmp_path / "c")
+
+
+def test_held_out_records_under_a_training_receipt_are_refused(tmp_path):
+    """A receipt naming only training shards does not vouch for its records: a record
+    whose ``src`` is shard 95 is refused."""
+    builder = _builder()
+    examples = _example_set(tmp_path / "set", shard="00095", inputs="00005")
+    with pytest.raises(SystemExit, match="output-00095-of-00100"):
+        builder.build(examples, _out(tmp_path / "a"), workers=1, cache=tmp_path / "c")
+
+
+def test_a_reused_cache_holding_a_held_out_set_is_refused(tmp_path):
+    """``--cache`` reuses the files already there, so the cache's own receipt is the one
+    read: a cached held-out set is refused even when the source set is clean."""
+    builder = _builder()
+    clean = _example_set(tmp_path / "set")
+    cache = _example_set(tmp_path / "cache", shard="00095")
+    with pytest.raises(SystemExit, match="output-00095-of-00100"):
+        builder.build(clean, _out(tmp_path / "a"), workers=1, cache=cache)
 
 
 def test_the_shipped_trees_name_the_example_set_they_were_trained_on():

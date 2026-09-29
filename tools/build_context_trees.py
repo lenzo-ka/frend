@@ -6,7 +6,8 @@ where frend offers two or more readings, with the reading the corpus says, sampl
 problem (at most 30,000, seed 20260928), and every standalone "-" and "–" with the
 corpus's spoken form. Each record keeps its token and up to three corpus tokens either
 side. This tool reads that set (copied locally first, every read of the mount bounded by
-``timeout``, each file checked against the set's receipt) and, reproducibly:
+``timeout``, each file checked against the set's receipt, and the receipt's inputs and
+every record's origin checked to be training shards, 00 to 89) and, reproducibly:
 
 1. **Examples by span.** Each record's window is joined into running text (one space
    between tokens), and its token read the way frend reads it, in that context
@@ -63,6 +64,8 @@ for _path in (_REPO, _TOOLS):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
+from google_tn_rows import TRAINING_SHARDS  # noqa: E402
+
 SOURCE = "google/tn-en_with_types"
 LOCALE = "en_US"
 DEFAULT_EXAMPLES = Path(
@@ -101,7 +104,18 @@ def fetch_examples(source: Path, cache: Path) -> tuple[Path, dict]:
         digest = hashlib.sha256((cache / name).read_bytes()).hexdigest()
         if digest != receipt["artifacts"][name]:
             raise SystemExit(f"{name}: sha256 {digest} is not the receipt's")
+    held_out = sorted(set(receipt["inputs"]) - TRAINING_SHARDS)
+    if held_out:
+        raise SystemExit(f"receipt.json: inputs outside the training shards: {held_out}")
     return cache, receipt
+
+
+def refuse_held_out(records) -> None:
+    """Refuse any record whose ``src`` names a shard outside the training shards: a set
+    whose receipt is self-consistent may still carry held-out rows."""
+    held_out = sorted({r["src"].split(":", 1)[0] for r in records} - TRAINING_SHARDS)
+    if held_out:
+        raise SystemExit(f"records from outside the training shards: {held_out}")
 
 
 def _records(path: Path):
@@ -383,6 +397,7 @@ def build(examples_dir: Path, out: Path, *, workers: int, cache: Path, log=print
     main = [r for r in _records(local / "examples.jsonl.gz") if r["tok"] not in DASHES]
     dashes = list(_records(local / "dash_examples.jsonl.gz"))
     records = main + dashes
+    refuse_held_out(records)
     log(f"records: {len(main)} main (dashes left out), {len(dashes)} dash")
     # Group by token so each worker's per-token caches are used; results keep order.
     order = sorted(range(len(records)), key=lambda i: (records[i]["tok"], records[i]["src"]))

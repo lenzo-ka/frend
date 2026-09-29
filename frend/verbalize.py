@@ -1806,18 +1806,61 @@ def range_separators(locale: str) -> frozenset[str]:
     return frozenset(written | ({cldr} if cldr else set()))
 
 
+def _digit_groups(text: str, start: int, end: int, separators: frozenset[str]) -> list[int]:
+    """The lengths of the ASCII digit groups joined, with no white space, by separators
+    through ``text[start:end]``, left to right ("978-1-234" at its first "-": [3, 1, 3])."""
+    left: list[int] = []
+    at = start
+    while True:
+        first = at
+        while first > 0 and text[first - 1] in "0123456789":
+            first -= 1
+        if first == at:
+            break
+        left.append(at - first)
+        if first == 0 or text[first - 1] not in separators:
+            break
+        at = first - 1
+    right: list[int] = []
+    at = end
+    while True:
+        last = at
+        while last < len(text) and text[last] in "0123456789":
+            last += 1
+        if last == at:
+            break
+        right.append(last - at)
+        if last == len(text) or text[last] not in separators:
+            break
+        at = last + 1
+    return [*reversed(left), *right]
+
+
+def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) -> bool:
+    """Whether the separator at ``text[start:end]`` joins the digit groups of an
+    identifier, not the ends of a range: a chain of three or more groups (an ISBN,
+    "1-800-555-1212") or a phone number's local shape, three digits then four
+    ("555-1212")."""
+    groups = _digit_groups(text, start, end, separators)
+    return len(groups) >= 3 or groups == [3, 4]
+
+
 def _range_to(context: TextContext | None, start: int, end: int, locale: str) -> str | None:
     """The locale's range connector ("to") when ``[start, end)`` of the lattice's text
-    is a range separator with a number on either side in ``context``; else ``None``."""
+    is a range separator with a number on either side in ``context``, spaced alike on
+    both sides, and not inside an identifier's digit groups; else ``None``."""
     if context is None:
         return None
     connector = range_connector(locale)
     if connector is None:
         return None
     a, b = context.offset + start, context.offset + end
-    if context.text[a:b] not in range_separators(locale):
+    separators = range_separators(locale)
+    if context.text[a:b] not in separators:
         return None
-    return connector if between_numbers(context.text, a, b) else None
+    if not between_numbers(context.text, a, b):
+        return None
+    return None if _is_identifier(context.text, a, b, separators) else connector
 
 
 def _connector_first(
