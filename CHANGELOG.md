@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Raised the tiergraph floor to `tiergraph>=0.4.0`, whose ranked fold no longer compares
+  each candidate against every kept witness: the same ranked output, far faster on long
+  sentences.
 - Read the ranges ICU writes. Where icukit builds range readers (`icukit.engine.
   range_detectors`, icukit main after 0.8.0; nothing changes on 0.8.0), the spoken
   profile gains them in the kinds of their ends only: `number:range` over the cardinal
