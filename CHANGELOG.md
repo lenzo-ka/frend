@@ -16,10 +16,17 @@
   `range.connector` patterns ("to", silent), at most 16, sourced
   `range:<left kind>+<connector>+<right kind>` ("1990–1995" "nineteen ninety to
   nineteen ninety five", "5–10 km" "five to ten kilometers", "10:00 AM – 2:00 PM" "ten
-  a m to two p m"). A four-digit left end reads both ends as years first, the interim
-  rule the hyphen follows (one shared function; P6 measures and replaces both):
-  "1990–95" is "nineteen ninety to ninety five", as "1990-95" is; a unit or currency written on one end is said in place and moved to
-  the end ("$5–10": "five dollars to ten", "five to ten dollars"), unmeasured. A
+  a m to two p m"). Each end is read as written, from its own captures: "1.00–2.00" is
+  "one point o o to two point o o" and "79.20%" keeps "point two o"; an interval reading
+  whose ends write fields its skeleton does not name ("5/1/2020, 10 AM – 5/2/2020, 10
+  AM" in the `h` interval) is dropped, so the span reads as it did before, and ICU's
+  UTF-16 field positions are cut as such (Adlam digits). Where both ends are plain
+  numbers and the left is written with four digits, both read as years first, the
+  interim rule the hyphen follows (one shared function; P6 measures and replaces both):
+  "1990–95" is "nineteen ninety to ninety five", as "1990-95" is ("1990–95 km" and
+  "$1000–2000" keep their kind's order). A unit or currency written on one end is said
+  in place and moved to the end ("$5–10": "five dollars to ten", "five to ten
+  dollars"), unmeasured. A
   pattern slot with a case and gender is said by the locale's
   `%spellout-cardinal-{gender}-{case}` or the pattern is skipped (no fallback case).
   `spoken_priors.json` is rebuilt: only `recognition_profile` changes (its counts are

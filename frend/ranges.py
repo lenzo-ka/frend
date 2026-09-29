@@ -21,6 +21,7 @@ ranges and are never read here (:func:`icu_range_readers` leaves them out).
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Literal
@@ -79,10 +80,28 @@ def date_interval_readers(locale: str) -> tuple[object, ...]:
     from icukit.engine import DATE_INTERVAL_FAMILY, generated_detectors
 
     return tuple(
-        reader
+        SpeakableDateIntervalDetector(reader)
         for reader in generated_detectors(locale, [DATE_INTERVAL_FAMILY]).detectors
         if set(str(reader.type).removeprefix("date-interval:")) <= _SPOKEN_INTERVAL_FIELDS
     )
+
+
+class SpeakableDateIntervalDetector:
+    """One of icukit's date-interval readers, keeping only the readings frend can say as
+    a range (:func:`from_icukit` reads them). ICU writes more fields on an end than the
+    skeleton names where the two dates differ in a larger field ("5/1/2020, 10 AM –
+    5/2/2020, 10 AM" in the ``h`` interval writes each end's date); such a reading is
+    dropped here, so the span keeps the readings frend reads without it."""
+
+    def __init__(self, reader: object) -> None:
+        self.reader = reader
+        self.type = reader.type
+        self.locale = getattr(reader, "locale", None)
+        self.skeleton = getattr(reader, "skeleton", None)
+        self.group = getattr(reader, "group", "date-interval")
+
+    def detect(self, text: str) -> list:
+        return [found for found in self.reader.detect(text) if from_icukit(found) is not None]
 
 
 @dataclass(frozen=True)
@@ -138,15 +157,55 @@ def _amount_ends(detection: Mapping) -> tuple[Mapping, Mapping] | None:
         return None
     unit_type = "measure" if str(detection["type"]).startswith("measure:") else None
     percent = not unit_type and any(_writes_percent(c.text, detection) for c in (start, end))
-    return tuple(  # type: ignore[return-value]
-        {
-            "type": _amount_type(capture.value, unit_type, percent),
-            "text": capture.text,
-            "value": capture.value,
-            "captures": (),
-            "writes_unit": _writes_unit(capture.text),
-        }
-        for capture in (start, end)
+    locale = str(getattr(detection.get("spec"), "locale", "en_US"))
+    ends = []
+    for capture in (start, end):
+        type_ = _amount_type(capture.value, unit_type, percent)
+        whole = _read_whole(capture.text, type_, locale)
+        ends.append(
+            {
+                "type": type_,
+                "text": capture.text,
+                "value": capture.value if whole is None else whole["value"],
+                "captures": () if whole is None else tuple(whole.get("captures", ())),
+                "writes_unit": _writes_unit(capture.text),
+                "number": _read_whole(_written_amount(capture.text), "number:decimal", locale),
+            }
+        )
+    return ends[0], ends[1]
+
+
+_AMOUNT = re.compile(r"[-\u2212+]?\d(?:[\d.,'\u00a0\u202f ]*\d)?")
+
+
+def _written_amount(text: str) -> str:
+    """The number an end writes, without its unit or currency ("79.20" in "79.20%",
+    "5" in "$5", "10" in "10 km")."""
+    found = _AMOUNT.search(text)
+    return found.group(0) if found else ""
+
+
+def _read_whole(text: str, type_: str, locale: str) -> Mapping | None:
+    """``text`` read whole by the locale's number reader (``number:decimal``) or percent
+    reader (``number:percent``): the reading and its captures in the end's own text
+    ("79.20%": integer "79", fraction "20"), so the end is said as written. ``None`` for
+    another type, or where the reader does not read the whole text."""
+    if not text or type_ not in ("number:decimal", "number:percent"):
+        return None
+    from icukit.recognize import FlexibleNumberDetector, FlexiblePercentDetector
+
+    reader = (FlexibleNumberDetector if type_ == "number:decimal" else FlexiblePercentDetector)(
+        locale
+    )
+    return next(
+        (
+            found
+            for found in reader.detect(text)
+            if found.get("start") == 0
+            and found.get("end") == len(text)
+            and str(found.get("type")) == type_
+        ),
+        None,
     )
 
 
@@ -194,6 +253,15 @@ _SPAN_CATEGORY = 0x1005  # UFIELD_CATEGORY_DATE_INTERVAL_SPAN
 _DATE_CATEGORY = 1  # UFIELD_CATEGORY_DATE
 
 
+_SKELETON_FIELDS = {"h": "H", "K": "H", "k": "H", "L": "M"}
+
+
+def _utf16_index(text: str, at: int) -> int:
+    """The code point index of UTF-16 offset ``at`` in ``text`` (ICU's positions are
+    UTF-16; a character outside the BMP, as Adlam's digits are, takes two units)."""
+    return len(text.encode("utf-16-le")[: 2 * at].decode("utf-16-le"))
+
+
 def _interval_ends(detection: Mapping, skeleton: str) -> tuple[Mapping, Mapping] | None:
     """Each end of a date interval as a date or time detection of its own, holding the
     fields ICU writes on that end: ICU's interval format of the same two values says
@@ -209,10 +277,13 @@ def _interval_ends(detection: Mapping, skeleton: str) -> tuple[Mapping, Mapping]
     if placed is None:
         return None
     twelve = any(letter in skeleton for letter in "hK")
+    # The fields the skeleton names (an hour of any cycle is "H", a standalone month "M"),
+    # and the day period ICU writes beside a 12-hour hour.
+    named = {_SKELETON_FIELDS.get(letter, letter) for letter in skeleton} | {"a"}
     ends = []
     for side, point in ((0, start), (1, end)):
         written = {letter: place for (letter, where), place in placed.items() if where == side}
-        if not written:
+        if not written or not set(written) <= named:
             return None
         ends.append(_end_detection(point, written, twelve, skeleton))
     return ends[0], ends[1]
@@ -259,7 +330,8 @@ def _placed_fields(
             (s for s, (a, b) in spans.items() if a <= at < b),
             0 if at < spans[0][0] else 1,
         )
-        placed.setdefault((letter, side), (at, text[at:limit]))
+        first, last = _utf16_index(text, at), _utf16_index(text, limit)
+        placed.setdefault((letter, side), (first, text[first:last]))
     return placed
 
 

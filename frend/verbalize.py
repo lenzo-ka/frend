@@ -2021,13 +2021,21 @@ def _range_end(
         amount = None
     else:
         amount = Decimal(value.decimal)
-        if type_ == "number:percent" and bare:
-            amount = amount.scaleb(2)
-        if bare or type_ == "number:decimal":
+        number = detection.get("number")
+        if (bare or type_ == "number:decimal") and number is not None:
+            # The number the end writes, read as written ("1.00" "one point o o", "79.20"
+            # in "79.20%"): a cardinal where it writes no fraction, else a decimal.
+            amount = Decimal(number["value"].decimal)
+            whole = _capture(number, "fraction") is None
+            alternatives = _spoken_number("number:decimal", number["value"], number, locale)
+            kind = "cardinal" if whole else "decimal"
+        elif bare or type_ == "number:decimal":
+            if type_ == "number:percent":
+                amount = amount.scaleb(2)
             whole = amount == amount.to_integral_value()
             type_ = "number:cardinal" if whole else "number:decimal"
-            number = NumberValue(decimal=str(amount), currency=None)
-            alternatives = _spoken_number(type_, number, {"captures": ()}, locale)
+            plain = NumberValue(decimal=str(amount), currency=None)
+            alternatives = _spoken_number(type_, plain, {"captures": ()}, locale)
             kind = "cardinal" if whole else "decimal"
         elif type_.startswith("measure:"):
             alternatives = _spoken_measure(value, locale)
@@ -2079,7 +2087,12 @@ def _spoken_range(
         connectors = _lexical("range.connector", locale) or {}
         patterns = tuple(connectors.get(value.separator_class, ()))
     left, right = value.left[0], value.right[0]
-    year = _written_digits(left) == 4
+    # The interim four-digit-year rule (``_year_first``) is the hyphen's, for two plain
+    # numbers: a range with a unit or currency keeps its kind's order ("1990–95 km").
+    plain = all(
+        end.get("type") == "number:decimal" and not end.get("writes_unit") for end in (left, right)
+    )
+    year = plain and _written_digits(left) == 4
     left_unit, right_unit = bool(left.get("writes_unit")), bool(right.get("writes_unit"))
     placements = [(False, False)]
     if left_unit != right_unit:

@@ -150,3 +150,83 @@ def test_unfillable_slot_skips_the_pattern():
     assert _fill_slot({"value": NumberValue(decimal="5")}, wrong["slots"]["0"], "ru_RU") is None
     said = _spoken_range(_numbers("5", "10"), "ru_RU", apply_source_priors=False, patterns=[wrong])
     assert said == ()
+
+
+# ------------------------------------------------------------------ ends read as written
+
+
+def _first(text: str) -> str:
+    return _readings(text, 1)[0][0]
+
+
+def _all(text: str) -> list[str]:
+    return [reading for reading, _ in _readings(text, 64)]
+
+
+@needs_icu_ranges
+def test_decimal_ends_keep_their_written_zeros():
+    """An end is whole only where it writes no fraction: "1.00" is said "one point o o",
+    as frend reads it alone (and as the base read each end), not "one"."""
+    assert _first("1.00–2.00") == "one point o o to two point o o"
+    assert _first("1.50–2.00") == "one point five o to two point o o"
+
+
+@needs_icu_ranges
+def test_percent_ends_keep_their_written_fraction_digits():
+    """A percent end is read from its own captures ("79.20%": fraction "20"), so its
+    written digits are said; "80.00%" keeps "eighty point o o percent" among them."""
+    assert _first("79.20%–80.00%").startswith("seventy nine point two o percent to ")
+    assert any(r.endswith("to eighty point o o percent") for r in _all("79.20%–80.00%"))
+
+
+@needs_icu_ranges
+def test_an_interval_writing_fields_its_skeleton_does_not_name_is_not_a_range():
+    """ICU's "h" interval writes each end's date when the days differ; that reading is
+    dropped, so the span keeps the readings frend has without it, never an unsupported
+    one."""
+    from reading_profile import reading_detectors
+
+    text = "5/1/2020, 10 AM – 5/2/2020, 10 AM"
+    lattice = resolve_lattice(list(detect(text, reading_detectors("en_US"))), source_text=text)
+    units = verbalize_lattice(lattice, context=TextContext(text)).best_path.units
+    sources = [unit.best.provenance for unit in units]
+    assert "surface:unsupported" not in sources, sources
+    assert not any(source.startswith("range:") for source in sources), sources
+
+
+@needs_icu_ranges
+def test_year_first_is_for_plain_numbers_only():
+    """The hyphen's interim four-digit-year rule reads two plain numbers; a range with a
+    unit or currency keeps its kind's order and is not sourced as a date."""
+    for text in ("1990–95 km", "$1000–2000"):
+        (first, source), *_ = _readings(text, 1)
+        assert not first.startswith("nineteen ninety"), (text, first)
+        assert "date" not in source, (text, source)
+
+
+@needs_icu_ranges
+def test_interval_fields_are_cut_in_code_points_not_utf16_units():
+    """ICU's field positions are UTF-16; Adlam's digits are outside the BMP, so each
+    field's text must be cut through UTF-16 ("𞥑𞥐" for 10, "𞥓𞥐" for 30)."""
+    import icu
+
+    from frend.ranges import date_interval_readers, from_icukit
+
+    locale = "ff_Adlm_GN"
+    digits = icu.NumberFormat.createInstance(icu.Locale(locale))
+    (reader,) = [r for r in date_interval_readers(locale) if r.type == "date-interval:hm"]
+    formatter = icu.DateIntervalFormat.createInstance("hm", icu.Locale(locale))
+    calendar = icu.Calendar.createInstance(icu.Locale(locale))
+    calendar.clear()
+    calendar.set(2000, 0, 1, 10, 0)
+    early = calendar.getTime()
+    calendar.clear()
+    calendar.set(2000, 0, 1, 14, 30)
+    text = str(formatter.format(icu.DateInterval(early, calendar.getTime())))
+    (found,) = reader.detect(text)
+    value = from_icukit(found)["value"]
+    left = {c.name: c.text for c in value.left[0]["captures"]}
+    right = {c.name: c.text for c in value.right[0]["captures"]}
+    assert left["H"] == digits.format(10)
+    assert right["m"] == digits.format(30)
+    assert all(left.values()) and all(right.values())
