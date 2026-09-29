@@ -50,6 +50,7 @@ from frend.electronic import (
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import LettersValue, cv_pattern, spelled
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
+from frend.ranges import RangeValue, from_icukit
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import SymbolValue
 from frend.written_forms import DigitsValue
@@ -734,6 +735,7 @@ _SPOKEN_CAPTURES = {
     "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
     "unit": frozenset({"unit"}),
     "roman": frozenset({"integer", "apostrophe", "suffix"}),
+    "range": frozenset({"start", "separator", "end"}),
 }
 _MINUS_SIGNS = frozenset({"-", "−"})
 _PLUS_SIGNS = frozenset({"+"})
@@ -1948,13 +1950,184 @@ def _unsigned(
     kind = _measured_kind(type_, unsigned_value)
     ranked = _rank_final(alternatives, kind, measurement_sub_key(kind, unsigned_detection))
     if year_first and type_ != "number:percent" and decimal == decimal.to_integral_value():
-        seen: set[str] = set()
-        return tuple(
-            item
-            for item in (*_year_leaf(decimal, locale), *ranked)
-            if not (item.text in seen or seen.add(item.text))
-        )
+        return _year_first(decimal, ranked, locale)
     return ranked
+
+
+def _year_first(
+    decimal: Decimal, ranked: Sequence[SpokenAlternative], locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """A whole range end read as a year first, then its own readings: the interim rule
+    for a range whose left end is written with four digits ("1990-1995", "1992-93",
+    "1990–95"), shared by the hyphen (``_unsigned``) and ICU's ranges (``_range_end``).
+    It follows the left end's form, not a measurement; the ranges plan's P6 measures
+    and replaces it."""
+    seen: set[str] = set()
+    return tuple(
+        item
+        for item in (*_year_leaf(decimal, locale), *ranked)
+        if not (item.text in seen or seen.add(item.text))
+    )
+
+
+# At most this many readings of one range: each end's readings, joined by each of the
+# locale's connector patterns, in order of how far each is from the first of its kind.
+_RANGE_CAP = 16
+
+
+def _fill_slot(detection: Mapping, slot: Mapping, locale: str) -> SpokenAlternative | None:
+    """A range end said in the case and gender its pattern's slot asks for ("от {0} до
+    {1}": genitive "пяти"), by the locale's own rule set ``%spellout-cardinal-{g}-{c}``;
+    ``None`` when the end is no whole number or the locale has no such rule set (the
+    pattern is then not said: no fallback to another case)."""
+    value = detection.get("value")
+    if not isinstance(value, NumberValue):
+        return None
+    try:
+        amount = Decimal(value.decimal)
+    except InvalidOperation:
+        return None
+    if amount != amount.to_integral_value():
+        return None
+    ruleset = f"%spellout-cardinal-{slot.get('gender')}-{slot.get('case')}"
+    if ruleset not in _spellout_rule_sets(locale):
+        return None
+    text = _format_exact(_spellout_formatter(locale), amount, ruleset)
+    return SpokenAlternative(text, f"icu-rbnf:{ruleset}")
+
+
+def _written_digits(detection: Mapping) -> int:
+    text = str(detection.get("text", ""))
+    return len(text) if text.isdigit() else 0
+
+
+def _range_end(
+    detection: Mapping, locale: str, *, bare: bool, year: bool, apply_source_priors: bool
+) -> tuple[tuple[SpokenAlternative, str], ...]:
+    """One end's readings, each with the kind it is read as (``cardinal``, ``decimal``,
+    ``money``, ``measure``, ``date``, ``time``): the end read as frend reads that value
+    alone, ranked by that kind's measured shares. ``bare`` reads an amount without the
+    unit or currency the other end carries; ``year`` reads a whole number as a year
+    first (``_year_first``, the interim rule the hyphen follows)."""
+    type_ = str(detection["type"])
+    value = detection["value"]
+    if isinstance(value, DateTimeValue):
+        if type_.startswith("time:"):
+            alternatives = _spoken_time(value, detection, locale)
+            kind = "time"
+        else:
+            alternatives = _spoken_date(value, detection, locale)
+            kind = "date"
+        amount = None
+    else:
+        amount = Decimal(value.decimal)
+        number = detection.get("number")
+        if (bare or type_ == "number:decimal") and number is not None:
+            # The number the end writes, read as written ("1.00" "one point o o", "79.20"
+            # in "79.20%"): a cardinal where it writes no fraction, else a decimal.
+            amount = Decimal(number["value"].decimal)
+            whole = _capture(number, "fraction") is None
+            alternatives = _spoken_number("number:decimal", number["value"], number, locale)
+            kind = "cardinal" if whole else "decimal"
+        elif bare or type_ == "number:decimal":
+            if type_ == "number:percent":
+                amount = amount.scaleb(2)
+            whole = amount == amount.to_integral_value()
+            type_ = "number:cardinal" if whole else "number:decimal"
+            plain = NumberValue(decimal=str(amount), currency=None)
+            alternatives = _spoken_number(type_, plain, {"captures": ()}, locale)
+            kind = "cardinal" if whole else "decimal"
+        elif type_.startswith("measure:"):
+            alternatives = _spoken_measure(value, locale)
+            kind = "measure"
+        else:
+            alternatives = _spoken_number(type_, value, detection, locale)
+            kind = _measured_kind(type_, value) or "cardinal"
+    if apply_source_priors:
+        alternatives = _rank_final(alternatives, kind, measurement_sub_key(kind, detection))
+    if (
+        year
+        and kind == "cardinal"
+        and amount is not None
+        and str(detection["type"]) != "number:percent"
+    ):
+        years = {item.text for item in _year_leaf(amount, locale)}
+        return tuple(
+            (item, "date" if item.text in years else kind)
+            for item in _year_first(amount, alternatives, locale)
+        )
+    return tuple((item, kind) for item in alternatives)
+
+
+def _spoken_range(
+    value: RangeValue,
+    locale: str,
+    *,
+    apply_source_priors: bool,
+    patterns: Sequence[Mapping] | None = None,
+) -> tuple[SpokenAlternative, ...]:
+    """Speak a range: each end's readings, joined by each connector pattern the locale's
+    lexical table gives the range's class (``range.connector``: "{0} to {1}", "{0} {1}").
+
+    - The readings are ordered by how far each is from the first reading of its end and
+      from the first pattern, and capped at ``_RANGE_CAP``. No range share is measured
+      yet (the ranges plan's P6), so each end keeps its own kind's measured order.
+    - A four-digit left end reads both ends as years first ("1990–95": "nineteen ninety
+      to ninety-five"), as the hyphen does ("1990-95"; ``_year_first``): interim, until
+      the ranges plan's P6 measures it.
+    - A unit or currency written on one end only ("$5–10") is said in place and also
+      moved to the end ("five dollars to ten", "five to ten dollars"): unmeasured.
+    - A pattern slot with a case and a gender is said by ``_fill_slot``, or the pattern
+      is not said.
+    - Each reading's source is ``range:<left kind>+<connector id>+<right kind>``.
+
+    ``patterns`` replaces the locale's connector patterns (a test's fixture).
+    """
+    if patterns is None:
+        connectors = _lexical("range.connector", locale) or {}
+        patterns = tuple(connectors.get(value.separator_class, ()))
+    left, right = value.left[0], value.right[0]
+    # The interim four-digit-year rule (``_year_first``) is the hyphen's, for two plain
+    # numbers: a range with a unit or currency keeps its kind's order ("1990–95 km").
+    plain = all(
+        end.get("type") == "number:decimal" and not end.get("writes_unit") for end in (left, right)
+    )
+    year = plain and _written_digits(left) == 4
+    left_unit, right_unit = bool(left.get("writes_unit")), bool(right.get("writes_unit"))
+    placements = [(False, False)]
+    if left_unit != right_unit:
+        # In place (the bare end said bare), then the unit moved to the end.
+        placements = list(dict.fromkeys([(not left_unit, not right_unit), (True, False)]))
+    candidates: list[tuple[tuple[int, ...], SpokenAlternative]] = []
+    for placement, (bare_left, bare_right) in enumerate(placements):
+        ends = [
+            _range_end(end, locale, bare=bare, year=year, apply_source_priors=apply_source_priors)
+            for end, bare in ((left, bare_left), (right, bare_right))
+        ]
+        for number, pattern in enumerate(patterns):
+            template = str(pattern["pattern"])
+            slots = pattern.get("slots") or {}
+            if slots:
+                filled = [
+                    _fill_slot(end, slots[key], locale) if key in slots else None
+                    for key, end in (("0", left), ("1", right))
+                ]
+                if any(item is None for item in filled):
+                    continue
+                source = f"range:cardinal+{pattern['id']}+cardinal"
+                said = template.format(*(item.text for item in filled))
+                candidates.append(
+                    ((number + placement, number, placement, 0, 0), SpokenAlternative(said, source))
+                )
+                continue
+            for i, (a, a_kind) in enumerate(ends[0]):
+                for j, (b, b_kind) in enumerate(ends[1]):
+                    said = template.format(a.text, b.text)
+                    source = f"range:{a_kind}+{pattern['id']}+{b_kind}"
+                    order = (i + j + number + placement, number, placement, i, j)
+                    candidates.append((order, SpokenAlternative(said, source)))
+    candidates.sort(key=lambda item: item[0])
+    return _ranked([item for _, item in candidates])[:_RANGE_CAP]
 
 
 def verbalize_edge(
@@ -2015,7 +2188,18 @@ def verbalize_edge(
     type_ = str(detection["type"])
     value = detection["value"]
     try:
-        if isinstance(value, NumberValue) and type_.startswith("ordinal:"):
+        ranged = from_icukit(detection)
+        if ranged is not None:
+            # A range ICU writes ("1990–1995", "5–10 km", "May 3 – 5, 2020"): each end
+            # read as that value alone, joined by the locale's connector patterns.
+            alternatives = _spoken_range(
+                ranged["value"], locale, apply_source_priors=apply_source_priors
+            )
+            if not alternatives:
+                raise NotImplementedError(f"no spoken connector for {type_!r} in {locale!r}")
+            key_value = str(detection.get("text", ""))
+            path = "range"
+        elif isinstance(value, NumberValue) and type_.startswith("ordinal:"):
             alternatives = _spoken_ordinal(value, detection, locale)
             key_value: object = value.decimal
             path = "ordinal"
@@ -2149,7 +2333,9 @@ def verbalize_edge(
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
         return VerbalizedUnit(edge.id, (fallback,), tier, provenance, False)
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
-    if apply_source_priors:
+    if apply_source_priors and path != "range":
+        # A range's readings are ranked within it (``_spoken_range``): each end by its
+        # own kind's measured shares.
         kind = _measured_kind(type_, value)
         alternatives = _rank_final(alternatives, kind, measurement_sub_key(kind, detection))
     weekday = _capture(detection, "weekday") if path == "date" else None

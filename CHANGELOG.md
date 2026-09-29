@@ -1,6 +1,38 @@
 # Changelog
 
 ## Unreleased
+- Read the ranges ICU writes. Where icukit builds range readers (`icukit.engine.
+  range_detectors`, icukit main after 0.8.0; nothing changes on 0.8.0), the spoken
+  profile gains them in the kinds of their ends only: `number:range` over the cardinal
+  readers, over percent and over the currencies, `measure:range` over the units, and
+  icukit's generated `date-interval:*` readers with the dates (those whose skeleton
+  writes only a year, month and day, or an hour, minutes and day period: 16 of en's 47).
+  Every `*:approximately` reader icukit builds beside them is left out ("~3" is no
+  range). `frend.ranges` reads such a reading as `range:icu` (`RangeValue`: each end a
+  detection of its own; a date interval's ends cut where ICU's own interval format
+  writes them, so "May 3 – 5, 2020" has the month on the left and the year on the
+  right), and `verbalize` says it as one reading: each end as frend reads that value
+  alone, ranked by its kind's measured shares, joined by each of the lexical table's
+  `range.connector` patterns ("to", silent), at most 16, sourced
+  `range:<left kind>+<connector>+<right kind>` ("1990–1995" "nineteen ninety to
+  nineteen ninety five", "5–10 km" "five to ten kilometers", "10:00 AM – 2:00 PM" "ten
+  a m to two p m"). Each end is read as written, from its own captures: "1.00–2.00" is
+  "one point o o to two point o o" and "79.20%" keeps "point two o"; an interval reading
+  whose ends write fields its skeleton does not name ("5/1/2020, 10 AM – 5/2/2020, 10
+  AM" in the `h` interval) is dropped, so the span reads as it did before, and ICU's
+  UTF-16 field positions are cut as such (Adlam digits). Where both ends are plain
+  numbers and the left is written with four digits, both read as years first, the
+  interim rule the hyphen follows (one shared function; P6 measures and replaces both):
+  "1990–95" is "nineteen ninety to ninety five", as "1990-95" is ("1990–95 km" and
+  "$1000–2000" keep their kind's order). A unit or currency written on one end is said
+  in place and moved to the end ("$5–10": "five dollars to ten", "five to ten
+  dollars"), unmeasured. A
+  pattern slot with a case and gender is said by the locale's
+  `%spellout-cardinal-{gender}-{case}` or the pattern is skipped (no fallback case).
+  `spoken_priors.json` is rebuilt: only `recognition_profile` changes (its counts are
+  identical; no training row has an en dash). Held-out shard 95 and published shard 99
+  are identical to #43 token for token (99.361% / 93.625% and 99.327% / 92.915%; neither
+  shard writes an en dash).
 - Read context, and say "to" between numbers. `frend.context` reads the running text
   around a span by character offsets (the lattice's spans, never a corpus's tokens) and
   asks a trained decision tree, one per reading-choice problem, which of the span's

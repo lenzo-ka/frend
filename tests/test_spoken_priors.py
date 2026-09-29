@@ -288,6 +288,11 @@ def test_recognition_profile_includes_compacts_currency_names_and_xcd():
     build = _load_builder()
     detectors = build._detectors()
 
+    import icukit.engine
+
+    # icukit's number range reader over the cardinals follows them where icukit builds
+    # range readers (icukit main after 0.8.0).
+    ranges = ["FlexibleNumberRangeDetector"] if hasattr(icukit.engine, "range_detectors") else []
     assert [type(detector).__name__ for detector in detectors["cardinal"]] == [
         "FlexibleNumberDetector",
         "FlexibleCompactDetector",
@@ -295,6 +300,7 @@ def test_recognition_profile_includes_compacts_currency_names_and_xcd():
         "LetterNameDetector",
         "SingleLetterWordDetector",
         "WrittenFormsDetector",
+        *ranges,
     ]
     assert sum(
         type(detector).__name__ == "FlexibleCurrencyNameDetector" for detector in detectors["money"]
@@ -302,6 +308,32 @@ def test_recognition_profile_includes_compacts_currency_names_and_xcd():
     assert "XCD" in build._CURRENCIES
     document = build.build_document(_FIXTURE)
     assert document["provenance"]["recognition_profile"]["compact_styles"] == ["long", "short"]
+
+
+def test_range_readers_join_the_kinds_of_their_endpoints():
+    """ICU's range readers join the kinds whose amounts they read, and no other: a
+    digit, decimal or ordinal row is a single value, which a range would only contest."""
+    import icukit.engine
+
+    if not hasattr(icukit.engine, "range_detectors"):
+        pytest.skip("this icukit builds no range readers (icukit.engine.range_detectors)")
+    detectors = _load_builder()._detectors()
+
+    def ranges(kind: str) -> set[str]:
+        return {
+            str(detector.type)
+            for detector in detectors[kind]
+            if str(getattr(detector, "type", "")).endswith(":range")
+            or str(getattr(detector, "type", "")).startswith("date-interval:")
+        }
+
+    holding = {kind for kind in detectors if ranges(kind)}
+    assert holding == {"cardinal", "measure", "money", "date"}
+    assert ranges("cardinal") == {"number:range"}
+    assert ranges("measure") == {"number:range", "measure:range"}
+    assert ranges("money") == {"number:range"}
+    assert "date-interval:y" in ranges("date")
+    assert all(kind.startswith("date-interval:") for kind in ranges("date"))
 
 
 @pytest.mark.parametrize(
