@@ -1,6 +1,28 @@
 # Changelog
 
 ## Unreleased
+- Read spaced letters of another script as one span. Which scripts are "another"
+  now comes from ICU through icukit, not a hand-written list: the locale's likely
+  script (`add_likely_subtags`: `en_US` -> `Latn`), its exemplar characters' scripts
+  (`get_locale_scripts`), where the locale names no script the scripts of its
+  language's other ICU locales (`sr` -> Cyrillic and Latin), and Common and Inherited
+  (for `en_US` exactly the old `Latn`/`Zyyy`/`Zinh`). Two or more single letters of one
+  out-of-script script, each one space apart and the whole standing alone ("Т Е С Т"),
+  are one `symbol:script-run` detection (`ScriptRunValue`) read as a unit: by ICU's
+  transliteration into the locale's script (the variant-free transform ICU lists from
+  that script to the locale's, else `Any-<script>`, followed by `Latin-ASCII` when the
+  target is Latin; "Θ" -> "th", "ж" -> "z"), each letter said as the locale spells its
+  own, and dropped when ICU leaves letters outside the locale's scripts; by the
+  letters' names; as written; or as nothing. Marks ICU cannot compose onto a letter are
+  dropped before naming and transliterating ("А́" is "a"). The script's measured shares
+  rank the names and silence as they rank its lone letters (Cyrillic silent, Greek by
+  name); the transliteration and the as-written reading are unmeasured and follow them.
+  Each letter used to be its own optional `symbol:letter`, so a sentence of 96 spaced
+  Cyrillic letters had 2^96 covers and was refused; the two captured sentences
+  (Cyrillic, Greek) now resolve in under 0.2 s. A lone out-of-script letter reads as
+  before (a lone Latin letter reads as written in every locale, as before), a run
+  touching a word falls back to its letters one by one, and a word of another script
+  ("αβ") is still left as written.
 - Read a range written in running text as one span, measured. `frend.ranges.
   RangeDetector` (last in the reading profile, its ends read by every reader before it)
   reads "5-10", "5 - 10", "16:79", "3x4", "5-10 kg", "$15,000-$25,000" and "10:30-11:45"

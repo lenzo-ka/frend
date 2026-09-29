@@ -62,7 +62,7 @@ from frend.ranges import (
     written_sub_key,
 )
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
-from frend.symbols import SymbolValue
+from frend.symbols import ScriptRunValue, SymbolValue
 from frend.written_forms import DigitsValue
 
 __all__ = [
@@ -2463,6 +2463,16 @@ def verbalize_edge(
                 alternatives = (*alternatives, _connector_reading(connector))
                 range_span = (edge.start, edge.end)
             key_value = value.char
+            path = "symbol"
+        elif isinstance(value, ScriptRunValue):
+            # A run of another script's letters is one reading: its ICU transliteration
+            # as this locale reads it, its letters' names, as written, or nothing; the
+            # script's measured shares rank them as they rank its lone letters.
+            alternatives = (
+                *(SpokenAlternative(name, source) for name, source in value.names),
+                SpokenAlternative("", "surface:silence"),
+            )
+            key_value = value.text
             path = "symbol"
         elif isinstance(value, LettersValue):
             alternatives = _spoken_letters(value)
