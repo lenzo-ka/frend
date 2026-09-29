@@ -30,7 +30,7 @@ classifiers = [
 # cartlet 0.6.0 is the first release with model format 2, which the context trees
 # (data/<locale>/context/trees/*.cart) are written in; frend uses its dependency-free
 # runner (cartlet.runner) to read them.
-dependencies = ["cartlet>=0.6", "icukit>=0.8", "tiergraph>=0.4.1"]
+dependencies = ["cartlet>=0.6", "icukit>=0.8", "tiergraph>=0.4.2"]
 
 [project.urls]
 Homepage = "https://github.com/lenzo-ka/frend"
