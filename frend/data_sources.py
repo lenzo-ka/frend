@@ -32,6 +32,15 @@ __all__ = [
     "shipping_refusals",
 ]
 
+# Receipts created in this process are indexed by canonical fingerprint so a package
+# boundary can resolve an ``ancestors`` reference instead of trusting an opaque hash.
+_RECEIPT_INDEX: dict[str, Mapping[str, object]] = {}
+
+
+def _register_receipt(fingerprint: str, receipt: Mapping[str, object]) -> None:
+    """Register a validated canonical receipt for ancestry checks."""
+    _RECEIPT_INDEX[fingerprint] = receipt
+
 INTERNAL_ONLY = "internal-only"
 # The shared license classes (conventions item 3, with kal's R2 ruling).
 LICENSE_CLASSES = ("shippable", "shippable-share-alike", "derived-shippable", INTERNAL_ONLY)
@@ -119,12 +128,20 @@ def source_class(source: str) -> str | None:
     return None if entry is None else str(entry["class"])
 
 
-def shipping_refusals(document: object, path: str = "") -> tuple[str, ...]:
+def shipping_refusals(
+    document: object,
+    path: str = "",
+    *,
+    receipt_index: Mapping[str, Mapping[str, object]] | None = None,
+) -> tuple[str, ...]:
     """Return package-boundary refusals, including identity hidden behind labels."""
     refusals: list[str] = []
     normalized = path.replace("\\", "/").casefold()
     if "/processed/frend/ldc/" in f"/{normalized.strip('/')}/":
         refusals.append(f"{path}: path is under the internal LDC store")
+
+    catalog = {**_RECEIPT_INDEX, **dict(receipt_index or {})}
+    resolved: set[str] = set()
 
     def walk(value: object) -> None:
         if isinstance(value, str):
@@ -135,6 +152,9 @@ def shipping_refusals(document: object, path: str = "") -> tuple[str, ...]:
                 refusals.append("document contains a cataloged internal digest")
             if folded == INTERNAL_ONLY:
                 refusals.append("document carries internal-only ancestry")
+            if value in catalog and value not in resolved:
+                resolved.add(value)
+                walk(catalog[value])
         elif isinstance(value, Mapping):
             for key, item in value.items():
                 walk(key)

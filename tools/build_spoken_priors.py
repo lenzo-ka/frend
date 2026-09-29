@@ -272,8 +272,8 @@ def _files(corpus_dir: Path) -> list[Path]:
     return chosen
 
 
-def build_document(corpus_dir: Path) -> dict:
-    files = _files(corpus_dir)
+def build_document(corpus_dir: Path, *, inputs=None) -> dict:
+    files = list(inputs) if inputs is not None else _files(corpus_dir)
     from google_tn_rows import corpus_label  # on sys.path once _files has run
 
     detectors = _detectors()
@@ -299,7 +299,13 @@ def build_document(corpus_dir: Path) -> dict:
     skipped_sentinels = 0
     for path in files:
         per_class: Counter[str] = Counter()
-        with path.open(encoding="utf-8") as handle:
+        if inputs is None:
+            handle_context = path.open(encoding="utf-8")
+        else:
+            from corpus_inputs import open_verified
+
+            handle_context = open_verified(path)
+        with handle_context as handle:
             for line in handle:
                 parts = line.rstrip("\n").split("\t")
                 if len(parts) < 3 or parts[0] not in CLASS_TO_KIND:
@@ -394,7 +400,9 @@ def build_document(corpus_dir: Path) -> dict:
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "generated": _BUILD_DATE,
             "sample_rule": {
-                "shards": [path.name for path in files],
+                "shards": [
+                    path.relative_path if inputs is not None else path.name for path in files
+                ],
                 "first_eligible_rows_per_class_per_shard": _ROWS_PER_CLASS_PER_SHARD,
             },
             "row_counts": dict(sorted(rows_by_class.items())),
@@ -452,11 +460,27 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("corpus", nargs="?", type=Path, default=None)
     parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--locale", required=True)
+    parser.add_argument("--source-id", required=True)
+    parser.add_argument("--pool", action="append", required=True, dest="pools")
+    parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--out", type=Path, default=_OUT)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     corpus_dir = args.corpus or args.corpus_dir or _default_corpus_dir()
-    rendered = _render(build_document(corpus_dir))
+    from corpus_inputs import verified_inputs, write_verification_receipt
+
+    verified = verified_inputs(
+        args.source_id,
+        _files(corpus_dir),
+        locale=args.locale,
+        pools=tuple(args.pools),
+        root=corpus_dir,
+    )
+    write_verification_receipt(
+        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
+    )
+    rendered = _render(build_document(corpus_dir, inputs=verified))
     if args.check:
         if not args.out.exists() or args.out.read_text(encoding="utf-8") != rendered:
             print(f"out of date: {args.out}", file=sys.stderr)

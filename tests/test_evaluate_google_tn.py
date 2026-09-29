@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import sys
@@ -152,7 +153,7 @@ def test_builder_and_evaluator_share_one_triple_predicate():
     assert evaluate._running_text is google_tn_rows.running_text
 
 
-def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path):
+def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path, monkeypatch):
     """--held-out-shard scores per token over the named shard's first 100,000 lines, as
     the paper cuts the test shard, and running text over all of it; the published
     test_set section is unchanged."""
@@ -168,9 +169,42 @@ def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path):
     name = "output-00095-of-00100"
     (corpus / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    from corpus_inputs import VerifiedInput
+
+    def verified(source_id, paths, **_kwargs):
+        return tuple(
+            VerifiedInput(
+                source_id,
+                path.name,
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+                "shippable-share-alike",
+                path.resolve(),
+            )
+            for path in paths
+        )
+
+    monkeypatch.setattr(evaluate, "verified_inputs", verified)
+
     def run(*flags: str) -> dict:
         out = tmp_path / f"report{len(flags)}.json"
-        base = ["--corpus-dir", str(corpus), "--workers", "1", "--json", str(out)]
+        base = [
+            "--corpus-dir",
+            str(corpus),
+            "--locale",
+            "en_US",
+            "--source-id",
+            "google/tn-en_with_types",
+            "--pool",
+            "report",
+            "--pool",
+            "acceptance",
+            "--receipt",
+            str(tmp_path / f"receipt{len(flags)}.json"),
+            "--workers",
+            "1",
+            "--json",
+            str(out),
+        ]
         assert evaluate.main([*base, *flags]) == 0
         return json.loads(out.read_text(encoding="utf-8"))
 

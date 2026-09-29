@@ -37,6 +37,12 @@ if str(_REPO) not in sys.path:
 
 import google_tn_rows  # noqa: E402
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
+from corpus_inputs import (  # noqa: E402
+    VerifiedInput,
+    open_verified,
+    verified_inputs,
+    write_verification_receipt,
+)
 
 _TEST_FILE = "output-00099-of-00100"
 _TEST_LINES = 100_000
@@ -138,12 +144,12 @@ def _score_joined(
     return (separator, middle, *_score_text(written, target, before, after, locale))
 
 
-def _rows(corpus_dir: Path, name: str = _TEST_FILE, limit: int | None = _TEST_LINES):
+def _rows(corpus_input: VerifiedInput, limit: int | None = _TEST_LINES):
     """Sentences of (class, written, spoken) rows from the first ``limit`` lines of shard
-    ``name`` (every line when ``limit`` is None); by default the test set, as the paper
-    cuts it."""
+    ``corpus_input`` (every line when ``limit`` is None). The input must already bind
+    source, locale pool and bytes through :mod:`corpus_inputs`."""
     sentences, current = [], []
-    with (corpus_dir / name).open(encoding="utf-8") as handle:
+    with open_verified(corpus_input) as handle:
         for line in islice(handle, limit):
             parts = line.rstrip("\n").split("\t")
             if parts[0] == "<eos>":
@@ -218,8 +224,8 @@ def _running_text_rows(sentences, workers: int, locale: str = "en_US") -> list[d
         (
             (row, context, locale)
             for row, context in zip(
-                _running_text(sentences),
-                google_tn_rows.running_text_contexts(sentences),
+                _running_text(sentences, locale),
+                google_tn_rows.running_text_contexts(sentences, locale),
                 strict=True,
             )
         )
@@ -242,32 +248,35 @@ def _running_text_rows(sentences, workers: int, locale: str = "en_US") -> list[d
     ]
 
 
-def _held_out(corpus_dir: Path, name: str, workers: int, locale: str = "en_US") -> dict:
+def _held_out(
+    inputs: dict[str, VerifiedInput], name: str, workers: int, locale: str = "en_US"
+) -> dict:
     """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
     as the paper cuts the test shard, and running text over the whole shard."""
-    whole = _rows(corpus_dir, name, None)
+    corpus_input = inputs[name]
+    whole = _rows(corpus_input, None)
     return {
         "shard": name,
         "per_token": {
             "lines": f"first {_TEST_LINES} lines of {name}",
-            **_per_token(_rows(corpus_dir, name, _TEST_LINES), workers, locale),
+            **_per_token(_rows(corpus_input, _TEST_LINES), workers, locale),
         },
         "running_text": {
             "lines": f"all lines of {name}",
-            "triples": len(_running_text(whole)),
+            "triples": len(_running_text(whole, locale)),
             "rows": _running_text_rows(whole, workers, locale),
         },
     }
 
 
 def evaluate(
-    corpus_dir: Path,
+    inputs: dict[str, VerifiedInput],
     workers: int,
     held_out_shard: str | None = None,
     *,
     locale: str = "en_US",
 ) -> dict:
-    sentences = _rows(corpus_dir)
+    sentences = _rows(inputs[_TEST_FILE])
     per_token = _per_token(sentences, workers, locale)
     report = {
         "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
@@ -284,7 +293,7 @@ def evaluate(
         ),
     }
     if held_out_shard is not None:
-        report["held_out"] = _held_out(corpus_dir, held_out_shard, workers, locale)
+        report["held_out"] = _held_out(inputs, held_out_shard, workers, locale)
     return report
 
 
@@ -339,6 +348,10 @@ def _render(report: dict) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--locale", required=True)
+    parser.add_argument("--source-id", required=True)
+    parser.add_argument("--pool", action="append", required=True, dest="pools")
+    parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--json", type=Path, default=None, help="also write the report here")
     parser.add_argument(
@@ -349,7 +362,22 @@ def main(argv: list[str] | None = None) -> int:
         "text over all of it (acceptance is on output-00095-of-00100)",
     )
     args = parser.parse_args(argv)
-    report = evaluate(args.corpus_dir or _default_corpus_dir(), args.workers, args.held_out_shard)
+    corpus_dir = args.corpus_dir or _default_corpus_dir()
+    names = [_TEST_FILE]
+    if args.held_out_shard is not None and args.held_out_shard not in names:
+        names.append(args.held_out_shard)
+    verified = verified_inputs(
+        args.source_id,
+        [corpus_dir / name for name in names],
+        locale=args.locale,
+        pools=tuple(args.pools),
+        root=corpus_dir,
+    )
+    write_verification_receipt(
+        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
+    )
+    inputs = {item.relative_path: item for item in verified}
+    report = evaluate(inputs, args.workers, args.held_out_shard, locale=args.locale)
     print(_render(report))
     if args.json:
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

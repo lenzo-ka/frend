@@ -65,10 +65,15 @@ def _default_corpus_dir() -> Path:
     return spoken_default()
 
 
-def _shards(corpus_dir: Path) -> tuple[list[Path], list[Path]]:
+def _shards(corpus_dir: Path, inputs=None) -> tuple[list, list]:
     """(E's shards, J's shards): the 90 training shards and every tenth of them for the
     full corpus; for another (a fixture), its shards less any held-out one, and every
     tenth of those by position."""
+    if inputs is not None:
+        available = sorted(inputs, key=lambda item: item.relative_path)
+        if not available:
+            raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
+        return available, available[::_SAMPLE_STEP]
     available = sorted(Path(corpus_dir).glob("output-*-of-*"))
     if not available:
         raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
@@ -84,7 +89,13 @@ def _shards(corpus_dir: Path) -> tuple[list[Path], list[Path]]:
 
 def _sentences(path: Path):
     sentences, current = [], []
-    with Path(path).open(encoding="utf-8") as handle:
+    if hasattr(path, "relative_path"):
+        from corpus_inputs import open_verified
+
+        handle_context = open_verified(path)
+    else:
+        handle_context = Path(path).open(encoding="utf-8")
+    with handle_context as handle:
         for line in handle:
             parts = line.rstrip("\n").split("\t")
             if parts[0] == "<eos>":
@@ -218,10 +229,10 @@ def _map(function, paths, jobs: int):
         return list(pool.map(function, paths))
 
 
-def build_document(corpus_dir: Path, jobs: int = 1) -> dict:
+def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     from frend.ranges import RANGE_TYPES, range_class_key
 
-    emit_paths, sample_paths = _shards(Path(corpus_dir))
+    emit_paths, sample_paths = _shards(Path(corpus_dir), inputs)
     emission: Counter = Counter()
     for counts in _map(emission_counts, emit_paths, jobs):
         emission.update(counts)
@@ -291,11 +302,18 @@ def build_document(corpus_dir: Path, jobs: int = 1) -> dict:
         "provenance": {
             "locale": "en",
             "corpus": corpus_label(Path(corpus_dir)),
-            "shards": [path.name for path in sample_paths],
-            "emit_shards": [path.name for path in emit_paths],
+            "shards": [
+                path.relative_path if inputs is not None else path.name for path in sample_paths
+            ],
+            "emit_shards": [
+                path.relative_path if inputs is not None else path.name for path in emit_paths
+            ],
             "sample_rule": {
                 "rule": "full_training_set(corpus)[::10], as tools/build_spoken_priors.py",
-                "shards": [path.name for path in sample_paths],
+                "shards": [
+                    path.relative_path if inputs is not None else path.name
+                    for path in sample_paths
+                ],
             },
             "unit": (
                 "tools/google_tn_rows.range_triples: a written token ending in an ASCII "
@@ -355,11 +373,29 @@ def render(document: dict) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--locale", required=True)
+    parser.add_argument("--source-id", required=True)
+    parser.add_argument("--pool", action="append", required=True, dest="pools")
+    parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--check", action="store_true", help="rebuild and compare byte for byte")
     args = parser.parse_args(argv)
-    text = render(build_document(args.corpus_dir or _default_corpus_dir(), args.jobs))
+    corpus_dir = args.corpus_dir or _default_corpus_dir()
+    from corpus_inputs import verified_inputs, write_verification_receipt
+
+    emit_paths, _sample_paths = _shards(corpus_dir)
+    verified = verified_inputs(
+        args.source_id,
+        emit_paths,
+        locale=args.locale,
+        pools=tuple(args.pools),
+        root=corpus_dir,
+    )
+    write_verification_receipt(
+        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
+    )
+    text = render(build_document(corpus_dir, args.jobs, inputs=verified))
     if args.check:
         shipped = args.out.read_text(encoding="utf-8") if args.out.exists() else None
         if shipped != text:

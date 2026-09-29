@@ -37,6 +37,7 @@ from collections.abc import Callable, Mapping, Sequence
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, replace
 from decimal import Context, Decimal, getcontext, localcontext
+from functools import lru_cache
 from math import prod
 from typing import Any, cast
 
@@ -62,7 +63,7 @@ from tiergraph import (
 )
 from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
-from frend.locale_data import canonical_locale
+from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.shape import shape
 from frend.type_priors import (
     LOCALE_NEUTRAL,
@@ -819,6 +820,25 @@ def _merged_covers(
     return found
 
 
+def _validated_sources(
+    canonical: str, sources: tuple[FeatureSource, ...]
+) -> tuple[FeatureSource, ...]:
+    for source in sources:
+        source_locale = getattr(source, "locale", None)
+        if source_locale not in (canonical, LOCALE_NEUTRAL):
+            raise ValueError(
+                f"feature source {type(source).__name__} locale {source_locale!r} "
+                f"does not match request locale {canonical!r}"
+            )
+    return sources
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _default_sources(locale: str) -> tuple[FeatureSource, ...]:
+    """Load and validate the immutable runtime tables once for one canonical locale."""
+    return _validated_sources(locale, (BlendedPrior(locale=locale),))
+
+
 def _resolve_sources(
     locale: str,
     feature_sources: Sequence[FeatureSource] | None,
@@ -827,6 +847,8 @@ def _resolve_sources(
 ) -> tuple[FeatureSource, ...]:
     """Default to the measured-first, ICU-backfilled runtime prior."""
     canonical = canonical_locale(locale)
+    if feature_sources is None and class_prior is None and class_prior_source is None:
+        return _default_sources(canonical)
     sources = (
         (
             BlendedPrior(
@@ -838,14 +860,7 @@ def _resolve_sources(
         if feature_sources is None
         else tuple(feature_sources)
     )
-    for source in sources:
-        source_locale = getattr(source, "locale", None)
-        if source_locale not in (canonical, LOCALE_NEUTRAL):
-            raise ValueError(
-                f"feature source {type(source).__name__} locale {source_locale!r} "
-                f"does not match request locale {canonical!r}"
-            )
-    return sources
+    return _validated_sources(canonical, sources)
 
 
 def _corpus_source(sources: Sequence[FeatureSource]) -> CorpusPrior | BlendedPrior | None:

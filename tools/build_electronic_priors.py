@@ -75,16 +75,22 @@ def _align(written: str, spoken: str):
     return events if at == len(words) else None
 
 
-def build_document(corpus_dir: Path) -> dict:
+def build_document(corpus_dir: Path, *, inputs=None) -> dict:
     counts = {
         "letters": defaultdict(Counter),
         "digits": defaultdict(Counter),
         "separators": defaultdict(Counter),
     }
-    files = _files(corpus_dir)
+    files = list(inputs) if inputs is not None else _files(corpus_dir)
     rows = aligned = 0
     for path in files:
-        with path.open(encoding="utf-8") as handle:
+        if inputs is None:
+            handle_context = path.open(encoding="utf-8")
+        else:
+            from corpus_inputs import open_verified
+
+            handle_context = open_verified(path)
+        with handle_context as handle:
             for line in handle:
                 parts = line.rstrip("\n").split("\t")
                 if len(parts) < 3 or parts[0] != "ELECTRONIC" or parts[2] in {"<self>", "sil"}:
@@ -104,7 +110,9 @@ def build_document(corpus_dir: Path) -> dict:
             "locale": "en",
             "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
-            "shards": [path.name for path in files],
+            "shards": [
+                path.relative_path if inputs is not None else path.name for path in files
+            ],
             "rows": rows,
             "rows_aligned": aligned,
             "tld_list": tld_version(),
@@ -128,10 +136,27 @@ def _render(document: dict) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--locale", required=True)
+    parser.add_argument("--source-id", required=True)
+    parser.add_argument("--pool", action="append", required=True, dest="pools")
+    parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--out", type=Path, default=_OUT)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
-    rendered = _render(build_document(args.corpus_dir or _default_corpus_dir()))
+    corpus_dir = args.corpus_dir or _default_corpus_dir()
+    from corpus_inputs import verified_inputs, write_verification_receipt
+
+    verified = verified_inputs(
+        args.source_id,
+        _files(corpus_dir),
+        locale=args.locale,
+        pools=tuple(args.pools),
+        root=corpus_dir,
+    )
+    write_verification_receipt(
+        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
+    )
+    rendered = _render(build_document(corpus_dir, inputs=verified))
     if args.check:
         current = args.out.read_text(encoding="utf-8") if args.out.exists() else ""
         if current != rendered:

@@ -49,7 +49,7 @@ from frend.electronic import (
     tld_positions,
 )
 from frend.lattice import ReadingEdge, ReadingLattice
-from frend.letters import LettersValue, cv_pattern, spelled
+from frend.letters import LettersValue, cv_pattern, letter_names, spelled
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.ranges import (
     RangeValue,
@@ -83,7 +83,12 @@ LEXICAL_SOURCE = "lexical:en_US"
 
 
 def lexical_source(locale: str) -> str:
-    return f"lexical:{canonical_locale(locale)}"
+    return _lexical_source(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _lexical_source(locale: str) -> str:
+    return f"lexical:{locale}"
 
 # Every form ICU and CLDR do not give, and the corpus says, is a hand-written lexical
 # form: it lives with its reason in ``data/<locale>/lexical.json`` and is read here by
@@ -1261,13 +1266,19 @@ def _era_names(era: int, detection: object, locale: str) -> tuple[SpokenAlternat
     text = str(getattr(written, "text", "")) or symbols.getEras()[era]
     if getattr(written, "form", None) == "wide":
         return (SpokenAlternative(" ".join(text.split()), "surface:words"),)
-    letters = "".join(ch for ch in text if ch.isalpha()).lower()
+    letters = "".join(ch for ch in text if ch.isalpha())
+    names_for_letters = letter_names(letters, locale)
     variant_short, variant_wide = _era_variants(locale)
     wide = SpokenAlternative(names[era], "icu-datetime:GGGG")
     if era < len(variant_short) and era < len(variant_wide):
         if text.casefold() == variant_short[era].casefold():
             wide = SpokenAlternative(variant_wide[era], "icu-datetime:GGGG%variant")
-    return (SpokenAlternative(" ".join(letters), "surface:letters"), wide)
+    spelled_era = (
+        ()
+        if names_for_letters is None
+        else (SpokenAlternative(" ".join(names_for_letters.spoken), "surface:letters"),)
+    )
+    return (*spelled_era, wide)
 
 
 def _spoken_era_year(
@@ -1873,8 +1884,13 @@ def range_connector(locale: str) -> RangeConnector | None:
     """The words a range's two ends are joined by ("to"), from the lexical table's
     ``range.connector`` "to" pattern; ``None`` when the locale has none (the feature is
     off) or its pattern cannot be said by a separator alone."""
-    canonical = canonical_locale(locale)
-    for form in (_lexical("range.connector", canonical) or {}).get("range", ()):
+    return _range_connector(canonical_locale(locale), _lexical, _lexical_for)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _range_connector(locale: str, lexical, lexical_for) -> RangeConnector | None:
+    del lexical_for  # Its identity invalidates the cache when tests or callers replace the loader.
+    for form in (lexical("range.connector", locale) or {}).get("range", ()):
         identifier = str(form.get("id", "")).strip()
         pattern = str(form.get("pattern", ""))
         words = connector_words(pattern)
@@ -1888,7 +1904,7 @@ def range_connector(locale: str) -> RangeConnector | None:
                 pattern,
                 words,
                 slots,
-                lexical_source(canonical),
+                _lexical_source(locale),
             )
     return None
 
@@ -1898,9 +1914,14 @@ def range_separators(locale: str) -> frozenset[str]:
     ``range.separator`` ranges (the hyphen-minus, which CLDR writes nowhere in en) and
     CLDR's own number-range separator (the en dash). Empty when the locale has no spoken
     connector."""
-    if range_connector(locale) is None:
+    return _range_separators(canonical_locale(locale), _lexical, _lexical_for)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _range_separators(locale: str, lexical, lexical_for) -> frozenset[str]:
+    if _range_connector(locale, lexical, lexical_for) is None:
         return frozenset()
-    written = set((_lexical("range.separator", locale) or {}).get("range", ()))
+    written = set((lexical("range.separator", locale) or {}).get("range", ()))
     cldr = cldr_range_separator(locale)
     return frozenset(written | ({cldr} if cldr else set()))
 
@@ -2482,7 +2503,7 @@ def verbalize_edge(
         # A range written in running text ("5-10", "16:79", "3x4"; ``RangeDetector``), or
         # one ICU writes ("1990–1995", "5–10 km", "May 3 – 5, 2020"): each end read as
         # that value alone, joined by the locale's connector patterns.
-        ranged = detection if isinstance(value, RangeValue) else from_icukit(detection)
+        ranged = detection if isinstance(value, RangeValue) else from_icukit(detection, locale)
         if ranged is not None:
             alternatives = _spoken_range(
                 ranged["value"],

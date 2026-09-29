@@ -27,6 +27,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
+from frend.locale_data import canonical_locale
+
 
 def _pool(first: int, last: int) -> frozenset[str]:
     return frozenset(f"output-{index:05d}-of-00100" for index in range(first, last + 1))
@@ -155,7 +157,21 @@ def range_candidate_denominators(sentences) -> Counter:
     )
 
 
-def running_text(sentences) -> list[tuple[str, str, str, str]]:
+def _operational_separators(locale: str) -> frozenset[str]:
+    """Range separators scored and trained for ``locale``.
+
+    English is the frozen published population, which predates em-dash support. Other
+    locales use the complete locale candidate inventory.
+    """
+    canonical = canonical_locale(locale)
+    return (
+        RANGE_CANDIDATE_SEPARATORS - {"—"}
+        if canonical.partition("_")[0] == "en"
+        else RANGE_CANDIDATE_SEPARATORS
+    )
+
+
+def running_text(sentences, locale: str = "en_US") -> list[tuple[str, str, str, str]]:
     """(separator, the middle's corpus reading, joined written, joined target) for each
     number, separator, number triple, left to right, never overlapping."""
     found = []
@@ -164,7 +180,7 @@ def running_text(sentences) -> list[tuple[str, str, str, str]]:
     # endpoints beginning with digits, and did not remove chains.
     for candidate in range_candidates(
         sentences,
-        separators=RANGE_CANDIDATE_SEPARATORS - {"—"},
+        separators=_operational_separators(locale),
         endpoints_start_digit=True,
         exclude_chains=False,
     ):
@@ -181,7 +197,7 @@ def running_text(sentences) -> list[tuple[str, str, str, str]]:
     return found
 
 
-def running_text_contexts(sentences) -> list[tuple[str, str]]:
+def running_text_contexts(sentences, locale: str = "en_US") -> list[tuple[str, str]]:
     """For each triple of :func:`running_text`, in the same order, the sentence's written
     text before it and after it (tokens joined by one space): the running text the joined
     triple is read in."""
@@ -192,18 +208,18 @@ def running_text_contexts(sentences) -> list[tuple[str, str]]:
         )
         for _candidate, sentence, at in _candidate_positions(
             sentences,
-            RANGE_CANDIDATE_SEPARATORS - {"—"},
+            _operational_separators(locale),
             endpoints_start_digit=True,
             exclude_chains=False,
         )
     ]
 
 
-def range_triple_positions(sentences):
+def range_triple_positions(sentences, locale: str = "en_US"):
     """(sentence, index of the triple's left row) for each triple of
     :func:`range_triples`, in the same order."""
     for _candidate, sentence, at in _candidate_positions(
-        sentences, RANGE_CANDIDATE_SEPARATORS
+        sentences, _operational_separators(locale)
     ):
         yield sentence, at
 
@@ -222,7 +238,7 @@ def _chained(sentence, at: int, separators=RANGE_CANDIDATE_SEPARATORS) -> bool:
     )
 
 
-def range_triples(sentences):
+def range_triples(sentences, locale: str = "en_US"):
     """(left, middle, right) corpus rows, each (class, written, spoken), for each triple
     whose left written token ends in an ASCII digit, whose middle is a joiner and whose
     right written token holds an ASCII digit, and that is no fragment of a chain ("1 - 2
@@ -230,5 +246,5 @@ def range_triples(sentences):
     superset of :func:`running_text`'s predicate (the evaluator's, unchanged): it also
     reaches "$15,000 - $25,000" and "Oct. 29, 1951 - April 28, 1953", which the range
     rules then judge (``frend.ranges.emit_relevant``)."""
-    for candidate in range_candidates(sentences):
+    for candidate in range_candidates(sentences, separators=_operational_separators(locale)):
         yield candidate.left, candidate.middle, candidate.right

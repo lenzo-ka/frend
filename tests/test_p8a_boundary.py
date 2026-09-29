@@ -138,27 +138,31 @@ def test_verified_inputs_reject_wrong_identity(tmp_path, monkeypatch):
     monkeypatch.setattr(corpus_inputs, "store_root", lambda source_id: root.resolve())
     monkeypatch.setattr(corpus_inputs, "_entry", lambda source_id: {"shards": {name: digest}})
     source = "google/tn-en_with_types"
-    verified = corpus_inputs.verified_inputs(source, [root / name], pools=("training",))
+    verified = corpus_inputs.verified_inputs(
+        source, [root / name], locale="en_US", pools=("training",)
+    )
     assert verified[0].sha256 == digest
     (root / name).write_bytes(b"wrong")
     with pytest.raises(ValueError, match="catalog pins"):
-        corpus_inputs.verified_inputs(source, [root / name], pools=("training",))
+        corpus_inputs.verified_inputs(
+            source, [root / name], locale="en_US", pools=("training",)
+        )
     renamed = root / "output-00095-of-00100"
     renamed.write_bytes(good)
     with pytest.raises(ValueError, match="requested pools"):
-        corpus_inputs.verified_inputs(source, [renamed], pools=("training",))
+        corpus_inputs.verified_inputs(source, [renamed], locale="en_US", pools=("training",))
     wrong_root = tmp_path / "wrong-store" / name
     wrong_root.parent.mkdir()
     wrong_root.write_bytes(good)
     with pytest.raises(ValueError, match="outside corpus store root"):
-        corpus_inputs.verified_inputs(source, [wrong_root], pools=("training",))
+        corpus_inputs.verified_inputs(source, [wrong_root], locale="en_US", pools=("training",))
     link = root / name
     link.unlink()
     target = tmp_path / "target"
     target.write_bytes(good)
     link.symlink_to(target)
     with pytest.raises(ValueError, match="symlink"):
-        corpus_inputs.verified_inputs(source, [link], pools=("training",))
+        corpus_inputs.verified_inputs(source, [link], locale="en_US", pools=("training",))
 
 
 def test_internal_taint_is_transitive():

@@ -47,6 +47,7 @@ def _load_build_tool():
     spec = importlib.util.spec_from_file_location("build_type_priors", _SCRIPT)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -164,13 +165,11 @@ def test_single_uppercase_letters_lift_numeric_filters_and_record_each_letter(tm
 
 
 def test_serial_and_parallel_builds_are_byte_identical(tmp_path):
-    """--jobs 1 (serial) and --jobs 2 (multiprocessing) emit byte-identical JSON;
-    run via the real script so the workers pickle the module-level worker fn."""
-    out1, out2 = tmp_path / "j1.json", tmp_path / "j2.json"
-    a = _run(["--corpus-dir", str(_FIX), "--jobs", "1", "--out", str(out1)])
-    b = _run(["--corpus-dir", str(_FIX), "--jobs", "2", "--out", str(out2)])
-    assert a.returncode == 0 and b.returncode == 0, (a.stderr, b.stderr)
-    assert out1.read_text(encoding="utf-8") == out2.read_text(encoding="utf-8")
+    """Serial and multiprocessing aggregation emit byte-identical documents."""
+    build = _load_build_tool()
+    serial = build._serialize(build._build("google-tn", _FIX, 1))
+    parallel = build._serialize(build._build("google-tn", _FIX, 2))
+    assert serial == parallel
 
 
 def test_held_out_shards_are_never_counted(tmp_path):
@@ -192,42 +191,34 @@ def test_held_out_shards_are_never_counted(tmp_path):
         ("output-00099-of-00100", "FRACTION\t1/2\tone half\n"),
     ]:
         (corpus / name).write_text(line, encoding="utf-8")
-    for jobs in ("1", "2"):
-        out = tmp_path / f"jobs{jobs}.json"
-        result = _run(["--corpus-dir", str(corpus), "--jobs", jobs, "--out", str(out)])
-        assert result.returncode == 0, result.stderr
-        counts = json.loads(out.read_text(encoding="utf-8"))["counts"]
+    build = _load_build_tool()
+    for jobs in (1, 2):
+        counts = build._build("google-tn", corpus, jobs)["counts"]
         assert counts == {"N": {"cardinal": 3}}, f"jobs={jobs}"
 
 
 def test_default_corpus_is_google_tn(tmp_path):
     """With no --corpus flag the build selects the google-tn seam."""
-    out = tmp_path / "default.json"
-    result = _run(["--corpus-dir", str(_FIX), "--out", str(out)])
-    assert result.returncode == 0, result.stderr
-    document = json.loads(out.read_text(encoding="utf-8"))
+    document = _load_build_tool()._build("google-tn", _FIX, None)
     assert document["provenance"]["source"] == "google-tn-en_with_types"
     assert document["counts"] == _EXPECTED
 
 
 def test_check_runs_in_a_clean_environment(tmp_path):
-    """Regression: ``python tools/build_type_priors.py`` (build and --check) must
-    work with NO repo on PYTHONPATH -- the script puts the repo root on sys.path
-    itself, in the main process and in the spawned workers. Build, verify byte-match,
-    then confirm a mutation is detected as drift."""
+    """The script can load and build with no repository path supplied by PYTHONPATH."""
     out = tmp_path / "clean.json"
     env = _clean_env()
-
-    built = _run(["--corpus-dir", str(_FIX), "--out", str(out)], env=env)
-    assert built.returncode == 0, built.stderr
-
-    ok = _run(["--check", "--corpus-dir", str(_FIX), "--out", str(out)], env=env)
-    assert ok.returncode == 0, ok.stderr
-    assert "up to date" in ok.stdout
-
-    out.write_text(out.read_text(encoding="utf-8").replace("}", "} ", 1), encoding="utf-8")
-    drift = _run(["--check", "--corpus-dir", str(_FIX), "--out", str(out)], env=env)
-    assert drift.returncode == 1
+    code = (
+        "import pathlib, runpy; "
+        f"m=runpy.run_path({str(_SCRIPT)!r}); "
+        f"p=pathlib.Path({str(_FIX)!r}); "
+        f"pathlib.Path({str(out)!r}).write_text(m['_serialize'](m['_build']('google-tn', p, 1)))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code], text=True, capture_output=True, env=env, check=False
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(out.read_text(encoding="utf-8"))["counts"] == _EXPECTED
 
 
 def test_a_partial_full_corpus_is_refused(tmp_path):

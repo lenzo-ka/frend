@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import gc
 import hashlib
+import inspect
 import json
 import os
 import platform
@@ -58,11 +59,30 @@ def _environment() -> dict[str, object]:
 
 def _worker(args: argparse.Namespace) -> int:
     setup_started = time.perf_counter_ns()
+    import reading_profile
     from icukit.detectors import detect
     from reading_profile import reading_detectors
 
+    import frend
     from frend.lattice import resolve_lattice
     from frend.verbalize import verbalize_lattice
+
+    resolve_accepts_locale = "locale" in inspect.signature(resolve_lattice).parameters
+
+    def resolve(detections, text):
+        kwargs = {"source_text": text}
+        if resolve_accepts_locale:
+            kwargs["locale"] = locale
+        return resolve_lattice(detections, **kwargs)
+
+    subject = args.subject_root.resolve()
+    imports = {
+        "reading_profile": str(Path(reading_profile.__file__).resolve()),
+        "frend": str(Path(frend.__file__).resolve()),
+    }
+    for name, imported in imports.items():
+        if not Path(imported).is_relative_to(subject):
+            raise SystemExit(f"{name} imported from {imported}, outside subject root {subject}")
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     locales = tuple(part for part in args.locales.split(",") if part)
@@ -105,7 +125,7 @@ def _worker(args: argparse.Namespace) -> int:
         for _ in range(args.warmup):
             locale, text = order[_ % len(order)]
             detections = list(detect(text, gangs[locale]))
-            verbalize_lattice(resolve_lattice(detections, source_text=text, locale=locale))
+            verbalize_lattice(resolve(detections, text))
         vectors = {locale: {"end_to_end_ns": [], "resolve_only_ns": []} for locale in locales}
         counts = {locale: 0 for locale in locales}
         index = 0
@@ -117,10 +137,10 @@ def _worker(args: argparse.Namespace) -> int:
             counts[locale] += 1
             before = time.perf_counter_ns()
             detections = list(detect(text, gangs[locale]))
-            verbalize_lattice(resolve_lattice(detections, source_text=text, locale=locale))
+            verbalize_lattice(resolve(detections, text))
             vectors[locale]["end_to_end_ns"].append(time.perf_counter_ns() - before)
             before = time.perf_counter_ns()
-            resolve_lattice(prepared[(locale, text)], source_text=text, locale=locale)
+            resolve(prepared[(locale, text)], text)
             vectors[locale]["resolve_only_ns"].append(time.perf_counter_ns() - before)
     finally:
         gc.callbacks.remove(callback)
@@ -144,6 +164,7 @@ def _worker(args: argparse.Namespace) -> int:
         "setup_ns": setup_ns,
         "started_ns": started,
         "ended_ns": time.time_ns(),
+        "imports": imports,
     }
     args.output.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
     return 0
@@ -163,8 +184,14 @@ def _run(args: argparse.Namespace) -> int:
     temporary = args.output.with_suffix(args.output.suffix + ".worker")
     command = [
         sys.executable,
-        str(Path(__file__).resolve()),
+        "-c",
+        (
+            "import runpy; "
+            f"runpy.run_path({str(Path(__file__).resolve())!r}, run_name='__main__')"
+        ),
         "--_worker",
+        "--subject-root",
+        str(subject),
         "--manifest",
         str(args.manifest.resolve()),
         "--locales",
@@ -230,6 +257,29 @@ def _compare(args: argparse.Namespace) -> int:
     for key in ("warmup", "runs", "seed", "max_words"):
         if baseline[key] != candidate[key]:
             raise SystemExit(f"comparison refuses different {key}")
+    required_boundaries = ("end_to_end_ns", "resolve_only_ns")
+    required_percentiles = ("p50", "p90")
+    for label, receipt, locales in (
+        ("baseline", baseline, ("en_US",)),
+        ("candidate", candidate, ("en_US", "ru_RU", "es_ES")),
+    ):
+        for locale in locales:
+            if not receipt.get("denominators", {}).get(locale):
+                raise SystemExit(f"comparison refuses {label} without a nonempty {locale} input")
+            summary = receipt.get("summaries", {}).get(locale)
+            if not isinstance(summary, dict):
+                raise SystemExit(f"comparison refuses {label} without a {locale} summary")
+            for boundary in required_boundaries:
+                values = summary.get(boundary)
+                if not isinstance(values, dict):
+                    raise SystemExit(
+                        f"comparison refuses {label} without {locale} {boundary} summary"
+                    )
+                for percentile in required_percentiles:
+                    if percentile not in values:
+                        raise SystemExit(
+                            f"comparison refuses {label} without {locale} {boundary} {percentile}"
+                        )
     if baseline["denominators"].get("en_US") != candidate["denominators"].get("en_US"):
         raise SystemExit("comparison refuses different English input denominator")
     failures = []

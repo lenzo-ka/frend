@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Mapping
+from functools import lru_cache
 from importlib.resources import files
 from importlib.resources.abc import Traversable
 from types import MappingProxyType
@@ -61,6 +62,12 @@ def canonical_locale(locale: str) -> str:
     """
     if not isinstance(locale, str):
         raise ValueError(f"not a locale tag: {locale!r}")
+    return _canonical_locale(locale)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _canonical_locale(locale: str) -> str:
+    """Validate and canonicalize one locale spelling once per process."""
     if locale.lower() == ROOT:
         return ROOT
     if not _WELL_FORMED.fullmatch(locale):
