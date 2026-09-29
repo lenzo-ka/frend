@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Raised the tiergraph floor to `tiergraph>=0.4.2`, which caches each graph's fold plan and
+  sets the Decimal context once per fold: the same output, with far less fixed cost per fold.
 - Resolve a sentence by its components, with the same answers. The resolver now
   splits the candidates into components of mutually overlapping spans (cut only where
   no candidate crosses) and resolves each alone: a component admitting at most 512
