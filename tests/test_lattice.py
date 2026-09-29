@@ -173,7 +173,8 @@ def test_ranked_projection_is_capped_and_reports_truncation():
     assert contract is not None
     assert "cap bounds only the paths exposed" in contract
     assert "complete top-geometry equivalence class" in contract
-    assert "can grow exponentially" in contract
+    assert "per component of overlapping spans" in contract
+    assert "is refused" in contract
 
 
 def test_detection_snapshot_is_independent_of_nested_input_mutation():

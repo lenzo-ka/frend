@@ -111,14 +111,12 @@ class ReadingPath:
 class ReadingLattice:
     """A distilled lattice and its capped public ranked-path projection.
 
-    ``paths`` is bounded by the requested output cap, but the resolver must
-    enumerate the complete top-geometry equivalence class internally to compute
-    canonical-structure selection and ambiguity correctly. Consequently, the
-    number of internally materialized covers is *not* bounded by that cap and can
-    grow exponentially for pathological same-geometry inputs.
-    :class:`ChoiceLattice` carries every reading without that enumeration, at the
-    cost of selecting nothing; it is not the bounded packed carrier for this
-    enumeration, which is still future work.
+    ``paths`` is bounded by the requested output cap, but the resolver must read
+    the complete top-geometry equivalence class to compute canonical-structure
+    selection and ambiguity correctly. It reads it per component of overlapping
+    spans, so what it materializes is each component's top level (bounded, and
+    refused past the bound), never their product. :class:`ChoiceLattice` carries
+    every reading without any enumeration, at the cost of selecting nothing.
     """
 
     text_length: int
@@ -551,13 +549,14 @@ def resolve_lattice(
     ``output_cap=1`` is the winner-take-all public projection; a larger cap
     exposes more ranked paths over the same candidate and passthrough edges.
     The cap bounds only the paths exposed in :attr:`ReadingLattice.paths`. The
-    resolver still enumerates the complete top-geometry equivalence class
-    internally, regardless of ``output_cap``, because canonical ``s*`` selection
-    and ambiguity require it. That internal cover set can grow exponentially on
-    pathological same-geometry inputs. That is the price of canonical selection,
-    and it is why :func:`resolve_choices` exists: it carries every reading as a
-    scored edge without enumerating any cover, and is defined on inputs where this
-    function is not. This API does not silently claim a bound it does not have.
+    resolver reads the complete top-geometry equivalence class, regardless of
+    ``output_cap``, because canonical ``s*`` selection and ambiguity require it, but
+    it reads it per component of overlapping spans: the sentence's top level is the
+    product of the components' and is never formed. A single component whose own
+    top level passes the resolver's bound is refused (a ``ValueError``) rather than
+    ranked; :func:`resolve_choices` carries every reading as a scored edge without
+    enumerating any cover, and is defined there too. This API does not silently
+    claim a bound it does not have.
     """
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:
         raise ValueError(f"output_cap must be a positive integer, got {output_cap!r}")

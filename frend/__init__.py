@@ -27,6 +27,7 @@ from frend.lattice import (
     resolve_lattice,
     route_geometry,
 )
+from frend.runtime import freeze_after_setup
 from frend.verbalize import (
     SpokenAlternative,
     VerbalizedLattice,
@@ -54,6 +55,7 @@ __all__ = [
     "VerbalizedUnit",
     "__version__",
     "compose_choices",
+    "freeze_after_setup",
     "resolve",
     "resolve_lattice",
     "resolve_choices",

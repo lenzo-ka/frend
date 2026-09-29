@@ -1,6 +1,40 @@
 # Changelog
 
 ## Unreleased
+- Resolve a sentence by its components, with the same answers. The resolver now
+  splits the candidates into components of mutually overlapping spans (cut only where
+  no candidate crosses) and resolves each alone: a component admitting at most 512
+  covers is enumerated directly in Python, a larger one is gathered by the tiergraph
+  fold over a lattice of its candidate boundaries only (a long URL is one skip, not
+  one per character). The sentence is assembled from them exactly as a whole-sentence
+  resolve would give it: the top geometry level is the product of the components'
+  top levels, so `s*`, the per-span winners and both ambiguity flags are read per
+  component and the product is never formed; the margin is the smallest component's
+  step to its next level; the cover list is drawn lazily in cover order from the
+  components' ordered covers; and `truncated` compares the exact product of their
+  counts. Tested against the whole-sentence fold and against every cover enumerated
+  on random lattices, ties across components included; the evaluator's shard 95
+  (per token and whole-shard running text) and shard 99 per-token first choices are
+  byte-identical to main. Sentences that took minutes or were refused now resolve in
+  milliseconds: the captured cases in 2 to 5 ms, and a list of 30 years (a top
+  level of 2**30 covers across 30 components) in 8 ms. On the latency harness's
+  2,000 sentences of shards 90-94, resolve p50 falls from 4.5-23 ms to 0.3-0.6 ms
+  per length bucket, and the 26 sentences main refused now resolve.
+- No bound on the number of covers. The 65,536 bound on a lattice's total covers is
+  gone: counts are exact integers (2**96 and more) that are never made a float or
+  used to size anything. What is bounded is what the ranked fold must emit whole in
+  one component: its top geometry level is counted exactly first (a fold over
+  tiergraph's `LexicographicSemiring(DECIMAL_TROPICAL, COUNTING)`: the best geometry
+  and how many covers reach it) and refused past 256 before any witness is ranked,
+  as is a widening that would pass it to show a lower needed level whole. Over 3.57M
+  sentences of the runtime-eval shards 90-94, no component's top level held more
+  than 4 covers, and a tied level of 256 ranks in about 0.2 s and 17 MB. frend has
+  no time bound of its own, and none is assumed of a caller.
+- `frend.freeze_after_setup()`: for a process that keeps frend loaded, a documented
+  call to make once after setup (readers built, tables loaded, a first text
+  resolved and verbalized): it collects, then `gc.freeze()`s everything alive, so
+  later collections no longer walk the setup objects. Importing frend changes
+  nothing.
 - Raised the tiergraph floor to `tiergraph>=0.4.1`, whose ranked fold keeps only the
   top k when multiplying single paths: the same ranked output, faster.
 - Read spaced letters of another script as one span. Which scripts are "another"
