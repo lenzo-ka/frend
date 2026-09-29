@@ -645,7 +645,10 @@ def connector_probability(
         bos=bos,
         eos=eos,
     )
-    return connector["to"], tree.distribution(values).get(connector["to"], 0.0)
+    label = connector.get("connector_source")
+    if not isinstance(label, str):
+        return None
+    return label, tree.distribution(values).get(label, 0.0)
 
 
 # --------------------------------------------------------------------------------------

@@ -207,7 +207,7 @@ def test_a_locale_without_the_connector_offers_none(monkeypatch):
     from frend.locale_data import lexical_forms
     from frend.ranges import RangeDetector
 
-    assert verbalize_module.range_connector("en_US") == "to"
+    assert verbalize_module.range_connector("en_US").words == "to"
     assert verbalize_module.range_separators("en_US") == frozenset({"-", "–"})
     assert RangeDetector("ru_RU").detect("5-10") == []
     assert connector_words("от {0} до {1}") is None

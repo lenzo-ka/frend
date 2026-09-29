@@ -37,18 +37,23 @@ if str(_REPO) not in sys.path:
 
 import google_tn_rows  # noqa: E402
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
+from corpus_inputs import (  # noqa: E402
+    VerifiedInput,
+    open_verified,
+    verified_inputs,
+    write_verification_receipt,
+)
 
 _TEST_FILE = "output-00099-of-00100"
 _TEST_LINES = 100_000
 _ANY_CAP = 64
 
 
-def _detectors():
-    """The evaluator's readers: the shared en_US profile (``reading_profile``), the very
-    list ``reading_profile.reading_detectors("en_US")`` returns."""
+def _detectors(locale: str = "en_US"):
+    """The evaluator's readers: the shared profile for ``locale``."""
     from reading_profile import reading_detectors
 
-    return reading_detectors("en_US")
+    return reading_detectors(locale)
 
 
 _expected = google_tn_rows.expected
@@ -63,9 +68,11 @@ def _joined(texts_and_passthrough) -> str:
     return out
 
 
-def _score(item: tuple[tuple[str, str, str], str, str]) -> tuple[str, bool, bool]:
-    (corpus_class, written, spoken), before, after = item
-    first, any_ = _score_text(written, _expected(corpus_class, written, spoken), before, after)
+def _score(item: tuple[tuple[str, str, str], str, str, str]) -> tuple[str, bool, bool]:
+    (corpus_class, written, spoken), before, after, locale = item
+    first, any_ = _score_text(
+        written, _expected(corpus_class, written, spoken), before, after, locale
+    )
     return corpus_class, first, any_
 
 
@@ -79,7 +86,13 @@ def _in_context(written: str, before: str, after: str):
     return TextContext(f"{head}{written}{tail}", len(head))
 
 
-def _score_text(written: str, target: str, before: str = "", after: str = "") -> tuple[bool, bool]:
+def _score_text(
+    written: str,
+    target: str,
+    before: str = "",
+    after: str = "",
+    locale: str = "en_US",
+) -> tuple[bool, bool]:
     """Whether frend's first reading of ``written``, and whether any reading, says ``target``.
 
     ``written`` is read alone, as a token of its sentence, and ``before`` and ``after``
@@ -93,9 +106,9 @@ def _score_text(written: str, target: str, before: str = "", after: str = "") ->
 
     target = normalize_spoken(target)
     try:
-        detections = list(detect(written, _detectors())) if written.strip() else []
+        detections = list(detect(written, _detectors(locale))) if written.strip() else []
         verbalized = verbalize_lattice(
-            resolve_lattice(detections, source_text=written),
+            resolve_lattice(detections, source_text=written, locale=locale),
             context=_in_context(written, before, after),
         )
     except Exception:  # noqa: BLE001 - a crash is a miss, counted, not hidden
@@ -121,21 +134,22 @@ def _score_text(written: str, target: str, before: str = "", after: str = "") ->
 # The number, separator, number predicate is shared with the builders (one definition);
 # the alias keeps the name the evaluator has always had.
 _running_text = google_tn_rows.running_text
+_range_denominators = google_tn_rows.range_candidate_denominators
 
 
 def _score_joined(
-    item: tuple[tuple[str, str, str, str], tuple[str, str]],
+    item: tuple[tuple[str, str, str, str], tuple[str, str], str],
 ) -> tuple[str, str, bool, bool]:
-    (separator, middle, written, target), (before, after) = item
-    return (separator, middle, *_score_text(written, target, before, after))
+    (separator, middle, written, target), (before, after), locale = item
+    return (separator, middle, *_score_text(written, target, before, after, locale))
 
 
-def _rows(corpus_dir: Path, name: str = _TEST_FILE, limit: int | None = _TEST_LINES):
+def _rows(corpus_input: VerifiedInput, limit: int | None = _TEST_LINES):
     """Sentences of (class, written, spoken) rows from the first ``limit`` lines of shard
-    ``name`` (every line when ``limit`` is None); by default the test set, as the paper
-    cuts it."""
+    ``corpus_input`` (every line when ``limit`` is None). The input must already bind
+    source, locale pool and bytes through :mod:`corpus_inputs`."""
     sentences, current = [], []
-    with (corpus_dir / name).open(encoding="utf-8") as handle:
+    with open_verified(corpus_input) as handle:
         for line in islice(handle, limit):
             parts = line.rstrip("\n").split("\t")
             if parts[0] == "<eos>":
@@ -158,7 +172,7 @@ def _map(function, items, workers: int, chunksize: int) -> list:
         return list(pool.map(function, items, chunksize=chunksize))
 
 
-def _per_token(sentences, workers: int) -> dict:
+def _per_token(sentences, workers: int, locale: str = "en_US") -> dict:
     """First-choice, any-reading and whole-sentence accuracy over every token of
     ``sentences``, overall and per class."""
     rows = [
@@ -166,6 +180,7 @@ def _per_token(sentences, workers: int) -> dict:
             row,
             " ".join(r[1] for r in sentence[:index]),
             " ".join(r[1] for r in sentence[index + 1 :]),
+            locale,
         )
         for sentence in sentences
         for index, row in enumerate(sentence)
@@ -202,11 +217,18 @@ def _per_token(sentences, workers: int) -> dict:
     }
 
 
-def _running_text_rows(sentences, workers: int) -> list[dict]:
+def _running_text_rows(sentences, workers: int, locale: str = "en_US") -> list[dict]:
     """Each number, separator, number triple of ``sentences`` rejoined as written and
     scored, grouped by separator and the corpus's reading of it."""
     items = list(
-        zip(_running_text(sentences), google_tn_rows.running_text_contexts(sentences), strict=True)
+        (
+            (row, context, locale)
+            for row, context in zip(
+                _running_text(sentences, locale),
+                google_tn_rows.running_text_contexts(sentences, locale),
+                strict=True,
+            )
+        )
     )
     joined_results = _map(_score_joined, items, workers, 16)
     by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
@@ -226,27 +248,36 @@ def _running_text_rows(sentences, workers: int) -> list[dict]:
     ]
 
 
-def _held_out(corpus_dir: Path, name: str, workers: int) -> dict:
+def _held_out(
+    inputs: dict[str, VerifiedInput], name: str, workers: int, locale: str = "en_US"
+) -> dict:
     """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
     as the paper cuts the test shard, and running text over the whole shard."""
-    whole = _rows(corpus_dir, name, None)
+    corpus_input = inputs[name]
+    whole = _rows(corpus_input, None)
     return {
         "shard": name,
         "per_token": {
             "lines": f"first {_TEST_LINES} lines of {name}",
-            **_per_token(_rows(corpus_dir, name, _TEST_LINES), workers),
+            **_per_token(_rows(corpus_input, _TEST_LINES), workers, locale),
         },
         "running_text": {
             "lines": f"all lines of {name}",
-            "triples": len(_running_text(whole)),
-            "rows": _running_text_rows(whole, workers),
+            "triples": len(_running_text(whole, locale)),
+            "rows": _running_text_rows(whole, workers, locale),
         },
     }
 
 
-def evaluate(corpus_dir: Path, workers: int, held_out_shard: str | None = None) -> dict:
-    sentences = _rows(corpus_dir)
-    per_token = _per_token(sentences, workers)
+def evaluate(
+    inputs: dict[str, VerifiedInput],
+    workers: int,
+    held_out_shard: str | None = None,
+    *,
+    locale: str = "en_US",
+) -> dict:
+    sentences = _rows(inputs[_TEST_FILE])
+    per_token = _per_token(sentences, workers, locale)
     report = {
         "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
         **{key: per_token[key] for key in ("tokens", "sentences")},
@@ -255,14 +286,14 @@ def evaluate(corpus_dir: Path, workers: int, held_out_shard: str | None = None) 
             for key in ("first_choice_accuracy", "any_reading_accuracy", "sentence_accuracy")
         },
         "classes": per_token["classes"],
-        "running_text": _running_text_rows(sentences, workers),
+        "running_text": _running_text_rows(sentences, workers, locale),
         "note": (
             "frend reads each token alone, its sentence as context; "
             "the published models read the sentence whole"
         ),
     }
     if held_out_shard is not None:
-        report["held_out"] = _held_out(corpus_dir, held_out_shard, workers)
+        report["held_out"] = _held_out(inputs, held_out_shard, workers, locale)
     return report
 
 
@@ -317,6 +348,10 @@ def _render(report: dict) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--locale", required=True)
+    parser.add_argument("--source-id", required=True)
+    parser.add_argument("--pool", action="append", required=True, dest="pools")
+    parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--json", type=Path, default=None, help="also write the report here")
     parser.add_argument(
@@ -327,7 +362,20 @@ def main(argv: list[str] | None = None) -> int:
         "text over all of it (acceptance is on output-00095-of-00100)",
     )
     args = parser.parse_args(argv)
-    report = evaluate(args.corpus_dir or _default_corpus_dir(), args.workers, args.held_out_shard)
+    corpus_dir = args.corpus_dir or _default_corpus_dir()
+    names = [_TEST_FILE]
+    if args.held_out_shard is not None and args.held_out_shard not in names:
+        names.append(args.held_out_shard)
+    verified = verified_inputs(
+        args.source_id,
+        [corpus_dir / name for name in names],
+        locale=args.locale,
+        pools=tuple(args.pools),
+        root=corpus_dir,
+    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
+    inputs = {item.relative_path: item for item in verified}
+    report = evaluate(inputs, args.workers, args.held_out_shard, locale=args.locale)
     print(_render(report))
     if args.json:
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

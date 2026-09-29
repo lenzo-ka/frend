@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 from decimal import Decimal
@@ -275,13 +276,40 @@ def test_fixture_matching_normalization_sentinels_and_unmatched():
     assert document["provenance"]["skipped_sentinel_rows"] == 2
 
 
-def test_fixture_check_rederives_byte_identical_document(tmp_path):
+def test_fixture_check_rederives_byte_identical_document(tmp_path, monkeypatch):
     build = _load_builder()
+    monkeypatch.syspath_prepend(str(_REPO / "tools"))
+    import corpus_inputs
+
+    source = next(_FIXTURE.glob("output-*-of-*"))
+    verified = corpus_inputs.VerifiedInput(
+        "google/tn-en_with_types",
+        source.name,
+        hashlib.sha256(source.read_bytes()).hexdigest(),
+        "shippable-share-alike",
+        source,
+    )
+    monkeypatch.setattr(corpus_inputs, "verified_inputs", lambda *args, **kwargs: (verified,))
     output = tmp_path / "spoken_priors.json"
-    assert build.main([str(_FIXTURE), "--out", str(output)]) == 0
-    assert build.main([str(_FIXTURE), "--check", "--out", str(output)]) == 0
+    rendered = build._render(build.build_document(_FIXTURE))
+    output.write_text(rendered, encoding="utf-8")
+    argv = [
+        str(_FIXTURE),
+        "--locale",
+        "en_US",
+        "--source-id",
+        "google/tn-en_with_types",
+        "--pool",
+        "training",
+        "--receipt",
+        str(tmp_path / "receipt.json"),
+        "--out",
+        str(output),
+        "--check",
+    ]
+    assert build.main(argv) == 0
     output.write_text(output.read_text().replace("}", "} ", 1))
-    assert build.main([str(_FIXTURE), "--check", "--out", str(output)]) == 1
+    assert build.main(argv) == 1
 
 
 def test_recognition_profile_includes_compacts_currency_names_and_xcd():

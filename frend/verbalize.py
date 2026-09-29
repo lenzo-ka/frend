@@ -49,7 +49,7 @@ from frend.electronic import (
     tld_positions,
 )
 from frend.lattice import ReadingEdge, ReadingLattice
-from frend.letters import LettersValue, cv_pattern, spelled
+from frend.letters import LettersValue, cv_pattern, letter_names, spelled
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.ranges import (
     RangeValue,
@@ -66,16 +66,30 @@ from frend.symbols import ScriptRunValue, SymbolValue
 from frend.written_forms import DigitsValue
 
 __all__ = [
+    "RangeConnector",
+    "RangeSlot",
     "SpokenAlternative",
     "VerbalizedLattice",
     "VerbalizedPath",
     "VerbalizedUnit",
     "register_curated_alternative",
+    "range_connector",
+    "range_separators",
     "verbalize_edge",
     "verbalize_lattice",
 ]
 
 LEXICAL_SOURCE = "lexical:en_US"
+
+
+def lexical_source(locale: str) -> str:
+    return _lexical_source(canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _lexical_source(locale: str) -> str:
+    return f"lexical:{locale}"
+
 
 # Every form ICU and CLDR do not give, and the corpus says, is a hand-written lexical
 # form: it lives with its reason in ``data/<locale>/lexical.json`` and is read here by
@@ -246,7 +260,10 @@ def _source_tier(provenance: str) -> int:
 
 
 def _rank_final(
-    alternatives: Sequence[SpokenAlternative], kind: str | None, sub_key: str | None
+    alternatives: Sequence[SpokenAlternative],
+    kind: str | None,
+    sub_key: str | None,
+    locale: str,
 ) -> tuple[SpokenAlternative, ...]:
     """Apply carried weights, one measurement scope, then source tiers stably.
 
@@ -261,7 +278,9 @@ def _rank_final(
             ranked.append((0, -alternative.weight, index, alternative))
             continue
         measurement = (
-            source_prior(kind, alternative.provenance, sub_key) if kind is not None else None
+            source_prior(kind, alternative.provenance, sub_key, locale=locale)
+            if kind is not None
+            else None
         )
         if measurement is not None:
             weighted = SpokenAlternative(
@@ -270,7 +289,7 @@ def _rank_final(
             ranked.append((1, -measurement.share, index, weighted))
             continue
         ranked.append((_source_tier(alternative.provenance), Decimal(0), index, alternative))
-    ranked = _zero_shares(ranked, kind)
+    ranked = _zero_shares(ranked, kind, locale)
     ranked.sort(key=lambda item: item[:3])
     return tuple(item[3] for item in ranked)
 
@@ -302,21 +321,21 @@ def _zero_key(text: str, locale: str = "en_US") -> tuple[str, ...]:
 
 
 def _zero_shares(
-    ranked: list[tuple[int, Decimal, int, SpokenAlternative]], kind: str | None
+    ranked: list[tuple[int, Decimal, int, SpokenAlternative]], kind: str | None, locale: str
 ) -> list[tuple[int, Decimal, int, SpokenAlternative]]:
     """Readings that differ only in how a zero is said ("point zero five", "point o
     five"; ICU's "oh-five", "o five") share their weight by how the corpus says a zero
     in this kind of reading (``data/en/zero_priors.json``, ``tools/build_zero_priors.py``),
     each zero counted once, add-one: a date's zero is "o", a decimal's mostly "o"."""
-    counts = _zero_priors().get(kind or "")
-    zeros = _zero_words()
+    counts = _zero_priors(locale=locale).get(kind or "")
+    zeros = _zero_words(locale)
     if not counts or not zeros:
         return ranked
     total = sum(counts.get(word, 0) + 1 for word in zeros)
     groups: dict[tuple[str, ...], list[int]] = {}
     for position, (_, _, _, alternative) in enumerate(ranked):
         if zeros & set(alternative.text.replace("-", " ").split()):
-            groups.setdefault(_zero_key(alternative.text), []).append(position)
+            groups.setdefault(_zero_key(alternative.text, locale), []).append(position)
     out = list(ranked)
     for members in groups.values():
         weights = [ranked[at][3].weight for at in members]
@@ -452,7 +471,7 @@ def _spoken_decimal(
         if digit == "0" and zero is not None:
             # ICU has no digit-reading rule that calls zero "o"; the corpus uses
             # that spelling for zero digits in decimals.
-            words.append(SpokenAlternative(zero, LEXICAL_SOURCE))
+            words.append(SpokenAlternative(zero, lexical_source(locale)))
         parts.append(_ranked(words))
     alternatives = list(_compose(parts, " ".join("{}" for _ in parts)))
     if set(fractional_digits) <= {"0"} and value == value.to_integral_value():
@@ -592,7 +611,7 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
     irregular = (_lexical("fraction.denominators", locale) or {}).get(str(int(denominator)))
     if irregular is not None:
         denominator_words.insert(
-            0, SpokenAlternative(irregular[0 if singular else 1], LEXICAL_SOURCE)
+            0, SpokenAlternative(irregular[0 if singular else 1], lexical_source(locale))
         )
     fraction = _compose([numerator_words, _ranked(denominator_words)], "{} {}")
     over = _compose([numerator_words, _number_leaf(denominator, "cardinal", locale)], "{} over {}")
@@ -603,7 +622,7 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
             None if irregular is None else _lexical_pattern("fraction.one", locale, irregular[0])
         )
         if numerator == 1 and single is not None:
-            mixed_fraction.insert(0, SpokenAlternative(single, LEXICAL_SOURCE))
+            mixed_fraction.insert(0, SpokenAlternative(single, lexical_source(locale)))
         mixed = _compose([whole_words, _ranked(mixed_fraction)], "{} and {}")
         mixed_over = _compose([whole_words, over], "{} and {}")
         return _ranked([*mixed, *mixed_over])
@@ -625,7 +644,7 @@ def _currency_unit_name(
     plural = (
         amount != amount.to_integral_value() or _plural_rules(locale).select(int(amount)) != "one"
     )
-    return SpokenAlternative(names[plural], LEXICAL_SOURCE)
+    return SpokenAlternative(names[plural], lexical_source(locale))
 
 
 def _currency_wide_names(
@@ -635,7 +654,7 @@ def _currency_wide_names(
     names = [SpokenAlternative(_currency_name(currency, plural, locale), "icu-measure:wide")]
     region = (_lexical("currency.region_names", locale) or {}).get(currency)
     if region is not None:
-        names.append(SpokenAlternative(region[plural], LEXICAL_SOURCE))
+        names.append(SpokenAlternative(region[plural], lexical_source(locale)))
     return _ranked(names)
 
 
@@ -830,7 +849,9 @@ def _spoken_time(
             # A zero-led minute is said with its zero ("oh five", "o five"), which no
             # ICU time pattern says; without the locale's words it is ICU's cardinal.
             minutes = tuple(
-                SpokenAlternative(f"{zero} {item.text}", f"{LEXICAL_SOURCE}+{item.provenance}")
+                SpokenAlternative(
+                    f"{zero} {item.text}", f"{lexical_source(locale)}+{item.provenance}"
+                )
                 for zero in zeros
                 for item in minutes
             )
@@ -840,13 +861,15 @@ def _spoken_time(
         oclock = _lexical("clock.oclock", locale)
         spoken_hours = [[hours, *tail]]
         if oclock is not None:
-            spoken_hours.append([hours, (SpokenAlternative(oclock, LEXICAL_SOURCE),), *tail])
+            spoken_hours.append(
+                [hours, (SpokenAlternative(oclock, lexical_source(locale)),), *tail]
+            )
         for parts in spoken_hours:
             forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
         hundred = _lexical("clock.hundred", locale)
         if minute == 0 and period is None and hundred is not None:
             # A written on-the-hour 24-hour time: the corpus reads "20:00" "twenty hundred".
-            parts = [hours, (SpokenAlternative(hundred, LEXICAL_SOURCE),), *tail]
+            parts = [hours, (SpokenAlternative(hundred, lexical_source(locale)),), *tail]
             forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
     return _ranked(forms)
 
@@ -887,7 +910,8 @@ def _spoken_plural(detection: object, locale: str) -> tuple[SpokenAlternative, .
     return _ranked(
         [
             SpokenAlternative(
-                _plural_phrase(item.text, locale), f"{item.provenance}+{LEXICAL_SOURCE}"
+                _plural_phrase(item.text, locale),
+                f"{item.provenance}+{lexical_source(locale)}",
             )
             for kind in ("year", "cardinal")
             for item in _number_leaf(number, kind, locale)
@@ -920,7 +944,16 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
                 )
             )
         elif kind == "letters":
-            parts.append((SpokenAlternative(" ".join(text.lower()), "surface:letters"),))
+            letter_form = spelled(text, locale)
+            if letter_form is None:
+                raise NotImplementedError(f"no authoritative letter names for {locale}")
+            parts.append(
+                (
+                    SpokenAlternative(letter_form.text, "surface:letters")
+                    if locale == "en_US"
+                    else letter_form,
+                )
+            )
     if not parts:
         raise NotImplementedError("alphanumeric token has no speakable run")
     return _compose(parts, " ".join("{}" for _ in parts))
@@ -942,7 +975,9 @@ def _roman_readings(
             raise NotImplementedError(f"no spoken possessive for {locale}")
         forms = [
             SpokenAlternative(
-                f"{item.text}{suffix}", f"{item.provenance}+{LEXICAL_SOURCE}", item.weight
+                f"{item.text}{suffix}",
+                f"{item.provenance}+{lexical_source(locale)}",
+                item.weight,
             )
             for item in forms
         ]
@@ -958,7 +993,7 @@ def _with_article(
     return tuple(
         SpokenAlternative(
             _lexical_pattern("ordinal.article", locale, item.text),
-            f"{LEXICAL_SOURCE}+{item.provenance}",
+            f"{lexical_source(locale)}+{item.provenance}",
         )
         for item in ordinals
     )
@@ -991,23 +1026,33 @@ _MARKS.freeze()
 
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
-def _spoken_letters(value: LettersValue) -> tuple[SpokenAlternative, ...]:
+def _spoken_letters(value: LettersValue, locale: str) -> tuple[SpokenAlternative, ...]:
     """A run of capitals spelled or read as a word, weighted as an acronym is; a plural
     or possessive rides on the last letter ("UFOs" -> "u f o's", "ufos"). An initial
     ("S.") is its letter."""
     letters = _NFC.normalize(value.letters)
     if value.suffix == ".":
-        return (SpokenAlternative(spelled(letters), "surface:letter"),)
+        letter_form = spelled(letters, locale)
+        if letter_form is None:
+            raise NotImplementedError(f"no authoritative letter names for {locale}")
+        return (
+            SpokenAlternative(letter_form.text, "surface:letter")
+            if locale == "en_US"
+            else letter_form,
+        )
     suffix = "'s" if value.suffix else ""
     word = _NFC.normalize(value.surface).lower()
-    return tuple(
+    readings = tuple(
         SpokenAlternative(
             f"{form.text}{suffix}" if form.provenance.endswith("spelled") else word,
             form.provenance,
             form.weight,
         )
-        for form in _with_acronym_readings(letters, ())
+        for form in _with_acronym_readings(letters, (), locale)
     )
+    if not readings:
+        raise NotImplementedError(f"no authoritative letter names for {locale}")
+    return readings
 
 
 # The source says which, so a consumer can tell spelled letters from a written long form.
@@ -1031,7 +1076,7 @@ def _acronym_priors_for(locale: str) -> dict[str, dict[str, int]]:
 
 
 def _with_acronym_readings(
-    surface: str, alternatives: tuple[SpokenAlternative, ...]
+    surface: str, alternatives: tuple[SpokenAlternative, ...], locale: str
 ) -> tuple[SpokenAlternative, ...]:
     """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
 
@@ -1045,16 +1090,22 @@ def _with_acronym_readings(
     letters = "".join(ch for ch in surface if ch.isalpha() or _MARKS.contains(ch))
     if len(letters) < 2 or not letters.isupper():
         return alternatives
-    table = _acronym_priors()
+    spelling = spelled(letters, locale)
+    if spelling is None:
+        return alternatives
+    table = _acronym_priors(locale=locale)
+    if not table:
+        return _ranked((spelling, *alternatives))
 
     def blend(counts: dict[str, int], parent: Decimal) -> Decimal:
         return (Decimal(counts.get("spelled", 0)) + 5 * parent) / (sum(counts.values()) + 5)
 
     overall = table["*"]
     share = blend(
-        table.get(letter_key(letters), {}), Decimal(overall["spelled"]) / sum(overall.values())
+        table.get(letter_key(letters, locale), {}),
+        Decimal(overall["spelled"]) / sum(overall.values()),
     )
-    if (pattern := cv_pattern(letters)) is not None and f"cv:{pattern}" in table:
+    if (pattern := cv_pattern(letters, locale)) is not None and f"cv:{pattern}" in table:
         # Its consonant-vowel pattern ("GUS" is mostly said, "GWR" spelled) over its shape.
         share = blend(table[f"cv:{pattern}"], share)
     for key in (f"surface:{letters}", f"roman:{letters}"):
@@ -1064,7 +1115,7 @@ def _with_acronym_readings(
             own = {label: table[key].get(label, 0) for label in ("spelled", "word")}
             share = blend(own, share)
     # Each capital by its own lower case ("İB" is "i b", "ΟΣ" "ο σ"), not the run's.
-    forms = [SpokenAlternative(spelled(letters), "measured:acronym-spelled", share)]
+    forms = [SpokenAlternative(spelling.text, "measured:acronym-spelled", share)]
     if letters == surface:
         # A dotted surface ("U.S.") is spelled or expanded, never read as a word ("us").
         forms.append(SpokenAlternative(letters.lower(), "measured:acronym-word", 1 - share))
@@ -1216,13 +1267,19 @@ def _era_names(era: int, detection: object, locale: str) -> tuple[SpokenAlternat
     text = str(getattr(written, "text", "")) or symbols.getEras()[era]
     if getattr(written, "form", None) == "wide":
         return (SpokenAlternative(" ".join(text.split()), "surface:words"),)
-    letters = "".join(ch for ch in text if ch.isalpha()).lower()
+    letters = "".join(ch for ch in text if ch.isalpha())
+    names_for_letters = letter_names(letters, locale)
     variant_short, variant_wide = _era_variants(locale)
     wide = SpokenAlternative(names[era], "icu-datetime:GGGG")
     if era < len(variant_short) and era < len(variant_wide):
         if text.casefold() == variant_short[era].casefold():
             wide = SpokenAlternative(variant_wide[era], "icu-datetime:GGGG%variant")
-    return (SpokenAlternative(" ".join(letters), "surface:letters"), wide)
+    spelled_era = (
+        ()
+        if names_for_letters is None
+        else (SpokenAlternative(" ".join(names_for_letters.spoken), "surface:letters"),)
+    )
+    return (*spelled_era, wide)
 
 
 def _spoken_era_year(
@@ -1258,7 +1315,7 @@ def _year_leaf(value: Decimal, locale: str) -> tuple[SpokenAlternative, ...]:
         words = item.text.replace("-", " ").split(" ")
         if said.keys() & set(words):
             text = " ".join(said.get(word, word) for word in words)
-            forms.append(SpokenAlternative(text, f"{item.provenance}+{LEXICAL_SOURCE}"))
+            forms.append(SpokenAlternative(text, f"{item.provenance}+{lexical_source(locale)}"))
     return _ranked(forms)
 
 
@@ -1322,7 +1379,8 @@ def _spoken_date_parts(
             dates = _rank_final(
                 _spoken_date(DateTimeValue(ymd, value.calendar), detection, locale),
                 "date",
-                measurement_sub_key("date", detection),
+                measurement_sub_key("date", detection, locale=locale),
+                locale,
             )
             first = min(
                 (
@@ -1518,7 +1576,9 @@ def _spoken_measure(value: MeasureValue, locale: str) -> tuple[SpokenAlternative
         singular = _measure_template(Decimal(1), base, locale).replace("{}", "").strip()
         plural = _measure_template(amount, base, locale).replace("{}", "").strip()
         if singular != plural and head.count(singular) == 1:
-            templates.append((head.replace(singular, plural), f"icu-measure:wide+{LEXICAL_SOURCE}"))
+            templates.append(
+                (head.replace(singular, plural), f"icu-measure:wide+{lexical_source(locale)}")
+            )
     return _ranked(
         [
             SpokenAlternative(template.format(item.text), f"{item.provenance}+{source}")
@@ -1600,7 +1660,7 @@ def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative,
                 forms.append(
                     SpokenAlternative(
                         _lexical_pattern("duration.milliseconds", locale, body, texts[-1]),
-                        f"{source}+icu-list:units+{LEXICAL_SOURCE}",
+                        f"{source}+icu-list:units+{lexical_source(locale)}",
                     )
                 )
                 continue
@@ -1682,6 +1742,10 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
     A separator the corpus never names is not verbalized, except one the locale names
     in ``lexical.json`` (``separator.words``: "@" "at").
     """
+    from frend.electronic import load_electronic_priors
+
+    if load_electronic_priors(locale=locale) is None:
+        raise NotImplementedError(f"no measured electronic prior for {locale}")
     tlds = tld_positions(value.parts)
     unmeasured_names = _lexical("separator.words", locale) or {}
     unmeasured = False
@@ -1690,7 +1754,7 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
         options: dict[str, Decimal] = {}
         if kind == "letters":
             lower = text.lower()
-            probabilities = letter_probabilities(text, tld=index in tlds)
+            probabilities = letter_probabilities(text, tld=index in tlds, locale=locale)
             if len(lower) == 1:
                 options[lower] = Decimal(1)
             else:
@@ -1700,14 +1764,18 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
                     "spelled", Decimal(0)
                 )
         elif kind == "digits":
-            probabilities = digit_probabilities(text)
+            probabilities = digit_probabilities(text, locale=locale)
             for form, readings in digit_forms(text, locale).items():
                 spoken = readings[0][0]
                 options[spoken] = options.get(spoken, Decimal(0)) + probabilities.get(
                     form, Decimal(0)
                 )
         else:
-            names = {name: share for name, share in separator_names(text).items() if name != "sil"}
+            names = {
+                name: share
+                for name, share in separator_names(text, locale=locale).items()
+                if name != "sil"
+            }
             if not names and text in unmeasured_names:
                 names = {unmeasured_names[text]: Decimal(1)}
                 unmeasured = True
@@ -1724,7 +1792,7 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
         ]
         extended.sort(key=lambda item: -item[0])
         beam = extended[:ELECTRONIC_BEAM]
-    source = f"{ELECTRONIC_SOURCE}+{LEXICAL_SOURCE}" if unmeasured else ELECTRONIC_SOURCE
+    source = f"{ELECTRONIC_SOURCE}+{lexical_source(locale)}" if unmeasured else ELECTRONIC_SOURCE
     return tuple(
         SpokenAlternative(" ".join(words), source, probability) for probability, words in beam
     )
@@ -1738,7 +1806,9 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
     zero = _lexical("zero.digit", locale)
     if "0" in value.digits and zero is not None:
         spoken = " ".join(zero if d == "0" else w for d, w in zip(value.digits, words, strict=True))
-        forms.append(SpokenAlternative(spoken, f"icu-rbnf:%spellout-cardinal+{LEXICAL_SOURCE}"))
+        forms.append(
+            SpokenAlternative(spoken, f"icu-rbnf:%spellout-cardinal+{lexical_source(locale)}")
+        )
     return _ranked(forms)
 
 
@@ -1793,16 +1863,47 @@ def _spoken_relative(
     )
 
 
-RANGE_SOURCE = LEXICAL_SOURCE  # the spoken range connector is a lexical form
+@dataclass(frozen=True)
+class RangeSlot:
+    index: str
+    attributes: Mapping[str, str]
 
 
-def range_connector(locale: str) -> str | None:
+@dataclass(frozen=True)
+class RangeConnector:
+    id: str
+    pattern: str
+    words: str
+    slots: tuple[RangeSlot, ...]
+    provenance: str
+
+
+def range_connector(locale: str) -> RangeConnector | None:
     """The words a range's two ends are joined by ("to"), from the lexical table's
     ``range.connector`` "to" pattern; ``None`` when the locale has none (the feature is
     off) or its pattern cannot be said by a separator alone."""
-    for form in (_lexical("range.connector", locale) or {}).get("range", ()):
-        if form.get("id") == "to":
-            return connector_words(str(form["pattern"]))
+    return _range_connector(canonical_locale(locale), _lexical, _lexical_for)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _range_connector(locale: str, lexical, lexical_for) -> RangeConnector | None:
+    del lexical_for  # Its identity invalidates the cache when tests or callers replace the loader.
+    for form in (lexical("range.connector", locale) or {}).get("range", ()):
+        identifier = str(form.get("id", "")).strip()
+        pattern = str(form.get("pattern", ""))
+        words = connector_words(pattern)
+        if identifier and words:
+            slots = tuple(
+                RangeSlot(str(index), MappingProxyType(dict(attributes)))
+                for index, attributes in sorted((form.get("slots") or {}).items())
+            )
+            return RangeConnector(
+                identifier,
+                pattern,
+                words,
+                slots,
+                _lexical_source(locale),
+            )
     return None
 
 
@@ -1811,9 +1912,14 @@ def range_separators(locale: str) -> frozenset[str]:
     ``range.separator`` ranges (the hyphen-minus, which CLDR writes nowhere in en) and
     CLDR's own number-range separator (the en dash). Empty when the locale has no spoken
     connector."""
-    if range_connector(locale) is None:
+    return _range_separators(canonical_locale(locale), _lexical, _lexical_for)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _range_separators(locale: str, lexical, lexical_for) -> frozenset[str]:
+    if _range_connector(locale, lexical, lexical_for) is None:
         return frozenset()
-    written = set((_lexical("range.separator", locale) or {}).get("range", ()))
+    written = set((lexical("range.separator", locale) or {}).get("range", ()))
     cldr = cldr_range_separator(locale)
     return frozenset(written | ({cldr} if cldr else set()))
 
@@ -1831,7 +1937,9 @@ def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) 
     return len(groups) >= 3 or groups == [3, 4]
 
 
-def _range_to(context: TextContext | None, start: int, end: int, locale: str) -> str | None:
+def _range_to(
+    context: TextContext | None, start: int, end: int, locale: str
+) -> RangeConnector | None:
     """The locale's range connector ("to") when ``[start, end)`` of the lattice's text
     is a range separator with a number on either side in ``context``, spaced alike on
     both sides, and not inside an identifier's digit groups; else ``None``.
@@ -1899,11 +2007,19 @@ def _lone_ratio_first(
     table = load_range_priors(locale)
     if table is None:
         return alternatives
-    said, silent = table.connector_share("ratio", "to"), table.connector_share("ratio", "silent")
+    connector = range_connector(locale)
+    if connector is None:
+        return alternatives
+    said = table.connector_share("ratio", connector.id)
+    silent = table.connector_share("ratio", "silent")
     if said is None or silent is None or said <= silent:
         return alternatives
     at = next(
-        (i for i, item in enumerate(alternatives) if item.provenance.startswith(RANGE_SOURCE)),
+        (
+            i
+            for i, item in enumerate(alternatives)
+            if item.provenance.startswith(connector.provenance)
+        ),
         None,
     )
     if not at:
@@ -1929,8 +2045,15 @@ def _connector_first(
     if said is None:
         return alternatives, None
     label, probability = said
+    connector = range_connector(locale)
+    if connector is None:
+        return alternatives, None
     at = next(
-        (i for i, item in enumerate(alternatives) if item.provenance.startswith(RANGE_SOURCE)),
+        (
+            i
+            for i, item in enumerate(alternatives)
+            if item.provenance.startswith(connector.provenance)
+        ),
         None,
     )
     applied = at is not None and at > 0 and probability >= threshold
@@ -1946,18 +2069,20 @@ def _may_end_a_range(type_: str) -> bool:
     return type_.startswith(("number:cardinal", "number:int", "number:decimal", "number:percent"))
 
 
-def _connector_reading(connector: str) -> SpokenAlternative:
+def _connector_reading(connector: RangeConnector) -> SpokenAlternative:
     """The range connector alone, said for a separator between two numbers ("to");
     ``connector`` is read from the lexical table (``range_connector``)."""
-    return SpokenAlternative(connector, RANGE_SOURCE)
+    return SpokenAlternative(connector.words, connector.provenance)
 
 
 def _connected(
-    connector: str, right_end: Sequence[SpokenAlternative]
+    connector: RangeConnector, right_end: Sequence[SpokenAlternative]
 ) -> tuple[SpokenAlternative, ...]:
     """The right end of a written range after the table's connector ("to ten")."""
     return tuple(
-        SpokenAlternative(f"{connector} {item.text}", f"{RANGE_SOURCE}+{item.provenance}")
+        SpokenAlternative(
+            f"{connector.words} {item.text}", f"{connector.provenance}+{item.provenance}"
+        )
         for item in right_end
     )
 
@@ -1994,7 +2119,12 @@ def _unsigned(
     }
     alternatives = _spoken_number(type_, unsigned_value, unsigned_detection, locale)
     kind = _measured_kind(type_, unsigned_value)
-    ranked = _rank_final(alternatives, kind, measurement_sub_key(kind, unsigned_detection))
+    ranked = _rank_final(
+        alternatives,
+        kind,
+        measurement_sub_key(kind, unsigned_detection, locale=locale),
+        locale,
+    )
     if year_first and type_ != "number:percent" and decimal == decimal.to_integral_value():
         return _year_first(decimal, ranked, locale)
     return ranked
@@ -2090,7 +2220,9 @@ def _range_end(
             alternatives = _spoken_number(type_, value, detection, locale)
             kind = _measured_kind(type_, value) or "cardinal"
     if apply_source_priors:
-        alternatives = _rank_final(alternatives, kind, measurement_sub_key(kind, detection))
+        alternatives = _rank_final(
+            alternatives, kind, measurement_sub_key(kind, detection, locale=locale), locale
+        )
     if (
         year
         and kind == "cardinal"
@@ -2139,7 +2271,7 @@ def _measured_end(
                 item for item in _year_leaf(amount, locale) if "numbering-year" in item.provenance
             )
             if apply_source_priors:
-                years = _rank_final(years, "date", None)
+                years = _rank_final(years, "date", None, locale)
             written = str(detection.get("text", ""))
             if len(written) == 4 and set(written) <= set("0123456789"):
                 year_texts = {item.text for item in years}
@@ -2331,8 +2463,7 @@ def verbalize_edge(
     ``rerank_by_context=False`` keeps frend's own order with the offers (the context
     trees' builder mode).
     """
-    if locale != "en_US":
-        raise NotImplementedError(f"verbalization v1 supports only en_US, got {locale!r}")
+    locale = canonical_locale(locale)
     if context is None and source_text is not None:
         context = TextContext(source_text)
     elif context is not None and source_text is not None:
@@ -2370,7 +2501,7 @@ def verbalize_edge(
         # A range written in running text ("5-10", "16:79", "3x4"; ``RangeDetector``), or
         # one ICU writes ("1990–1995", "5–10 km", "May 3 – 5, 2020"): each end read as
         # that value alone, joined by the locale's connector patterns.
-        ranged = detection if isinstance(value, RangeValue) else from_icukit(detection)
+        ranged = detection if isinstance(value, RangeValue) else from_icukit(detection, locale)
         if ranged is not None:
             alternatives = _spoken_range(
                 ranged["value"],
@@ -2415,19 +2546,25 @@ def verbalize_edge(
                 if measures_spelled(written, locale=locale):
                     # A key the corpus spells ("Lt", "ch", "Rt") also reads letter by
                     # letter; the table ranks the letters with the other readings.
-                    alternatives = (
-                        *alternatives,
-                        SpokenAlternative(spelled(written.replace(".", "")), SPELLED_SOURCE),
-                    )
+                    if (letter_form := spelled(written.replace(".", ""), locale)) is not None:
+                        alternatives = (
+                            *alternatives,
+                            SpokenAlternative(letter_form.text, SPELLED_SOURCE)
+                            if locale == "en_US"
+                            else letter_form,
+                        )
             else:
-                alternatives = _with_acronym_readings(value.surface, expanded)
+                alternatives = _with_acronym_readings(value.surface, expanded, locale)
                 if is_chain(written) and not written.isupper():
                     # A dotted chain of any case is spelled ("e.g." "e g", "j.r.r." "j r
                     # r"): the corpus spells every one it writes.
-                    alternatives = (
-                        *alternatives,
-                        SpokenAlternative(spelled(written.replace(".", "")), SPELLED_SOURCE),
-                    )
+                    if (letter_form := spelled(written.replace(".", ""), locale)) is not None:
+                        alternatives = (
+                            *alternatives,
+                            SpokenAlternative(letter_form.text, SPELLED_SOURCE)
+                            if locale == "en_US"
+                            else letter_form,
+                        )
             if not alternatives:
                 raise NotImplementedError(f"no reading for {value.surface!r}")
             if apply_source_priors:
@@ -2475,7 +2612,7 @@ def verbalize_edge(
             key_value = value.text
             path = "symbol"
         elif isinstance(value, LettersValue):
-            alternatives = _spoken_letters(value)
+            alternatives = _spoken_letters(value, locale)
             if not value.suffix:
                 # A run that is a lexicon abbreviation in capitals ("MR", "DR") is also
                 # offered its expansions.
@@ -2530,7 +2667,9 @@ def verbalize_edge(
         # A range's readings are ranked within it (``_spoken_range``): each end by its
         # own kind's measured shares.
         kind = _measured_kind(type_, value)
-        alternatives = _rank_final(alternatives, kind, measurement_sub_key(kind, detection))
+        alternatives = _rank_final(
+            alternatives, kind, measurement_sub_key(kind, detection, locale=locale), locale
+        )
     weekday = _capture(detection, "weekday") if path == "date" else None
     if weekday is not None:
         # The weekday is written but not in the date's value; it leads every form,
@@ -2554,7 +2693,7 @@ def verbalize_edge(
             *(
                 SpokenAlternative(
                     _lexical_pattern("sign.plus", locale, item.text),
-                    f"{LEXICAL_SOURCE}+{item.provenance}",
+                    f"{lexical_source(locale)}+{item.provenance}",
                     item.weight,
                 )
                 for item in alternatives
@@ -2622,7 +2761,7 @@ def verbalize_edge(
 def verbalize_lattice(
     lattice: ReadingLattice,
     *,
-    locale: str = "en_US",
+    locale: str | None = None,
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
 ) -> VerbalizedLattice:
@@ -2631,6 +2770,9 @@ def verbalize_lattice(
     ``context`` is the running text the lattice's source text sits in (by default the
     source text itself): it is what the context trees read (``verbalize_edge``).
     """
+    effective = lattice.locale
+    if locale is not None and canonical_locale(locale) != effective:
+        raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
     edges = {edge.id: edge for edge in lattice.edges}
     paths = tuple(
         VerbalizedPath(
@@ -2640,7 +2782,7 @@ def verbalize_lattice(
                 verbalize_edge(
                     edges[edge_id],
                     source_text=lattice.source_text,
-                    locale=locale,
+                    locale=effective,
                     supplements=supplements,
                     context=context,
                 )

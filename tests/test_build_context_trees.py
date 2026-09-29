@@ -110,7 +110,8 @@ def test_trees_are_trained_reproducibly_and_name_their_examples(tmp_path):
     assert provenance["examples"]["fingerprint"] == "feedfacefeedface"
     assert provenance["records"] == {"main": 1, "dash": 60}
     connector = index["connectors"]["-"]
-    assert connector["to"] == "lexical:en_US"
+    assert connector["connector_id"] == "to"
+    assert connector["connector_source"] == "lexical:en_US"
     assert connector["first"] == "surface:silence"
     tree = index["trees"][connector["problem"]]
     assert tree["labels"] == {"lexical:en_US": 30, "surface:silence": 30}

@@ -56,6 +56,7 @@ class FrendReadingProfile:
         self,
         detections: Sequence[Detection],
         *,
+        locale: str = "en_US",
         n: int = 8,
         epsilon: int = DEFAULT_EPSILON,
     ) -> None:
@@ -66,7 +67,7 @@ class FrendReadingProfile:
         """
         unique = _dedupe(detections)
         self.graph, _roots, _id_to_index = build_lattice(unique)
-        self.covers = resolve(unique, n=n, epsilon=epsilon).covers
+        self.covers = resolve(unique, locale=locale, n=n, epsilon=epsilon).covers
 
     def _require_snapshot(self, graph: Graph, path: CanonicalPath | None = None) -> None:
         if graph is not self.graph:

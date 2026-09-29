@@ -37,6 +37,7 @@ from collections.abc import Callable, Mapping, Sequence
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, replace
 from decimal import Context, Decimal, getcontext, localcontext
+from functools import lru_cache
 from math import prod
 from typing import Any, cast
 
@@ -62,8 +63,10 @@ from tiergraph import (
 )
 from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
+from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.shape import shape
 from frend.type_priors import (
+    LOCALE_NEUTRAL,
     BlendedPrior,
     CorpusPrior,
     FeatureSource,
@@ -817,17 +820,47 @@ def _merged_covers(
     return found
 
 
+def _validated_sources(
+    canonical: str, sources: tuple[FeatureSource, ...]
+) -> tuple[FeatureSource, ...]:
+    for source in sources:
+        source_locale = getattr(source, "locale", None)
+        if source_locale not in (canonical, LOCALE_NEUTRAL):
+            raise ValueError(
+                f"feature source {type(source).__name__} locale {source_locale!r} "
+                f"does not match request locale {canonical!r}"
+            )
+    return sources
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _default_sources(locale: str) -> tuple[FeatureSource, ...]:
+    """Load and validate the immutable runtime tables once for one canonical locale."""
+    return _validated_sources(locale, (BlendedPrior(locale=locale),))
+
+
 def _resolve_sources(
+    locale: str,
     feature_sources: Sequence[FeatureSource] | None,
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
 ) -> tuple[FeatureSource, ...]:
     """Default to the measured-first, ICU-backfilled runtime prior."""
-    return (
-        (BlendedPrior(class_prior=class_prior, class_prior_source=class_prior_source),)
+    canonical = canonical_locale(locale)
+    if feature_sources is None and class_prior is None and class_prior_source is None:
+        return _default_sources(canonical)
+    sources = (
+        (
+            BlendedPrior(
+                locale=canonical,
+                class_prior=class_prior,
+                class_prior_source=class_prior_source,
+            ),
+        )
         if feature_sources is None
         else tuple(feature_sources)
     )
+    return _validated_sources(canonical, sources)
 
 
 def _corpus_source(sources: Sequence[FeatureSource]) -> CorpusPrior | BlendedPrior | None:
@@ -1188,6 +1221,7 @@ def _cover_priors(
 def resolve_cover(
     detections: Sequence[Detection],
     *,
+    locale: str = "en_US",
     feature_sources: Sequence[FeatureSource] | None = None,
     source_text: str | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
@@ -1199,10 +1233,10 @@ def resolve_cover(
     deposited universe); the returned ``best`` is pairwise non-overlapping and in
     span order. Use :func:`resolve` to see the per-span alternatives and the
     ambiguity flags."""
+    sources = _resolve_sources(locale, feature_sources, class_prior, class_prior_source)
     if not detections:
         return Cover(best=(), score=CoverScore(0, 0, 0))
     unique = _dedupe(detections)
-    sources = _resolve_sources(feature_sources, class_prior, class_prior_source)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
     selection = _select(unique, sources, context, n=1)
     return Cover(
@@ -1215,6 +1249,7 @@ def resolve_cover(
 def resolve(
     detections: Sequence[Detection],
     *,
+    locale: str = "en_US",
     n: int = 8,
     epsilon: int = DEFAULT_EPSILON,
     feature_sources: Sequence[FeatureSource] | None = None,
@@ -1245,10 +1280,10 @@ def resolve(
     del epsilon
     if not isinstance(n, int) or isinstance(n, bool) or n < 1:
         raise ValueError(f"n must be a positive integer, got {n!r}")
+    sources = _resolve_sources(locale, feature_sources, class_prior, class_prior_source)
     if not detections:
         return Resolution(best=(), covers=((),), margin=CoverMargin(0, 0, 0), ambiguous=False)
     unique = _dedupe(detections)
-    sources = _resolve_sources(feature_sources, class_prior, class_prior_source)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
     selection = _select(unique, sources, context, n=n)
     return Resolution(

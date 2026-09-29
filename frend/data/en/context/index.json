@@ -258,13 +258,15 @@
  "connectors": {
   "-": {
    "problem": "cldr-symbol:dash\tcldr-symbol:hyphen\tcldr-symbol:hyphen-minus\tcldr-symbol:minus\tlexical:en_US\tsurface:silence",
-   "to": "lexical:en_US",
+   "connector_id": "to",
+   "connector_source": "lexical:en_US",
    "first": "surface:silence",
    "first_weight": 0.9961655819687967
   },
   "–": {
    "problem": "cldr-symbol:dash\tcldr-symbol:hyphen\tcldr-symbol:hyphen-minus\tcldr-symbol:minus\tlexical:en_US\tsurface:silence",
-   "to": "lexical:en_US",
+   "connector_id": "to",
+   "connector_source": "lexical:en_US",
    "first": "surface:silence",
    "first_weight": 0.9961655819687967,
    "read_as": "-"

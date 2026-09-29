@@ -81,9 +81,15 @@ for _path in (_REPO, _TOOLS):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
-from google_tn_rows import TRAINING_SHARDS  # noqa: E402
+from google_tn_rows import TRAINING_SHARDS, range_candidate_denominators  # noqa: E402
 
 SOURCE = "google/tn-en_with_types"
+
+
+def _range_denominators(sentences):
+    return range_candidate_denominators(sentences)
+
+
 LOCALE = "en_US"
 DEFAULT_EXAMPLES = Path(
     "/Volumes/k02/processed/frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc"
@@ -735,11 +741,14 @@ def build(
             trees[problem] = info
             blobs[name] = blob
     log(f"trained {len(trees)} trees in {time.time() - started:.0f}s")
+    from frend.verbalize import range_connector, range_separators
+
+    connector = range_connector(LOCALE)
     connectors = {}
     for problem in sorted(kept):
         labels = problem.split("\t")
         examples = kept[problem]
-        if "lexical:en_US" not in labels or problem not in trees:
+        if connector is None or connector.provenance not in labels or problem not in trees:
             continue
         if any(ex["text"][ex["start"] : ex["end"]] not in DASHES for ex in examples):
             continue
@@ -750,15 +759,14 @@ def build(
         (first, weight), (separator,) = firsts.pop(), separators
         connectors[separator] = {
             "problem": problem,
-            "to": "lexical:en_US",
+            "connector_id": connector.id,
+            "connector_source": connector.provenance,
             "first": first,
             "first_weight": weight,
         }
     if connectors:
         # A separator the set never writes between numbers (the corpus has no en dash
         # there) reads the tree of the first one it does: the same question, "to" or not.
-        from frend.verbalize import range_separators
-
         written = sorted(connectors)[0]
         for separator in sorted(range_separators(LOCALE) - connectors.keys()):
             connectors[separator] = {**connectors[written], "read_as": written}

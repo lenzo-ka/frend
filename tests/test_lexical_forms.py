@@ -239,6 +239,8 @@ class _Label:
                 self.provenance(value, scope, seen) for value in self._aliases(node.id, scope)
             )
         if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id == "lexical_source":
+                return True
             # A label is a string: one built by a string method ("+".join(...),
             # "{}+{}".format(...)) carries what it is built from; any other call makes
             # a value that is not a label.

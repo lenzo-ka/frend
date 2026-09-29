@@ -22,6 +22,8 @@ from dataclasses import dataclass
 
 from icukit.detectors import Capture, DateTimeValue, NumberValue
 
+from frend.locale_data import canonical_locale
+
 __all__ = ["DigitsValue", "WrittenFormsDetector"]
 
 _SPACED_COLON = re.compile(r"(?<![\w:.])(\d{1,2}): (\d{2})(?![\w:])")
@@ -61,7 +63,7 @@ class WrittenFormsDetector:
     """Detect the written forms ICU writes nowhere that frend reads."""
 
     def __init__(self, locale: str = "en_US") -> None:
-        self.locale = locale
+        self.locale = canonical_locale(locale)
 
     def detect(self, text: str) -> list[dict]:
         found = []
@@ -84,29 +86,35 @@ class WrittenFormsDetector:
                     ),
                 )
             )
-        for match in _CITATION.finditer(text):
-            found.append(
-                _detection(
-                    text,
-                    match.start(),
-                    match.end(),
-                    "number:cardinal:citation",
-                    NumberValue(match.group(1), None),
-                    (
-                        Capture(
-                            "integer",
-                            match.start(1),
-                            match.end(1),
-                            match.group(1),
-                            match.group(1),
-                            "numeric",
+        if self.locale.partition("_")[0] == "en":
+            for match in _CITATION.finditer(text):
+                found.append(
+                    _detection(
+                        text,
+                        match.start(),
+                        match.end(),
+                        "number:cardinal:citation",
+                        NumberValue(match.group(1), None),
+                        (
+                            Capture(
+                                "integer",
+                                match.start(1),
+                                match.end(1),
+                                match.group(1),
+                                match.group(1),
+                                "numeric",
+                            ),
+                            Capture(
+                                "reporter",
+                                match.start(2),
+                                match.end(2),
+                                match.group(2),
+                                None,
+                                "symbol",
+                            ),
                         ),
-                        Capture(
-                            "reporter", match.start(2), match.end(2), match.group(2), None, "symbol"
-                        ),
-                    ),
+                    )
                 )
-            )
         for match in _SPACED_DIGITS.finditer(text):
             digits = match.group().replace(" ", "")
             found.append(
@@ -123,36 +131,41 @@ class WrittenFormsDetector:
                     ),
                 )
             )
-        for match in _ERA_AFTER.finditer(text):
-            year, era = int(match.group(1)), match.group(3)
-            if era in ("AD", "BC") and match.group(2) == " ":
-                continue  # "500 BC" is ICU's own form; icukit reads it
-            found.append(
-                _detection(
-                    text,
-                    match.start(),
-                    match.end(),
-                    "date:era",
-                    DateTimeValue((("G", _era_index(era)), ("y", year)), "gregorian"),
-                    (
-                        Capture("y", match.start(1), match.end(1), match.group(1), year, "numeric"),
-                        Capture("era", match.start(3), match.end(3), era, None, "short"),
-                    ),
+        if self.locale.partition("_")[0] == "en":
+            for match in _ERA_AFTER.finditer(text):
+                year, era = int(match.group(1)), match.group(3)
+                if era in ("AD", "BC") and match.group(2) == " ":
+                    continue  # "500 BC" is ICU's own form; icukit reads it
+                found.append(
+                    _detection(
+                        text,
+                        match.start(),
+                        match.end(),
+                        "date:era",
+                        DateTimeValue((("G", _era_index(era)), ("y", year)), "gregorian"),
+                        (
+                            Capture(
+                                "y", match.start(1), match.end(1), match.group(1), year, "numeric"
+                            ),
+                            Capture("era", match.start(3), match.end(3), era, None, "short"),
+                        ),
+                    )
                 )
-            )
-        for match in _ERA_BEFORE.finditer(text):
-            year, era = int(match.group(3)), match.group(1)
-            found.append(
-                _detection(
-                    text,
-                    match.start(),
-                    match.end(),
-                    "date:era",
-                    DateTimeValue((("G", 1), ("y", year)), "gregorian"),
-                    (
-                        Capture("era", match.start(1), match.end(1), era, None, "short"),
-                        Capture("y", match.start(3), match.end(3), match.group(3), year, "numeric"),
-                    ),
+            for match in _ERA_BEFORE.finditer(text):
+                year, era = int(match.group(3)), match.group(1)
+                found.append(
+                    _detection(
+                        text,
+                        match.start(),
+                        match.end(),
+                        "date:era",
+                        DateTimeValue((("G", 1), ("y", year)), "gregorian"),
+                        (
+                            Capture("era", match.start(1), match.end(1), era, None, "short"),
+                            Capture(
+                                "y", match.start(3), match.end(3), match.group(3), year, "numeric"
+                            ),
+                        ),
+                    )
                 )
-            )
         return sorted(found, key=lambda d: (d["start"], d["end"]))

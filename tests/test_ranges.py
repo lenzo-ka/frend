@@ -225,7 +225,7 @@ def test_interval_fields_are_cut_in_code_points_not_utf16_units():
     calendar.set(2000, 0, 1, 14, 30)
     text = str(formatter.format(icu.DateInterval(early, calendar.getTime())))
     (found,) = reader.detect(text)
-    value = from_icukit(found)["value"]
+    value = from_icukit(found, locale)["value"]
     left = {c.name: c.text for c in value.left[0]["captures"]}
     right = {c.name: c.text for c in value.right[0]["captures"]}
     assert left["H"] == digits.format(10)

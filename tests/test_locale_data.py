@@ -60,7 +60,7 @@ def test_the_canonical_spelling_is_icus_base_name():
 def test_a_script_is_title_cased_and_walks_its_chain():
     from frend.locale_data import locale_chain
 
-    assert locale_chain("zh-hant-tw") == ("zh_Hant_TW", "zh_Hant", "zh", "root")
+    assert locale_chain("zh-hant-tw") == ("zh_Hant_TW", "zh_Hant", "root")
 
 
 @pytest.mark.parametrize("spelling", ["root", "ROOT", "Root", "rOoT"])
@@ -395,10 +395,11 @@ def _refusals(name: str, document: object) -> list[str]:
         class_ = data_sources.source_class(source)
         if class_ not in data_sources.SHIPPABLE_CLASSES:
             refusals.append(f"{name}: source {source!r} is {class_ or 'undeclared'}")
-    # The whole document, every key and value at any depth: an LDC mention may sit in
-    # any metadata ("inputs", "derivation"), not only the named provenance fields.
-    if _mentions_ldc(document):
-        refusals.append(f"{name}: it mentions an LDC corpus")
+    # The package boundary also rejects identity hidden behind an innocent source label:
+    # known internal digests, internal ancestry, and processed-LDC paths.
+    refusals.extend(
+        f"{name}: {reason}" for reason in data_sources.shipping_refusals(document, name)
+    )
     return refusals
 
 

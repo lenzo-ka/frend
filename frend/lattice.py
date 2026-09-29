@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Hashable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass, fields, is_dataclass, replace
+from dataclasses import dataclass, field, fields, is_dataclass, replace
 from decimal import Decimal
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Literal
@@ -26,6 +26,7 @@ from frend.fold_resolve import (
     _select,
     _span_priors,
 )
+from frend.locale_data import canonical_locale
 from frend.type_priors import FeatureSource, ReadingPrior, ResolveContext
 
 __all__ = [
@@ -120,6 +121,7 @@ class ReadingLattice:
     every reading without any enumeration, at the cost of selecting nothing.
     """
 
+    locale: str = field(default="en_US", kw_only=True, repr=False)
     text_length: int
     nodes: tuple[LatticeNode, ...]
     edges: tuple[ReadingEdge, ...]
@@ -167,6 +169,7 @@ class ChoiceLattice:
     text.
     """
 
+    locale: str = field(default="en_US", kw_only=True, repr=False)
     text_length: int
     nodes: tuple[LatticeNode, ...]
     edges: tuple[ReadingEdge, ...]
@@ -316,6 +319,7 @@ _CHOICE_READING_CAP = 1 << 16
 def resolve_choices(
     detections: Sequence[Detection],
     *,
+    locale: str = "en_US",
     reading_cap: int = _CHOICE_READING_CAP,
     feature_sources: Sequence[FeatureSource] | None = None,
     source_text: str | None = None,
@@ -387,7 +391,8 @@ def resolve_choices(
             f"bound; an unordered reading set has no meaningful prefix, so a truncated "
             f"carrier would claim a completeness it does not have"
         )
-    sources = _resolve_sources(feature_sources, class_prior, class_prior_source)
+    canonical = canonical_locale(locale)
+    sources = _resolve_sources(canonical, feature_sources, class_prior, class_prior_source)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
     priors = _span_priors(unique, sources, context) if unique else ()
     snapshots = tuple(_snapshot(detection) for detection in unique)
@@ -436,6 +441,7 @@ def resolve_choices(
         tuple(reading_edges + passthrough_edges),
         dropped,
         source_text,
+        locale=canonical,
     )
 
 
@@ -504,7 +510,7 @@ _COMPOSED_SPOKEN_CAP = 1 << 16
 def compose_choices(
     lattice: ChoiceLattice,
     *,
-    locale: str = "en_US",
+    locale: str | None = None,
     supplements: CuratedSupplements | None = None,
 ) -> ChoiceGraph:
     """Join every choice edge to its spoken forms without selecting a route.
@@ -515,6 +521,9 @@ def compose_choices(
     after each edge is verbalized, so this cannot bound the cost of verbalizing
     one intrinsically pathological edge once.
     """
+    effective = lattice.locale
+    if locale is not None and canonical_locale(locale) != effective:
+        raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
     if lattice.source_text is None:
         raise ValueError("source_text is required to compose passthrough spoken forms")
     from frend.verbalize import verbalize_edge
@@ -523,7 +532,7 @@ def compose_choices(
     spoken_total = 0
     for edge in lattice.edges:
         unit = verbalize_edge(
-            edge, source_text=lattice.source_text, locale=locale, supplements=supplements
+            edge, source_text=lattice.source_text, locale=effective, supplements=supplements
         )
         units.append(unit)
         spoken_total += len(unit.alternatives)
@@ -539,6 +548,7 @@ def compose_choices(
 def resolve_lattice(
     detections: Sequence[Detection],
     *,
+    locale: str = "en_US",
     output_cap: int = 1,
     feature_sources: Sequence[FeatureSource] | None = None,
     source_text: str | None = None,
@@ -573,7 +583,8 @@ def resolve_lattice(
             f"source_text length {text_length} is shorter than detection extent {detected_length}"
         )
 
-    sources = _resolve_sources(feature_sources, class_prior, class_prior_source)
+    canonical = canonical_locale(locale)
+    sources = _resolve_sources(canonical, feature_sources, class_prior, class_prior_source)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
     selection = (
         _select(
@@ -673,4 +684,5 @@ def resolve_lattice(
         selection.semantic_ambiguous if selection is not None else False,
         selection.ambiguous if selection is not None else False,
         source_text,
+        locale=canonical,
     )

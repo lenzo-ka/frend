@@ -153,7 +153,7 @@ def _has_digit(surface: str) -> bool:
     return any(unicodedata.category(ch) == "Nd" for ch in surface)
 
 
-def _google_tn_file_pairs(path: Path) -> Iterator[tuple[str, str]]:
+def _google_tn_file_pairs(path) -> Iterator[tuple[str, str]]:
     """Yield mapped, digit-bearing ``(surface, class)`` pairs from one corpus file.
 
     The corpus is TAB-separated ``(class, written, spoken)``; sentence boundaries
@@ -161,7 +161,13 @@ def _google_tn_file_pairs(path: Path) -> Iterator[tuple[str, str]]:
     sentinels) is ignored entirely. Only mapped classes whose surface carries a
     digit are yielded.
     """
-    with path.open(encoding="utf-8") as handle:
+    if hasattr(path, "relative_path"):
+        from corpus_inputs import open_verified
+
+        handle_context = open_verified(path)
+    else:
+        handle_context = path.open(encoding="utf-8")
+    with handle_context as handle:
         for line in handle:
             parts = line.rstrip("\n").split("\t")
             if len(parts) < 3:  # <eos> (2 columns) or malformed: skip
@@ -176,10 +182,15 @@ def _google_tn_file_pairs(path: Path) -> Iterator[tuple[str, str]]:
             yield surface, mapped
 
 
-def _google_tn_files(corpus_dir: Path) -> list[Path]:
+def _google_tn_files(corpus_dir: Path, inputs=None) -> list:
     """The sorted ``output-NNNNN-of-NNNNN`` shards under ``corpus_dir``, less the
     held-out shards 90-99 (``tools/google_tn_rows.py``): the serial stream, the parallel
     file list and a fixture build all read their shards here."""
+    if inputs is not None:
+        listed = sorted(inputs, key=lambda item: item.relative_path)
+        if not listed:
+            raise FileNotFoundError(f"no Google-TN corpus shards under {corpus_dir}")
+        return listed
     listed = sorted(corpus_dir.glob("output-*-of-*"))
     full = full_training_set(listed)
     files = full if full is not None else training_shards(listed)
@@ -191,7 +202,7 @@ def _google_tn_files(corpus_dir: Path) -> list[Path]:
     return files
 
 
-def google_tn_pairs(corpus_dir: Path | None = None) -> Iterator[tuple[str, str]]:
+def google_tn_pairs(corpus_dir: Path | None = None, *, inputs=None) -> Iterator[tuple[str, str]]:
     """Stream ``(written_surface, corpus_class)`` from the Google-TN corpus.
 
     The default seam. Streams every shard line by line (never loading a file
@@ -199,7 +210,7 @@ def google_tn_pairs(corpus_dir: Path | None = None) -> Iterator[tuple[str, str]]
     classes and any surface without a digit.
     """
     corpus_dir = Path(corpus_dir) if corpus_dir is not None else _default_corpus_dir()
-    for path in _google_tn_files(corpus_dir):
+    for path in _google_tn_files(corpus_dir, inputs):
         yield from _google_tn_file_pairs(path)
 
 
@@ -275,15 +286,15 @@ def build_google_tn_counts(
 
 
 def _build_google_tn_material(
-    corpus_dir: Path | None = None, jobs: int | None = None
+    corpus_dir: Path | None = None, jobs: int | None = None, *, inputs=None
 ) -> tuple[dict[str, dict[str, int]], dict[str, dict[str, int]]]:
     """Build aggregate and per-letter counts in one corpus pass."""
     corpus_dir = Path(corpus_dir) if corpus_dir is not None else _default_corpus_dir()
-    files = _google_tn_files(corpus_dir)
+    files = _google_tn_files(corpus_dir, inputs)
     if jobs is None:
         jobs = os.cpu_count() or 1
     if jobs <= 1 or len(files) <= 1:
-        counts, letters = _tally(google_tn_pairs(corpus_dir))
+        counts, letters = _tally(google_tn_pairs(corpus_dir, inputs=inputs))
         return _canonical(counts), _canonical(letters)
     import multiprocessing as mp  # noqa: PLC0415 -- only when parallelizing
 
@@ -336,27 +347,33 @@ def _serialize(document: dict) -> str:
     return json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
 
-def _build(corpus: str, corpus_dir: Path | None, jobs: int | None) -> dict:
+def _build(corpus: str, corpus_dir: Path | None, jobs: int | None, *, inputs=None) -> dict:
     """Assemble the artifact for the selected corpus seam."""
     if corpus == "google-tn":
         directory = Path(corpus_dir) if corpus_dir is not None else _default_corpus_dir()
-        counts, letters = _build_google_tn_material(directory, jobs)
+        counts, letters = _build_google_tn_material(directory, jobs, inputs=inputs)
         return build_document(
             [],
             counts=counts,
             single_uppercase_letters=letters,
-            shards=[path.name for path in _google_tn_files(directory)],
+            shards=[
+                path.relative_path if inputs is not None else path.name
+                for path in _google_tn_files(directory, inputs)
+            ],
             corpus=corpus_label(directory),
             **_GOOGLE_TN_PROFILE,
         )
     path = Path(corpus)
-    counts, letters = _build_google_tn_material(path, 1 if jobs is None else jobs)
+    counts, letters = _build_google_tn_material(path, 1 if jobs is None else jobs, inputs=inputs)
     profile = {**_GOOGLE_TN_PROFILE, "source": f"google-tn-en_with_types:{path}"}
     return build_document(
         [],
         counts=counts,
         single_uppercase_letters=letters,
-        shards=[shard.name for shard in _google_tn_files(path)],
+        shards=[
+            shard.relative_path if inputs is not None else shard.name
+            for shard in _google_tn_files(path, inputs)
+        ],
         corpus=corpus_label(path),
         **profile,
     )
@@ -387,9 +404,30 @@ def main(argv: list[str] | None = None) -> int:
         help="google-tn: parallel worker processes (default: os.cpu_count())",
     )
     parser.add_argument("--out", type=Path, default=_OUT, help="output path")
+    parser.add_argument("--locale", required=True)
+    parser.add_argument("--source-id", required=True)
+    parser.add_argument("--pool", action="append", required=True, dest="pools")
+    parser.add_argument("--receipt", type=Path, required=True)
     args = parser.parse_args(argv)
 
-    document = _build(args.corpus, args.corpus_dir, args.jobs)
+    directory = (
+        Path(args.corpus_dir)
+        if args.corpus == "google-tn" and args.corpus_dir
+        else _default_corpus_dir()
+        if args.corpus == "google-tn"
+        else Path(args.corpus)
+    )
+    from corpus_inputs import verified_inputs, write_verification_receipt
+
+    verified = verified_inputs(
+        args.source_id,
+        _google_tn_files(directory),
+        locale=args.locale,
+        pools=tuple(args.pools),
+        root=directory,
+    )
+    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
+    document = _build(args.corpus, args.corpus_dir, args.jobs, inputs=verified)
     rendered = _serialize(document)
 
     if args.check:

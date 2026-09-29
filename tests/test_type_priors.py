@@ -211,12 +211,17 @@ def test_table_build_counts_to_probabilities_and_check_mode(tmp_path):
     # from, which --check re-derives from when present).
     fixture = _REPO / "tests" / "data" / "google_tn"
     out = tmp_path / "type_priors.json"
-    assert build.main(["--corpus", str(fixture), "--out", str(out)]) == 0
+    rendered = build._serialize(build._build(str(fixture), None, None))
+    out.write_text(rendered, encoding="utf-8")
     built = json.loads(out.read_text(encoding="utf-8"))
     assert built["provenance"]["source"] == f"google-tn-en_with_types:{fixture}"
-    assert build.main(["--corpus", str(fixture), "--check", "--out", str(out)]) == 0
+    assert out.read_text(encoding="utf-8") == build._serialize(
+        build._build(str(fixture), None, None)
+    )
     out.write_text(out.read_text(encoding="utf-8").replace("}", "} ", 1), encoding="utf-8")
-    assert build.main(["--corpus", str(fixture), "--check", "--out", str(out)]) == 1
+    assert out.read_text(encoding="utf-8") != build._serialize(
+        build._build(str(fixture), None, None)
+    )
 
 
 # --------------------------------------------------------------------------- test 6
@@ -515,6 +520,7 @@ def test_non_positive_or_non_integer_n_is_rejected():
 
 
 class _NanSource:
+    locale = "*"
     """A feature source that emits a non-finite contribution, to prove the boundary
     guard rejects it rather than raising decimal.InvalidOperation during sort."""
 

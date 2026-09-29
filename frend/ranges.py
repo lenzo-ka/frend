@@ -142,7 +142,11 @@ class SpeakableDateIntervalDetector:
         self.group = getattr(reader, "group", "date-interval")
 
     def detect(self, text: str) -> list:
-        return [found for found in self.reader.detect(text) if from_icukit(found) is not None]
+        return [
+            found
+            for found in self.reader.detect(text)
+            if from_icukit(found, self.locale) is not None
+        ]
 
 
 @dataclass(frozen=True)
@@ -160,13 +164,13 @@ class RangeValue:
     right: tuple[Mapping, ...]
 
 
-def from_icukit(detection: Mapping) -> Mapping | None:
+def from_icukit(detection: Mapping, locale: str) -> Mapping | None:
     """``detection`` as a ``range:icu`` reading when it is icukit's ``number:range``,
     ``measure:range`` or ``date-interval:*``; ``None`` for any other reading (an
     ``*:approximately`` reading among them)."""
     type_ = str(detection.get("type", ""))
     if type_ in ("number:range", "measure:range"):
-        ends = _amount_ends(detection)
+        ends = _amount_ends(detection, locale)
     elif type_.startswith("date-interval:") and not type_.startswith("date-interval:short-year"):
         ends = _interval_ends(detection, type_.removeprefix("date-interval:"))
     else:
@@ -192,13 +196,12 @@ def _capture(detection: Mapping, name: str) -> Capture | None:
     )
 
 
-def _amount_ends(detection: Mapping) -> tuple[Mapping, Mapping] | None:
+def _amount_ends(detection: Mapping, locale: str) -> tuple[Mapping, Mapping] | None:
     start, end = _capture(detection, "start"), _capture(detection, "end")
     if start is None or end is None or start.value is None or end.value is None:
         return None
     unit_type = "measure" if str(detection["type"]).startswith("measure:") else None
-    percent = not unit_type and any(_writes_percent(c.text, detection) for c in (start, end))
-    locale = str(getattr(detection.get("spec"), "locale", "en_US"))
+    percent = not unit_type and any(_writes_percent(c.text, locale) for c in (start, end))
     ends = []
     for capture in (start, end):
         type_ = _amount_type(capture.value, unit_type, percent)
@@ -250,9 +253,7 @@ def _read_whole(text: str, type_: str, locale: str) -> Mapping | None:
     )
 
 
-def _writes_percent(text: str, detection: Mapping) -> bool:
-    spec = detection.get("spec")
-    locale = str(getattr(spec, "locale", "en_US"))
+def _writes_percent(text: str, locale: str) -> bool:
     symbols = icu.DecimalFormatSymbols(icu.Locale(locale))
     return symbols.getSymbol(icu.DecimalFormatSymbols.kPercentSymbol) in text
 

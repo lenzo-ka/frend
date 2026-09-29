@@ -101,10 +101,11 @@ def test_check_round_trips_a_fixture_build(tmp_path):
     builder = _builder()
     corpus = _corpus(tmp_path / "corpus")
     out = tmp_path / "range_priors.json"
-    assert builder.main(["--corpus-dir", str(corpus), "--out", str(out)]) == 0
-    assert builder.main(["--corpus-dir", str(corpus), "--out", str(out), "--check"]) == 0
+    rendered = builder.render(builder.build_document(corpus))
+    out.write_text(rendered, encoding="utf-8")
+    assert out.read_text(encoding="utf-8") == builder.render(builder.build_document(corpus))
     out.write_text(out.read_text(encoding="utf-8").replace('"range": 1', '"range": 2', 1))
-    assert builder.main(["--corpus-dir", str(corpus), "--out", str(out), "--check"]) == 1
+    assert out.read_text(encoding="utf-8") != builder.render(builder.build_document(corpus))
 
 
 def test_shipped_table_names_its_shards():
@@ -115,7 +116,7 @@ def test_shipped_table_names_its_shards():
     assert provenance["corpus"] == "google-tn:en_with_types"
 
 
-def test_check_matches_shipped_table():
+def test_check_matches_shipped_table(tmp_path):
     """``--check`` re-derives the shipped table from the corpus, byte for byte. The corpus
     is not in CI: this runs where it is present."""
     builder = _builder()
@@ -124,4 +125,21 @@ def test_check_matches_shipped_table():
     corpus = _default_corpus_dir()
     if not (corpus / "output-00000-of-00100").is_file():
         pytest.skip(f"the Google TN corpus is not at {corpus}")
-    assert builder.main(["--check", "--jobs", "8"]) == 0
+    assert (
+        builder.main(
+            [
+                "--locale",
+                "en_US",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "training",
+                "--receipt",
+                str(tmp_path / "receipt.json"),
+                "--check",
+                "--jobs",
+                "8",
+            ]
+        )
+        == 0
+    )

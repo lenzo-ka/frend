@@ -296,7 +296,12 @@ def run_readings(
         written = _transliterator(transform).transliterate(base)
         # Letters set apart are said one by one, each as ICU writes it in the locale's
         # script ("Θ" -> "th"), lower-cased as the locale spells; a word is said whole.
-        units = [spelled(unit).replace(" ", "") for unit in written.split()]
+        forms = [spelled(unit, locale) for unit in written.split()]
+        units = (
+            []
+            if any(form is None for form in forms)
+            else [form.text.replace(" ", "") for form in forms if form is not None]
+        )
         spoken = " ".join(unit for unit in units if any(_lettered(ch) for ch in unit))
         scripts = locale_scripts(locale)
         # A transform that leaves letters outside the locale's scripts ("α" through
