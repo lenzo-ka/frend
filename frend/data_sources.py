@@ -29,6 +29,7 @@ __all__ = [
     "SOURCE_LABELS",
     "source_id",
     "source_class",
+    "shipping_refusals",
 ]
 
 INTERNAL_ONLY = "internal-only"
@@ -42,6 +43,11 @@ SHIPPABLE_CLASSES = frozenset({"shippable", "shippable-share-alike", "derived-sh
 SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
     {
         "google/tn-en_with_types": {
+            "license": "CC-BY-SA-4.0",
+            "class": "shippable-share-alike",
+            "vendored": (),
+        },
+        "google/tn-ru_with_types": {
             "license": "CC-BY-SA-4.0",
             "class": "shippable-share-alike",
             "vendored": (),
@@ -84,6 +90,10 @@ SOURCE_LABELS: Mapping[str, str] = MappingProxyType(
 )
 
 _ICU_ID = re.compile(r"icu/\d+(?:\.\d+)*/[a-z0-9][a-z0-9-]*")
+KNOWN_INTERNAL_DIGESTS = frozenset(
+    {"5d1b84c18b57c62e2c369ce93b3fdc607a2487de17acb74ec72503e242300034"}
+)
+_LDC = re.compile(r"(?<![a-z0-9])ldc(?:[/:_-]|\d{2}[a-z]\d)", re.IGNORECASE)
 
 
 def source_id(label: str, provenance: Mapping[str, object] | None = None) -> str:
@@ -107,3 +117,31 @@ def source_class(source: str) -> str | None:
     if entry is None and _ICU_ID.fullmatch(source):
         entry = SHIPPABLE_SOURCES["icu/"]
     return None if entry is None else str(entry["class"])
+
+
+def shipping_refusals(document: object, path: str = "") -> tuple[str, ...]:
+    """Return package-boundary refusals, including identity hidden behind labels."""
+    refusals: list[str] = []
+    normalized = path.replace("\\", "/").casefold()
+    if "/processed/frend/ldc/" in f"/{normalized.strip('/')}/":
+        refusals.append(f"{path}: path is under the internal LDC store")
+
+    def walk(value: object) -> None:
+        if isinstance(value, str):
+            folded = value.casefold()
+            if _LDC.search(value):
+                refusals.append("document mentions an LDC corpus")
+            if folded in KNOWN_INTERNAL_DIGESTS:
+                refusals.append("document contains a cataloged internal digest")
+            if folded == INTERNAL_ONLY:
+                refusals.append("document carries internal-only ancestry")
+        elif isinstance(value, Mapping):
+            for key, item in value.items():
+                walk(key)
+                walk(item)
+        elif isinstance(value, (list, tuple, set, frozenset)):
+            for item in value:
+                walk(item)
+
+    walk(document)
+    return tuple(dict.fromkeys(refusals))

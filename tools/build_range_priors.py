@@ -47,9 +47,12 @@ from google_tn_rows import (  # noqa: E402
     corpus_label,
     expected,
     full_training_set,
+    range_candidate_denominators,
     range_triples,
     training_shards,
 )
+
+_range_denominators = range_candidate_denominators
 
 LOCALE = "en_US"
 DEFAULT_OUT = _REPO / "frend" / "data" / "en" / "range_priors.json"

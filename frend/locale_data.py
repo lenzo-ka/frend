@@ -11,7 +11,7 @@ directory: ``"-"`` and ``"_"`` both separate subtags, ICU's base name sets the c
 (``EN-us`` -> ``en_US``), ``root`` in any case is ``root``, and anything that is not a
 well-formed tag (a ``/``, ``..``, an empty subtag) is refused with ``ValueError``.
 
-CLDR ``parentLocales`` exceptions are not handled: truncation is exact for en and ru.
+Parent locales follow icukit's CLDR-aware locale chain.
 """
 
 from __future__ import annotations
@@ -85,11 +85,13 @@ def locale_chain(locale: str) -> tuple[str, ...]:
     ``"en_US"`` -> ``("en_US", "en", "root")``; the tag is canonicalized first
     (:func:`canonical_locale`), so ``"EN-us"`` walks the same chain.
     """
+    from icukit.abbreviations import locale_chain as icukit_locale_chain
+
     canonical = canonical_locale(locale)
     if canonical == ROOT:
         return (ROOT,)
-    tags = canonical.split("_")
-    return (*("_".join(tags[:count]) for count in range(len(tags), 0, -1)), ROOT)
+    chain = tuple(icukit_locale_chain(canonical))
+    return (*chain, ROOT) if chain[-1:] != (ROOT,) else chain
 
 
 def _data() -> Traversable:

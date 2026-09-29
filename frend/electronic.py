@@ -269,25 +269,36 @@ def _shares(counts: dict[str, int]) -> dict[str, Decimal]:
     return {key: Decimal(value) / total for key, value in counts.items()} if total else {}
 
 
-def letter_probabilities(run: str, *, tld: bool) -> dict[str, Decimal]:
+def letter_probabilities(
+    run: str, *, tld: bool, locale: str = "en_US"
+) -> dict[str, Decimal]:
     """P(word) and P(spelled) for a letter run: its shape blended toward all runs,
     and a top-level domain's own evidence blended toward its shape."""
-    table = load_electronic_priors()["letters"]
+    document = load_electronic_priors(locale=locale)
+    if document is None:
+        return {}
+    table = document["letters"]
     overall = _shares(table["*"])
-    shaped = _blend(table.get(letter_key(run), {}), overall)
+    shaped = _blend(table.get(letter_key(run, locale), {}), overall)
     if tld and f"tld:{run.lower()}" in table:
         return _blend(table[f"tld:{run.lower()}"], shaped)
     return shaped
 
 
-def digit_probabilities(run: str) -> dict[str, Decimal]:
-    table = load_electronic_priors()["digits"]
+def digit_probabilities(run: str, *, locale: str = "en_US") -> dict[str, Decimal]:
+    document = load_electronic_priors(locale=locale)
+    if document is None:
+        return {}
+    table = document["digits"]
     return _blend(table.get(digit_key(run), {}), _shares(table["*"]))
 
 
-def separator_names(character: str) -> dict[str, Decimal]:
+def separator_names(character: str, *, locale: str = "en_US") -> dict[str, Decimal]:
     """The corpus's names for a separator character, with their shares."""
-    return _shares(load_electronic_priors()["separators"].get(character, {}))
+    document = load_electronic_priors(locale=locale)
+    if document is None:
+        return {}
+    return _shares(document["separators"].get(character, {}))
 
 
 def tld_positions(parts: tuple[tuple[str, str], ...]) -> frozenset[int]:
@@ -313,7 +324,7 @@ def digit_forms(run: str, locale: str = "en_US") -> dict[str, tuple[tuple[str, s
     no digit rule that calls zero "o"; ``lexical.json`` ``zero.digit``, so a locale with
     none has no ``digits_o``).
     """
-    from frend.verbalize import LEXICAL_SOURCE, _lexical, _number_leaf
+    from frend.verbalize import _lexical, _number_leaf, lexical_source
 
     value = Decimal(run)
     words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in run]
@@ -327,5 +338,5 @@ def digit_forms(run: str, locale: str = "en_US") -> dict[str, tuple[tuple[str, s
     zero = _lexical("zero.digit", locale)
     if "0" in run and zero is not None:
         spoken = " ".join(zero if d == "0" else w for d, w in zip(run, words, strict=True))
-        forms["digits_o"] = ((spoken, LEXICAL_SOURCE),)
+        forms["digits_o"] = ((spoken, lexical_source(locale)),)
     return forms

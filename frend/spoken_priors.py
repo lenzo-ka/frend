@@ -162,7 +162,9 @@ class SpokenPriorTable:
         return SourceMeasurement(sub_count, blended)
 
 
-def measurement_sub_key(kind: str | None, detection: object) -> str | None:
+def measurement_sub_key(
+    kind: str | None, detection: object, *, locale: str = "en_US"
+) -> str | None:
     """Derive the declared measurement sub-key shared by building and ranking.
 
     Fraction measurements use the captured denominator's decimal value, and
@@ -178,7 +180,9 @@ def measurement_sub_key(kind: str | None, detection: object) -> str | None:
         value = detection.get("value")  # type: ignore[union-attr]
         script = str(getattr(value, "script", ""))
         char = str(getattr(value, "char", ""))
-        if script in ("Zyyy", "Zinh", "Latn") and char:
+        from frend.symbols import locale_scripts
+
+        if script in locale_scripts(locale) and char:
             return f"U+{ord(char):04X}"
         return script or None
     if kind == "date":

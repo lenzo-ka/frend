@@ -246,7 +246,8 @@ def test_measured_sources_order_by_share(monkeypatch):
         "curated:higher": SourceMeasurement(7, Decimal("0.7")),
     }
     monkeypatch.setattr(
-        "frend.verbalize.source_prior", lambda kind, source, sub_key: shares.get(source)
+        "frend.verbalize.source_prior",
+        lambda kind, source, sub_key, *, locale="en_US": shares.get(source),
     )
 
     alternatives = (
@@ -271,7 +272,9 @@ def test_measured_sources_order_by_share(monkeypatch):
 
 
 def test_unmeasured_lexical_form_outranks_unmeasured_icu(monkeypatch):
-    monkeypatch.setattr("frend.verbalize.source_prior", lambda kind, source, sub_key: None)
+    monkeypatch.setattr(
+        "frend.verbalize.source_prior", lambda kind, source, sub_key, *, locale="en_US": None
+    )
     supplements = {
         ("number:decimal", "42"): (SpokenAlternative("house forty-two", "curated:test"),)
     }
@@ -294,7 +297,7 @@ def test_measured_icu_form_outranks_unmeasured_lexical(monkeypatch):
 
     monkeypatch.setattr(
         "frend.verbalize.source_prior",
-        lambda kind, source, sub_key: (
+        lambda kind, source, sub_key, *, locale="en_US": (
             SourceMeasurement(1, Decimal("0.1")) if source.startswith("icu-rbnf:") else None
         ),
     )
@@ -320,7 +323,7 @@ def test_caller_supplied_weight_wins_over_measured_source(monkeypatch):
 
     monkeypatch.setattr(
         "frend.verbalize.source_prior",
-        lambda kind, source, sub_key: SourceMeasurement(1, Decimal("1")),
+        lambda kind, source, sub_key, *, locale="en_US": SourceMeasurement(1, Decimal("1")),
     )
     registry = {}
     monkeypatch.setattr("frend.verbalize._CURATED", registry)
@@ -498,7 +501,10 @@ def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(mon
         },
         {"sub_key_rules": {"fraction": "denominator"}},
     )
-    monkeypatch.setattr("frend.verbalize.source_prior", table.lookup)
+    monkeypatch.setattr(
+        "frend.verbalize.source_prior",
+        lambda kind, source, sub_key, *, locale="en_US": table.lookup(kind, source, sub_key),
+    )
     written = "1/999"
     detection = next(
         item

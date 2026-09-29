@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "en_US": ["The total is 25 kg.", "Call 412-555-1212.", "From 1990-1995."],
+    "ru_RU": ["25 кг", "с 5 до 10", "2026 год"],
+    "es_ES": ["25 kg", "del 5 al 10", "año 2026"]
+  }
+}

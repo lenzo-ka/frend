@@ -75,7 +75,10 @@ from typing import Any, Literal, Protocol, runtime_checkable
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table, root_table
 from frend.shape import shape
 
+LOCALE_NEUTRAL = "*"
+
 __all__ = [
+    "LOCALE_NEUTRAL",
     "MIN_N",
     "CorpusPrior",
     "BlendedPrior",
@@ -231,6 +234,8 @@ class FeatureSource(Protocol):
     not depend on the order in which readings are asked about -- the resolver
     evaluates readings in whatever order its selection needs, and that order is
     not part of this contract."""
+
+    locale: str
 
     def features(
         self, detection: Detection, context: ResolveContext
@@ -437,13 +442,13 @@ class _Omitted:
 _OMITTED = _Omitted()
 
 
-def _range_table(range_table: Any):
+def _range_table(range_table: Any, locale: str):
     """Omitted: the default locale's range table (``frend.ranges.load_range_priors``);
     ``None``: no range prior."""
     if range_table is _OMITTED:
         from frend.ranges import load_range_priors
 
-        return load_range_priors()
+        return load_range_priors(locale)
     return range_table
 
 
@@ -455,14 +460,18 @@ class BlendedPrior:
         measured: PriorTable | None | _Omitted = _OMITTED,
         backfill: IcuBackfillTable | None = None,
         *,
+        locale: str = "en_US",
         class_prior: Mapping[str, Decimal | int] | None = None,
         class_prior_source: str | None = None,
         range_table: Any = _OMITTED,
     ):
         # Omitted: the default table. ``None``: this locale has no measured table, so
         # no measured tier -- only the cross-locale ICU backfill (read from ``root``).
-        self.measured = load_prior_table() if measured is _OMITTED else measured
-        self.range_table = _range_table(range_table)
+        self.locale = canonical_locale(locale)
+        self.measured = (
+            load_prior_table(locale=self.locale) if measured is _OMITTED else measured
+        )
+        self.range_table = _range_table(range_table, self.locale)
         self.backfill = backfill if backfill is not None else load_icu_backfill_table()
         self.class_prior = (
             None
@@ -526,13 +535,18 @@ class CorpusPrior:
     """The Layer-2 feature source: a base-rate log-weight per supported reading."""
 
     def __init__(
-        self, table: PriorTable | None | _Omitted = _OMITTED, *, range_table: Any = _OMITTED
+        self,
+        table: PriorTable | None | _Omitted = _OMITTED,
+        *,
+        locale: str = "en_US",
+        range_table: Any = _OMITTED,
     ):
         # Omitted: the default table. ``None``: this locale has no table, so no prior.
-        self._table = load_prior_table() if table is _OMITTED else table
+        self.locale = canonical_locale(locale)
+        self._table = load_prior_table(locale=self.locale) if table is _OMITTED else table
         # A range span's prior is the range table's (E: range triples against single
         # tokens of its written shape; ``frend.ranges.RangePriorTable``).
-        self.range_table = _range_table(range_table)
+        self.range_table = _range_table(range_table, self.locale)
 
     def reading_prior(self, detection: Detection) -> ReadingPrior | None:
         """Expose the decomposed :class:`ReadingPrior`, or ``None`` for no support."""

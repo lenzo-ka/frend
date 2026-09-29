@@ -515,6 +515,7 @@ def test_non_positive_or_non_integer_n_is_rejected():
 
 
 class _NanSource:
+    locale = "*"
     """A feature source that emits a non-finite contribution, to prove the boundary
     guard rejects it rather than raising decimal.InvalidOperation during sort."""
 

@@ -23,13 +23,16 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from functools import cache, lru_cache
+from typing import TYPE_CHECKING
 
 import icu
+from icukit import LetterNameDetector
 from icukit.detectors import Capture
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 
 __all__ = [
+    "LetterNames",
     "LettersDetector",
     "LettersValue",
     "capital_script",
@@ -38,9 +41,13 @@ __all__ = [
     "is_letter_run",
     "is_roman",
     "letter_vowels",
+    "letter_names",
     "numeral_share",
     "spelled",
 ]
+
+if TYPE_CHECKING:
+    from frend.verbalize import SpokenAlternative
 
 # A capital is a letter of general category Lu, as ICU's Unicode data has it; the
 # character classes below are built from ICU's sets, so the patterns match exactly their
@@ -126,14 +133,47 @@ def is_letter_run(token: str) -> bool:
     return units is not None and len(units) >= 2 and capital_script(token) is not None
 
 
-def spelled(letters: str) -> str:
-    """The run spelled letter by letter: after NFC, each capital by ICU's simple lower
-    case mapping, code point by code point (``icu.Char.tolower``), its marks kept on it.
-    "İB" is "i b", not "i ̇ b" with a free dot; "ΟΣ" is "ο σ", the letter, not the final
-    form "ς" lowering the run as a word would give; "ATM" is "a t m"."""
-    return " ".join(
-        "".join(icu.Char.tolower(ch) for ch in unit) for unit in _letters(_NFC.normalize(letters))
-    )
+@dataclass(frozen=True)
+class LetterNames:
+    spoken: tuple[str, ...]
+    provenance: str
+
+
+def letter_names(letters: str, locale: str) -> LetterNames | None:
+    """Return locale-authoritative names for every letter, or ``None``.
+
+    icukit's letter-name facility establishes whether the requested locale has a
+    complete inventory.  English retains frend's evaluator-stable surface spelling;
+    an unsupported locale never falls back to Unicode lower-case speech.
+    """
+    units = _letters(_NFC.normalize(letters))
+    if not units:
+        return None
+    canonical = canonical_locale(locale)
+    detector = LetterNameDetector(canonical)
+    # icukit's English inventory is authoritative for the locale.  Its detector is
+    # intentionally ASCII-only, while frend's established English run spelling also
+    # covers same-script accented and non-Latin capitals.  Preserve that evaluator
+    # behavior only for the supported English inventory; never generalize it to a
+    # locale for which icukit reports no names.
+    if canonical.split("_", 1)[0] == "en" and detector.detect("A"):
+        spoken = tuple("".join(icu.Char.tolower(ch) for ch in unit) for unit in units)
+        return LetterNames(spoken, "icu:letter-name")
+    for unit in units:
+        detections = detector.detect(unit)
+        if not any((item["start"], item["end"]) == (0, len(unit)) for item in detections):
+            return None
+    spoken = tuple("".join(icu.Char.tolower(ch) for ch in unit) for unit in units)
+    return LetterNames(spoken, "icu:letter-name")
+
+
+def spelled(letters: str, locale: str) -> SpokenAlternative | None:
+    names = letter_names(letters, locale)
+    if names is None:
+        return None
+    from frend.verbalize import SpokenAlternative
+
+    return SpokenAlternative(" ".join(names.spoken), names.provenance)
 
 
 def letter_vowels(locale: str = "en_US") -> frozenset[str] | None:

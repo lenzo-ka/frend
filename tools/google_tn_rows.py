@@ -22,7 +22,9 @@ one the range builders count (a left token that ends in a digit, such as "$15,00
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -89,31 +91,84 @@ def expected(corpus_class: str, written: str, spoken: str) -> str:
     return normalize_spoken(spoken)
 
 
-# Running text writes a range or a dimension as one word ("5-10", "3x4", "3:2"), where the
-# corpus splits it into three tokens; these are rejoined by their written form alone.
-JOINERS = frozenset({"-", "–", "x", ":"})
+type CorpusRow = tuple[str, str, str]
+RANGE_CANDIDATE_SEPARATORS = frozenset({"-", "–", "—", "x", ":"})
 
 
-def _triples(sentences):
-    """(sentence, index of the triple's left row) for each number, separator, number
-    triple, left to right, never overlapping: the one predicate."""
+@dataclass(frozen=True)
+class RangeCandidate:
+    left: CorpusRow
+    middle: CorpusRow
+    right: CorpusRow
+    separator: str
+
+
+def _candidate_positions(
+    sentences,
+    separators,
+    *,
+    endpoints_start_digit: bool = False,
+    exclude_chains: bool = True,
+):
     for sentence in sentences:
         at = 1
         while at < len(sentence) - 1:
             left, middle, right = sentence[at - 1], sentence[at], sentence[at + 1]
-            if middle[1] in JOINERS and left[1][:1].isdigit() and right[1][:1].isdigit():
-                yield sentence, at - 1
+            endpoints_match = (
+                left[1][:1] in _ASCII_DIGITS and right[1][:1] in _ASCII_DIGITS
+                if endpoints_start_digit
+                else left[1][-1:] in _ASCII_DIGITS
+                and any(char in _ASCII_DIGITS for char in right[1])
+            )
+            if (
+                middle[1] in separators
+                and endpoints_match
+                and (not exclude_chains or not _chained(sentence, at, separators))
+            ):
+                yield RangeCandidate(left, middle, right, middle[1]), sentence, at - 1
                 at += 3
             else:
                 at += 1
+
+
+def range_candidates(
+    sentences,
+    *,
+    separators=RANGE_CANDIDATE_SEPARATORS,
+    endpoints_start_digit: bool = False,
+    exclude_chains: bool = True,
+):
+    """Yield the shared, non-overlapping corpus range-candidate inventory."""
+    separators = frozenset(separators)
+    for candidate, _sentence, _at in _candidate_positions(
+        sentences,
+        separators,
+        endpoints_start_digit=endpoints_start_digit,
+        exclude_chains=exclude_chains,
+    ):
+        yield candidate
+
+
+def range_candidate_denominators(sentences) -> Counter:
+    return Counter(
+        (item.separator, item.middle[0], item.middle[2]) for item in range_candidates(sentences)
+    )
 
 
 def running_text(sentences) -> list[tuple[str, str, str, str]]:
     """(separator, the middle's corpus reading, joined written, joined target) for each
     number, separator, number triple, left to right, never overlapping."""
     found = []
-    for sentence, at in _triples(sentences):
-        left, middle, right = sentence[at : at + 3]
+    # Preserve the published English evaluator's frozen population while sourcing its
+    # positions from the shared extractor: the historical report used four separators,
+    # endpoints beginning with digits, and did not remove chains.
+    for candidate in range_candidates(
+        sentences,
+        separators=RANGE_CANDIDATE_SEPARATORS - {"—"},
+        endpoints_start_digit=True,
+        exclude_chains=False,
+    ):
+        left, middle, right = candidate.left, candidate.middle, candidate.right
         parts = [expected(*row) for row in (left, middle, right)]
         found.append(
             (
@@ -135,40 +190,35 @@ def running_text_contexts(sentences) -> list[tuple[str, str]]:
             " ".join(row[1] for row in sentence[:at]),
             " ".join(row[1] for row in sentence[at + 3 :]),
         )
-        for sentence, at in _triples(sentences)
+        for _candidate, sentence, at in _candidate_positions(
+            sentences,
+            RANGE_CANDIDATE_SEPARATORS - {"—"},
+            endpoints_start_digit=True,
+            exclude_chains=False,
+        )
     ]
 
 
 def range_triple_positions(sentences):
     """(sentence, index of the triple's left row) for each triple of
     :func:`range_triples`, in the same order."""
-    for sentence in sentences:
-        at = 1
-        while at < len(sentence) - 1:
-            left, middle, right = sentence[at - 1], sentence[at], sentence[at + 1]
-            if (
-                middle[1] in JOINERS
-                and left[1][-1:] in _ASCII_DIGITS
-                and any(char in _ASCII_DIGITS for char in right[1])
-                and not _chained(sentence, at)
-            ):
-                yield sentence, at - 1
-                at += 3
-            else:
-                at += 1
+    for _candidate, sentence, at in _candidate_positions(
+        sentences, RANGE_CANDIDATE_SEPARATORS
+    ):
+        yield sentence, at
 
 
 _ASCII_DIGITS = frozenset("0123456789")
 
 
-def _chained(sentence, at: int) -> bool:
+def _chained(sentence, at: int, separators=RANGE_CANDIDATE_SEPARATORS) -> bool:
     """Whether the triple around ``sentence[at]`` is a fragment of a chain ("1 - 2 - 3",
     "2008 - 09 - 30"): a joiner then a number after its right end, or a number then a
     joiner before its left."""
     after = sentence[at + 2 : at + 4]
     before = sentence[max(0, at - 3) : at - 1]
-    return (len(after) == 2 and after[0][1] in JOINERS and after[1][1][:1] in _ASCII_DIGITS) or (
-        len(before) == 2 and before[1][1] in JOINERS and before[0][1][-1:] in _ASCII_DIGITS
+    return (len(after) == 2 and after[0][1] in separators and after[1][1][:1] in _ASCII_DIGITS) or (
+        len(before) == 2 and before[1][1] in separators and before[0][1][-1:] in _ASCII_DIGITS
     )
 
 
@@ -180,5 +230,5 @@ def range_triples(sentences):
     superset of :func:`running_text`'s predicate (the evaluator's, unchanged): it also
     reaches "$15,000 - $25,000" and "Oct. 29, 1951 - April 28, 1953", which the range
     rules then judge (``frend.ranges.emit_relevant``)."""
-    for sentence, at in range_triple_positions(sentences):
-        yield tuple(sentence[at : at + 3])
+    for candidate in range_candidates(sentences):
+        yield candidate.left, candidate.middle, candidate.right
