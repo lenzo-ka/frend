@@ -223,7 +223,7 @@ against its receipt) and compares byte for byte, so it needs the kalman mount.
   file, hash, size and label counts.
 - The range problems (`range:range`, `range:ratio`, `range:dimension`; the ranges
   plan's P6) are trained from their own stored set
-  (`frend/google/tn-en_with_types/p6-range-examples/b37f5893ffa8e1c0`, derived by
+  (`frend/google/tn-en_with_types/p6-range-examples/548d6f67beab4223`, derived by
   `--derive-range-examples` from the same shards 05, ..., 85: every range triple the
   rules can emit on, less the punctuation dashes, with its sentence either side), with
   the range family of features added; `index.json`'s `range_examples` names that set,

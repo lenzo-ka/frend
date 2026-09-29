@@ -150,6 +150,7 @@ def range_triple_positions(sentences):
                 middle[1] in JOINERS
                 and left[1][-1:] in _ASCII_DIGITS
                 and any(char in _ASCII_DIGITS for char in right[1])
+                and not _chained(sentence, at)
             ):
                 yield sentence, at - 1
                 at += 3
@@ -160,10 +161,22 @@ def range_triple_positions(sentences):
 _ASCII_DIGITS = frozenset("0123456789")
 
 
+def _chained(sentence, at: int) -> bool:
+    """Whether the triple around ``sentence[at]`` is a fragment of a chain ("1 - 2 - 3",
+    "2008 - 09 - 30"): a joiner then a number after its right end, or a number then a
+    joiner before its left."""
+    after = sentence[at + 2 : at + 4]
+    before = sentence[max(0, at - 3) : at - 1]
+    return (len(after) == 2 and after[0][1] in JOINERS and after[1][1][:1] in _ASCII_DIGITS) or (
+        len(before) == 2 and before[1][1] in JOINERS and before[0][1][-1:] in _ASCII_DIGITS
+    )
+
+
 def range_triples(sentences):
     """(left, middle, right) corpus rows, each (class, written, spoken), for each triple
     whose left written token ends in an ASCII digit, whose middle is a joiner and whose
-    right written token holds an ASCII digit; left to right, never overlapping. A
+    right written token holds an ASCII digit, and that is no fragment of a chain ("1 - 2
+    - 3"); left to right, never overlapping. A
     superset of :func:`running_text`'s predicate (the evaluator's, unchanged): it also
     reaches "$15,000 - $25,000" and "Oct. 29, 1951 - April 28, 1953", which the range
     rules then judge (``frend.ranges.emit_relevant``)."""

@@ -428,14 +428,16 @@ _CLASS_KEYS = MappingProxyType({"range": "dash", "ratio": "ratio", "dimension": 
 _CLASS_OF_KEY = MappingProxyType({key: cls for cls, key in _CLASS_KEYS.items()})
 
 # E: a sub-key is emitted as a span when its range triples are at least this many times
-# its single corpus tokens of the same written shape. Tuned for the ensemble's running
-# text on the runtime-eval shards 90-94 (the ranges plan's P6, stage 2): 0.5 reads
-# 55,397 of 65,392 triples first, 1 (the plan's value) 55,395.
-EMIT_RATIO = Decimal("0.5")
+# its single corpus tokens of the same written shape. Stage 2 (the runtime-eval shards
+# 90-94) found no value better than this beyond noise (0.5: +2 of 65,392 triples).
+EMIT_RATIO = Decimal(1)
+# E: a sub-key's own row decides only with at least this many observations (range
+# triples and single tokens); a sparser one reads its class row.
+RANGE_MIN_N = 50
 # J: how many credited rows the class row's share is worth when a sub-key's share is
-# blended toward it (as the spoken priors' SUB_KEY_PRIOR_STRENGTH). Tuned likewise: 1
-# reads 55,397, 5 (the plan's value) 55,390.
-RANGE_SUB_KEY_STRENGTH = Decimal(1)
+# blended toward it (as the spoken priors' SUB_KEY_PRIOR_STRENGTH). Stage 2 found no
+# better value beyond noise (1: +7 of 65,392).
+RANGE_SUB_KEY_STRENGTH = Decimal(5)
 
 # R7: the readings a range's end may be, each the whole side. A duration ("10:30") is no
 # end, and neither is another range or an approximately reading.
@@ -520,6 +522,63 @@ def digit_groups(text: str, start: int, end: int, separators: frozenset[str]) ->
     return [*reversed(left), *right]
 
 
+def chain_length(text: str, at: int, separators: frozenset[str]) -> int:
+    """R3: how many ASCII digit groups the separator at ``text[at]`` chains, each link a
+    separator of the class spaced as this one is (joined, or spaced on both sides):
+    "978-1-234" 3, "1 - 2 - 3" 3, "5-10" 2."""
+    spaced = text[at - 1 : at].isspace()
+
+    def link(sep_at: int) -> bool:
+        before = text[sep_at - 1 : sep_at].isspace()
+        after = text[sep_at + 1 : sep_at + 2].isspace()
+        return before == after == spaced
+
+    def digits_left(end: int) -> int:
+        start = end
+        while start > 0 and text[start - 1] in _ASCII_DIGITS:
+            start -= 1
+        return start
+
+    def digits_right(start: int) -> int:
+        end = start
+        while end < len(text) and text[end] in _ASCII_DIGITS:
+            end += 1
+        return end
+
+    count = 0
+    sep = at
+    while True:  # leftward
+        end = sep
+        while end > 0 and text[end - 1].isspace():
+            end -= 1
+        start = digits_left(end)
+        if start == end:
+            break
+        count += 1
+        prev = start
+        while prev > 0 and text[prev - 1].isspace():
+            prev -= 1
+        if prev == 0 or text[prev - 1] not in separators or not link(prev - 1):
+            break
+        sep = prev - 1
+    sep = at
+    while True:  # rightward
+        start = sep + 1
+        while start < len(text) and text[start].isspace():
+            start += 1
+        end = digits_right(start)
+        if start == end:
+            break
+        count += 1
+        nxt = end
+        while nxt < len(text) and text[nxt].isspace():
+            nxt += 1
+        if nxt >= len(text) or text[nxt] not in separators or not link(nxt):
+            break
+        sep = nxt
+    return count
+
+
 def _starts_an_amount(text: str) -> bool:
     """R1's right side: an ASCII digit, or a currency sign (General_Category ``Sc``)
     followed by one ("$10")."""
@@ -543,8 +602,7 @@ def emit_relevant(
     if not _starts_an_amount(right_written):
         return False
     joined = left_written + separator + right_written
-    at = len(left_written)
-    return len(digit_groups(joined, at, at + len(separator), classes[cls])) < 3
+    return chain_length(joined, len(left_written), classes[cls]) < 3
 
 
 _YEAR_SHAPED = re.compile(r"[12][0-9]{3}")
@@ -565,13 +623,24 @@ def punctuation_dash(left: Sequence[str], middle: Sequence[str], right: Sequence
     return "MONEY" in (left[0], right[0])
 
 
+_GROUPED = re.compile(r"[0-9]{1,3}(?:,[0-9]{3})+")
+
+
+def _ungrouped(text: str) -> str:
+    """ASCII digits grouped by commas in threes, without the commas ("1,000" "1000")."""
+    return text.replace(",", "") if _GROUPED.fullmatch(text) else text
+
+
 def _sub_key(cls: str, left: str, right: str, clock: bool) -> str:
     """R4a/R4b: ``<class>:clock`` for a clock, ``<class>:<L>+<R>`` (ASCII digit lengths;
     ``:0`` added for a right end of two or more digits written with a leading zero)
-    where both ends are ASCII digits only, else ``<class>:other``."""
+    where both ends are ASCII digits only (grouping commas not counted), else
+    ``<class>:other``."""
     key = _CLASS_KEYS[cls]
     if clock:
         return f"{key}:clock"
+    # A number grouped by commas counts its digits ("1,000-2,000" is dash:4+4).
+    left, right = _ungrouped(left), _ungrouped(right)
     if left and right and set(left) <= _ASCII_DIGITS and set(right) <= _ASCII_DIGITS:
         lead0 = ":0" if len(right) > 1 and right.startswith("0") else ""
         return f"{key}:{len(left)}+{len(right)}{lead0}"
@@ -673,10 +742,13 @@ class RangePriorTable:
 
     def emission(self, sub_key: str) -> tuple[int, int] | None:
         """E's row for ``sub_key``: (range triples, single tokens) of its emit key, or of
-        its class where the key was never observed; ``None`` without either."""
+        its class where the key has fewer than ``RANGE_MIN_N`` observations; ``None``
+        without either."""
         key = emit_key(sub_key)
         row = self._readings.get(key)
-        if row is None:
+        if row is None or sum(row) < RANGE_MIN_N:
+            # A key never observed, or seen too rarely to decide ("dash:4+10", 4 and 0),
+            # reads its class row.
             row = self._readings.get(key.split(":", 1)[0])
         return row
 
@@ -969,8 +1041,9 @@ class RangeDetector:
             # R2: joined or spaced alike on both sides ("10 -5" writes a signed number).
             if (left_edge < at) != (right_edge > at + 1):
                 continue
-            # R3: a chain of three or more digit groups is an identifier.
-            if len(digit_groups(text, at, at + 1, classes[cls])) >= 3:
+            # R3: a chain of three or more digit groups is an identifier, joined or
+            # spaced ("1-2-3", "1 - 2 - 3", "2008 - 09 - 30").
+            if chain_length(text, at, classes[cls]) >= 3:
                 continue
             left = self._left_end(text, left_edge)
             right = self._right_end(text, right_edge)

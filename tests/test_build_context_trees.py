@@ -8,6 +8,7 @@ import hashlib
 import importlib.util
 import json
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -174,19 +175,33 @@ def test_the_shipped_trees_name_the_example_set_they_were_trained_on():
         assert hashlib.sha256(blob).hexdigest() == entry["sha256"]
 
 
-def _range_set(root: Path, *, shard: str = "00005") -> Path:
-    """A tiny stored range set: one record, its receipt hashing it."""
+def _range_set(root: Path, *, shard: str = "00005", count: int = 60) -> Path:
+    """A stored range set of ``count`` records (enough for a range tree: at least
+    ``MIN_EXAMPLES``), "to" after "pages" and silent after "score", its receipt hashing
+    it."""
     root.mkdir()
-    record = {
-        "tok": "5-10",
-        "L": "pages",
-        "R": "of the book",
-        "gold": "five to ten",
-        "bos": True,
-        "eos": True,
-        "src": f"output-{shard}-of-00100:0:1",
-    }
-    blob = gzip.compress((json.dumps(record) + "\n").encode("utf-8"), mtime=0)
+    records = []
+    for index in range(count):
+        said = index % 2 == 0
+        left, right = index + 1, index + 5
+        from frend.spoken_priors import normalize_spoken
+        from frend.verbalize import _number_leaf
+
+        words = [normalize_spoken(_number_leaf(Decimal(n), "cardinal", "en_US")[0].text)
+                 for n in (left, right)]  # fmt: skip
+        records.append(
+            {
+                "tok": f"{left}-{right}",
+                "L": "pages" if said else "score",
+                "R": "of the book",
+                "gold": f"{words[0]} to {words[1]}" if said else f"{words[0]} {words[1]}",
+                "bos": True,
+                "eos": True,
+                "src": f"output-{shard}-of-00100:{index}:1",
+            }
+        )
+    body = "".join(json.dumps(r) + "\n" for r in records).encode("utf-8")
+    blob = gzip.compress(body, mtime=0)
     (root / "range_examples.jsonl.gz").write_bytes(blob)
     receipt = {
         "derivation": "frend/google/tn-en_with_types/p6-range-examples",
@@ -239,3 +254,7 @@ def test_the_range_set_leaves_the_main_trees_as_they_are(tmp_path):
     )  # fmt: skip
     files = {entry["file"] for entry in index["trees"].values()}
     assert builder._compare(ranged_out, plain, only=files) == []
+    ranged_index = json.loads((ranged_out / "index.json").read_text(encoding="utf-8"))
+    # The range set does train a tree here (so its draws and words are exercised).
+    assert "range:range" in ranged_index["trees"]
+    assert ranged_index["frequent_words"] == index["frequent_words"]

@@ -131,37 +131,37 @@
    "joint": "range_triples passing R1-R3 and R7 on the sample shards, R6 rows dropped; credited by the first matching builder-mode candidate",
    "dropped_filter": "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said 'sil', and (left CARDINAL written [12][0-9]{3} or a MONEY end)",
    "wider_not_counted": {
-    "not_emittable": 23305,
-    "punctuation_dash": 122942
+    "not_emittable": 23242,
+    "punctuation_dash": 121241
    },
    "joint_outcomes": {
-    "credited": 104592,
+    "credited": 102684,
     "error": 9,
-    "no_end": 1708,
-    "not_emittable": 2316,
-    "punctuation_dash": 12109,
-    "unmatched": 47
+    "no_end": 1569,
+    "not_emittable": 2313,
+    "punctuation_dash": 11962,
+    "unmatched": 46
    }
   },
   "builder": "tools/build_range_priors.py"
  },
  "readings": {
   "dash": {
-   "range": 905009,
+   "range": 889801,
    "single_token": {
     "TELEPHONE": 30468
    }
   },
   "dash:1+1": {
-   "range": 99319,
+   "range": 99167,
    "single_token": {}
   },
   "dash:1+2": {
-   "range": 33478,
+   "range": 31463,
    "single_token": {}
   },
   "dash:1+3": {
-   "range": 15089,
+   "range": 3960,
    "single_token": {}
   },
   "dash:1+4": {
@@ -169,7 +169,7 @@
    "single_token": {}
   },
   "dash:1+5": {
-   "range": 34,
+   "range": 37,
    "single_token": {}
   },
   "dash:1+6": {
@@ -181,7 +181,7 @@
    "single_token": {}
   },
   "dash:1+8": {
-   "range": 2,
+   "range": 1,
    "single_token": {}
   },
   "dash:10+10": {
@@ -236,8 +236,12 @@
     "TELEPHONE": 3
    }
   },
+  "dash:16+16": {
+   "range": 2,
+   "single_token": {}
+  },
   "dash:2+1": {
-   "range": 21771,
+   "range": 21677,
    "single_token": {
     "TELEPHONE": 136
    }
@@ -249,43 +253,43 @@
    }
   },
   "dash:2+2": {
-   "range": 112704,
+   "range": 112491,
    "single_token": {
     "TELEPHONE": 929
    }
   },
   "dash:2+3": {
-   "range": 12356,
+   "range": 11871,
    "single_token": {
     "TELEPHONE": 692
    }
   },
   "dash:2+4": {
-   "range": 1711,
+   "range": 1708,
    "single_token": {
     "TELEPHONE": 536
    }
   },
   "dash:2+5": {
-   "range": 17,
+   "range": 21,
    "single_token": {
     "TELEPHONE": 2027
    }
   },
   "dash:2+6": {
-   "range": 1,
+   "range": 5,
    "single_token": {
     "TELEPHONE": 433
    }
   },
   "dash:2+7": {
-   "range": 0,
+   "range": 1,
    "single_token": {
     "TELEPHONE": 41
    }
   },
   "dash:2+8": {
-   "range": 0,
+   "range": 1,
    "single_token": {
     "TELEPHONE": 14
    }
@@ -297,7 +301,7 @@
    }
   },
   "dash:3+1": {
-   "range": 9111,
+   "range": 9070,
    "single_token": {
     "TELEPHONE": 63
    }
@@ -333,31 +337,31 @@
    }
   },
   "dash:3+2": {
-   "range": 17203,
+   "range": 17086,
    "single_token": {
     "TELEPHONE": 78
    }
   },
   "dash:3+3": {
-   "range": 123709,
+   "range": 123284,
    "single_token": {
     "TELEPHONE": 231
    }
   },
   "dash:3+4": {
-   "range": 54,
+   "range": 31,
    "single_token": {
     "TELEPHONE": 4004
    }
   },
   "dash:3+5": {
-   "range": 2,
+   "range": 5,
    "single_token": {
     "TELEPHONE": 215
    }
   },
   "dash:3+6": {
-   "range": 0,
+   "range": 1,
    "single_token": {
     "TELEPHONE": 78
    }
@@ -381,7 +385,7 @@
    }
   },
   "dash:4+1": {
-   "range": 9572,
+   "range": 9567,
    "single_token": {
     "TELEPHONE": 30
    }
@@ -399,37 +403,37 @@
    }
   },
   "dash:4+2": {
-   "range": 40391,
+   "range": 40354,
    "single_token": {
     "TELEPHONE": 68
    }
   },
   "dash:4+3": {
-   "range": 3611,
+   "range": 3601,
    "single_token": {
     "TELEPHONE": 873
    }
   },
   "dash:4+4": {
-   "range": 336153,
+   "range": 336034,
    "single_token": {
     "TELEPHONE": 8772
    }
   },
   "dash:4+5": {
-   "range": 325,
+   "range": 363,
    "single_token": {
     "TELEPHONE": 84
    }
   },
   "dash:4+6": {
-   "range": 452,
+   "range": 461,
    "single_token": {
     "TELEPHONE": 37
    }
   },
   "dash:4+7": {
-   "range": 23,
+   "range": 28,
    "single_token": {
     "TELEPHONE": 6
    }
@@ -441,7 +445,7 @@
    }
   },
   "dash:4+9": {
-   "range": 3,
+   "range": 4,
    "single_token": {
     "TELEPHONE": 1
    }
@@ -469,19 +473,19 @@
    }
   },
   "dash:5+4": {
-   "range": 10,
+   "range": 16,
    "single_token": {
     "TELEPHONE": 570
    }
   },
   "dash:5+5": {
-   "range": 0,
+   "range": 67,
    "single_token": {
     "TELEPHONE": 842
    }
   },
   "dash:5+6": {
-   "range": 0,
+   "range": 7,
    "single_token": {
     "TELEPHONE": 21
    }
@@ -505,7 +509,7 @@
    }
   },
   "dash:6+3": {
-   "range": 1,
+   "range": 2,
    "single_token": {
     "TELEPHONE": 95
    }
@@ -517,25 +521,25 @@
    }
   },
   "dash:6+5": {
-   "range": 0,
+   "range": 3,
    "single_token": {
     "TELEPHONE": 3
    }
   },
   "dash:6+6": {
-   "range": 0,
+   "range": 35,
    "single_token": {
     "TELEPHONE": 61
    }
   },
   "dash:6+7": {
-   "range": 0,
+   "range": 1,
    "single_token": {
     "TELEPHONE": 2
    }
   },
   "dash:7+1": {
-   "range": 7,
+   "range": 8,
    "single_token": {
     "TELEPHONE": 2
    }
@@ -553,7 +557,7 @@
    }
   },
   "dash:7+4": {
-   "range": 1,
+   "range": 9,
    "single_token": {
     "TELEPHONE": 13
    }
@@ -565,7 +569,7 @@
    }
   },
   "dash:7+7": {
-   "range": 0,
+   "range": 3,
    "single_token": {
     "TELEPHONE": 5
    }
@@ -611,13 +615,13 @@
    }
   },
   "dash:8+8": {
-   "range": 0,
+   "range": 3,
    "single_token": {
     "TELEPHONE": 6
    }
   },
   "dash:9+1": {
-   "range": 0,
+   "range": 1,
    "single_token": {
     "TELEPHONE": 9
    }
@@ -629,15 +633,15 @@
    }
   },
   "dash:other": {
-   "range": 67175,
+   "range": 66628,
    "single_token": {}
   },
   "dimension": {
-   "range": 10970,
+   "range": 10641,
    "single_token": {}
   },
   "dimension:1+1": {
-   "range": 3254,
+   "range": 3140,
    "single_token": {}
   },
   "dimension:1+16": {
@@ -645,23 +649,23 @@
    "single_token": {}
   },
   "dimension:1+2": {
-   "range": 1040,
+   "range": 1025,
    "single_token": {}
   },
   "dimension:1+3": {
-   "range": 1075,
+   "range": 1074,
    "single_token": {}
   },
   "dimension:1+4": {
-   "range": 87,
+   "range": 89,
    "single_token": {}
   },
   "dimension:1+5": {
-   "range": 26,
+   "range": 28,
    "single_token": {}
   },
   "dimension:1+6": {
-   "range": 7,
+   "range": 8,
    "single_token": {}
   },
   "dimension:1+7": {
@@ -677,19 +681,19 @@
    "single_token": {}
   },
   "dimension:2+1": {
-   "range": 342,
+   "range": 340,
    "single_token": {}
   },
   "dimension:2+2": {
-   "range": 1189,
+   "range": 1127,
    "single_token": {}
   },
   "dimension:2+3": {
-   "range": 65,
+   "range": 63,
    "single_token": {}
   },
   "dimension:2+4": {
-   "range": 33,
+   "range": 34,
    "single_token": {}
   },
   "dimension:3+1": {
@@ -697,31 +701,31 @@
    "single_token": {}
   },
   "dimension:3+2": {
-   "range": 149,
+   "range": 140,
    "single_token": {}
   },
   "dimension:3+3": {
-   "range": 618,
+   "range": 590,
    "single_token": {}
   },
   "dimension:3+4": {
-   "range": 12,
+   "range": 15,
    "single_token": {}
   },
   "dimension:4+1": {
-   "range": 14,
+   "range": 15,
    "single_token": {}
   },
   "dimension:4+2": {
-   "range": 51,
+   "range": 57,
    "single_token": {}
   },
   "dimension:4+3": {
-   "range": 195,
+   "range": 207,
    "single_token": {}
   },
   "dimension:4+4": {
-   "range": 230,
+   "range": 238,
    "single_token": {}
   },
   "dimension:5+1": {
@@ -729,15 +733,15 @@
    "single_token": {}
   },
   "dimension:5+3": {
-   "range": 4,
+   "range": 5,
    "single_token": {}
   },
   "dimension:5+4": {
-   "range": 1,
+   "range": 2,
    "single_token": {}
   },
   "dimension:5+5": {
-   "range": 1,
+   "range": 2,
    "single_token": {}
   },
   "dimension:6+1": {
@@ -745,7 +749,7 @@
    "single_token": {}
   },
   "dimension:6+2": {
-   "range": 2,
+   "range": 3,
    "single_token": {}
   },
   "dimension:6+3": {
@@ -757,25 +761,29 @@
    "single_token": {}
   },
   "dimension:other": {
-   "range": 2491,
+   "range": 2355,
    "single_token": {}
   },
   "ratio": {
-   "range": 145548,
+   "range": 140845,
    "single_token": {
     "TIME": 56603
    }
   },
   "ratio:1+1": {
-   "range": 14209,
+   "range": 13646,
    "single_token": {}
   },
   "ratio:1+10": {
+   "range": 4,
+   "single_token": {}
+  },
+  "ratio:1+11": {
    "range": 1,
    "single_token": {}
   },
   "ratio:1+13": {
-   "range": 1,
+   "range": 2,
    "single_token": {}
   },
   "ratio:1+15": {
@@ -787,35 +795,39 @@
    "single_token": {}
   },
   "ratio:1+2": {
-   "range": 2411,
+   "range": 2358,
    "single_token": {}
   },
   "ratio:1+3": {
-   "range": 10666,
+   "range": 10494,
    "single_token": {}
   },
   "ratio:1+4": {
-   "range": 3316,
+   "range": 3296,
    "single_token": {}
   },
   "ratio:1+5": {
-   "range": 568,
+   "range": 2056,
    "single_token": {}
   },
   "ratio:1+6": {
-   "range": 3210,
+   "range": 3608,
    "single_token": {}
   },
   "ratio:1+7": {
-   "range": 12,
+   "range": 74,
    "single_token": {}
   },
   "ratio:1+8": {
-   "range": 5,
+   "range": 21,
+   "single_token": {}
+  },
+  "ratio:1+9": {
+   "range": 2,
    "single_token": {}
   },
   "ratio:2+1": {
-   "range": 12359,
+   "range": 12039,
    "single_token": {}
   },
   "ratio:2+10": {
@@ -823,6 +835,10 @@
    "single_token": {}
   },
   "ratio:2+13": {
+   "range": 1,
+   "single_token": {}
+  },
+  "ratio:2+14": {
    "range": 1,
    "single_token": {}
   },
@@ -835,37 +851,37 @@
    "single_token": {}
   },
   "ratio:2+2": {
-   "range": 12025,
+   "range": 11779,
    "single_token": {
     "TIME": 207
    }
   },
   "ratio:2+3": {
-   "range": 23278,
+   "range": 22835,
    "single_token": {}
   },
   "ratio:2+4": {
-   "range": 3333,
+   "range": 3292,
    "single_token": {}
   },
   "ratio:2+5": {
-   "range": 184,
+   "range": 193,
    "single_token": {}
   },
   "ratio:2+6": {
-   "range": 404,
+   "range": 422,
    "single_token": {}
   },
   "ratio:2+7": {
-   "range": 29,
+   "range": 31,
    "single_token": {}
   },
   "ratio:2+8": {
-   "range": 13,
+   "range": 14,
    "single_token": {}
   },
   "ratio:3+1": {
-   "range": 2996,
+   "range": 2884,
    "single_token": {}
   },
   "ratio:3+15": {
@@ -873,23 +889,23 @@
    "single_token": {}
   },
   "ratio:3+2": {
-   "range": 3953,
+   "range": 3888,
    "single_token": {}
   },
   "ratio:3+3": {
-   "range": 8189,
+   "range": 8044,
    "single_token": {}
   },
   "ratio:3+4": {
-   "range": 1646,
+   "range": 1635,
    "single_token": {}
   },
   "ratio:3+5": {
-   "range": 135,
+   "range": 141,
    "single_token": {}
   },
   "ratio:3+6": {
-   "range": 138,
+   "range": 140,
    "single_token": {}
   },
   "ratio:3+7": {
@@ -905,7 +921,7 @@
    "single_token": {}
   },
   "ratio:4+1": {
-   "range": 4706,
+   "range": 4657,
    "single_token": {}
   },
   "ratio:4+10": {
@@ -913,7 +929,7 @@
    "single_token": {}
   },
   "ratio:4+11": {
-   "range": 1,
+   "range": 2,
    "single_token": {}
   },
   "ratio:4+19": {
@@ -921,39 +937,43 @@
    "single_token": {}
   },
   "ratio:4+2": {
-   "range": 11918,
+   "range": 11803,
    "single_token": {}
   },
   "ratio:4+3": {
-   "range": 10784,
+   "range": 10696,
    "single_token": {}
   },
   "ratio:4+4": {
-   "range": 1587,
+   "range": 1669,
    "single_token": {}
   },
   "ratio:4+5": {
-   "range": 62,
+   "range": 191,
    "single_token": {}
   },
   "ratio:4+6": {
-   "range": 392,
+   "range": 481,
    "single_token": {}
   },
   "ratio:4+7": {
-   "range": 9,
+   "range": 37,
    "single_token": {}
   },
   "ratio:4+8": {
-   "range": 62,
+   "range": 65,
+   "single_token": {}
+  },
+  "ratio:4+9": {
+   "range": 3,
    "single_token": {}
   },
   "ratio:5+1": {
-   "range": 31,
+   "range": 36,
    "single_token": {}
   },
   "ratio:5+2": {
-   "range": 15,
+   "range": 16,
    "single_token": {}
   },
   "ratio:5+3": {
@@ -961,35 +981,35 @@
    "single_token": {}
   },
   "ratio:5+4": {
-   "range": 505,
+   "range": 511,
    "single_token": {}
   },
   "ratio:5+5": {
-   "range": 6,
+   "range": 16,
    "single_token": {}
   },
-  "ratio:5+6": {
+  "ratio:5+7": {
    "range": 1,
    "single_token": {}
   },
   "ratio:6+1": {
-   "range": 2,
-   "single_token": {}
-  },
-  "ratio:6+2": {
-   "range": 9,
-   "single_token": {}
-  },
-  "ratio:6+3": {
-   "range": 15,
-   "single_token": {}
-  },
-  "ratio:6+4": {
    "range": 4,
    "single_token": {}
   },
+  "ratio:6+2": {
+   "range": 15,
+   "single_token": {}
+  },
+  "ratio:6+3": {
+   "range": 14,
+   "single_token": {}
+  },
+  "ratio:6+4": {
+   "range": 6,
+   "single_token": {}
+  },
   "ratio:6+5": {
-   "range": 2,
+   "range": 5,
    "single_token": {}
   },
   "ratio:6+6": {
@@ -997,7 +1017,7 @@
    "single_token": {}
   },
   "ratio:7+1": {
-   "range": 4,
+   "range": 11,
    "single_token": {}
   },
   "ratio:7+2": {
@@ -1005,23 +1025,23 @@
    "single_token": {}
   },
   "ratio:7+3": {
-   "range": 17,
+   "range": 15,
    "single_token": {}
   },
   "ratio:7+4": {
-   "range": 3,
+   "range": 14,
    "single_token": {}
   },
   "ratio:7+5": {
-   "range": 1,
+   "range": 6,
    "single_token": {}
   },
-  "ratio:7+7": {
-   "range": 5,
+  "ratio:7+6": {
+   "range": 3,
    "single_token": {}
   },
   "ratio:8+1": {
-   "range": 3,
+   "range": 5,
    "single_token": {}
   },
   "ratio:8+2": {
@@ -1032,57 +1052,53 @@
    "range": 1,
    "single_token": {}
   },
-  "ratio:8+4": {
-   "range": 1,
-   "single_token": {}
-  },
   "ratio:8+8": {
-   "range": 3,
+   "range": 2,
    "single_token": {}
   },
   "ratio:9+1": {
-   "range": 1,
+   "range": 4,
    "single_token": {}
   },
   "ratio:clock": {
-   "range": 58,
+   "range": 37,
    "single_token": {
     "TIME": 56396
    }
   },
   "ratio:other": {
-   "range": 12127,
+   "range": 7487,
    "single_token": {}
   }
  },
  "kinds": {
   "dash": {
-   "total": 89616,
-   "matched": 89575,
+   "total": 88077,
+   "matched": 88036,
    "unmatched": 41,
    "source_matched": {
-    "range:cardinal+to+cardinal": 41810,
-    "range:date+to+date": 33621,
-    "range:date+to+cardinal": 5108,
-    "range:cardinal+silent+cardinal": 2451,
-    "range:cardinal+to+measure": 2256,
-    "range:decimal+to+cardinal": 1846,
+    "range:cardinal+to+cardinal": 40332,
+    "range:date+to+date": 33598,
+    "range:date+to+cardinal": 5106,
+    "range:cardinal+silent+cardinal": 2438,
+    "range:cardinal+to+measure": 2254,
+    "range:decimal+to+cardinal": 1843,
     "range:date+to+measure": 496,
-    "range:date+to+digits": 484,
+    "range:date+to+digits": 481,
     "range:cardinal+silent+digits": 480,
-    "range:decimal+to+measure": 234,
-    "range:decimal+to+decimal": 167,
+    "range:decimal+to+measure": 231,
+    "range:decimal+to+decimal": 162,
     "range:time+to+time": 144,
     "range:cardinal+to+time": 126,
-    "range:cardinal+silent+date": 120,
+    "range:cardinal+silent+date": 116,
     "range:cardinal+to+decimal": 60,
     "range:digits+silent+measure": 41,
     "range:digits+silent+digits": 31,
     "range:decimal+silent+digits": 22,
-    "range:digits+silent+cardinal": 14,
     "range:decimal+silent+date": 13,
+    "range:digits+silent+cardinal": 12,
     "range:date+silent+cardinal": 11,
-    "range:date+silent+decimal": 8,
+    "range:date+silent+decimal": 7,
     "range:digits+silent+date": 7,
     "range:time+silent+cardinal": 5,
     "range:time+silent+digits": 5,
@@ -1095,16 +1111,16 @@
    },
    "sub_keys": {
     "1+1": {
-     "matched": 9822,
+     "matched": 9808,
      "source_matched": {
-      "range:cardinal+to+cardinal": 9806,
-      "range:cardinal+silent+cardinal": 16
+      "range:cardinal+to+cardinal": 9793,
+      "range:cardinal+silent+cardinal": 15
      }
     },
     "1+2": {
-     "matched": 3368,
+     "matched": 3162,
      "source_matched": {
-      "range:cardinal+to+cardinal": 3344,
+      "range:cardinal+to+cardinal": 3138,
       "range:cardinal+silent+cardinal": 22,
       "range:cardinal+silent+digits": 2
      }
@@ -1116,9 +1132,9 @@
      }
     },
     "1+3": {
-     "matched": 1529,
+     "matched": 424,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1516,
+      "range:cardinal+to+cardinal": 411,
       "range:cardinal+silent+cardinal": 9,
       "range:cardinal+silent+digits": 4
      }
@@ -1130,9 +1146,9 @@
      }
     },
     "1+4": {
-     "matched": 43,
+     "matched": 42,
      "source_matched": {
-      "range:cardinal+silent+date": 29,
+      "range:cardinal+silent+date": 28,
       "range:cardinal+silent+digits": 14
      }
     },
@@ -1143,9 +1159,9 @@
      }
     },
     "1+5": {
-     "matched": 2,
+     "matched": 3,
      "source_matched": {
-      "range:cardinal+silent+cardinal": 2
+      "range:cardinal+silent+cardinal": 3
      }
     },
     "1+5:0": {
@@ -1167,34 +1183,34 @@
      }
     },
     "2+1": {
-     "matched": 2134,
+     "matched": 2122,
      "source_matched": {
-      "range:cardinal+to+cardinal": 2100,
-      "range:cardinal+silent+cardinal": 33,
+      "range:cardinal+to+cardinal": 2089,
+      "range:cardinal+silent+cardinal": 32,
       "range:digits+silent+cardinal": 1
      }
     },
     "2+2": {
-     "matched": 11211,
+     "matched": 11181,
      "source_matched": {
-      "range:cardinal+to+cardinal": 8940,
-      "range:cardinal+silent+cardinal": 2268,
+      "range:cardinal+to+cardinal": 8919,
+      "range:cardinal+silent+cardinal": 2259,
       "range:cardinal+silent+digits": 2,
       "range:digits+silent+cardinal": 1
      }
     },
     "2+2:0": {
-     "matched": 110,
+     "matched": 109,
      "source_matched": {
       "range:cardinal+silent+digits": 78,
-      "range:cardinal+silent+cardinal": 31,
+      "range:cardinal+silent+cardinal": 30,
       "range:digits+silent+digits": 1
      }
     },
     "2+3": {
-     "matched": 1252,
+     "matched": 1203,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1236,
+      "range:cardinal+to+cardinal": 1187,
       "range:cardinal+silent+cardinal": 7,
       "range:cardinal+silent+digits": 7,
       "range:digits+silent+cardinal": 2
@@ -1224,18 +1240,24 @@
       "range:digits+silent+digits": 1
      }
     },
-    "3+1": {
-     "matched": 925,
+    "2+5": {
+     "matched": 1,
      "source_matched": {
-      "range:cardinal+to+cardinal": 913,
+      "range:cardinal+silent+cardinal": 1
+     }
+    },
+    "3+1": {
+     "matched": 924,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 912,
       "range:cardinal+silent+cardinal": 11,
       "range:digits+silent+cardinal": 1
      }
     },
     "3+2": {
-     "matched": 1669,
+     "matched": 1657,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1659,
+      "range:cardinal+to+cardinal": 1647,
       "range:cardinal+silent+cardinal": 9,
       "range:cardinal+silent+digits": 1
      }
@@ -1248,9 +1270,9 @@
      }
     },
     "3+3": {
-     "matched": 12307,
+     "matched": 12247,
      "source_matched": {
-      "range:cardinal+to+cardinal": 12296,
+      "range:cardinal+to+cardinal": 12236,
       "range:cardinal+silent+cardinal": 8,
       "range:cardinal+silent+digits": 3
      }
@@ -1263,9 +1285,10 @@
      }
     },
     "3+4": {
-     "matched": 5,
+     "matched": 3,
      "source_matched": {
-      "range:cardinal+silent+date": 4,
+      "range:cardinal+silent+cardinal": 1,
+      "range:cardinal+silent+date": 1,
       "range:cardinal+silent+digits": 1
      }
     },
@@ -1278,9 +1301,9 @@
      }
     },
     "4+2": {
-     "matched": 3681,
+     "matched": 3679,
      "source_matched": {
-      "range:date+to+cardinal": 3667,
+      "range:date+to+cardinal": 3665,
       "range:date+silent+cardinal": 8,
       "range:digits+silent+cardinal": 3,
       "range:cardinal+silent+cardinal": 2,
@@ -1288,34 +1311,35 @@
      }
     },
     "4+2:0": {
-     "matched": 335,
+     "matched": 333,
      "source_matched": {
-      "range:date+to+digits": 322,
+      "range:date+to+digits": 320,
       "range:digits+silent+digits": 11,
       "range:cardinal+silent+digits": 2
      }
     },
     "4+3": {
-     "matched": 307,
+     "matched": 305,
      "source_matched": {
       "range:date+to+cardinal": 300,
       "range:date+silent+cardinal": 3,
-      "range:digits+silent+cardinal": 3,
+      "range:digits+silent+cardinal": 1,
       "range:digits+silent+digits": 1
      }
     },
     "4+3:0": {
-     "matched": 93,
+     "matched": 92,
      "source_matched": {
-      "range:date+to+digits": 91,
+      "range:date+to+digits": 90,
       "range:digits+silent+digits": 2
      }
     },
     "4+4": {
-     "matched": 33774,
+     "matched": 33761,
      "source_matched": {
-      "range:date+to+date": 33621,
-      "range:date+to+cardinal": 147,
+      "range:date+to+date": 33598,
+      "range:date+to+cardinal": 149,
+      "range:cardinal+silent+cardinal": 8,
       "range:digits+silent+date": 5,
       "range:digits+silent+digits": 1
      }
@@ -1328,9 +1352,10 @@
      }
     },
     "4+5": {
-     "matched": 20,
+     "matched": 22,
      "source_matched": {
-      "range:date+to+cardinal": 20
+      "range:date+to+cardinal": 21,
+      "range:cardinal+silent+cardinal": 1
      }
     },
     "4+5:0": {
@@ -1340,9 +1365,9 @@
      }
     },
     "4+6": {
-     "matched": 46,
+     "matched": 48,
      "source_matched": {
-      "range:date+to+cardinal": 46
+      "range:date+to+cardinal": 48
      }
     },
     "4+6:0": {
@@ -1388,9 +1413,22 @@
      }
     },
     "5+4": {
+     "matched": 2,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 1,
+      "range:digits+silent+digits": 1
+     }
+    },
+    "5+5": {
+     "matched": 6,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 6
+     }
+    },
+    "5+6": {
      "matched": 1,
      "source_matched": {
-      "range:digits+silent+digits": 1
+      "range:cardinal+silent+cardinal": 1
      }
     },
     "6+2:0": {
@@ -1399,23 +1437,33 @@
       "range:digits+silent+digits": 1
      }
     },
-    "other": {
-     "matched": 5470,
+    "6+6": {
+     "matched": 4,
      "source_matched": {
-      "range:cardinal+to+measure": 2256,
-      "range:decimal+to+cardinal": 1846,
+      "range:cardinal+silent+cardinal": 4
+     }
+    },
+    "7+7": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+silent+cardinal": 1
+     }
+    },
+    "other": {
+     "matched": 5425,
+     "source_matched": {
+      "range:cardinal+to+measure": 2254,
+      "range:decimal+to+cardinal": 1843,
       "range:date+to+measure": 496,
-      "range:decimal+to+measure": 234,
-      "range:decimal+to+decimal": 167,
+      "range:decimal+to+measure": 231,
+      "range:decimal+to+decimal": 162,
       "range:time+to+time": 144,
       "range:cardinal+to+time": 126,
       "range:cardinal+to+decimal": 60,
       "range:digits+silent+measure": 41,
-      "range:cardinal+silent+cardinal": 26,
       "range:decimal+silent+digits": 22,
       "range:decimal+silent+date": 13,
-      "range:date+silent+decimal": 8,
-      "range:date+to+cardinal": 6,
+      "range:date+silent+decimal": 7,
       "range:time+silent+cardinal": 5,
       "range:time+silent+digits": 5,
       "range:date+to+time": 4,
@@ -1423,44 +1471,44 @@
       "range:cardinal+silent+measure": 3,
       "range:decimal+silent+cardinal": 3,
       "range:cardinal+silent+time": 1,
+      "range:date+to+cardinal": 1,
       "range:digits+silent+decimal": 1
      }
     }
    }
   },
   "dimension": {
-   "total": 1127,
-   "matched": 1125,
+   "total": 1097,
+   "matched": 1095,
    "unmatched": 2,
    "source_matched": {
-    "range:cardinal+by+cardinal": 818,
+    "range:cardinal+by+cardinal": 797,
     "range:cardinal+by+measure": 139,
-    "range:cardinal+letter+cardinal": 35,
+    "range:cardinal+letter+cardinal": 33,
     "range:decimal+letter+measure": 30,
     "range:cardinal+letter+digits": 29,
     "range:decimal+letter+cardinal": 26,
-    "range:cardinal+letter+decimal": 18,
-    "range:decimal+letter+decimal": 18,
+    "range:cardinal+letter+decimal": 17,
+    "range:decimal+letter+decimal": 13,
     "range:decimal+letter+date": 4,
     "range:time+letter+cardinal": 3,
     "range:date+by+cardinal": 2,
-    "range:date+letter+date": 1,
     "range:decimal+letter+digits": 1,
     "range:digits+letter+digits": 1
    },
    "sub_keys": {
     "1+1": {
-     "matched": 321,
+     "matched": 311,
      "source_matched": {
-      "range:cardinal+by+cardinal": 302,
+      "range:cardinal+by+cardinal": 292,
       "range:cardinal+letter+cardinal": 19
      }
     },
     "1+2": {
-     "matched": 90,
+     "matched": 89,
      "source_matched": {
       "range:cardinal+by+cardinal": 82,
-      "range:cardinal+letter+cardinal": 7,
+      "range:cardinal+letter+cardinal": 6,
       "range:cardinal+letter+digits": 1
      }
     },
@@ -1478,9 +1526,9 @@
      }
     },
     "1+4": {
-     "matched": 3,
+     "matched": 5,
      "source_matched": {
-      "range:cardinal+by+cardinal": 3
+      "range:cardinal+by+cardinal": 5
      }
     },
     "1+4:0": {
@@ -1490,23 +1538,23 @@
      }
     },
     "1+6": {
-     "matched": 1,
+     "matched": 2,
      "source_matched": {
-      "range:cardinal+by+cardinal": 1
+      "range:cardinal+by+cardinal": 2
      }
     },
     "2+1": {
-     "matched": 34,
+     "matched": 33,
      "source_matched": {
-      "range:cardinal+by+cardinal": 32,
+      "range:cardinal+by+cardinal": 31,
       "range:cardinal+letter+cardinal": 2
      }
     },
     "2+2": {
-     "matched": 109,
+     "matched": 100,
      "source_matched": {
-      "range:cardinal+by+cardinal": 107,
-      "range:cardinal+letter+cardinal": 2
+      "range:cardinal+by+cardinal": 99,
+      "range:cardinal+letter+cardinal": 1
      }
     },
     "2+3": {
@@ -1536,9 +1584,9 @@
      }
     },
     "3+3": {
-     "matched": 72,
+     "matched": 70,
      "source_matched": {
-      "range:cardinal+by+cardinal": 72
+      "range:cardinal+by+cardinal": 70
      }
     },
     "3+4": {
@@ -1555,58 +1603,57 @@
      }
     },
     "4+3": {
-     "matched": 16,
+     "matched": 18,
      "source_matched": {
-      "range:cardinal+by+cardinal": 15,
+      "range:cardinal+by+cardinal": 17,
       "range:date+by+cardinal": 1
      }
     },
     "4+4": {
-     "matched": 25,
+     "matched": 26,
      "source_matched": {
-      "range:cardinal+by+cardinal": 23,
-      "range:date+letter+date": 1,
+      "range:cardinal+by+cardinal": 25,
       "range:digits+letter+digits": 1
      }
     },
     "other": {
-     "matched": 248,
+     "matched": 235,
      "source_matched": {
       "range:cardinal+by+measure": 139,
       "range:decimal+letter+measure": 30,
       "range:decimal+letter+cardinal": 26,
-      "range:cardinal+letter+decimal": 18,
-      "range:decimal+letter+decimal": 18,
-      "range:cardinal+by+cardinal": 9,
+      "range:cardinal+letter+decimal": 17,
+      "range:decimal+letter+decimal": 13,
       "range:decimal+letter+date": 4,
       "range:time+letter+cardinal": 3,
+      "range:cardinal+by+cardinal": 2,
       "range:decimal+letter+digits": 1
      }
     }
    }
   },
   "ratio": {
-   "total": 13896,
-   "matched": 13892,
-   "unmatched": 4,
+   "total": 13556,
+   "matched": 13553,
+   "unmatched": 3,
    "source_matched": {
-    "range:cardinal+to+cardinal": 12348,
-    "range:date+to+cardinal": 700,
-    "range:decimal+silent+cardinal": 216,
-    "range:cardinal+silent+cardinal": 174,
-    "range:cardinal+to+date": 141,
-    "range:cardinal+silent+digits": 116,
+    "range:cardinal+to+cardinal": 12243,
+    "range:date+to+cardinal": 691,
+    "range:decimal+silent+cardinal": 141,
+    "range:cardinal+to+date": 140,
+    "range:cardinal+silent+digits": 114,
+    "range:cardinal+silent+cardinal": 58,
     "range:date+to+date": 51,
     "range:cardinal+silent+money": 38,
-    "range:digits+silent+cardinal": 27,
-    "range:date+silent+cardinal": 16,
+    "range:digits+silent+cardinal": 15,
     "range:cardinal+silent+measure": 12,
-    "range:cardinal+silent+date": 9,
     "range:date+silent+money": 8,
     "range:date+silent+digits": 6,
     "range:digits+silent+date": 6,
     "range:date+silent+measure": 5,
     "range:digits+silent+digits": 4,
+    "range:cardinal+silent+date": 3,
+    "range:date+silent+cardinal": 3,
     "range:cardinal+silent+decimal": 2,
     "range:cardinal+silent+time": 2,
     "range:date+silent+decimal": 2,
@@ -1620,10 +1667,10 @@
    },
    "sub_keys": {
     "1+1": {
-     "matched": 1395,
+     "matched": 1346,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1351,
-      "range:cardinal+silent+cardinal": 44
+      "range:cardinal+to+cardinal": 1339,
+      "range:cardinal+silent+cardinal": 7
      }
     },
     "1+13": {
@@ -1639,17 +1686,16 @@
      }
     },
     "1+2": {
-     "matched": 275,
+     "matched": 268,
      "source_matched": {
-      "range:cardinal+to+cardinal": 268,
-      "range:cardinal+silent+cardinal": 7
+      "range:cardinal+to+cardinal": 268
      }
     },
     "1+3": {
-     "matched": 1033,
+     "matched": 1019,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1026,
-      "range:cardinal+silent+cardinal": 7
+      "range:cardinal+to+cardinal": 1018,
+      "range:cardinal+silent+cardinal": 1
      }
     },
     "1+3:0": {
@@ -1659,11 +1705,10 @@
      }
     },
     "1+4": {
-     "matched": 291,
+     "matched": 289,
      "source_matched": {
-      "range:cardinal+to+cardinal": 257,
-      "range:cardinal+to+date": 28,
-      "range:cardinal+silent+date": 6
+      "range:cardinal+to+cardinal": 262,
+      "range:cardinal+to+date": 27
      }
     },
     "1+4:0": {
@@ -1673,9 +1718,9 @@
      }
     },
     "1+5": {
-     "matched": 63,
+     "matched": 208,
      "source_matched": {
-      "range:cardinal+to+cardinal": 63
+      "range:cardinal+to+cardinal": 208
      }
     },
     "1+5:0": {
@@ -1685,9 +1730,9 @@
      }
     },
     "1+6": {
-     "matched": 321,
+     "matched": 354,
      "source_matched": {
-      "range:cardinal+to+cardinal": 321
+      "range:cardinal+to+cardinal": 354
      }
     },
     "1+6:0": {
@@ -1697,17 +1742,23 @@
      }
     },
     "1+7": {
+     "matched": 8,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 8
+     }
+    },
+    "1+8": {
      "matched": 2,
      "source_matched": {
       "range:cardinal+to+cardinal": 2
      }
     },
     "2+1": {
-     "matched": 1240,
+     "matched": 1205,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1216,
-      "range:cardinal+silent+cardinal": 18,
-      "range:digits+silent+cardinal": 6
+      "range:cardinal+to+cardinal": 1197,
+      "range:digits+silent+cardinal": 5,
+      "range:cardinal+silent+cardinal": 3
      }
     },
     "2+10": {
@@ -1723,24 +1774,23 @@
      }
     },
     "2+2": {
-     "matched": 1086,
+     "matched": 1065,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1072,
-      "range:cardinal+silent+cardinal": 13,
+      "range:cardinal+to+cardinal": 1063,
+      "range:cardinal+silent+cardinal": 1,
       "range:digits+silent+cardinal": 1
      }
     },
     "2+2:0": {
-     "matched": 36,
+     "matched": 35,
      "source_matched": {
-      "range:cardinal+silent+digits": 36
+      "range:cardinal+silent+digits": 35
      }
     },
     "2+3": {
-     "matched": 2345,
+     "matched": 2307,
      "source_matched": {
-      "range:cardinal+to+cardinal": 2324,
-      "range:cardinal+silent+cardinal": 17,
+      "range:cardinal+to+cardinal": 2303,
       "range:digits+silent+cardinal": 4
      }
     },
@@ -1751,9 +1801,9 @@
      }
     },
     "2+4": {
-     "matched": 329,
+     "matched": 325,
      "source_matched": {
-      "range:cardinal+to+cardinal": 296,
+      "range:cardinal+to+cardinal": 292,
       "range:cardinal+to+date": 26,
       "range:digits+silent+date": 4,
       "range:cardinal+silent+date": 2,
@@ -1767,16 +1817,15 @@
      }
     },
     "2+5": {
-     "matched": 15,
+     "matched": 17,
      "source_matched": {
-      "range:cardinal+to+cardinal": 14,
-      "range:cardinal+silent+digits": 1
+      "range:cardinal+to+cardinal": 17
      }
     },
     "2+6": {
-     "matched": 16,
+     "matched": 18,
      "source_matched": {
-      "range:cardinal+to+cardinal": 16
+      "range:cardinal+to+cardinal": 18
      }
     },
     "2+6:0": {
@@ -1792,24 +1841,24 @@
      }
     },
     "2+8": {
-     "matched": 2,
+     "matched": 3,
      "source_matched": {
-      "range:cardinal+to+cardinal": 2
+      "range:cardinal+to+cardinal": 3
      }
     },
     "3+1": {
-     "matched": 312,
+     "matched": 302,
      "source_matched": {
-      "range:cardinal+to+cardinal": 300,
-      "range:cardinal+silent+cardinal": 10,
-      "range:digits+silent+cardinal": 2
+      "range:cardinal+to+cardinal": 296,
+      "range:cardinal+silent+cardinal": 5,
+      "range:digits+silent+cardinal": 1
      }
     },
     "3+2": {
-     "matched": 365,
+     "matched": 358,
      "source_matched": {
-      "range:cardinal+to+cardinal": 326,
-      "range:cardinal+silent+cardinal": 38,
+      "range:cardinal+to+cardinal": 324,
+      "range:cardinal+silent+cardinal": 33,
       "range:digits+silent+cardinal": 1
      }
     },
@@ -1820,12 +1869,12 @@
      }
     },
     "3+3": {
-     "matched": 807,
+     "matched": 788,
      "source_matched": {
-      "range:cardinal+to+cardinal": 777,
+      "range:cardinal+to+cardinal": 771,
       "range:cardinal+silent+digits": 14,
-      "range:cardinal+silent+cardinal": 12,
-      "range:digits+silent+cardinal": 4
+      "range:digits+silent+cardinal": 2,
+      "range:cardinal+silent+cardinal": 1
      }
     },
     "3+3:0": {
@@ -1835,9 +1884,9 @@
      }
     },
     "3+4": {
-     "matched": 165,
+     "matched": 163,
      "source_matched": {
-      "range:cardinal+to+cardinal": 151,
+      "range:cardinal+to+cardinal": 149,
       "range:cardinal+to+date": 11,
       "range:cardinal+silent+digits": 1,
       "range:digits+silent+date": 1,
@@ -1845,9 +1894,9 @@
      }
     },
     "3+5": {
-     "matched": 11,
+     "matched": 13,
      "source_matched": {
-      "range:cardinal+to+cardinal": 11
+      "range:cardinal+to+cardinal": 13
      }
     },
     "3+6": {
@@ -1882,21 +1931,19 @@
      }
     },
     "4+1": {
-     "matched": 428,
+     "matched": 423,
      "source_matched": {
-      "range:cardinal+to+cardinal": 334,
-      "range:date+to+cardinal": 90,
-      "range:date+silent+cardinal": 3,
-      "range:digits+silent+cardinal": 1
+      "range:cardinal+to+cardinal": 333,
+      "range:date+to+cardinal": 89,
+      "range:date+silent+cardinal": 1
      }
     },
     "4+2": {
-     "matched": 1174,
+     "matched": 1160,
      "source_matched": {
-      "range:cardinal+to+cardinal": 884,
-      "range:date+to+cardinal": 280,
-      "range:date+silent+cardinal": 8,
-      "range:digits+silent+cardinal": 2
+      "range:cardinal+to+cardinal": 882,
+      "range:date+to+cardinal": 276,
+      "range:date+silent+cardinal": 2
      }
     },
     "4+2:0": {
@@ -1907,12 +1954,10 @@
      }
     },
     "4+3": {
-     "matched": 1062,
+     "matched": 1052,
      "source_matched": {
-      "range:cardinal+to+cardinal": 761,
-      "range:date+to+cardinal": 297,
-      "range:date+silent+cardinal": 3,
-      "range:digits+silent+cardinal": 1
+      "range:cardinal+to+cardinal": 758,
+      "range:date+to+cardinal": 294
      }
     },
     "4+3:0": {
@@ -1923,36 +1968,34 @@
      }
     },
     "4+4": {
-     "matched": 164,
+     "matched": 171,
      "source_matched": {
-      "range:cardinal+to+cardinal": 75,
+      "range:cardinal+to+cardinal": 83,
       "range:date+to+date": 51,
       "range:cardinal+to+date": 19,
       "range:date+to+cardinal": 16,
-      "range:date+silent+cardinal": 1,
       "range:digits+silent+date": 1,
       "range:digits+silent+digits": 1
      }
     },
     "4+5": {
-     "matched": 3,
+     "matched": 15,
      "source_matched": {
-      "range:cardinal+to+cardinal": 2,
-      "range:date+to+cardinal": 1
+      "range:cardinal+to+cardinal": 8,
+      "range:date+to+cardinal": 7
      }
     },
     "4+6": {
-     "matched": 29,
+     "matched": 37,
      "source_matched": {
-      "range:cardinal+to+cardinal": 28,
-      "range:date+to+cardinal": 1
+      "range:cardinal+to+cardinal": 32,
+      "range:date+to+cardinal": 5
      }
     },
     "4+7": {
-     "matched": 2,
+     "matched": 1,
      "source_matched": {
-      "range:cardinal+to+cardinal": 1,
-      "range:date+silent+cardinal": 1
+      "range:cardinal+to+cardinal": 1
      }
     },
     "4+8": {
@@ -1969,17 +2012,10 @@
      }
     },
     "5+1": {
-     "matched": 5,
+     "matched": 4,
      "source_matched": {
       "range:cardinal+to+cardinal": 3,
-      "range:cardinal+silent+cardinal": 1,
-      "range:digits+silent+cardinal": 1
-     }
-    },
-    "5+2": {
-     "matched": 2,
-     "source_matched": {
-      "range:digits+silent+cardinal": 2
+      "range:cardinal+silent+cardinal": 1
      }
     },
     "5+4": {
@@ -1996,16 +2032,22 @@
       "range:cardinal+to+cardinal": 1
      }
     },
-    "6+1": {
-     "matched": 1,
-     "source_matched": {
-      "range:digits+silent+cardinal": 1
-     }
-    },
     "6+2": {
      "matched": 2,
      "source_matched": {
       "range:cardinal+silent+cardinal": 1,
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "6+6": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "7+1": {
+     "matched": 1,
+     "source_matched": {
       "range:cardinal+to+cardinal": 1
      }
     },
@@ -2016,6 +2058,12 @@
      }
     },
     "7+3": {
+     "matched": 1,
+     "source_matched": {
+      "range:cardinal+to+cardinal": 1
+     }
+    },
+    "7+4": {
      "matched": 1,
      "source_matched": {
       "range:cardinal+to+cardinal": 1
@@ -2034,20 +2082,19 @@
      }
     },
     "clock": {
-     "matched": 5,
+     "matched": 4,
      "source_matched": {
-      "range:cardinal+silent+cardinal": 5
+      "range:cardinal+silent+cardinal": 4
      }
     },
     "other": {
-     "matched": 739,
+     "matched": 421,
      "source_matched": {
-      "range:cardinal+to+cardinal": 411,
-      "range:decimal+silent+cardinal": 216,
+      "range:cardinal+to+cardinal": 179,
+      "range:decimal+silent+cardinal": 141,
       "range:cardinal+silent+money": 38,
       "range:cardinal+to+date": 23,
       "range:cardinal+silent+measure": 12,
-      "range:date+to+cardinal": 11,
       "range:date+silent+money": 8,
       "range:date+silent+measure": 5,
       "range:cardinal+silent+decimal": 2,

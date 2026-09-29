@@ -355,7 +355,7 @@ def test_lone_colon_between_numbers_is_offered_to():
 
 
 def test_emit_decision():
-    """E: a valid clock (R4a) and a phone's local shape (``dash:3+4``: 54 range triples
+    """E: a valid clock (R4a) and a phone's local shape (``dash:3+4``: 31 range triples
     against 4,004 single tokens) emit no span; an invalid clock does; a sub-key never
     observed reads its class row. Break: with the table's readings emptied, nothing is
     emitted."""
@@ -370,7 +370,7 @@ def test_emit_decision():
     (found,) = detector.detect("16:79")
     assert found["type"] == "range:ratio" and found["sub_key"] == "ratio:2+2"
     table = load_range_priors("en_US")
-    assert table.emission("dash:3+4") == (54, 4004)
+    assert table.emission("dash:3+4") == (31, 4004)
     assert table.emission("dash:31+29") == table.emission("dash")
     document = {"readings": {}, "kinds": {}}
     empty = RangeDetector("en_US", detector.endpoints, table=RangePriorTable(document))
@@ -487,3 +487,81 @@ def test_relevance_predicates():
     assert not emit_relevant("1-2", "-", "3")
     assert emit_relevant("1990", "-", "95")
     assert emit_relevant("15", "-", "$25")
+
+
+# ------------------------------------------------------------------ fugu review fixes
+
+
+def test_grouped_numbers_count_their_digits():
+    """C1: a number grouped by commas keys by its digits ("1,000-2,000" is ``dash:4+4``,
+    not the sparse, mostly measure ``dash:other``). How it is then said is J's: the
+    corpus writes such a range with a silent VERBATIM dash (``dash:4+4``
+    ``cardinal+silent+cardinal`` 8, ``cardinal+to+cardinal`` 0)."""
+    from frend.ranges import written_sub_key
+
+    assert written_sub_key("range", "1,000", "-", "2,000") == "dash:4+4"
+    assert written_sub_key("range", "1,00", "-", "2") == "dash:other"
+    (found,) = __import__("reading_profile").reading_detectors("en_US")[-1].detect("1,000-2,000")
+    assert found["sub_key"] == "dash:4+4"
+
+
+def test_a_sparse_sub_key_reads_its_class_row():
+    """F3: a sub-key seen fewer than RANGE_MIN_N times does not decide E alone."""
+    from frend.ranges import RANGE_MIN_N, RangePriorTable, load_range_priors
+
+    document = {
+        "readings": {
+            "dash:4+10": {"range": 4, "single_token": {}},
+            "dash": {"range": 10, "single_token": {"TELEPHONE": 100}},
+        },
+        "kinds": {},
+    }
+    table = RangePriorTable(document)
+    assert RANGE_MIN_N == 50
+    assert table.emission("dash:4+10") == (10, 100)
+    assert not table.emits("dash:4+10")
+    shipped = load_range_priors("en_US")
+    assert shipped.emission("dash:4+10") == shipped.emission("dash")
+
+
+def test_a_spaced_chain_is_not_a_range():
+    """F1: R3 counts a chain spaced alike ("1 - 2 - 3", a date "2008 - 09 - 30",
+    "1 x 2 x 3"): no range span is formed."""
+    from reading_profile import reading_detectors
+
+    detector = reading_detectors("en_US")[-1]
+    for text in ("1 - 2 - 3", "2008 - 09 - 30", "1 x 2 x 3", "412 - 555 - 1212"):
+        assert detector.detect(text) == [], text
+    assert len(detector.detect("5 - 10")) == 1
+
+
+def test_range_triples_skip_chain_fragments():
+    """F2: a corpus chain ("1 - 2 - 3") yields no range triple for the builders."""
+    from google_tn_rows import range_triples
+
+    chain = [("CARDINAL", "1", "one"), ("PLAIN", "-", "to"), ("CARDINAL", "2", "two"),
+             ("PLAIN", "-", "to"), ("CARDINAL", "3", "three")]  # fmt: skip
+    assert list(range_triples([chain])) == []
+    assert len(list(range_triples([chain[:3]]))) == 1
+
+
+def test_spacing_is_no_range_feature():
+    """C2: the corpus's triples record no spacing, so no tree can learn it: family R has
+    no ``r_spaced``."""
+    from frend.context import range_features
+
+    assert set(range_features("-", "5", "10")) == {"r_sep", "r_ldig", "r_rdig", "r_lead0"}
+
+
+def test_combination_parameters_are_the_plans():
+    """C3: stage 2 found no gain beyond noise, so the plan's values stand."""
+    from decimal import Decimal
+
+    from frend.context import RANGE_CONTEXT_THRESHOLD
+    from frend.ranges import EMIT_RATIO, RANGE_SUB_KEY_STRENGTH
+
+    assert (EMIT_RATIO, RANGE_SUB_KEY_STRENGTH, RANGE_CONTEXT_THRESHOLD) == (
+        Decimal(1),
+        Decimal(5),
+        0.7,
+    )

@@ -701,8 +701,9 @@ def test_range_edge_is_scored_in_the_align_graph():
 
 
 def test_connector_choice_is_unit_weight():
-    """Which connector is said is no plan factor: every form exit under the range
-    reading carries unit weight (kal's ruling C)."""
+    """CHAR (align_graph's own rule, kal's ruling C, unchanged by P6): which connector
+    is said is no plan factor; every form exit under the range reading carries unit
+    weight."""
     choices = _range_choices("29:46")
     graph = build_align_graph(choices)
     (edge,) = [

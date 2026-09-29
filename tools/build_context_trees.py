@@ -101,7 +101,7 @@ _MOUNT_TIMEOUT = "900"
 _FILES = ("receipt.json", "examples.jsonl.gz", "dash_examples.jsonl.gz")
 _RANGE_FILES = ("receipt.json", "range_examples.jsonl.gz")
 RANGE_EXAMPLES_ROOT = Path("/Volumes/k02/processed/frend/google/tn-en_with_types/p6-range-examples")
-DEFAULT_RANGE_EXAMPLES = RANGE_EXAMPLES_ROOT / "b37f5893ffa8e1c0"
+DEFAULT_RANGE_EXAMPLES = RANGE_EXAMPLES_ROOT / "548d6f67beab4223"
 RANGE_DERIVATION = "frend/google/tn-en_with_types/p6-range-examples"
 # P7's example shards, the range set's too.
 RANGE_SHARDS = tuple(f"output-{index:05d}-of-00100" for index in range(5, 90, 10))

@@ -88,10 +88,9 @@ __all__ = [
 # while most gains stay).
 CONTEXT_THRESHOLD = 0.7
 # A range tree's top joint source overrides frend's first only at this probability or
-# more: its own constant, tuned for the ensemble's running text on the runtime-eval
-# shards 90-94 (the ranges plan's P6, stage 2): 0.6 reads 55,397 of 65,392 triples first,
-# 0.7 (the plan's starting value) 55,381.
-RANGE_CONTEXT_THRESHOLD = 0.6
+# more: its own constant. Stage 2 (the runtime-eval shards 90-94) found no value better
+# than this beyond noise (0.6: +16 of 65,392 triples).
+RANGE_CONTEXT_THRESHOLD = 0.7
 
 # Characters of running text read on either side of a span: enough for three words and
 # three characters; a cut is moved to white space so no word is split by it.
@@ -503,11 +502,11 @@ def range_problem(separator_class: str) -> str:
 _ASCII = frozenset("0123456789")
 
 
-def range_features(separator: str, left: str, right: str, spaced: bool) -> dict[str, Any]:
+def range_features(separator: str, left: str, right: str) -> dict[str, Any]:
     """Family R: a range's separator (``r_sep``), each end's ASCII digit count
-    (``r_ldig``, ``r_rdig``; -1 for an end that is not ASCII digits only), whether the
-    right end is written with a leading zero and two or more digits (``r_lead0``: "05"),
-    and whether the separator is spaced (``r_spaced``)."""
+    (``r_ldig``, ``r_rdig``; -1 for an end that is not ASCII digits only), and whether
+    the right end is written with a leading zero and two or more digits (``r_lead0``:
+    "05"). Spacing is no feature: the corpus's triples record none."""
 
     def digits(text: str) -> float:
         return float(len(text)) if text and set(text) <= _ASCII else -1.0
@@ -517,14 +516,13 @@ def range_features(separator: str, left: str, right: str, spaced: bool) -> dict[
         "r_ldig": digits(left),
         "r_rdig": digits(right),
         "r_lead0": "1" if len(right) > 1 and set(right) <= _ASCII and right[0] == "0" else "0",
-        "r_spaced": "1" if spaced else "0",
     }
 
 
-def _range_shape(value: Any) -> tuple[str, str, str, bool]:
+def _range_shape(value: Any) -> tuple[str, str, str]:
     left = str(value.left[0].get("text", "")) if value.left else ""
     right = str(value.right[0].get("text", "")) if value.right else ""
-    return value.separator, left, right, False
+    return value.separator, left, right
 
 
 def distinct_sources(alternatives: Sequence[Any]) -> list[int]:
@@ -610,11 +608,7 @@ def range_example_features(
         text, start, end, first=first, first_weight=first_weight, locale=locale,
         frequent=frequent or frozenset(), curated=curated, bos=bos, eos=eos,
     )  # fmt: skip
-    separator, left, right, _ = _range_shape(value)
-    span = text[start:end]
-    at = span.find(separator, len(left))
-    spaced = at > 0 and (span[at - 1].isspace() or span[at + 1 : at + 2].isspace())
-    out.update(range_features(separator, left, right, spaced))
+    out.update(range_features(*_range_shape(value)))
     return out
 
 
