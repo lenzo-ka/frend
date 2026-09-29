@@ -34,8 +34,9 @@ from __future__ import annotations
 import heapq
 from bisect import bisect_left
 from collections.abc import Callable, Mapping, Sequence
+from contextlib import AbstractContextManager
 from dataclasses import dataclass, replace
-from decimal import Decimal
+from decimal import Context, Decimal, getcontext, localcontext
 from math import prod
 from typing import Any, cast
 
@@ -454,6 +455,33 @@ _COVER_TRANSITIONS = (
 )
 
 
+def _exact_digits(graph: Graph) -> int:
+    """The decimal digits a fold over ``graph`` needs to stay exact.
+
+    A cover's cost is a sum of at most one weight per position, so its magnitude is
+    below the largest weight times the number of positions. The weights are exact
+    mixed-radix integers (:func:`_candidates`) whose size grows with the square of
+    the lattice's furthest span end; Decimal arithmetic rounds past the context's
+    precision (28 digits by default), which would merge distinct geometries."""
+    positions, candidates = graph.tiers
+    largest = max(
+        (
+            abs(int(Decimal(attribute.lexical)))
+            for item in candidates.items
+            for attribute in item.attributes
+        ),
+        default=0,
+    )
+    return len(str(largest * max(len(positions.items), 1))) + 2
+
+
+def _exact(graph: Graph) -> AbstractContextManager[Context]:
+    """A decimal context precise enough for every fold over ``graph``."""
+    context = getcontext().copy()
+    context.prec = max(context.prec, _exact_digits(graph))
+    return localcontext(context)
+
+
 def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
     """Count the covers the lattice admits, exactly, without ranking any of them.
 
@@ -472,7 +500,8 @@ def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
         _COVER_TRANSITIONS,
         roots=roots,
     )
-    return cast(int, fold.run().value)
+    with _exact(graph):
+        return cast(int, fold.run().value)
 
 
 # The ranked fold's geometry, with every cover at the best geometry counted: the
@@ -498,7 +527,8 @@ def _count_top_level(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
         _COVER_TRANSITIONS,
         roots=roots,
     )
-    return cast(tuple[Decimal, int], fold.run().value)[1]
+    with _exact(graph):
+        return cast(tuple[Decimal, int], fold.run().value)[1]
 
 
 def _fold_covers(
@@ -528,7 +558,8 @@ def _fold_covers(
         output_cap=output_cap,
         ranked_output=True,
     )
-    result = fold.run()
+    with _exact(graph):
+        result = fold.run()
     scored: list[tuple[Decimal, tuple[Detection, ...]]] = []
     for value, labels in result.ranked_witnesses or ():
         indices = [id_to_index[label] for label in labels if label in id_to_index]
@@ -622,7 +653,12 @@ def _gather_levels(
             "fold is allowed to emit whole, so canonical selection cannot be shown "
             "complete and would run over a prefix"
         )
-    request = min(count, max(needed, _FIRST_RANKED_REQUEST))
+    # One witness past the ``needed`` shows at once whether the level holding the
+    # last needed cover ends there. The bound limits the top level's size (above) and
+    # how far the level holding the last needed cover may run past it, never the
+    # number of covers asked for.
+    ceiling = needed + _RANKED_LEVEL_BOUND + 1
+    request = min(count, max(needed + 1, _FIRST_RANKED_REQUEST))
     while True:
         scored, truncated = _fold_covers(detections, graph, roots, id_to_index, request)
         if not truncated:
@@ -632,16 +668,17 @@ def _gather_levels(
         if scored[-1][0][0] != last_level:
             whole = [entry for entry in scored if entry[0][0] <= last_level]
             return whole, count, scored[len(whole)][1]
-        # A level is shown whole by one witness past it, so the bound's worth of
-        # covers takes one more witness than the bound.
-        if request > _RANKED_LEVEL_BOUND:
+        # A level is shown whole by one witness past it, so ``ceiling`` witnesses
+        # show whole levels holding one fewer covers.
+        if request >= ceiling:
             raise ValueError(
-                f"the geometry levels holding the {needed} best covers pass the "
-                f"{_RANKED_LEVEL_BOUND} the ranked fold is allowed to emit whole "
-                f"(of {count} covers over {len(detections)} detections), so the "
-                "cover list cannot be shown complete and would be a prefix"
+                f"the geometry level holding cover {needed} of the cover order runs more than "
+                f"{_RANKED_LEVEL_BOUND} covers past it (of {count} covers over "
+                f"{len(detections)} detections), past what the ranked fold is allowed "
+                "to emit whole, so the cover list cannot be shown complete and would "
+                "be a prefix"
             )
-        request = min(count, request * 4, _RANKED_LEVEL_BOUND + 1)
+        request = min(count, request * 4, ceiling)
 
 
 # A component admitting at most this many covers is enumerated directly in Python;
@@ -957,24 +994,6 @@ class _Selection:
     priors: tuple[tuple[ReadingPrior | None, ...], ...]
     edge_priors: tuple[ReadingPrior | None, ...]
     truncated: bool
-
-
-def _margin(ordered: Sequence[tuple[Detection, ...]]) -> CoverMargin:
-    """Coverage advantage of the top cover over the runner-up.
-
-    The runner-up is simply the second cover in ranked order: its geometry is the
-    top geometry when the top level holds two-or-more covers (a dead ``(0, 0, 0)``
-    tie), and the best strictly-worse geometry otherwise. Purely geometric; the
-    prior never enters here."""
-    if len(ordered) < 2:
-        return CoverMargin(0, 0, 0)
-    top = _cover_score(ordered[0])
-    second = _cover_score(ordered[1])
-    return CoverMargin(
-        top.coverage - second.coverage,
-        second.span_count - top.span_count,
-        top.capture_count - second.capture_count,
-    )
 
 
 def _select(

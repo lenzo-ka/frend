@@ -114,8 +114,9 @@ class ReadingLattice:
     ``paths`` is bounded by the requested output cap, but the resolver must read
     the complete top-geometry equivalence class to compute canonical-structure
     selection and ambiguity correctly. It reads it per component of overlapping
-    spans, so what it materializes is each component's top level (bounded, and
-    refused past the bound), never their product. :class:`ChoiceLattice` carries
+    spans, so what it materializes is each component's top level, never their
+    product; a component of more than 512 covers whose top level passes 256 covers
+    is refused. :class:`ChoiceLattice` carries
     every reading without any enumeration, at the cost of selecting nothing.
     """
 
@@ -552,11 +553,14 @@ def resolve_lattice(
     resolver reads the complete top-geometry equivalence class, regardless of
     ``output_cap``, because canonical ``s*`` selection and ambiguity require it, but
     it reads it per component of overlapping spans: the sentence's top level is the
-    product of the components' and is never formed. A single component whose own
-    top level passes the resolver's bound is refused (a ``ValueError``) rather than
-    ranked; :func:`resolve_choices` carries every reading as a scored edge without
-    enumerating any cover, and is defined there too. This API does not silently
-    claim a bound it does not have.
+    product of the components' and is never formed. A component admitting at most
+    512 covers is enumerated directly and has no bound. A larger one is gathered by
+    the ranked fold, and there, a top level of more than 256 covers is refused (a
+    ``ValueError``) rather than ranked, as is a cover list whose last needed level
+    runs more than 256 covers past the ``output_cap``-th cover; the ``output_cap``
+    itself is never refused. :func:`resolve_choices` carries every
+    reading as a scored edge without enumerating any cover, and is defined there
+    too. This API does not silently claim a bound it does not have.
     """
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:
         raise ValueError(f"output_cap must be a positive integer, got {output_cap!r}")

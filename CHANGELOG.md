@@ -23,10 +23,15 @@
 - No bound on the number of covers. The 65,536 bound on a lattice's total covers is
   gone: counts are exact integers (2**96 and more) that are never made a float or
   used to size anything. What is bounded is what the ranked fold must emit whole in
-  one component: its top geometry level is counted exactly first (a fold over
-  tiergraph's `LexicographicSemiring(DECIMAL_TROPICAL, COUNTING)`: the best geometry
-  and how many covers reach it) and refused past 256 before any witness is ranked,
-  as is a widening that would pass it to show a lower needed level whole. Over 3.57M
+  a component it gathers (one of more than 512 covers; smaller ones are enumerated
+  directly and have no bound): its top geometry level is counted exactly first (a
+  fold over tiergraph's `LexicographicSemiring(DECIMAL_TROPICAL, COUNTING)`: the best
+  geometry and how many covers reach it) and refused past 256 before any witness is
+  ranked, as is a cover list whose last needed level runs more than 256 covers past
+  the `n`-th cover. The `n` or `output_cap` asked for
+  is never refused. The folds run under a decimal context wide enough for the
+  lattice's weights, so no geometry is rounded into another however far the spans
+  lie. Over 3.57M
   sentences of the runtime-eval shards 90-94, no component's top level held more
   than 4 covers, and a tied level of 256 ranks in about 0.2 s and 17 MB. frend has
   no time bound of its own, and none is assumed of a caller.

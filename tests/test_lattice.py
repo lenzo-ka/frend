@@ -174,7 +174,9 @@ def test_ranked_projection_is_capped_and_reports_truncation():
     assert "cap bounds only the paths exposed" in contract
     assert "complete top-geometry equivalence class" in contract
     assert "per component of overlapping spans" in contract
-    assert "is refused" in contract
+    words = " ".join(contract.split())
+    assert "at most 512 covers is enumerated directly and has no bound" in words
+    assert "``output_cap`` itself is never refused" in words
 
 
 def test_detection_snapshot_is_independent_of_nested_input_mutation():
