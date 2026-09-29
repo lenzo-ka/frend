@@ -1,6 +1,17 @@
 # Changelog
 
 ## Unreleased
+- Resolve faster, with the same answers. The resolver counts a lattice's covers
+  exactly first (the same fold over tiergraph's `COUNTING`, linear in the lattice) and
+  refuses past the 65,536 bound at once, where it used to rank for minutes before
+  refusing. Within the bound it no longer ranks every cover: it folds only the whole
+  geometry levels the requested covers need (the top level for `s*` and ambiguity, and
+  the `max(n, 2)` best for the cover list and margin), asking the ranked fold for 16 and
+  widening fourfold until a witness past the needed level shows that level whole.
+  Outputs and refusals are unchanged: shards 99 and 95 score identically to #44, and on
+  the captured slow sentences (a 3,240-cover and a 2,716-cover one) the resolved lattice
+  is identical, in 0.3 s and 0.2 s where main (tiergraph 0.3.0) took 264 s and 104 s
+  on a loaded host. Needs tiergraph 0.4.0.
 - Raised the tiergraph floor to `tiergraph>=0.4.0`, whose ranked fold no longer compares
   each candidate against every kept witness: the same ranked output, far faster on long
   sentences.

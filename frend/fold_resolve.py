@@ -56,7 +56,7 @@ from tiergraph import (
     TierDeclaration,
     XsdType,
 )
-from tiergraph.semiring import PATH
+from tiergraph.semiring import COUNTING, PATH
 
 from frend.shape import shape
 from frend.type_priors import (
@@ -414,18 +414,47 @@ def _span_signature(cover: Sequence[Detection]) -> tuple[tuple[int, int], ...]:
 def _geometry_rank(cover: Sequence[Detection]) -> tuple[int, int, int]:
     """The geometry equivalence class: ``(-coverage, span_count, -capture_count)``.
 
-    This is a COARSENING of the fold's own witness value, not a restatement of it.
-    The fold ranks by a weight that varies per position and candidate, so two covers
-    can share this rank and still carry different fold values -- grouping by the
-    fold value instead splits classes that structural ambiguity is defined over,
-    which is what makes two span signatures at one geometry a structural ambiguity
-    rather than a ranking. Measured: doing so drops structural ambiguity and changes
-    a resolved winner.
+    Under the weight encoding of :func:`_candidates`, this rank and the fold's
+    witness cost correspond one to one, in the same order. A cover's cost is
+    ``-(coverage * span_radix * capture_radix - span_count * capture_radix +
+    capture_count)``, and the bounds argued at the end of :func:`_candidates` --
+    captures strictly below ``capture_radix``, spans at most ``span_end`` -- make
+    that a mixed-radix numeral whose digits are exactly this triple. So two covers
+    share a cost exactly when they share this rank, and the lower cost is the
+    better rank. The level-whole gathering in :func:`_gather_top_geometry` relies
+    on this: it reads a geometry level's boundary off the fold's cost.
 
-    Ordering agrees with the fold's, so the ranked emission is still in this order;
-    only equality is coarser."""
+    It is recomputed from the cover rather than read off the cost because the
+    triple is what callers compare and report; the encoding is what keeps the two
+    in agreement, and a test holds them to it."""
     score = _cover_score(cover)
     return (-score.coverage, score.span_count, -score.capture_count)
+
+
+_COVER_TRANSITIONS = (
+    FoldTransition(_OFFERS, ChildCombination.OR),
+    FoldTransition(_SPANS, ChildCombination.AND),
+)
+
+
+def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
+    """Count the covers the lattice admits, exactly, without ranking any of them.
+
+    The same lattice and transitions as the ranked fold, over ``COUNTING``: every
+    item lifts to one, so a position sums its candidates' counts and a candidate
+    carries its end position's. This is linear in the lattice, where the ranked fold
+    pays for every witness it keeps, so the cover bound can be checked before any
+    witness is ranked."""
+    fold = FoldDeclaration(
+        "cover-count",
+        graph,
+        AttributeValuation("weight", _WEIGHT, (_POS, _CAND)),
+        COUNTING,
+        lambda _value, _label: COUNTING.one,
+        _COVER_TRANSITIONS,
+        roots=roots,
+    )
+    return cast(int, fold.run().value)
 
 
 def _fold_covers(
@@ -450,10 +479,7 @@ def _fold_covers(
         AttributeValuation("weight", _WEIGHT, (_POS, _CAND)),
         PATH,
         lambda value, label: (-cast(Decimal, value), ((label,),)),
-        (
-            FoldTransition(_OFFERS, ChildCombination.OR),
-            FoldTransition(_SPANS, ChildCombination.AND),
-        ),
+        _COVER_TRANSITIONS,
         roots=roots,
         output_cap=output_cap,
         ranked_output=True,
@@ -475,39 +501,60 @@ def _cover_score(cover: Sequence[Detection]) -> CoverScore:
     )
 
 
-# Every cover the lattice admits is wanted, not a ranked prefix: canonical ``s*``
-# selection needs the top geometry level whole, and the lower levels carry the
-# geometric margin. tiergraph's fold has no spelling for "all witnesses" -- its
-# ``output_cap`` must be a positive integer -- so this asks for a bound far above
-# any input this pipeline meets, and refuses when the fold reports the bound was
-# reached. A prefix returned as though it were complete is the failure to avoid;
-# it looks exactly like an answer.
+# Whole geometry levels are wanted, never a ranked prefix that ends inside one:
+# canonical ``s*`` selection needs the top level whole, and the cover list and the
+# margin need every level down to the one holding their last cover. A lattice
+# admitting more covers than this bound is refused, as it was when every cover was
+# ranked, so a result never depends on how far past the bound it lies. A prefix
+# returned as though it were complete is the failure to avoid; it looks exactly
+# like an answer.
 _COVER_ENUMERATION_CAP = 1 << 16
+
+
+# The ranked fold's first request when fewer covers are needed than the lattice
+# admits. Its cost grows with the witnesses it keeps (measured on tiergraph 0.4.0:
+# 0.4 s for 64 witnesses of a 3,240-cover sentence, 17 s for all of them), so it
+# asks small and widens only when the geometry level it needs is not yet whole.
+_FIRST_RANKED_REQUEST = 16
 
 
 def _gather_top_geometry(
     detections: Sequence[Detection],
-) -> list[tuple[Decimal, tuple[Detection, ...]]]:
-    """Return every cover the lattice admits, in the fold's ranked order, each
-    paired with the fold's own witness value.
+    needed: int = _COVER_ENUMERATION_CAP,
+) -> tuple[list[tuple[Decimal, tuple[Detection, ...]]], int]:
+    """Return every cover of the best geometry levels, in the fold's ranked order,
+    each paired with the fold's own witness value, and the count of all covers.
 
-    The PATH fold ranks witnesses by geometry alone. This asks once, for more
-    witnesses than any practical input produces, and refuses if the fold says it
-    truncated -- rather than discovering completeness by doubling a cap and
-    inferring it from where the ranking fell. The result is complete, so the top
-    same-span equivalence classes never depend on any requested ``n``, and the
-    lower geometry levels the margin needs are present by construction."""
+    The covers are counted exactly first, without ranking any; past the bound this
+    refuses. Within it, the returned levels are whole and are the fewest that
+    together hold at least ``needed`` covers (every cover when the lattice admits no
+    more than that). The fold ranks by geometry, and each geometry level is one
+    witness value, so a level is shown whole by a ranked witness after it with a
+    greater value: the fold's order is ascending and exact, so nothing of the level
+    lies beyond that witness. Until the fold emits one, it is asked for four times as
+    many, up to the count itself. Whole levels are what canonical selection reads:
+    the top level for ``s*`` and ambiguity, and the ``needed`` best covers of the
+    cover order, whose first key is geometry."""
     graph, roots, id_to_index = build_lattice(detections)
     if not id_to_index:
-        return []
-    scored, truncated = _fold_covers(detections, graph, roots, id_to_index, _COVER_ENUMERATION_CAP)
-    if truncated:
+        return [], 1
+    count = _count_covers(graph, roots)
+    if count > _COVER_ENUMERATION_CAP:
         raise ValueError(
             f"cover enumeration reached the {_COVER_ENUMERATION_CAP} witness bound over "
             f"{len(detections)} detections, so the top geometry level cannot be shown "
             "complete and canonical selection would run over a prefix"
         )
-    return scored
+    request = min(count, max(needed, _FIRST_RANKED_REQUEST))
+    while True:
+        scored, truncated = _fold_covers(detections, graph, roots, id_to_index, request)
+        if not truncated:
+            return scored, count
+        # A PATH witness value is (cost, paths); the cost alone is the geometry.
+        last_level = scored[needed - 1][0][0]
+        if scored[-1][0][0] != last_level:
+            return [entry for entry in scored if entry[0][0] <= last_level], count
+        request = min(count, request * 4)
 
 
 def _resolve_sources(
@@ -729,7 +776,7 @@ def _select(
     geometry level, so they do not depend on ``n``; ``n`` only caps the legacy
     ``covers`` list, which additionally ranks the lower geometry levels."""
     corpus = _corpus_source(sources)
-    scored = _gather_top_geometry(detections)
+    scored, cover_count = _gather_top_geometry(detections, max(n, 2))
     if not scored:
         # No valid candidates: the sole reading is the empty cover.
         return _Selection(
@@ -761,7 +808,8 @@ def _select(
     span_sequence = (
         ((int(det["start"]), int(det["end"])) for det in detections)
         if collect_edge_priors
-        else ((int(det["start"]), int(det["end"])) for cover in covers for det in cover)
+        # Every valid candidate lies on some cover, so these are the spans of all covers.
+        else ((candidate.start, candidate.end) for candidate in _candidates(detections)[0])
     )
     spans_to_rank = dict.fromkeys(span_sequence)
     for span in spans_to_rank:
@@ -819,7 +867,7 @@ def _select(
 
     ordered = sorted(covers, key=cover_key)
     margin = _margin(ordered)
-    truncated = len(ordered) > n
+    truncated = cover_count > n
     ordered = ordered[:n]
     edge_priors = (
         tuple(
