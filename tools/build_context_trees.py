@@ -54,7 +54,7 @@ compares every file byte for byte, and every tree decoded (its feature names, no
 leaf distributions); ``--check`` without ``--range-examples`` compares the main set's
 trees only (``--no-range-examples``).
 
-Run with frend's interpreter and cartlet importable (``cartlet>=0.6``).
+Run with frend's interpreter and cartlet importable (``cartlet>=0.7``).
 """
 
 from __future__ import annotations
@@ -101,6 +101,9 @@ MIN_EXAMPLES = 50
 MIN_LEAF = 5
 VALIDATION = 0.1
 FREQUENT = 200
+_Q16_MAX = 65_535
+_Q16_TOTAL_WINDOW = 256
+_OVERRIDE_THRESHOLD = 0.7
 DASHES = frozenset({"-", "–"})
 _ANY_CAP = 64  # combinations tried per record, as the evaluator tries per token
 _MOUNT_TIMEOUT = "900"
@@ -462,6 +465,56 @@ def _range_row(ex, frequent, curated) -> dict:
     )  # fmt: skip
 
 
+def _apportion_q16(node) -> None:
+    """Calibrate classification leaves for format 3's normalized q16 values in place.
+
+    Cartlet rounds each value against 65535, then normalizes the integer values when it
+    reads them. Search nearby integer totals for the closest decoded distribution while
+    preserving both the winning class and its side of frend's override threshold. The
+    values placed in the in-memory tree are the pre-normalization encoder inputs.
+    """
+    if isinstance(node, dict):
+        labels = list(node)
+        if not labels:
+            return
+        best = max(labels, key=node.__getitem__)
+        labels = [best, *(label for label in labels if label != best)]
+        probabilities = [float(node[label]) for label in labels]
+        candidate = None
+        for total in range(_Q16_MAX - _Q16_TOTAL_WINDOW, _Q16_MAX + _Q16_TOTAL_WINDOW + 1):
+            raw = [probability * total for probability in probabilities]
+            counts = [int(value) for value in raw]
+            seats = total - sum(counts)
+            order = sorted(range(len(labels)), key=lambda i: raw[i] - counts[i], reverse=True)
+            for index in order[:seats]:
+                counts[index] += 1
+            if max(counts) > _Q16_MAX or counts[0] < max(counts[1:], default=0):
+                continue
+            decoded = [count / total for count in counts]
+            if (probabilities[0] >= _OVERRIDE_THRESHOLD) != (decoded[0] >= _OVERRIDE_THRESHOLD):
+                continue
+            score = (
+                max(
+                    abs(actual - stored)
+                    for actual, stored in zip(probabilities, decoded, strict=True)
+                ),
+                abs(total - _Q16_MAX),
+                abs(probabilities[0] - decoded[0]),
+            )
+            if candidate is None or score < candidate[0]:
+                candidate = score, counts
+        if candidate is None:
+            raise AssertionError("no q16 calibration preserves the winning class and threshold")
+        counts = candidate[1]
+        node.clear()
+        for label in labels:
+            node[label] = counts[labels.index(label)] / _Q16_MAX
+        return
+    if isinstance(node, list) and len(node) == 5:
+        _apportion_q16(node[3])
+        _apportion_q16(node[4])
+
+
 def _train(job) -> tuple[str, str, bytes, dict]:
     """Featurize one problem's examples and train its tree: (problem, file name, bytes,
     info)."""
@@ -504,12 +557,14 @@ def _train(job) -> tuple[str, str, bytes, dict]:
         criterion="entropy",
         categorical_split="fast",
         min_confidence=1.0,
+        min_dist_entropy=0.1,
     )
     tree.load_data([[row[n] for n in names] for row in rows], labels)
     if len(set(labels)) > 1 and len(examples) >= 40:
         tree.train(prune=True, validation_split=VALIDATION, random_state=SEED)
     else:
         tree.train(prune=False, random_state=SEED)
+    _apportion_q16(tree.model)
     metadata = {"source": SOURCE, "examples": fingerprint, "problem": problem}
     pid = problem_id(problem)
     info = {
@@ -804,6 +859,9 @@ def build(
             "min_leaf": MIN_LEAF,
             "validation_split": VALIDATION,
             "criterion": "entropy",
+            "min_confidence": 1.0,
+            "min_dist_entropy": 0.1,
+            "q16_calibration": "nearby normalized integer total; winner and threshold preserved",
             "families": ["B", "F", "W", "C"],
             "frequent_words": FREQUENT,
             "records": {"main": len(main), "dash": len(dashes)},

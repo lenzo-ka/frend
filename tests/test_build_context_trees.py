@@ -122,6 +122,28 @@ def test_trees_are_trained_reproducibly_and_name_their_examples(tmp_path):
     assert metadata["examples"] == "feedfacefeedface"
 
 
+def test_q16_apportionment_preserves_the_winning_probability():
+    builder = _builder()
+    distribution = {
+        "best": 0.7,
+        "second": 0.18527918781725888,
+        "third": 0.11472081218274112,
+    }
+    expected = distribution.copy()
+    builder._apportion_q16(distribution)
+    counts = [round(probability * 65_535) for probability in distribution.values()]
+    decoded = [count / sum(counts) for count in counts]
+    assert (
+        max(
+            abs(probability - stored)
+            for probability, stored in zip(expected.values(), decoded, strict=True)
+        )
+        < 1e-5
+    )
+    assert decoded[0] >= 0.7
+    assert next(iter(distribution)) == "best"
+
+
 def test_a_set_that_is_not_its_receipts_is_refused(tmp_path):
     builder = _builder()
     examples = _example_set(tmp_path / "set")

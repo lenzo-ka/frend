@@ -378,14 +378,14 @@ def distinct_readings(alternatives: Sequence[Any]) -> list[int]:
 
 class _Tree:
     def __init__(self, blob: bytes):
-        from cartlet.runner import Predictor
+        from cartlet import Predictor
 
         self._predictor = Predictor(blob)
         self.names = list(self._predictor.feature_names)
 
     def distribution(self, values: Mapping[str, Any]) -> dict[str, float]:
         vector = [values.get(name) for name in self.names]
-        dist = self._predictor.predict(vector, return_dist=True)
+        dist = self._predictor.predict(vector, return_dist=True, missing="right")
         if not isinstance(dist, dict):  # a tree stored without distributions
             return {str(dist): 1.0}
         return {str(label): float(p) for label, p in dist.items()}
