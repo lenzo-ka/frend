@@ -31,6 +31,9 @@
   "min_leaf": 5,
   "validation_split": 0.1,
   "criterion": "entropy",
+  "min_confidence": 1.0,
+  "min_dist_entropy": 0.1,
+  "q16_calibration": "nearby normalized integer total; winner and threshold preserved",
   "families": [
    "B",
    "F",
@@ -315,7 +318,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/a7b9e5f7f426.cart",
-   "sha256": "d97638b979e24fb71979c303acb9d7af63c4a5b1ebf9e161cf8acaaaf6945b18",
+   "sha256": "b52affe5aaef94964aff476f1c5019cddb080688eca14b114adaddf07cc1bd10",
    "seen": 379
   },
   "cldr-symbol:bang\tcldr-symbol:exclamation\tcldr-symbol:exclamation mark\tcldr-symbol:mark\tcldr-symbol:point\tsurface:silence": {
@@ -328,7 +331,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/920535cba10a.cart",
-   "sha256": "15073e2e0cdb491de21d22209f0b6ee78e5cbae183ed2a17a85ee57bf668ec37",
+   "sha256": "960c5374d9af06b54962bf63d799a3f8a22cb2c386477fc9340f3b57bcf69cc0",
    "seen": 28314
   },
   "cldr-symbol:cent\tcldr-symbol:per\tcldr-symbol:per-cent\tcldr-symbol:percent\tsurface:silence": {
@@ -340,7 +343,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/86fe09d7eff2.cart",
-   "sha256": "5808595c3d9d5e82250ae71d428057eebc7fc76fbb0fea4fdc9012217080927d",
+   "sha256": "b99427420d248356be40e70d41321d58eeffff0e6292f5f9ca1ee340dc98a98e",
    "seen": 246
   },
   "cldr-symbol:colon\tsurface:silence": {
@@ -353,7 +356,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/43bdf6f44fab.cart",
-   "sha256": "4f156a58b51f111143e31e0fb56e723fd09af9657d33914f512a5c93b99af639",
+   "sha256": "f5e8282705577cdea9713c09579e15ef35f08c3910036f429f992e8afb6ad3e2",
    "seen": 33683
   },
   "cldr-symbol:comma\tsurface:silence": {
@@ -366,7 +369,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/c219aae837e8.cart",
-   "sha256": "75cb1b18ebd3b895fdd87170f2a1e71d872faf5accb0b501546957de9745eda7",
+   "sha256": "8dd332d3da5e04595ef37ecf301009e54b6d8c74759cdf082ebd643a7350d014",
    "seen": 30002
   },
   "cldr-symbol:dash\tcldr-symbol:hyphen\tcldr-symbol:hyphen-minus\tcldr-symbol:minus\tlexical:en_US\tsurface:silence": {
@@ -379,7 +382,7 @@
    "leaves": 197,
    "depth": 42,
    "file": "trees/6dcb8c4b620c.cart",
-   "sha256": "d1b8bcff604c50f1fc8bd64ffb251a15260c3b37f6c5a3ef5be3f878e3bd63e6",
+   "sha256": "ef28c61c22b9960698bc335979a4f6636b72d8d31808e9bd87856b5a76211fb9",
    "seen": 103911
   },
   "cldr-symbol:hash\tcldr-symbol:hash sign\tcldr-symbol:hashtag\tcldr-symbol:lb\tcldr-symbol:number\tcldr-symbol:pound\tcldr-symbol:sign\tsurface:silence": {
@@ -392,7 +395,7 @@
    "leaves": 9,
    "depth": 5,
    "file": "trees/407a01b7830a.cart",
-   "sha256": "364f90b8ff41d5196397305a9dfd7548557923801742f3c28154b6b70d0512b7",
+   "sha256": "04ff5ae19a6e00ad2ff44a4b58c7c6d2ef84ea5997beb32a96032327580a0d4e",
    "seen": 14196
   },
   "cldr-symbol:measure\tcldr-symbol:micro\tcldr-symbol:micro sign\tcldr-symbol:sign\tsurface:silence": {
@@ -404,7 +407,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/cec4bd37fa27.cart",
-   "sha256": "f785526f89f5571636e93d87e956c00b97bf32f536f8751dfc0f137d3112f921",
+   "sha256": "884d1cf9a0e3e4e10fe8361c549aa1eca9f4237d1991a90bddf433c8b4824ada",
    "seen": 56
   },
   "cldr-symbol:semi-colon\tcldr-symbol:semicolon\tsurface:silence": {
@@ -417,7 +420,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/ff0ddfa3bada.cart",
-   "sha256": "83ad9dffa6f581ed6756fcc5003ffa1c4ac28bef7d099ab08d993d09fb17dda2",
+   "sha256": "cc02c8d7e3aa75b57101145d24f5047fc550c1c1e53a883d1158c3240307682f",
    "seen": 30031
   },
   "cldr-symbol:tilde\tsurface:silence": {
@@ -430,7 +433,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/520bac64ed0b.cart",
-   "sha256": "66cfc1c6d262811c3154b91f8f5fae6b96f292c554985c0dd4a5fdffad632096",
+   "sha256": "4f57bb6851112ede2ab3ba12a6fa96777577a74df321c501efa4635c493c9714",
    "seen": 910
   },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL": {
@@ -443,7 +446,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/de898b164e0d.cart",
-   "sha256": "a3e201641f6d76e5d02e5316e2481512b3cd917474a77879f17fbda412e58e81",
+   "sha256": "18c1bbe902e3e90c385d71490298a4638fed0141be6eb331373babb3412f3cee",
    "seen": 38188
   },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": {
@@ -456,7 +459,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/3dce3c6ac32b.cart",
-   "sha256": "4dda2961e98605e266ebd680a727ecd2b996e2fb5ef5e4c807c46beee8b1100d",
+   "sha256": "55b82b887eb63bee5a795f40cfbae41774de7cd9c9200d8fee21fa16c7be17c9",
    "seen": 6068
   },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
@@ -469,7 +472,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/d110d44cade4.cart",
-   "sha256": "b82eec62402e02c09826651686ce237d6abf4e74cf6d52139e8ff16d0551de5f",
+   "sha256": "5e285bd0c2ff87cc4b8831b2e8e40968b32dfb77d9421efce4629ff2774351b6",
    "seen": 30685
   },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
@@ -482,7 +485,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/5636100b74c7.cart",
-   "sha256": "864bce28d37c8fa4d8c9144e1e66ec66c8cb32476ac888640b6af00415ff2a80",
+   "sha256": "614f2dcfd10357c95cfa5761effd3fd51c401c672bf0c2d77bfa248033fbcca4",
    "seen": 672
   },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
@@ -495,7 +498,7 @@
    "leaves": 6,
    "depth": 5,
    "file": "trees/635e794f0fbb.cart",
-   "sha256": "fe50a0b4c5423476ab41e22b40e9c621798e301f081d7a1d5c59790d9edcbe9f",
+   "sha256": "0d8df7837f091ebf95a636635a9e5df4327534cbe7774bbd341aa3f1270c1503",
    "seen": 31588
   },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
@@ -508,7 +511,7 @@
    "leaves": 4,
    "depth": 3,
    "file": "trees/37559c83c020.cart",
-   "sha256": "fce35ebb29f896210bb567a28f92653854d2a17172ef13c397bfe72e857fdd4e",
+   "sha256": "4413763ca2cb3c87b03460907d177a015676359c0f2f4c6157bc7607c36e19e6",
    "seen": 7878
   },
   "icu-name:letter\tsurface:silence": {
@@ -521,7 +524,7 @@
    "leaves": 7,
    "depth": 6,
    "file": "trees/0274023d0843.cart",
-   "sha256": "8d787934525d0c510677025c0a66cab38d464ac32e0e4167b81a92f1b04f3cdc",
+   "sha256": "404f07112ba2646d471b9a4aad10d91e3d57fadfcce30810570d4e4103140c9c",
    "seen": 30000
   },
   "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering": {
@@ -534,7 +537,7 @@
    "leaves": 106,
    "depth": 22,
    "file": "trees/a594e90328c1.cart",
-   "sha256": "e1747d17fd9f40e4240ac0bdb25fb372752014df2c397994c2e7ee5e199d2e84",
+   "sha256": "a2ee6b9efaad6d4e578ea0abb8f694e2e71501172f3cd20beae8dcf2ab8ecb09",
    "seen": 34011
   },
   "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose": {
@@ -547,7 +550,7 @@
    "leaves": 59,
    "depth": 13,
    "file": "trees/18cc1535c691.cart",
-   "sha256": "858e70e08931f09d46220563d9962788893f3c8bc8d130dfc2d3f3ff47385b19",
+   "sha256": "d741aa90ef11b371031ee612c65e5f22627283748dfe6a67c5bd881c0819d883",
    "seen": 30666
   },
   "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-numbering": {
@@ -560,7 +563,7 @@
    "leaves": 27,
    "depth": 11,
    "file": "trees/1f2ef4893593.cart",
-   "sha256": "ad4ce1034af1d8f6522a2b277e9e0db92eb6096e425f696e9fd2bb4cda229d39",
+   "sha256": "7de84895e2ac9b8aeb79d9e9ba1eb33ecceb6b7e66d63062fb7341602d3b1d68",
    "seen": 44847
   },
   "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose": {
@@ -573,7 +576,7 @@
    "leaves": 51,
    "depth": 14,
    "file": "trees/b513182c330a.cart",
-   "sha256": "4ec7d6cce97a0b9d7115b7b992c6daea9e9280984365a89448f85978dae5f6bd",
+   "sha256": "b7f7cec107d8ccbd0f536c55dc29babc362062138163cd9370c2203f65d849a8",
    "seen": 30888
   },
   "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": {
@@ -585,7 +588,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/223fe35e2609.cart",
-   "sha256": "b922f61c8f146c1f3318ba0d3b56095138c0616a9f010d69acba5215730add4e",
+   "sha256": "04a0d250cee0e08a9893a14a88f95198b97d1a4648419feb3fe6881911591b1d",
    "seen": 75
   },
   "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": {
@@ -597,7 +600,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/f418027f4a98.cart",
-   "sha256": "47634b8ad52ed6b3ee2a034e09b62049a860e9753793ef0dbe037519447c02d7",
+   "sha256": "14eac5ccab8135fd304ea5a4a665984437c73e585e90960e783bbb161b8a2266",
    "seen": 148
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US": {
@@ -610,7 +613,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/8bee8046856d.cart",
-   "sha256": "b186bc02c3c91ded92a1ca0154368d8ed4a38db9426ddf9a243bf8a24bb3c475",
+   "sha256": "e464b4d4028c4f92689548326d4fcee58b0fa0d1e6c82adedcbb0e19921a6159",
    "seen": 5094
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US": {
@@ -622,7 +625,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/0b4e0aa3e560.cart",
-   "sha256": "d69776a614b9b7b31d43249ab33218e8f9a7cbe1d9264bfd27216d7ba3428d98",
+   "sha256": "59c756df73908f34893dcc64ef09dabbcac2dc7731bb0e6226df382eb37bcf17",
    "seen": 934
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US": {
@@ -634,7 +637,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/1393e194e58a.cart",
-   "sha256": "d64a0822c0fb983b377bd5513dfc5ef447a418975f7263f89cd8e8191355b235",
+   "sha256": "b6042162350328750ca9af2ab4c9f62e6b498642a631e6baf7f6916b69c9d22b",
    "seen": 679
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": {
@@ -646,7 +649,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/328a30953c3e.cart",
-   "sha256": "19fc0eb8adae0750922a59ec018e9883452f9930d73cf4085b1038a0c6b92752",
+   "sha256": "973f7c63966e79ecd65271d9dcba3a29ad7a293ea511631fa97500b159c60450",
    "seen": 336
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": {
@@ -658,7 +661,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/3b30c29ec0bc.cart",
-   "sha256": "29a6efae8893341052c317c725262c27df51f618c0c4d3dd24008e213c7ee99d",
+   "sha256": "da4e79b7768e1a06a9bca62561c63852e0c5d362cde2c6805048c792853533f0",
    "seen": 51
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2": {
@@ -672,7 +675,7 @@
    "leaves": 29,
    "depth": 16,
    "file": "trees/4c2eed8a9df0.cart",
-   "sha256": "3eb649cadb5101535765442a1299a3d36bd05e22251192731463667ff98c6b4d",
+   "sha256": "efa426d954b2be3f3302d4a87c33c2c938b325881a3e2282657ece3d60bee036",
    "seen": 919
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": {
@@ -685,7 +688,7 @@
    "leaves": 54,
    "depth": 13,
    "file": "trees/f536797113eb.cart",
-   "sha256": "0361a812f9c08579d426a058b31703da6f302213edaeae08bea157d6fb011fed",
+   "sha256": "5b7812122cfc155addea498bbfb9e0f9f1f8e224133423067501b08b0dbc8085",
    "seen": 30594
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-numbering-year+lexical:en_US": {
@@ -698,7 +701,7 @@
    "leaves": 57,
    "depth": 19,
    "file": "trees/47fe893e2742.cart",
-   "sha256": "2330183e47349ba69e19b009baf9a5ab7e6830e8d9de7f6819e91cdba42b25de",
+   "sha256": "f4482909eafbf47bfaaad357a945ff8092e9d4a844785de147f6beefc56929f0",
    "seen": 30112
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-year": {
@@ -711,7 +714,7 @@
    "leaves": 126,
    "depth": 53,
    "file": "trees/3a9296711eb1.cart",
-   "sha256": "70f1744f564c14b938ab5a6773885a77e4b14a7762a3dd3c9768860586878df3",
+   "sha256": "2ff8cae69e7e2774701dd0ab08e949040e669074040f107c525b3e954fd135b0",
    "seen": 10131
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal\tlexical:en_US+icu-rbnf:%spellout-ordinal": {
@@ -725,7 +728,7 @@
    "leaves": 57,
    "depth": 15,
    "file": "trees/21bb157e7032.cart",
-   "sha256": "f38d219a3adac12da8d989ac1c16c3f800d45d79af3b8dd9a0505a7d69852e16",
+   "sha256": "04db0850cd0b2b45d25ca8a829dd0ed63e87f0c5adb68734a9a1ec181f5282d8",
    "seen": 30051
   },
   "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": {
@@ -738,7 +741,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/b75f6ac3aed9.cart",
-   "sha256": "c2f0a1b300dc0dbbaa0020ca1491b1552a8a5ebb517a802efe003bf3437c27a0",
+   "sha256": "795bf3d7719b7200d2550e1082219c08676ba1f3a072d6760524d4eb90140f3d",
    "seen": 1327
   },
   "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
@@ -751,7 +754,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/4e8b400e07fc.cart",
-   "sha256": "5a2fd20ab0af085ac704ae2f61e5aa8fb6757419d7f7075cac54219fa24df0da",
+   "sha256": "3af7243fcf7c222fa31609304e0e3d5b9e66482164d3b4653ef77f1c6e67d679",
    "seen": 6980
   },
   "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US#2": {
@@ -764,7 +767,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/03918c73c1cd.cart",
-   "sha256": "5bc4a114c9490386841bf8d00c15342f0777e38ad6f2c780bde4b76cf012b098",
+   "sha256": "eec2b22cd758b374936818491229701a1e2a07c5706c90eb61906f0324eebd7e",
    "seen": 1948
   },
   "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US": {
@@ -777,7 +780,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/3c45a1cd70fa.cart",
-   "sha256": "613b6cd43b7cc84012abc429bdd6224bed2c617b814e13805ee48e2c5133c099",
+   "sha256": "822d070f1abe981341d00e68473036cdbfddb6bf38afd94430a9685cbe6341b9",
    "seen": 301
   },
   "icu-rbnf:%spellout-numbering+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering+surface:letters\ticu-rbnf:%spellout-numbering-verbose+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering-verbose+surface:letters\ticu-rbnf:%spellout-numbering-year+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering-year+surface:letters": {
@@ -789,7 +792,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/1320fa15f3aa.cart",
-   "sha256": "cad7ffd06b28a02531394cd4f3f422b8adfd7842f331782174bbbdb333528dc3",
+   "sha256": "acace33a94cd972e9337c7a78dec42aa148587ebdf0cc2cc1a2ba84c0fc24dbc",
    "seen": 382
   },
   "icu-rbnf:%spellout-numbering+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering+surface:letters\ticu-rbnf:%spellout-numbering-year+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering-year+surface:letters": {
@@ -801,7 +804,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/bd8b7319152c.cart",
-   "sha256": "f960d5bc50df34bfff7986bd1a9be80cb9754e34e1b542767f1d0675f24dcf7b",
+   "sha256": "4dcde9c988d7ada296d2d6e2e0ccba3173855a4b7a81e57296dec114a9705751",
    "seen": 214
   },
   "icu-rbnf:%spellout-numbering+icu-datetime:GGGG%variant\ticu-rbnf:%spellout-numbering+surface:letters\ticu-rbnf:%spellout-numbering-verbose+icu-datetime:GGGG%variant\ticu-rbnf:%spellout-numbering-verbose+surface:letters\ticu-rbnf:%spellout-numbering-year+icu-datetime:GGGG%variant\ticu-rbnf:%spellout-numbering-year+surface:letters": {
@@ -813,7 +816,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/a8226db3c036.cart",
-   "sha256": "dee1c123de6e93212e8fcb0efa71392c3d999f6a80a92211745ab691d7fcf848",
+   "sha256": "b709b9cacfa1e3ee02f7394eb859846d464642ae30cc1e982504b7dfd5e69d06",
    "seen": 110
   },
   "icu-rbnf:%spellout-numbering+icu-datetime:GGGG%variant\ticu-rbnf:%spellout-numbering+surface:letters\ticu-rbnf:%spellout-numbering-year+icu-datetime:GGGG%variant\ticu-rbnf:%spellout-numbering-year+surface:letters": {
@@ -825,7 +828,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/de2bdedc2381.cart",
-   "sha256": "b9665bdee4adac157e390318ae1e03c294375396f4971d66b25f6a35c3854418",
+   "sha256": "b2e23a26478105694af706e6b76510e090a53f81d60f28296b843e648843f040",
    "seen": 97
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": {
@@ -837,7 +840,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/5e3242ca3bab.cart",
-   "sha256": "c936012d816e7e9dd07233374fb93476f645b856bcf0294485a4005f410fba0b",
+   "sha256": "5170701defd3695a4eebb83f8c0bf0444d3f1585046949174db5fcafa5bc4045",
    "seen": 450
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide+lexical:en_US": {
@@ -849,7 +852,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/05f9c74a5cbf.cart",
-   "sha256": "53a7f8168a3f3cf5a467f1c40f9cd1b83a2dac7e6c6ab94257afc92dceca92c4",
+   "sha256": "58f9569eacbe049f375fc54c02130f22b3262c9edc0bb70678e15666688bc442",
    "seen": 286
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide+lexical:en_US": {
@@ -861,7 +864,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/3caee6c74d29.cart",
-   "sha256": "8d807429083444b1f826dc2b379e2f84c3eab1ab98d8de0506ee4e98aaf0fe40",
+   "sha256": "fd17eca7b8093e05bc21245e3276feb885827ef2712d50159341b0c19ac52366",
    "seen": 521
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide+lexical:en_US": {
@@ -873,7 +876,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/cb491deed07c.cart",
-   "sha256": "0c287d23f5f6a09486b69de44b3d71fca5c9c57f86b6924365f1540525070eea",
+   "sha256": "609c92893dd48f7c4c12459836455ec24e2a349714bfb570976569960a33b74e",
    "seen": 89
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide": {
@@ -885,7 +888,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/2290bb44e800.cart",
-   "sha256": "f11411484b1d6a433d1ea22c49bd52f4c20058064213d8be73a39e13edc08bce",
+   "sha256": "9ad159ffd2592ddeed84d741cfe53e9db6f63bcf767c885ac3b8df6f2700720f",
    "seen": 654
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide": {
@@ -897,7 +900,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/ada159e41fa4.cart",
-   "sha256": "42a78dc5c716d9d555de51fc64abdba5076ed2f9f7ed0dd1390095b223806397",
+   "sha256": "ff99733fe123446e91362c96146e836f09bcc3c0cec94ea66292cb036071d83e",
    "seen": 88
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US": {
@@ -910,7 +913,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/07b225c3e125.cart",
-   "sha256": "b2ff1bda4f69280c16e09d58a2cae42988eee56e4fe6dfb6188b3f767b16236e",
+   "sha256": "1513b27e02a5c9548336de87f2c088007c70886ab378d83dd53345f302320d9d",
    "seen": 2803
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2": {
@@ -923,7 +926,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/cfc4be36d32e.cart",
-   "sha256": "7b594830ea82a5248d82ffcc36fc6fe010ff71b4d697e825f0805f672df9adf2",
+   "sha256": "70699d5840cef5a1c6ff2a3ecffe72e009fcccc3549ba431a83cd07711173200",
    "seen": 9979
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US#2": {
@@ -936,7 +939,7 @@
    "leaves": 6,
    "depth": 3,
    "file": "trees/eef8970abc6a.cart",
-   "sha256": "ddfccd39df00c1f4253e2a9c61da80b558b79824c0f1484aa1d5d2e36e58e7c2",
+   "sha256": "619435358d1671734153cfb00ab36dd3b614f7bb8429ccda41373ba8b06b1ec9",
    "seen": 20923
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US": {
@@ -949,7 +952,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/86f2ab7caa1a.cart",
-   "sha256": "92d788d12b2d34d7bf3a7d9a53fca64850616d1b4ab526e9f4cca54a86fa673f",
+   "sha256": "698da0fd2ea69164940d5e394c8344d6f815096054b78e8f77f4beb32ffbae7b",
    "seen": 1266
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": {
@@ -962,7 +965,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/1021dd530b5e.cart",
-   "sha256": "353b8c4e80f24d00153f9fb0b2d615f94666b03d54d48f4924ff30859f7568aa",
+   "sha256": "bf80e2905de41de13c53a761103637064d4b0a29898f98875d5805ea50eb5590",
    "seen": 110
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US#2": {
@@ -975,7 +978,7 @@
    "leaves": 5,
    "depth": 4,
    "file": "trees/80019304b2d9.cart",
-   "sha256": "e65005c54db141fcdfe1892581bd684c37ff70959f81c23785c7b1c304cc21de",
+   "sha256": "ab32142e3bb073d32d4a6e72c0bdaa25f562749a117cb23ecd1436b6dae8fe3e",
    "seen": 554
   },
   "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": {
@@ -988,7 +991,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/0968969291ba.cart",
-   "sha256": "723012ddd703a862535e1dc17a123a251c1afbe7c0fc439b50455598843b7db0",
+   "sha256": "3474ffb63f615c7b6f92466ee6703e5213c9a8f9d98651b10f6a6caa1f33c3ce",
    "seen": 522
   },
   "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
@@ -1001,7 +1004,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/d9447d7813ae.cart",
-   "sha256": "6417afbef54852c6597e783190662739a59687a77cb2ca261651d9e8022774b0",
+   "sha256": "3726728f781cce0ab49ee083d640c01ff123c6e4fdc0284f67cc01ef6b2c08e1",
    "seen": 3595
   },
   "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
@@ -1014,7 +1017,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/35d322f8cfab.cart",
-   "sha256": "dcff9c0ab4ba718881b824433f3b98931078b6ec42cf0b2c0546302d7099a2a8",
+   "sha256": "6d592d72e3fc7979d2fcfe0f8ebd7d6a17f930d6f78e6f3caab155fd73f1ea5a",
    "seen": 226
   },
   "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": {
@@ -1026,7 +1029,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/8e93ce0feb19.cart",
-   "sha256": "0ddc5b57726133925bd26db248ed90ef4b48390d6bc321bfb11d74247b924907",
+   "sha256": "b8d4612781a4188fdfd11648bb9a68679060e87d42f211d630f9115b36ab0c9f",
    "seen": 2909
   },
   "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": {
@@ -1039,7 +1042,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/6ecba2c79f68.cart",
-   "sha256": "83be458e22529d75b54c4621d3a34551988cbb8d5ba4f8d115b0284949fb04c0",
+   "sha256": "18ce38f8b0d3673ec6cc1d402978d4da12f9a71ff3dbca1920fe25d9caed1592",
    "seen": 90
   },
   "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
@@ -1052,7 +1055,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/03625199bb4a.cart",
-   "sha256": "4a73343d4d194cd89ec8a0a61e5fd509f397701acdb08382e99196833abcaee9",
+   "sha256": "a0d33eb4a09bf48748ae9a5d8e4eb99a767fec4f07054d6125893a5f47376b31",
    "seen": 509
   },
   "icu-rbnf:%spellout-numbering+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone#2\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters#2\ticu-rbnf:%spellout-numbering+surface:letters": {
@@ -1065,7 +1068,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/ed6725393463.cart",
-   "sha256": "4b0505f2950815630b4429fa0c2045c6f69deb011f4ccc5f9e28043de6e07d62",
+   "sha256": "be4b62fa8d2cfda359435976163bd7ecf02b9ad3a096ffffe5594baee1468b8f",
    "seen": 103
   },
   "icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-ordinal+lexical:en_US\tlexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US": {
@@ -1078,7 +1081,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/574c74980184.cart",
-   "sha256": "1d3e0efb66a22c97531d3ac6d7b488ceb59c38d62b4e5f9b6e1cbbd3bcb5a47c",
+   "sha256": "373f5c4a89eed8d2e2f1f2ad360a9f8a3508b4f03a6aec023a00b970e553c188",
    "seen": 394
   },
   "icukit-abbreviation:given-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1091,7 +1094,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/cb6d68dfcd3c.cart",
-   "sha256": "3f7a28ea521eff35d0a7404a3e70c7c7026b1bb9887657074245294ab130e34b",
+   "sha256": "b9eec457b78af8d92dd9987cfda5c6ac51c358dcc221f40bf79e7af93cb3caba",
    "seen": 265
   },
   "icukit-abbreviation:month/date\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1105,7 +1108,7 @@
    "leaves": 8,
    "depth": 6,
    "file": "trees/3ce2056a8b72.cart",
-   "sha256": "7ebcac10e6dcf568b54ad2981dbf95ab5169882f1ad46fb2edffa3e757d815dc",
+   "sha256": "4e8f2f58a148cfa47f09dab84ae21ad870d778f53525e77710effe890620fdcc",
    "seen": 320
   },
   "icukit-abbreviation:month/date\tsurface:as-written": {
@@ -1118,7 +1121,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/0ca2e35c182f.cart",
-   "sha256": "859a481a306bbd1fc85c4b44791495e366f3cd81737f11d3b8a493e66ad59016",
+   "sha256": "0bb72b2ff0a36562084fe5b038772f2ab23d7043ce3b58047f53b6bacac732aa",
    "seen": 6688
   },
   "icukit-abbreviation:number/precedes-number\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1132,7 +1135,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/2fef2a7f6f37.cart",
-   "sha256": "72b9b925b12fa5c29922d674e17fa06e7c08676543575ce991b355956c797616",
+   "sha256": "380af29bb1b355cffb064f5f0e99dd28801135140c4a26a38cad20a629557e6e",
    "seen": 1167
   },
   "icukit-abbreviation:number/precedes-number\tsurface:as-written": {
@@ -1145,7 +1148,7 @@
    "leaves": 12,
    "depth": 7,
    "file": "trees/7d928ce2933c.cart",
-   "sha256": "6491e7296159167b194d829009d115fad959a53a311f0bd03336d9f708e94fbd",
+   "sha256": "664f8b9b4720c86155eb333cd1941c84774399b2840398a3e92c0f98887de1ed",
    "seen": 30020
   },
   "icukit-abbreviation:number/precedes-number\tsurface:as-written\tsurface:spelled": {
@@ -1158,7 +1161,7 @@
    "leaves": 4,
    "depth": 3,
    "file": "trees/4db519f7a586.cart",
-   "sha256": "1a7c91890173619f40ffe490d200b99ba600fdfcc1bfc304147de6ece11737e4",
+   "sha256": "17b45e70f29da88f7ea80ea16db40d8321ce6a2f3a0f8f2dbc1219b50df91c24",
    "seen": 30235
   },
   "icukit-abbreviation:organization\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1172,7 +1175,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/a5bf4548a39d.cart",
-   "sha256": "1c78fa8ee6a020084b1e375e6b17795f7169b486693e06c7350057407819164d",
+   "sha256": "628b89e61c61df511b80f7032e40d7cd3294196d41b78424ea2ae521c0e5e44b",
    "seen": 30212
   },
   "icukit-abbreviation:organization\tsurface:as-written": {
@@ -1185,7 +1188,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/eeb8d86cc71b.cart",
-   "sha256": "49d00a5703fdc4a37611699aa1a071c7753a656b95c6c53a4b9fa8186d6fa3c5",
+   "sha256": "77947137d654c20d4c7f0bcdd0a298dacbe2dde77e8fd6a3ff4a5f1cd7429d2c",
    "seen": 1387
   },
   "icukit-abbreviation:organization/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1199,7 +1202,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/5463c3b40aed.cart",
-   "sha256": "17054665011554174c6b93338079ac0cef58c9be0a11e047e048e22b24d3fdfd",
+   "sha256": "1b5c9334c2294336aa6a397bb9a5ded565aa957bd648eca134c9245bb5415cc5",
    "seen": 11070
   },
   "icukit-abbreviation:organization/follows-name\tsurface:as-written": {
@@ -1212,7 +1215,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/7ce9656c3ecc.cart",
-   "sha256": "35545ce36597314ce946300fb48edcbd86ba686bd171a4a8a91fa9a8357491d2",
+   "sha256": "d49f08b3c9cf6666c1ed226b7bc0b7246efda687c6173499b002008ca1b1eb6f",
    "seen": 19577
   },
   "icukit-abbreviation:organization/follows-name\tsurface:as-written\tsurface:spelled": {
@@ -1225,7 +1228,7 @@
    "leaves": 4,
    "depth": 3,
    "file": "trees/9933163c88a2.cart",
-   "sha256": "20c48e716f2e6ab910d76bc88f74b158ff6653c6f0bf6f366084da95accc5422",
+   "sha256": "6816d96a59fc5449a5b4b15153d3300f9d9e33fbd2ff5d86639edbe7c27ffd4c",
    "seen": 10465
   },
   "icukit-abbreviation:other\ticukit-abbreviation:other#2\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1238,7 +1241,7 @@
    "leaves": 7,
    "depth": 6,
    "file": "trees/4393630c8d2d.cart",
-   "sha256": "cadae58b2050ef1faedd208dbdd0aa79d66a4afb2011e54ab7bbd9d0fcd9a2b6",
+   "sha256": "5030faa995235bf9c882b0d8649ed38a0df23c60968ab6be56e9499ee6dfe569",
    "seen": 13179
   },
   "icukit-abbreviation:other\ticukit-abbreviation:other/measurement\tsurface:as-written": {
@@ -1251,7 +1254,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/b1ae6a87f4dd.cart",
-   "sha256": "38c17e04a627a8c6dc36577de8d89f86ce39eea97795996efefba4e1fa0adc02",
+   "sha256": "d76ccb3deab524e1bc3956d00564f95bccd3a070a136c5479d3f4582adbb759b",
    "seen": 1284
   },
   "icukit-abbreviation:other\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1264,7 +1267,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/b8df4e4d9e41.cart",
-   "sha256": "8f836757f3976ef048eb35259277ac3c66cf88d9f32345927bf877abe0b37134",
+   "sha256": "c03d7a857cbaa6248539b6ff23a6dbd64bc6a4f546dff384df2aebffbb0a46a7",
    "seen": 31142
   },
   "icukit-abbreviation:other/measurement\ticukit-abbreviation:place/precedes-name\tsurface:as-written\tsurface:spelled": {
@@ -1277,7 +1280,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/bace0ffbdb93.cart",
-   "sha256": "de8b6de981983246af552dac706c8322f67477c519dba437f18bf5054cd5d2a6",
+   "sha256": "8f2477a5a77a00b5f683691c3f81aa4db021ac77ae1ab6984904d02777f5f5c7",
    "seen": 427
   },
   "icukit-abbreviation:phrase\tsurface:as-written\tsurface:spelled": {
@@ -1291,7 +1294,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/d2ad3e0a81de.cart",
-   "sha256": "3170464fe11f303d13dbf4c6606d787b7cdba3e9ed5ae0a5e3ef24e688b2b0ba",
+   "sha256": "871d770e206022aa341421c56df0ec5985d45c18b6e1062421cb0e6507bae136",
    "seen": 9137
   },
   "icukit-abbreviation:place\ticukit-abbreviation:place/precedes-name\tsurface:as-written\tsurface:spelled": {
@@ -1304,7 +1307,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/465750e66128.cart",
-   "sha256": "63eeac5beb3e9ce43e22f9c7f6b21439b96917eff4b484218f4a2f5f71225c9e",
+   "sha256": "71f1409d0036a23fabbe527c01809cde0c28f0325e3378a6ed779b5de0a98800",
    "seen": 1347
   },
   "icukit-abbreviation:place/address\ticukit-abbreviation:saint/precedes-name\tsurface:as-written\tsurface:spelled": {
@@ -1317,7 +1320,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/aa4393d96dc9.cart",
-   "sha256": "b3ea3a66b86b8c565fc5f3b1337edd0a4cf79b8dee162cec2e37544d6bd5856f",
+   "sha256": "82eeaf1834819ae6944ede52b5e69b807f4b652a3cc33b009f5d56de54ed2b25",
    "seen": 243
   },
   "icukit-abbreviation:place/address\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1331,7 +1334,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/59aadc4b0ff1.cart",
-   "sha256": "27c12a06397a61e92fe07607197ecff205c20f6965afdceabe0a70638c39cd92",
+   "sha256": "7a2fc5cbd9406fc60d1537e4fb15bf9925d493acdefefb0a7ed0a3227cb8b3b1",
    "seen": 92
   },
   "icukit-abbreviation:place/address\tsurface:as-written\tsurface:spelled": {
@@ -1344,7 +1347,7 @@
    "leaves": 6,
    "depth": 5,
    "file": "trees/075cba7551ac.cart",
-   "sha256": "22662b92d5ec98e803b38a21646fa52609f9dcf39a6bc7ac0dbe963ce2ea16c6",
+   "sha256": "b5a41fc540be9c0aa528a257ea42653a88b8c4e0f213ce66ba4ff118b2adc301",
    "seen": 1244
   },
   "icukit-abbreviation:region\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1357,7 +1360,7 @@
    "leaves": 7,
    "depth": 5,
    "file": "trees/3e0b706fb788.cart",
-   "sha256": "c0f181a3b9f3a6abbe8f3af664e653f01cd0d592597074e4a2d763d5199df160",
+   "sha256": "acee55c2cd2683addafdbc5d4bd353e6ebae41da7e903d584378a251e4a22960",
    "seen": 2671
   },
   "icukit-abbreviation:region\tsurface:as-written\tsurface:spelled": {
@@ -1370,7 +1373,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/d034617a2c3d.cart",
-   "sha256": "ed56d35df2fc37ca17df71be494f8a6b25e00825d21ba00af1b10e0da2aac148",
+   "sha256": "cbadc23bbd6a9990dae839cf22d81d46d065144fdc4847617038fadd6afe4749",
    "seen": 1460
   },
   "icukit-abbreviation:region/address\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1383,7 +1386,7 @@
    "leaves": 26,
    "depth": 11,
    "file": "trees/dc4772eb1067.cart",
-   "sha256": "de55d7845ba570f107d48317db44b15a363e4abc61fbbe5caf6ec74a15aada35",
+   "sha256": "cb5b61634a2c0e4e61644545e76e18f542b05b8a27b805be048a946e6cfd0518",
    "seen": 31665
   },
   "icukit-abbreviation:saint/precedes-name\ticukit-abbreviation:thoroughfare/address\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1397,7 +1400,7 @@
    "leaves": 7,
    "depth": 4,
    "file": "trees/2ddb36e16367.cart",
-   "sha256": "90f8b517c87577a217eb3fe04a3357613882244c5a73ee72a8f8a3b1afc1a280",
+   "sha256": "97078fb8e878d40221851c84cb201f74dca22b96e796fed053b925c03c467ee0",
    "seen": 510
   },
   "icukit-abbreviation:saint/precedes-name\ticukit-abbreviation:thoroughfare/address\tsurface:as-written\tsurface:spelled": {
@@ -1412,7 +1415,7 @@
    "leaves": 22,
    "depth": 10,
    "file": "trees/0a64b444bf49.cart",
-   "sha256": "d3b15dfac3f3eee909cbb10a313e85de36c06292cd8356ad0cecdaf9dfe329ea",
+   "sha256": "a294afe282214712955d5938fb189e08e38266f87504dc0c0b6f3067e9348108",
    "seen": 30001
   },
   "icukit-abbreviation:thoroughfare/address\ticukit-abbreviation:title/precedes-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1426,7 +1429,7 @@
    "leaves": 9,
    "depth": 4,
    "file": "trees/99daccef2728.cart",
-   "sha256": "3875248d2650bd3a4759c0c1f8d8f464706c91a4b35ad6fb72d726856f425845",
+   "sha256": "d0544c89aafab85f275eddd21c61554cce1fd9959aabec6b42f4799965b1dd37",
    "seen": 724
   },
   "icukit-abbreviation:thoroughfare/address\ticukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": {
@@ -1440,7 +1443,7 @@
    "leaves": 14,
    "depth": 9,
    "file": "trees/8d4515587195.cart",
-   "sha256": "5a27f06305df69a6f17ed589ffb477502333705527ef496642934762a3a76a32",
+   "sha256": "7bb6c82a7d934a74cdfec78539f0b8e8775d4fee8a20a58ccb39ebcb3c460252",
    "seen": 11420
   },
   "icukit-abbreviation:thoroughfare/address\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1454,7 +1457,7 @@
    "leaves": 19,
    "depth": 14,
    "file": "trees/7ce519ec98b4.cart",
-   "sha256": "7fe9af2551fac5805e52a50d6b375ea6aab4b458300ad206d46d89deaa47cf6e",
+   "sha256": "44e3400ec1ced2907d30873d65229d302b3ecf2cab0303cb973baee6bde250f7",
    "seen": 1502
   },
   "icukit-abbreviation:thoroughfare/address\tsurface:as-written": {
@@ -1467,7 +1470,7 @@
    "leaves": 4,
    "depth": 3,
    "file": "trees/c47c8fc4d6cb.cart",
-   "sha256": "01755d86e5e2ceac1ee595964169a0969832b38ffd266a2126e76c58d36cb640",
+   "sha256": "f6c8b0d210301eb89ab379bde8614eba4848f109f826d9e67b80aea997423c00",
    "seen": 1400
   },
   "icukit-abbreviation:thoroughfare/address\tsurface:as-written\tsurface:spelled": {
@@ -1480,7 +1483,7 @@
    "leaves": 9,
    "depth": 8,
    "file": "trees/3048774c63c3.cart",
-   "sha256": "de3a3f238b8b83b3ed7906ce0925f0774836191f760105f93b78c4d7af197567",
+   "sha256": "357f870ea420f22a3e91ce8e9c3f19ec22edb3086d5a62e7d22fc8304d4cf7c1",
    "seen": 787
   },
   "icukit-abbreviation:title\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1493,7 +1496,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/27bf380a9737.cart",
-   "sha256": "d6c2c337b44cc01a2bff2deb7961d4a2afa3bbb69221325505ca12126fa7dfc4",
+   "sha256": "24d8837ad7ef22f9de7bd104aa0f149c49a745e91c7665baa6691ac0055faa17",
    "seen": 5577
   },
   "icukit-abbreviation:title\tsurface:as-written\tsurface:spelled": {
@@ -1506,7 +1509,7 @@
    "leaves": 1,
    "depth": 0,
    "file": "trees/1d6310da7613.cart",
-   "sha256": "53c57476b86446469cd253f7a83b242d49fedba85fa71fdb705c9b3d3af11efc",
+   "sha256": "e78492d79cac575d79ba2539433f1a257afc50d7c3ea3d161bda099825f41690",
    "seen": 64
   },
   "icukit-abbreviation:title/follows-name\ticukit-abbreviation:title/precedes-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1519,7 +1522,7 @@
    "leaves": 4,
    "depth": 3,
    "file": "trees/c5acdd634b93.cart",
-   "sha256": "c939ba1bd7dbf2e27110987adb844222aaacef31b5240d7f5d94d280295c287a",
+   "sha256": "370e3b61191c4962dd8f0f436333083c57939e0aaf9937bd677185d982e47a08",
    "seen": 601
   },
   "icukit-abbreviation:title/follows-name\ticukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": {
@@ -1532,7 +1535,7 @@
    "leaves": 4,
    "depth": 2,
    "file": "trees/d92b41b57938.cart",
-   "sha256": "8ecfa3ca2e8ea47b64b1bcfe15d850f56f1638bd62b530bb92468ad9a5c29eb8",
+   "sha256": "e144e595b8278373f7e00eec9c97c9c0d68f21c7ed07aa718ba337907bbd2161",
    "seen": 2992
   },
   "icukit-abbreviation:title/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1545,7 +1548,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/00c7edf44b9a.cart",
-   "sha256": "b423752bb567349b5e503702c6d0a6d732b7a4634e0c9e895e800e40d7187af6",
+   "sha256": "6a2fbe60a901e63d9cdd8c4a5f0285ceed1a4de657d5a152c734f6094b78474c",
    "seen": 892
   },
   "icukit-abbreviation:title/follows-name\tsurface:as-written\tsurface:spelled": {
@@ -1559,7 +1562,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/34a84c88b72b.cart",
-   "sha256": "8dcfad251b615f8856e46aa6c0146a3b66be7c861b93a390a1621b7397103f44",
+   "sha256": "663c63cfeded7ec9b109bcd691f6774c1ef6eaa54ea941ff1ab9603aeeea2252",
    "seen": 8189
   },
   "icukit-abbreviation:title/precedes-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1573,7 +1576,7 @@
    "leaves": 14,
    "depth": 7,
    "file": "trees/1f8d3ffd9018.cart",
-   "sha256": "11484e9d3d1b4dcde1f587719afb9c648afd379d5047643adb650d27e4d4eb6f",
+   "sha256": "c1a2362c2e7fa80356495ead061d66ff0e7bf6807257f130a330341a2eff3b56",
    "seen": 1162
   },
   "icukit-abbreviation:title/precedes-name\tsurface:as-written": {
@@ -1586,7 +1589,7 @@
    "leaves": 5,
    "depth": 4,
    "file": "trees/540a0cb280e7.cart",
-   "sha256": "9f3f882efcafc380a88b6f2e6a93ef8c1bcb579957fda1d8b738f16f32f00f8b",
+   "sha256": "87e7c0d0cb2251c000ad6ffb428cfe4fc2acc7e9a29925c15feb980f660c0581",
    "seen": 13687
   },
   "icukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": {
@@ -1600,7 +1603,7 @@
    "leaves": 8,
    "depth": 6,
    "file": "trees/c02413f857d2.cart",
-   "sha256": "9c2f64a83dc4e06ece570c649ad23bd88c6530a956683617499eab93b5a4e83f",
+   "sha256": "a772a0ce0081043c22699b5bc62312d694ed4e4381c2b118b23c5c2adb71100a",
    "seen": 14655
   },
   "icukit-abbreviation:weekday/date\tmeasured:acronym-spelled\tmeasured:acronym-word": {
@@ -1614,7 +1617,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/0b4e760886bf.cart",
-   "sha256": "0a0b30c3041d140ff820685d5dbc5ea6be39a8d45b2429794fb584a4edc9bfa2",
+   "sha256": "653ba694a10a9f334abc442977c1c9fb028643255e02c0df0dd5d5ba23574281",
    "seen": 601
   },
   "icukit-abbreviation:weekday/date\tsurface:as-written": {
@@ -1627,7 +1630,7 @@
    "leaves": 10,
    "depth": 7,
    "file": "trees/3fe1b4526d5f.cart",
-   "sha256": "d5ef1a9d0c05eb8a342ec917792eebc981636b53f68eb15c073a1e57e436df6f",
+   "sha256": "fdd13829274c4c6b2ca8a78667102d1d66b7ff6660ec4c8ec75a22b1842f615c",
    "seen": 11241
   },
   "measured:acronym-spelled\tmeasured:acronym-word": {
@@ -1640,7 +1643,7 @@
    "leaves": 306,
    "depth": 45,
    "file": "trees/a55b7822c9ab.cart",
-   "sha256": "7caa5f8bdcee0d5b212b2efb1642d07ecb9179692e0a34320684d85135f2a883",
+   "sha256": "9b4d1eb1dd562a23a73c78aa6ad58e6c7063599201d77074e1cafea37f99e2fb",
    "seen": 58558
   },
   "measured:electronic\tmeasured:electronic#2": {
@@ -1653,7 +1656,7 @@
    "leaves": 2,
    "depth": 1,
    "file": "trees/f7ad01f708df.cart",
-   "sha256": "e3d44e66b02d16c1a2727daab2ced3678d1feb7a57bd715eb5c9c5bceda0cbfc",
+   "sha256": "bdc00c090f7702c3d53c64bc437855e911ff7fc89029510d71ca3d098ec7119d",
    "seen": 115
   },
   "measured:electronic\tmeasured:electronic#2\tmeasured:electronic#3\tmeasured:electronic#4": {
@@ -1668,7 +1671,7 @@
    "leaves": 53,
    "depth": 27,
    "file": "trees/31034ca7e091.cart",
-   "sha256": "c4d999a835c4644cec1d8d603144a3c3f11408f3918df894c660e1cac8c3e8a0",
+   "sha256": "5390d5a23936240ecf4462aca4fad086054081521766e78d202e7da7db28c648",
    "seen": 25860
   },
   "measured:electronic\tmeasured:electronic#2\tmeasured:electronic#3\tmeasured:electronic#4\tmeasured:electronic#5\tmeasured:electronic#6\tmeasured:electronic#7\tmeasured:electronic#8": {
@@ -1687,7 +1690,7 @@
    "leaves": 119,
    "depth": 18,
    "file": "trees/55c6141177f9.cart",
-   "sha256": "66aa38b944e0f21de1a56b0f50ff30b74ae4ea3334403183ff628f3ee671e3bd",
+   "sha256": "aba0d32dd2269069b109648ad0200b99163880e4c3203895196c012328fc2887",
    "seen": 12352
   },
   "range:dimension": {
@@ -1711,7 +1714,7 @@
    "leaves": 9,
    "depth": 5,
    "file": "trees/3efba0f2f3f2.cart",
-   "sha256": "baaea09dfcccafce5fcbb93f5ff34ddd6ee667af8b3926a18cafc5ea69683caf",
+   "sha256": "d8dff7db80c8cd8ab8b6640564bd773e374a0a5a0d7378fa3cbb2dd898bb24fe",
    "seen": 998,
    "families": [
     "B",
@@ -1765,7 +1768,7 @@
    "leaves": 83,
    "depth": 19,
    "file": "trees/aa808c894ba0.cart",
-   "sha256": "d21f7796ba9f961e7c519388fd33150b1bf1cbe29f35d490e46c4858299163d9",
+   "sha256": "d8bf76f529a5f515116f7973e58ca7ccc8d6ac2d210cf84aaf861cbef94dae8f",
    "seen": 86940,
    "families": [
     "B",
@@ -1815,7 +1818,7 @@
    "leaves": 42,
    "depth": 14,
    "file": "trees/7cd29f8897af.cart",
-   "sha256": "2ee40cebabd62605869f5421cfe34df10e64b1afd1b3b88e4425f4d85e3216c8",
+   "sha256": "259e101f2191c6a1f9d60b09a582a91d658607bd203fb89060e8e672153873ac",
    "seen": 13431,
    "families": [
     "B",
@@ -1840,7 +1843,7 @@
    "leaves": 3,
    "depth": 2,
    "file": "trees/49e7a861adf9.cart",
-   "sha256": "735c5f599f0a103a1b080367ff605eb6c23b1df878801c326f4ec1949364cab0",
+   "sha256": "70a82ff9239d2d43051dd35a4dadc554f9847bb6ba2933fd43a330c2d0b01894",
    "seen": 978
   }
  }

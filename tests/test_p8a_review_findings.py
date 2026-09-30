@@ -48,6 +48,7 @@ def test_latency_worker_imports_the_selected_subject(tmp_path):
         runs=1,
         seed=1,
         output=output,
+        imports_only=True,
     )
     assert benchmark._run(args) == 0
     receipt = json.loads(output.read_text(encoding="utf-8"))

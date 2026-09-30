@@ -27,9 +27,8 @@ classifiers = [
 # frend's tests where it can be seen, not be held back silently by a cap.
 # icukit 0.8.0 is the floor: the first release with CLDR symbol names (icukit #136).
 # OutputPlan first appears in tiergraph 0.2.3.
-# cartlet 0.6.0 is the first release with model format 2, which the context trees
-# (data/<locale>/context/trees/*.cart) are written in; frend uses its dependency-free
-# runner (cartlet.runner) to read them.
+# The context trees use cartlet format 3, introduced in 0.7.0. Keep the published
+# floor at 0.6 until 0.7.0 is on PyPI; this migration branch must not land before then.
 dependencies = ["cartlet>=0.6", "icukit>=0.8", "tiergraph>=0.4.2"]
 
 [project.urls]

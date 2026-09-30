@@ -83,6 +83,9 @@ def _worker(args: argparse.Namespace) -> int:
     for name, imported in imports.items():
         if not Path(imported).is_relative_to(subject):
             raise SystemExit(f"{name} imported from {imported}, outside subject root {subject}")
+    if getattr(args, "imports_only", False):
+        args.output.write_text(json.dumps({"imports": imports}), encoding="utf-8")
+        return 0
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     locales = tuple(part for part in args.locales.split(",") if part)
@@ -204,6 +207,8 @@ def _run(args: argparse.Namespace) -> int:
         "--output",
         str(temporary),
     ]
+    if getattr(args, "imports_only", False):
+        command.append("--_imports-only")
     environment = dict(os.environ)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     environment["PYTHONPATH"] = os.pathsep.join((str(subject), str(subject / "tools")))
@@ -314,6 +319,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, default=20260929)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--_worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--_imports-only", dest="imports_only", action="store_true", help=argparse.SUPPRESS
+    )
     args = parser.parse_args(argv)
     if args.compare:
         return _compare(args)
