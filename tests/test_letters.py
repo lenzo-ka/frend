@@ -67,6 +67,17 @@ def test_short_token_rule_is_bounded(text):
     assert not is_spelled_token(text)
 
 
+@pytest.mark.parametrize(("text", "locale"), [("мир", "ru_RU"), ("hola", "es_ES")])
+def test_spell_or_say_requires_locale_names_and_measured_data(text, locale):
+    detections = LettersDetector(locale).detect(text)
+    lattice = resolve_lattice(detections, locale=locale, source_text=text)
+    units = verbalize_lattice(lattice).best_path.units
+
+    assert detections == []
+    assert all(unit.best.provenance == "surface:passthrough" for unit in units)
+    assert all(unit.best.provenance != "surface:unsupported" for unit in units)
+
+
 def test_unattested_rule_say_token_still_offers_both_readings():
     assert is_spelled_token("word")
     found = [d for d in LettersDetector().detect("word") if d["type"] == "letters:token"]

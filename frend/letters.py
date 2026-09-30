@@ -163,17 +163,18 @@ def is_spelled_token(token: str, locale: str = "en_US") -> bool:
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
-def _spelled_token_priors(locale: str) -> dict[str, dict[str, object]]:
-    """Load a locale's exception mapping once; the English table is several megabytes."""
+def _spelled_token_priors(locale: str) -> dict[str, dict[str, object]] | None:
+    """Load a locale's exception mapping once, or ``None`` when none is measured."""
     from frend.locale_data import measured_table
 
     table = measured_table("spelled_token_priors", locale)
-    return {} if table is None else table["tokens"]
+    return None if table is None else table["tokens"]
 
 
 def spelled_token_prior(token: str, locale: str = "en_US") -> dict[str, object] | None:
     """The measured exception row for ``token``, or ``None`` when the rule decides."""
-    return _spelled_token_priors(canonical_locale(locale)).get(_NFC.normalize(token))
+    priors = _spelled_token_priors(canonical_locale(locale))
+    return None if priors is None else priors.get(_NFC.normalize(token))
 
 
 def spelled_token_rule(token: str) -> str:
@@ -354,8 +355,11 @@ class LettersDetector:
             )
         for match in _SHORT_TOKEN.finditer(text):
             letters = match.group(1)
-            if not is_spelled_token(letters, self.locale) or any(
-                match.start() < end and match.end() > start for start, end in occupied
+            if (
+                not is_spelled_token(letters, self.locale)
+                or _spelled_token_priors(canonical_locale(self.locale)) is None
+                or letter_names(letters, self.locale) is None
+                or any(match.start() < end and match.end() > start for start, end in occupied)
             ):
                 continue
             start, end = match.start(), match.end()

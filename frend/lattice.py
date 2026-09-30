@@ -623,15 +623,23 @@ def resolve_lattice(
     # lattice, but do not make the generic tiergraph fold rediscover that fact for
     # every ordinary short word in running text. This type has no type-prior mapping;
     # its spell/say ranking is internal to verbalization.
-    isolated_keys = {
-        content_key(candidate.detection)
-        for candidate in candidates
-        if candidate.detection.get("type") == "letters:token"
-        and all(
-            other is candidate or candidate.end <= other.start or other.end <= candidate.start
-            for other in candidates
-        )
-    }
+    # Detector output is already start-ordered, so the common path is one linear
+    # sweep. Preserve the public API's behavior for an arbitrarily ordered sequence
+    # with a sort only when its caller did not supply that invariant.
+    ordered = candidates
+    if any(left.start > right.start for left, right in zip(ordered, ordered[1:], strict=False)):
+        ordered = sorted(ordered, key=lambda candidate: candidate.start)
+    isolated_keys = set()
+    prior_max_end = -1
+    for index, candidate in enumerate(ordered):
+        next_start = ordered[index + 1].start if index + 1 < len(ordered) else candidate.end
+        if (
+            candidate.detection.get("type") == "letters:token"
+            and prior_max_end <= candidate.start
+            and next_start >= candidate.end
+        ):
+            isolated_keys.add(content_key(candidate.detection))
+        prior_max_end = max(prior_max_end, candidate.end)
     selected_unique = [item for item in unique if content_key(item) not in isolated_keys]
     isolated = sorted(
         (item for item in unique if content_key(item) in isolated_keys),

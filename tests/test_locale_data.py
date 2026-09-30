@@ -295,6 +295,15 @@ def test_every_table_loads_from_package_resources():
             assert any(relative.match(glob) for glob in globs), relative
 
 
+def test_shipped_spelled_token_priors_have_attested_exceptions():
+    document = locale_data.measured_table("spelled_token_priors", "en_US")
+    assert document is not None
+    assert document["tokens"]
+    assert document["tokens"]["by"]["counts"] == {"say": 4_335_164, "spell": 0}
+    assert document["tokens"]["fMRI"]["counts"] == {"say": 0, "spell": 678}
+    assert document["provenance"]["acronym_cases"]["NASA"]["say"] == 19_509
+
+
 def _evaluator():
     sys.path.insert(0, str(_TOOLS))
     spec = importlib.util.spec_from_file_location(
