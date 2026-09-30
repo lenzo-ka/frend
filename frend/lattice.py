@@ -269,6 +269,30 @@ def _snapshot(detection: Detection) -> Detection:
     return frozen
 
 
+def _snapshot_spelled_token(detection: Detection) -> Detection:
+    """Own frend's scalar/frozen spell-token payload without generic deep copying."""
+    from frend.letters import LettersValue
+
+    value = detection.get("value")
+    captures = detection.get("captures", ())
+    frozen_captures = isinstance(captures, tuple) and all(
+        (params := getattr(type(item), "__dataclass_params__", None)) is not None and params.frozen
+        for item in captures
+    )
+    if not isinstance(value, LettersValue) or not frozen_captures:
+        return _snapshot(detection)
+    return MappingProxyType(
+        {
+            "text": str(detection["text"]),
+            "start": int(detection["start"]),
+            "end": int(detection["end"]),
+            "type": "letters:token",
+            "value": value,
+            "captures": captures,
+        }
+    )
+
+
 def _content_identity(detection: Detection) -> Hashable:
     """Return a hashable, type-tagged identity for all snapshot content.
 
@@ -577,6 +601,14 @@ def resolve_lattice(
 
     unique = _dedupe(detections)
     candidates, detected_length = _candidates(unique)
+    key_cache: dict[int, tuple] = {}
+
+    def content_key(detection: Detection) -> tuple:
+        identity = id(detection)
+        if identity not in key_cache:
+            key_cache[identity] = _content_key(detection)
+        return key_cache[identity]
+
     text_length = len(source_text) if source_text is not None else detected_length
     if text_length < detected_length:
         raise ValueError(
@@ -586,30 +618,65 @@ def resolve_lattice(
     canonical = canonical_locale(locale)
     sources = _resolve_sources(canonical, feature_sources, class_prior, class_prior_source)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
+    # A bounded spelled-token candidate that overlaps no other valid candidate is
+    # structurally forced into every maximum-coverage cover. Keep it in the public
+    # lattice, but do not make the generic tiergraph fold rediscover that fact for
+    # every ordinary short word in running text. This type has no type-prior mapping;
+    # its spell/say ranking is internal to verbalization.
+    # Detector output is already start-ordered, so the common path is one linear
+    # sweep. Preserve the public API's behavior for an arbitrarily ordered sequence
+    # with a sort only when its caller did not supply that invariant.
+    ordered = candidates
+    if any(left.start > right.start for left, right in zip(ordered, ordered[1:], strict=False)):
+        ordered = sorted(ordered, key=lambda candidate: candidate.start)
+    isolated_keys = set()
+    prior_max_end = -1
+    for index, candidate in enumerate(ordered):
+        next_start = ordered[index + 1].start if index + 1 < len(ordered) else candidate.end
+        if (
+            candidate.detection.get("type") == "letters:token"
+            and prior_max_end <= candidate.start
+            and next_start >= candidate.end
+        ):
+            isolated_keys.add(content_key(candidate.detection))
+        prior_max_end = max(prior_max_end, candidate.end)
+    selected_unique = [item for item in unique if content_key(item) not in isolated_keys]
+    isolated = sorted(
+        (item for item in unique if content_key(item) in isolated_keys),
+        key=lambda item: (int(item["start"]), int(item["end"]), content_key(item)),
+    )
     selection = (
         _select(
-            unique,
+            selected_unique,
             sources,
             context,
             output_cap,
             projection_probe=True,
             collect_edge_priors=True,
         )
-        if unique
+        if selected_unique
         else None
     )
 
-    prior_by_key = (
-        {_content_key(det): prior for det, prior in zip(unique, selection.edge_priors, strict=True)}
-        if selection is not None and selection.edge_priors
-        else {}
-    )
-    snapshot_by_key = {_content_key(det): _snapshot(det) for det in unique}
+    prior_by_key = {key: None for key in isolated_keys}
+    if selection is not None and selection.edge_priors:
+        prior_by_key.update(
+            {
+                content_key(det): prior
+                for det, prior in zip(selected_unique, selection.edge_priors, strict=True)
+            }
+        )
+    snapshot_by_key = {
+        content_key(det): (
+            _snapshot_spelled_token(det) if det.get("type") == "letters:token" else _snapshot(det)
+        )
+        for det in unique
+    }
     reading_edges: list[ReadingEdge] = []
     id_by_key: dict[tuple, str] = {}
     for candidate in candidates:
         source_detection = candidate.detection
-        key = _content_key(source_detection)
+        key = content_key(source_detection)
         detection = snapshot_by_key[key]
         prior = prior_by_key[key]
         geometry = CoverScore(
@@ -647,8 +714,20 @@ def resolve_lattice(
         for position in range(text_length)
     ]
 
-    covers = selection.covers if selection is not None else ((),)
-    cover_priors = selection.priors if selection is not None else ((),)
+    selected_covers = selection.covers if selection is not None else ((),)
+    selected_priors = selection.priors if selection is not None else ((),)
+    covers = []
+    cover_priors = []
+    for cover, priors in zip(selected_covers, selected_priors, strict=True):
+        by_key = {content_key(item): prior for item, prior in zip(cover, priors, strict=True)}
+        merged = tuple(
+            sorted(
+                (*cover, *isolated),
+                key=lambda item: (int(item["start"]), int(item["end"]), content_key(item)),
+            )
+        )
+        covers.append(merged)
+        cover_priors.append(tuple(by_key.get(content_key(item)) for item in merged))
     paths: list[ReadingPath] = []
     for rank, (cover, priors) in enumerate(zip(covers, cover_priors, strict=True)):
         edge_ids: list[str] = []
@@ -656,13 +735,13 @@ def resolve_lattice(
         for detection in cover:
             start = int(detection["start"])
             edge_ids.extend(f"skip{offset}" for offset in range(position, start))
-            edge_ids.append(id_by_key[_content_key(detection)])
+            edge_ids.append(id_by_key[content_key(detection)])
             position = int(detection["end"])
         edge_ids.extend(f"skip{offset}" for offset in range(position, text_length))
         paths.append(
             ReadingPath(
                 tuple(edge_ids),
-                tuple(snapshot_by_key[_content_key(detection)] for detection in cover),
+                tuple(snapshot_by_key[content_key(detection)] for detection in cover),
                 _cover_score(cover),
                 PriorSummary(
                     priors,

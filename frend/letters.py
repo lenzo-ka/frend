@@ -16,6 +16,10 @@ of 26,792 times in shard 0). Which reading comes
 first is measured (``data/en/acronym_priors.json``), by the run's length and vowels; the
 vowels are the locale's (``lexical.json``'s ``letter.vowels``), and a locale without
 them has no vowel key.
+
+A non-uppercase token of two through six letters in the locale's script is also an
+ambiguous spell-or-say candidate. Training counts rank the word and letter-name
+readings when the token is an exception to the cheap rule; neither reading is removed.
 """
 
 from __future__ import annotations
@@ -39,11 +43,14 @@ __all__ = [
     "capitals",
     "cv_pattern",
     "is_letter_run",
+    "is_spelled_token",
     "is_roman",
     "letter_vowels",
     "letter_names",
     "numeral_share",
     "spelled",
+    "spelled_token_prior",
+    "spelled_token_rule",
 ]
 
 if TYPE_CHECKING:
@@ -56,6 +63,8 @@ if TYPE_CHECKING:
 # the text's own spans; a match is a run only if its capitals share one script.
 _CAPITALS = icu.UnicodeSet("[:Lu:]")
 _CAPITALS.freeze()
+_LETTERS = icu.UnicodeSet("[:L:]")
+_LETTERS.freeze()
 _MARKS = icu.UnicodeSet("[:M:]")
 _MARKS.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
@@ -74,6 +83,7 @@ def _character_class(unicode_set: icu.UnicodeSet, *, bracket: bool = True) -> st
 
 
 _LU = _character_class(_CAPITALS)
+_L = _character_class(_LETTERS)
 _M = _character_class(_MARKS)
 _MARK_RANGES = _character_class(_MARKS, bracket=False)
 _CAPITAL = f"{_LU}{_M}*"
@@ -81,6 +91,7 @@ _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
 _RUN = re.compile(rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s|['’]s)?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
 _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(?![\w{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
+_SHORT_TOKEN = re.compile(rf"{_BEFORE}((?:{_L}{_M}*){{2,6}})(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
 
 
 def capitals(letters: str) -> tuple[str, ...] | None:
@@ -133,12 +144,51 @@ def is_letter_run(token: str) -> bool:
     return units is not None and len(units) >= 2 and capital_script(token) is not None
 
 
+@lru_cache(maxsize=4096)
+def is_spelled_token(token: str, locale: str = "en_US") -> bool:
+    """Whether ``token`` is a bounded spell-or-say candidate for ``locale``."""
+    from frend.symbols import locale_scripts
+
+    units = _letters(_NFC.normalize(token))
+    if not 2 <= len(units) <= 6 or token.isupper():
+        return False
+    if not all(_LETTERS.contains(unit[0]) for unit in units):
+        return False
+    scripts = {
+        icu.Script.getScript(ord(unit[0])).getShortName()
+        for unit in units
+        if icu.Script.getScript(ord(unit[0])).getScriptCode() not in _NEUTRAL_SCRIPTS
+    }
+    return bool(scripts) and scripts <= set(locale_scripts(canonical_locale(locale)))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _spelled_token_priors(locale: str) -> dict[str, dict[str, object]] | None:
+    """Load a locale's exception mapping once, or ``None`` when none is measured."""
+    from frend.locale_data import measured_table
+
+    table = measured_table("spelled_token_priors", locale)
+    return None if table is None else table["tokens"]
+
+
+def spelled_token_prior(token: str, locale: str = "en_US") -> dict[str, object] | None:
+    """The measured exception row for ``token``, or ``None`` when the rule decides."""
+    priors = _spelled_token_priors(canonical_locale(locale))
+    return None if priors is None else priors.get(_NFC.normalize(token))
+
+
+def spelled_token_rule(token: str) -> str:
+    """Default spell-or-say decision: AEIOU means say; y remains a consonant."""
+    return "say" if any(letter in "aeiou" for letter in token.casefold()) else "spell"
+
+
 @dataclass(frozen=True)
 class LetterNames:
     spoken: tuple[str, ...]
     provenance: str
 
 
+@lru_cache(maxsize=4096)
 def letter_names(letters: str, locale: str) -> LetterNames | None:
     """Return locale-authoritative names for every letter, or ``None``.
 
@@ -253,13 +303,14 @@ def _captures(start: int, letters: str, suffix: str) -> tuple[Capture, ...]:
 
 
 class LettersDetector:
-    """Detect runs of capital letters and single initials."""
+    """Detect capital runs, initials, and bounded spell-or-say tokens."""
 
     def __init__(self, locale: str = "en_US") -> None:
         self.locale = locale
 
     def detect(self, text: str) -> list[dict]:
         detections = []
+        occupied: list[tuple[int, int]] = []
         for chain in _INITIALS.finditer(text):
             # "S." or a chain of initials ("J.R.R."): each letter, with its marks, and its
             # period, the chain's letters in one script.
@@ -291,6 +342,7 @@ class LettersDetector:
                 # The corpus reads "II" as a number: icukit's Roman reading stands alone.
                 continue
             start, end = match.start(), match.end()
+            occupied.append((start, end))
             detections.append(
                 {
                     "text": text[start:end],
@@ -299,6 +351,26 @@ class LettersDetector:
                     "type": "letters:run",
                     "value": LettersValue(text[start:end], letters, suffix),
                     "captures": _captures(start, letters, suffix),
+                }
+            )
+        for match in _SHORT_TOKEN.finditer(text):
+            letters = match.group(1)
+            if (
+                not is_spelled_token(letters, self.locale)
+                or _spelled_token_priors(canonical_locale(self.locale)) is None
+                or letter_names(letters, self.locale) is None
+                or any(match.start() < end and match.end() > start for start, end in occupied)
+            ):
+                continue
+            start, end = match.start(), match.end()
+            detections.append(
+                {
+                    "text": text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": "letters:token",
+                    "value": LettersValue(text[start:end], letters, ""),
+                    "captures": _captures(start, letters, ""),
                 }
             )
         return sorted(detections, key=lambda detection: detection["start"])

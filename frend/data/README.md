@@ -18,9 +18,10 @@ Every measured table under `en/` is counted from the Google TN English corpus,
 `en_with_types.tgz`, 100 shards `output-000NN-of-00100`). Its README splits the shards
 training 00-89, runtime eval 90-94 and test 95-99, and frend keeps that split
 (`tools/google_tn_rows.py`: `TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`).
-A table counts training shards only: `type_priors.json` all 90 (00-89), the other five
-every tenth (00, 10, ..., 80), and `range_priors.json` both (its emit counts all 90, its
-reading counts every tenth). The runtime-eval and test shards are held out
+A table counts training shards only: `type_priors.json` and
+`spelled_token_priors.json` all 90 (00-89), the sampled tables every tenth
+(00, 10, ..., 80), and `range_priors.json` both (its emit counts all 90, its reading
+counts every tenth). The runtime-eval and test shards are held out
 (`HELD_OUT_SHARDS`) and no builder opens one. Shard 99 is the published test shard
 the evaluator reports; shard 95 is the held-out running-text shard changes are
 accepted on (`--held-out-shard`); 90-94 are a second held-out pool.
@@ -115,6 +116,20 @@ for an acronym icukit's lexicon lists (`surface:NASA`) and for a Roman numeral i
 reads (`roman:II`, which also counts the corpus's CARDINAL and ORDINAL readings as
 `numeral`), with `*` pooling all; no corpus text is stored. The shared attribution above
 applies.
+
+## `en/spelled_token_priors.json`
+
+Spell-or-say exceptions for non-uppercase tokens of two through six letters in the
+locale's script. `tools/build_spelled_token_priors.py` counts all 90 training shards
+(00--89). A row is relevant only
+when `LETTERS` literally equals the locale's authoritative letter names or `PLAIN`
+literally equals the written token after spoken normalization. The default rule says a
+token containing a/e/i/o/u and spells one without; y is separate. Only a measured
+majority that disagrees is stored (60,982 exceptions from 898,326 measured tokens).
+Each exception holds spell/say counts and unsmoothed shares. Both readings are offered
+for every structurally eligible token. `--check` recounts verified training shards byte
+for byte. Its only inputs are those rows, locale-authoritative letter names, and spoken
+normalization.
 
 ## `en/abbreviation_priors.json`
 
