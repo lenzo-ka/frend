@@ -63,6 +63,7 @@ frend = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+console_output_style = "times"
 
 [tool.ruff]
 line-length = 100

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Tests print each test's duration beside its result (pytest `console_output_style = "times"`), locally and in CI, so a slow path shows up where it runs.
 - Raised the tiergraph floor to `tiergraph>=0.4.2`, which caches each graph's fold plan and
   sets the Decimal context once per fold: the same output, with far less fixed cost per fold.
 - Resolve a sentence by its components, with the same answers. The resolver now
