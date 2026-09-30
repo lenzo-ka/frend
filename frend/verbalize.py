@@ -49,7 +49,15 @@ from frend.electronic import (
     tld_positions,
 )
 from frend.lattice import ReadingEdge, ReadingLattice
-from frend.letters import LettersValue, cv_pattern, letter_names, spelled
+from frend.letters import (
+    LettersValue,
+    cv_pattern,
+    is_letter_run,
+    letter_names,
+    spelled,
+    spelled_token_prior,
+    spelled_token_rule,
+)
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.ranges import (
     RangeValue,
@@ -1027,9 +1035,12 @@ _MARKS.freeze()
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
 def _spoken_letters(value: LettersValue, locale: str) -> tuple[SpokenAlternative, ...]:
-    """A run of capitals spelled or read as a word, weighted as an acronym is; a plural
-    or possessive rides on the last letter ("UFOs" -> "u f o's", "ufos"). An initial
-    ("S.") is its letter."""
+    """A letter token spelled or read as a word, weighted by its measured population.
+
+    Capital runs use the acronym prior; relevant bounded non-uppercase tokens use their
+    exact spell-or-say prior. A plural or possessive rides on an acronym's last letter.
+    An initial is its letter.
+    """
     letters = _NFC.normalize(value.letters)
     if value.suffix == ".":
         letter_form = spelled(letters, locale)
@@ -1039,6 +1050,34 @@ def _spoken_letters(value: LettersValue, locale: str) -> tuple[SpokenAlternative
             SpokenAlternative(letter_form.text, "surface:letter")
             if locale == "en_US"
             else letter_form,
+        )
+    if not is_letter_run(letters):
+        spelling = spelled(letters, locale)
+        if spelling is None:
+            raise NotImplementedError(f"no authoritative letter names for {locale}")
+        word = _NFC.normalize(value.surface).lower()
+        entry = spelled_token_prior(value.letters, locale)
+        if entry is None:
+            decision = spelled_token_rule(value.letters)
+            other = "say" if decision == "spell" else "spell"
+            shares = {decision: 1, other: 0}
+            source = "rule:spelled-token"
+        else:
+            shares = entry["shares"]
+            source = "measured:spelled-token"
+        return _ranked(
+            (
+                SpokenAlternative(
+                    spelling.text,
+                    f"{source}-spell",
+                    Decimal(str(shares["spell"])),
+                ),
+                SpokenAlternative(
+                    word,
+                    f"{source}-say",
+                    Decimal(str(shares["say"])),
+                ),
+            )
         )
     suffix = "'s" if value.suffix else ""
     word = _NFC.normalize(value.surface).lower()

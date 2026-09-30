@@ -8,7 +8,7 @@ from icukit.detectors import detect
 from icukit.recognize import FlexibleNumberDetector
 
 from frend import resolve_lattice
-from frend.letters import LettersDetector, cv_pattern, is_roman, numeral_share
+from frend.letters import LettersDetector, cv_pattern, is_roman, is_spelled_token, numeral_share
 from frend.verbalize import verbalize_lattice
 
 _DETECTORS = (FlexibleNumberDetector("en_US"), AbbreviationDetector("en_US"), LettersDetector())
@@ -20,11 +20,17 @@ def _read(text: str) -> list[list[str]]:
         [alternative.text for alternative in unit.alternatives]
         for unit in verbalize_lattice(lattice).best_path.units
         if unit.best.provenance != "surface:passthrough"
+        and not any("spelled-token" in item.provenance for item in unit.alternatives)
+        and unit.best.provenance != "surface:word"
     ]
 
 
 def _spans(text: str) -> list[tuple[str, str]]:
-    return [(d["type"], d["text"]) for d in LettersDetector().detect(text)]
+    return [
+        (d["type"], d["text"])
+        for d in LettersDetector().detect(text)
+        if d["type"] != "letters:token"
+    ]
 
 
 @pytest.mark.parametrize(
@@ -47,6 +53,46 @@ def test_detects_runs_initials_and_suffixes(text, expected):
 @pytest.mark.parametrize("text", ["A&I", "I saw it", "McDonald", "ATMs2", "U.S.A", "GRA-B", "II"])
 def test_leaves_mixed_single_and_numeral_runs(text):
     assert _spans(text) == []
+
+
+@pytest.mark.parametrize("text", ["pdf", "pc", "fMRI", "Meic"])
+def test_short_locale_script_tokens_offer_spelling(text):
+    found = [d for d in LettersDetector().detect(text) if d["type"] == "letters:token"]
+    assert [(d["start"], d["end"], d["text"]) for d in found] == [(0, len(text), text)]
+    assert is_spelled_token(text)
+
+
+@pytest.mark.parametrize("text", ["a", "toolong", "NASA", "AΒ"])
+def test_short_token_rule_is_bounded(text):
+    assert not is_spelled_token(text)
+
+
+def test_unattested_rule_say_token_still_offers_both_readings():
+    assert is_spelled_token("word")
+    found = [d for d in LettersDetector().detect("word") if d["type"] == "letters:token"]
+    lattice = resolve_lattice(found, source_text="word")
+    unit = verbalize_lattice(lattice).best_path.units[0]
+    assert [item.text for item in unit.alternatives] == ["word", "w o r d"]
+
+
+def test_consonant_only_rule_spells_first():
+    found = [d for d in LettersDetector().detect("xyz") if d["type"] == "letters:token"]
+    lattice = resolve_lattice(found, source_text="xyz")
+    unit = verbalize_lattice(lattice).best_path.units[0]
+    assert [item.text for item in unit.alternatives] == ["x y z", "xyz"]
+
+
+def test_exact_token_prior_ranks_but_keeps_both_readings(monkeypatch):
+    from frend import verbalize
+
+    monkeypatch.setattr(
+        verbalize,
+        "spelled_token_prior",
+        lambda token, locale: {"shares": {"spell": 0.9, "say": 0.1}},
+    )
+    lattice = resolve_lattice(list(detect("pdf", (LettersDetector(),))), source_text="pdf")
+    unit = verbalize_lattice(lattice).best_path.units[0]
+    assert [item.text for item in unit.alternatives] == ["p d f", "pdf"]
 
 
 def test_a_consonant_run_spells_first():
@@ -89,7 +135,12 @@ def test_a_chain_of_initials_reads_one_initial_at_a_time():
     text = "X.Q.Z. Smith"
     lattice = resolve_lattice(list(detect(text, (LettersDetector(),))), source_text=text)
     units = verbalize_lattice(lattice).best_path.units
-    spoken = [u.best.text for u in units if u.best.provenance != "surface:passthrough"]
+    spoken = [
+        u.best.text
+        for u in units
+        if u.best.provenance not in {"surface:passthrough", "surface:word"}
+        and not any("spelled-token" in item.provenance for item in u.alternatives)
+    ]
     assert spoken == ["x", "q", "z"]
 
 
@@ -189,7 +240,11 @@ def test_the_builder_counts_the_numerals_the_reader_defers(tmp_path):
     ],
 )
 def test_combining_marks_stay_with_their_capital(text, expected):
-    found = [(d["type"], d["text"], d["start"], d["end"]) for d in LettersDetector().detect(text)]
+    found = [
+        (d["type"], d["text"], d["start"], d["end"])
+        for d in LettersDetector().detect(text)
+        if d["type"] != "letters:token"
+    ]
     assert found == expected
     assert all(text[start:end] == surface for _, surface, start, end in found)
 
