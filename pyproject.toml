@@ -29,7 +29,7 @@ classifiers = [
 # OutputPlan first appears in tiergraph 0.2.3.
 # The context trees use cartlet format 3, introduced in 0.7.0. Keep the published
 # floor at 0.6 until 0.7.0 is on PyPI; this migration branch must not land before then.
-dependencies = ["cartlet>=0.6", "icukit>=0.8", "tiergraph>=0.4.2"]
+dependencies = ["cartlet>=0.7", "icukit>=0.8", "tiergraph>=0.4.2"]
 
 [project.urls]
 Homepage = "https://github.com/lenzo-ka/frend"
