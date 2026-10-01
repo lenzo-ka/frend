@@ -642,6 +642,8 @@ _GOLDEN = {
             ("nineteen oh-eight", "icu-rbnf:%spellout-numbering-year"),
             ("one thousand nine hundred eight", "icu-rbnf:%spellout-numbering"),
             ("one thousand nine hundred and eight", "icu-rbnf:%spellout-numbering-verbose"),
+            ("one nine o eight", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
+            ("one nine zero eight", "icu-rbnf:%spellout-cardinal"),
         ],
     ],
     ("clock.oclock", "5pm"): [
