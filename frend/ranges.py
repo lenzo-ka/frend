@@ -28,11 +28,11 @@ each as one span, ``range:dash``, ``range:ratio`` or ``range:dimension``, whose 
   digit, or a currency sign and one, after it), its spacing (R2: joined or spaced alike
   on both sides), no chain (R3: three or more digit groups are an identifier), the
   clock (R4a: a ratio that icukit's ``time:flexible`` reads whole is ``ratio:clock``),
-  the sub-key (R4b, :func:`range_sub_key`), the punctuation dash (R6,
-  :func:`punctuation_dash`: the corpus's dash read as nothing is no range reading), and
-  the end types (R7: numbers, percents, currency amounts, measures other than durations,
-  and times, each the whole side: not glued to a word or, through a punctuation mark,
-  to another number).
+  the sub-key (R4b, :func:`range_sub_key`), R6's refined training filter
+  (:func:`punctuation_dash`: only a silent dash whose ends the real range verbalizer
+  misreads is dropped; silence between correct ends is valid), and the end types (R7:
+  numbers, percents, currency amounts, measures other than durations, and times, each
+  the whole side: not glued to a word or, through punctuation, to another number).
 * **Trained**: whether a span is emitted at all (E, :meth:`RangePriorTable.emits`: a
   sub-key's range triples against the single corpus tokens of its written shape, over
   the 90 training shards) and how its readings are ordered (J,
@@ -606,22 +606,23 @@ def emit_relevant(
     return chain_length(joined, len(left_written), classes[cls]) < 3
 
 
-_YEAR_SHAPED = re.compile(r"[12][0-9]{3}")
+def punctuation_dash(
+    left: Sequence[str], middle: Sequence[str], right: Sequence[str], *, ends_match: bool
+) -> bool:
+    """R6 refined: a silent dash is dropped only when its ends are misread.
 
-
-def punctuation_dash(left: Sequence[str], middle: Sequence[str], right: Sequence[str]) -> bool:
-    """R6 (kal's ruling A): whether a corpus triple's dash is punctuation, not a range.
-    Each row is (class, written, spoken). True when the middle is a ``VERBATIM`` or
-    ``PUNCT`` "-" or "–" said as nothing (``sil``), and either the left end is a
-    ``CARDINAL`` written as a year ("1994 - 95", read "one thousand nine hundred ninety
-    four ninety five") or either end is ``MONEY`` ("$15,000 - $25,000", silent). Such a
-    triple is no range reading and is dropped from the range table's and range trees'
-    training data."""
-    if middle[1] not in ("-", "–") or middle[0] not in ("VERBATIM", "PUNCT") or middle[2] != "sil":
-        return False
-    if left[0] == "CARDINAL" and _YEAR_SHAPED.fullmatch(left[1]) is not None:
-        return True
-    return "MONEY" in (left[0], right[0])
+    Each row is ``(class, written, spoken)``.  Silence between ends that a range
+    candidate says correctly is a valid silent range reading.  The builders determine
+    ``ends_match`` with the real range verbalizer; this predicate retains only the
+    stated punctuation shape and the result of that check.
+    """
+    del left, right
+    return (
+        middle[1] in ("-", "–")
+        and middle[0] in ("VERBATIM", "PUNCT")
+        and middle[2] == "sil"
+        and not ends_match
+    )
 
 
 _GROUPED = re.compile(r"[0-9]{1,3}(?:,[0-9]{3})+")
@@ -898,6 +899,32 @@ def _is_end_type(type_: str) -> bool:
     return type_.startswith(_END_TYPES)
 
 
+@lru_cache(maxsize=LOCALE_CACHE)
+def _month_numbers(locale: str) -> Mapping[str, int]:
+    """ICU's wide and abbreviated month names, case-folded, to month numbers."""
+    symbols = icu.DateFormatSymbols(icu.Locale(locale))
+    names: dict[str, int] = {}
+    for collection in (symbols.getMonths(), symbols.getShortMonths()):
+        for month, name in enumerate(collection, 1):
+            if name:
+                names.setdefault(str(name).casefold(), month)
+    return MappingProxyType(names)
+
+
+def _month_detection(text: str, locale: str) -> Mapping | None:
+    month = _month_numbers(locale).get(text.casefold())
+    if month is None:
+        return None
+    return {
+        "type": "date:M",
+        "text": text,
+        "start": 0,
+        "end": len(text),
+        "value": DateTimeValue((("M", month),), "gregorian"),
+        "captures": (Capture("M", 0, len(text), text, month, "text"),),
+    }
+
+
 class RangeDetector:
     """A range written in running text, both ends in the text ("5-10", "5 - 10", "16:79",
     "3x4", "5-10 kg", "$15,000-$25,000"): one span, typed by its separator's class
@@ -920,6 +947,7 @@ class RangeDetector:
         self.endpoints = tuple(endpoints)
         self._table = table
         self._ends: dict[str, Mapping | None] = {}
+        self._date_ends: dict[str, Mapping | None] = {}
 
     @property
     def table(self) -> RangePriorTable | None:
@@ -1012,6 +1040,125 @@ class RangeDetector:
                 return stop, end
         return None
 
+    def date_end(self, text: str) -> Mapping | None:
+        """A structured date/month written whole, excluding an otherwise bare year."""
+        if text in self._date_ends:
+            return self._date_ends[text]
+        found = None
+        for reading in self._read(text):
+            value = reading.get("value")
+            if reading["start"] != 0 or reading["end"] != len(text):
+                continue
+            if not isinstance(value, DateTimeValue) or not str(reading["type"]).startswith("date:"):
+                continue
+            fields = set(dict(value.fields))
+            if fields == {"y"} and reading["type"] != "date:elided-year":
+                continue
+            found = {
+                "type": reading["type"],
+                "text": text,
+                "start": 0,
+                "end": len(text),
+                "value": value,
+                "captures": tuple(reading.get("captures", ())),
+            }
+            break
+        if found is None:
+            found = _month_detection(text, self.locale)
+        self._date_ends[text] = found
+        return found
+
+    def _left_date_end(self, text: str, at: int) -> tuple[int, Mapping] | None:
+        """The longest structured date/month ending immediately before ``at``."""
+        low = max(0, at - _END_REACH)
+        for start in range(low, at):
+            if not _whole_before(text, start):
+                continue
+            found = self.date_end(text[start:at])
+            if found is not None:
+                return start, found
+        return None
+
+    def _right_date_end(self, text: str, at: int) -> tuple[int, Mapping] | None:
+        """The longest structured date/month starting immediately after ``at``."""
+        high = min(len(text), at + _END_REACH)
+        for stop in range(high, at, -1):
+            if not _whole_after(text, stop):
+                continue
+            found = self.date_end(text[at:stop])
+            if found is not None:
+                return stop, found
+        return None
+
+    def _day_end(self, left: Mapping, right: Mapping) -> Mapping | None:
+        """A numeric right end as the left date's day, completing an abbreviated day."""
+        value = left.get("value")
+        if not isinstance(value, DateTimeValue):
+            return None
+        fields = dict(value.fields)
+        if not {"M", "d"} <= set(fields):
+            return None
+        written = str(right.get("text", ""))
+        if not written.isascii() or not written.isdigit() or len(written) > 2:
+            return None
+        left_day = int(fields["d"])
+        day = int(written)
+        left_capture = _capture(left, "d")
+        left_written = str(getattr(left_capture, "text", left_day))
+        if len(written) < len(left_written):
+            day = int(left_written[: len(left_written) - len(written)] + written)
+            if day <= left_day:
+                return None
+        if not 1 <= day <= 31:
+            return None
+        return {
+            "type": "date:d",
+            "text": written,
+            "start": 0,
+            "end": len(written),
+            "value": DateTimeValue((("d", day),), value.calendar),
+            "captures": (Capture("d", 0, len(written), written, day, "numeric"),),
+        }
+
+    def _date_candidate(
+        self, text: str, at: int, left_edge: int, right_edge: int, separator: str
+    ) -> dict | None:
+        """A hyphen/dash joining structured dates, months, or a date and its day."""
+        window = text[max(0, left_edge - _END_REACH) : left_edge]
+        if not any(char.isalpha() or char in "'’" for char in window):
+            return None
+        month_names = _month_numbers(self.locale)
+        words = re.findall(r"[^\W\d_]+\.?", window, re.UNICODE)
+        plausible_month = any(word.casefold() in month_names for word in words)
+        plausible_elision = re.search(r"['’][0-9]{2}\s*$", window) is not None
+        if not plausible_month and not plausible_elision:
+            return None
+        left = self._left_date_end(text, left_edge)
+        if left is None:
+            return None
+        start, left_end = left
+        right = self._right_date_end(text, right_edge)
+        if right is None:
+            numeric = self._right_end(text, right_edge)
+            if numeric is None:
+                return None
+            stop, numeric_end = numeric
+            right_end = self._day_end(left_end, numeric_end)
+            if right_end is None:
+                return None
+        else:
+            stop, right_end = right
+        return {
+            "type": "range:date",
+            "start": start,
+            "end": stop,
+            "text": text[start:stop],
+            "value": RangeValue((left_end,), separator, "range", (right_end,)),
+            "captures": _span_captures(text, start, left_end, at, separator, right_edge, right_end),
+            "sub_key": "dash:date",
+            "rule": "date-structure",
+        }
+
     def sub_key(self, cls: str, left: str, separator: str, right: str) -> str:
         """R4a/R4b for a span's written ends."""
         return written_sub_key(cls, left, separator, right, self.locale)
@@ -1034,6 +1181,10 @@ class RangeDetector:
             right_edge = at + 1
             while right_edge < len(text) and text[right_edge].isspace():
                 right_edge += 1
+            if cls == "range":
+                date_candidate = self._date_candidate(text, at, left_edge, right_edge, char)
+                if date_candidate is not None:
+                    found.append(date_candidate)
             # R1: an ASCII digit before, an ASCII digit (or a currency sign and one) after.
             if left_edge == 0 or text[left_edge - 1] not in _ASCII_DIGITS:
                 continue
@@ -1104,6 +1255,28 @@ class RangeDetector:
 
     def detect(self, text: str) -> list[dict]:
         table = self.table
-        if table is None:
-            return []
-        return [found for found in self.candidates(text) if table.emits(found["sub_key"])]
+        candidates = self.candidates(text)
+        date_candidates = [found for found in candidates if found.get("rule") == "date-structure"]
+        if date_candidates:
+            # Where icukit reads the same span as an interval, keep its structure and
+            # do not build a parallel frend reading.
+            icu_spans = {
+                (found["start"], found["end"])
+                for reader in date_interval_readers(self.locale)
+                for found in reader.detect(text)
+            }
+            date_candidates = [
+                found
+                for found in date_candidates
+                if (found["start"], found["end"]) not in icu_spans
+            ]
+        measured = (
+            []
+            if table is None
+            else [
+                found
+                for found in candidates
+                if found.get("rule") != "date-structure" and table.emits(found["sub_key"])
+            ]
+        )
+        return [*date_candidates, *measured]

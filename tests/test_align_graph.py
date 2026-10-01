@@ -645,7 +645,10 @@ def test_upstream_caps_still_refuse(monkeypatch):
 
 
 def test_partial_date_alternatives_are_never_cut(monkeypatch):
-    """Kill month-first slicing in the early-return branch for a year-only date."""
+    """Kill month-first slicing in the early-return branch for a year-only date.
+
+    Five digits, because a bare four-digit year takes the digit-string branch first.
+    """
     from icukit.detectors import all_detectors
 
     import frend.verbalize as verbalize
@@ -659,9 +662,9 @@ def test_partial_date_alternatives_are_never_cut(monkeypatch):
 
     monkeypatch.setattr(verbalize, "_number_leaf", widened)
     detection = next(
-        d for d in all_detectors("en_US", ("y",)).detect("2024") if d["type"] == "date:y"
+        d for d in all_detectors("en_US", ("y",)).detect("12024") if d["type"] == "date:y"
     )
-    unit = compose_choices(resolve_choices([detection], source_text="2024")).units[0]
+    unit = compose_choices(resolve_choices([detection], source_text="12024")).units[0]
     assert {a.text for a in extra} <= {a.text for a in unit.alternatives}
 
 

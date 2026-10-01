@@ -5,8 +5,9 @@ corpus's training shards: whether a range written in running text is read as one
 **E, the emit decision** (``readings``), over all 90 training shards (00-89). A
 positive is a corpus triple (``google_tn_rows.range_triples``: a token ending in an ASCII
 digit, a joiner, a token holding one) that the range rules can emit on
-(``frend.ranges.emit_relevant``: R1-R3) and that is no punctuation dash
-(``frend.ranges.punctuation_dash``: R6, kal's ruling A). A negative is a single corpus
+(``frend.ranges.emit_relevant``: R1-R3). R6 drops a silent punctuation dash only when
+the real range verbalizer cannot say its two ends correctly; silence between correctly
+read ends is evidence. A negative is a single corpus
 token written ``<ASCII digits><separator><ASCII digits>`` (a TELEPHONE "555-1212", a TIME
 "10:30"), counted by its class. Both are keyed by the emit key (``frend.ranges.emit_key``:
 the class, then the two ends' digit lengths; a ratio icukit reads as a clock is
@@ -143,7 +144,10 @@ def emission_counts(path: Path) -> Counter:
         if cls is None:
             continue
         key = emit_key(written_sub_key(cls, left[1], middle[1], right[1], LOCALE))
-        if punctuation_dash(left, middle, right):
+        misread_dash = punctuation_dash(left, middle, right, ends_match=False) and (
+            credit(left, middle, right)[0] == "punctuation_dash"
+        )
+        if misread_dash:
             counts[("punctuation_dash", key, "")] += 1
         elif not emit_relevant(left[1], middle[1], right[1], LOCALE):
             counts[("not_emittable", key, "")] += 1
@@ -194,8 +198,6 @@ def credit(left, middle, right) -> tuple[str, str | None, str | None]:
         return "not_emittable", None, None
     reader = _end_reader()
     sub_key = reader.sub_key(cls, left[1], separator, right[1])
-    if punctuation_dash(left, middle, right):
-        return "punctuation_dash", sub_key, None
     if not emit_relevant(left[1], separator, right[1], LOCALE):
         return "not_emittable", sub_key, None
     ends = reader.ends(left[1], right[1])
@@ -211,6 +213,8 @@ def credit(left, middle, right) -> tuple[str, str | None, str | None]:
     source = next(
         (item.provenance for item in candidates if normalize_spoken(item.text) == target), None
     )
+    if source is None and punctuation_dash(left, middle, right, ends_match=False):
+        return "punctuation_dash", sub_key, None
     return ("credited" if source else "unmatched"), sub_key, source
 
 
@@ -350,7 +354,8 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 ),
                 "dropped_filter": (
                     "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said "
-                    "'sil', and (left CARDINAL written [12][0-9]{3} or a MONEY end)"
+                    "'sil', only when no builder-mode range candidate says both ends "
+                    "as the corpus does"
                 ),
                 "wider_not_counted": {
                     "not_emittable": set_apart["not_emittable"],

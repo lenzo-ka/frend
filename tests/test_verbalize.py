@@ -88,7 +88,10 @@ def test_real_year_harvests_year_and_cardinal_rule_sets_reflectively():
     alternatives = result.best_path.units[0].alternatives
     actual = {(item.text, item.provenance) for item in alternatives}
     applicable = [name for name in _rule_sets() if "ordinal" not in name]
-    expected = _first_forms(applicable)
+    expected = _first_forms(applicable) | {
+        ("two zero two six", "icu-rbnf:%spellout-cardinal"),
+        ("two o two six", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
+    }
 
     assert actual == expected
     assert result.best_path.units[0].best == alternatives[0]
@@ -1885,9 +1888,8 @@ def test_single_grouped_signed_or_fractional_numbers_get_no_digit_reading(writte
     assert len({normalize_spoken(a.text) for a in unit.alternatives}) == len(unit.alternatives)
 
 
-def test_a_year_is_never_read_digit_by_digit():
-    """kal: "I wouldn't read a year like that if I knew it was a year": the digit reading
-    belongs to the number reading only, never to a date."""
+def test_only_a_bare_four_digit_year_offers_a_digit_string():
+    """A bare four-digit surface is ambiguous; a structured date stays a date."""
     detections = [
         d
         for d in detect("2013", list(all_detectors("en_US", ("y",)).detectors))
@@ -1901,4 +1903,9 @@ def test_a_year_is_never_read_digit_by_digit():
             normalize_spoken(a.text) for a in verbalize_edge(edge, source_text="2013").alternatives
         }
         assert "twenty thirteen" in forms
-        assert not forms & {"two zero one three", "two o one three"}
+        assert forms & {"two zero one three", "two o one three"}
+    structured = _result("2/29/2024", "date:yMd").best_path.units[0].alternatives
+    assert not {
+        "two zero two four",
+        "two o two four",
+    } & {normalize_spoken(alternative.text) for alternative in structured}

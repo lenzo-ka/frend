@@ -231,6 +231,30 @@ def _passthrough(alternative) -> bool:
     return alternative.provenance == "surface:passthrough"
 
 
+def _generic_alternatives(token: str, alternatives):
+    """Leave the dedicated bare-number problem out of the generic context model."""
+    if (
+        len(token) == 4
+        and token.isascii()
+        and token.isdigit()
+        and any("numbering-year" in item.provenance for item in alternatives)
+    ):
+        filtered = tuple(
+            item
+            for item in alternatives
+            if not item.provenance.startswith("icu-rbnf:%spellout-cardinal")
+        )
+        from frend.verbalize import SpokenAlternative, _rank_final
+
+        return _rank_final(
+            tuple(SpokenAlternative(item.text, item.provenance) for item in filtered),
+            "date",
+            None,
+            LOCALE,
+        )
+    return alternatives
+
+
 def _token_readings(token: str) -> dict[str, str]:
     """Stage A's labels for the token read alone -> the text each says (its candidate
     enumeration: every path, the product of alternatives capped at 64, deduplicated by
@@ -259,7 +283,13 @@ def _token_readings(token: str) -> dict[str, str]:
     labels = [label([u.best.provenance for u in best])]
     seen = {first}
     for units in paths.values():
-        options = [[(a.text, unit_pt(u), a.provenance) for a in u.alternatives] for u in units]
+        options = [
+            [
+                (a.text, unit_pt(u), a.provenance)
+                for a in _generic_alternatives(token, u.alternatives)
+            ]
+            for u in units
+        ]
         for combination in islice(product(*options), _ANY_CAP):
             text = normalize_spoken(_joined((c[0], c[1]) for c in combination))
             if text in seen:
@@ -323,7 +353,7 @@ def derive(record) -> tuple[str, list[dict]]:
     for edge_id in lattice.best_path.edge_ids:
         edge = edges[edge_id]
         unit = verbalize_edge(edge, source_text=token, context=context, rerank_by_context=False)
-        alternatives = unit.alternatives
+        alternatives = _generic_alternatives(token, unit.alternatives)
         if _rule_ordered_connector(edge, text, offset):
             # A lone ":" between numbers is offered "to" by rule (R12), ordered by the
             # range table, never by a tree: it is no label here.
@@ -595,6 +625,7 @@ def derive_range_examples(corpus_dir: Path, dest: Path, log=print) -> dict:
     that the range rules can emit on and that is no punctuation dash, joined as written
     with its sentence either side and the corpus's reading; a receipt names each input
     shard's sha256, the file's, and the set's fingerprint."""
+    from build_range_priors import credit
     from google_tn_rows import expected, range_triple_positions
 
     from frend.ranges import emit_relevant, punctuation_dash
@@ -630,7 +661,9 @@ def derive_range_examples(corpus_dir: Path, dest: Path, log=print) -> dict:
         index_of = {id(sentence): i for i, sentence in enumerate(sentences)}
         for sentence, at in range_triple_positions(sentences):
             left, middle, right = sentence[at : at + 3]
-            if punctuation_dash(left, middle, right):
+            if punctuation_dash(left, middle, right, ends_match=False) and (
+                credit(left, middle, right)[0] == "punctuation_dash"
+            ):
                 counts["punctuation_dash"] += 1
                 continue
             if not emit_relevant(left[1], middle[1], right[1], LOCALE):

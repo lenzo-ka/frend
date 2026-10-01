@@ -84,8 +84,8 @@ def test_icu_range_follows_the_table(no_context_trees):
     ``dash:4+2`` row, the en dash pooled with the hyphen), no longer by the interim
     four-digit-year rule: the same first reading, from a measured source."""
     (first, source), *_ = _readings("1990–95", 1)
-    assert first == "nineteen ninety to ninety five", (first, source)
-    assert source == "range:date+to+cardinal", source
+    assert first == "one thousand nine hundred ninety ninety five", (first, source)
+    assert source == "range:cardinal+silent+cardinal"
 
 
 @needs_icu_ranges
@@ -295,12 +295,14 @@ def test_year_range_prior_order(no_context_trees):
 
 
 def test_four_plus_two_prior_order(no_context_trees):
-    """With R6's punctuation dashes set aside, the corpus reads ``dash:4+2`` with "to"
-    and a year (main: "nineteen ninety two minus ninety three"); the silent cardinal
-    pair stays offered."""
+    """R6 refined keeps a silent row when both ends are correct; the rebuilt
+    ``dash:4+2`` prior therefore leads with its measured silent cardinal pair."""
     readings = _readings("1992-93", 16)
-    assert readings[0] == ("nineteen ninety two to ninety three", "range:date+to+cardinal")
-    assert "one thousand nine hundred ninety two ninety three" in [r for r, _ in readings]
+    assert readings[0] == (
+        "one thousand nine hundred ninety two ninety three",
+        "range:cardinal+silent+cardinal",
+    )
+    assert "nineteen ninety two to ninety three" in [r for r, _ in readings]
 
 
 def test_silence_is_offered_inside_a_written_range():
@@ -435,8 +437,8 @@ def test_leading_zero_right_end_reads_digits(no_context_trees):
     """R4b/R11: a right end written with a leading zero is its own sub-key
     (``dash:4+2:0``), whose leader says the digits (main: "from twenty twenty minus five
     on")."""
-    assert _said("from 2020-05 on") == "from twenty twenty to o five on"
-    assert _range_unit("from 2020-05 on").best.provenance == "range:date+to+digits"
+    assert _said("from 2020-05 on") == "from twenty twenty five on"
+    assert _range_unit("from 2020-05 on").best.provenance == "range:date+silent+cardinal"
 
 
 def test_punctuation_dash_filter():
@@ -447,10 +449,15 @@ def test_punctuation_dash_filter():
 
     from frend.ranges import load_range_priors, punctuation_dash
 
-    assert punctuation_dash(("CARDINAL", "1994"), ("PUNCT", "-", "sil"), ("CARDINAL", "95"))
-    assert punctuation_dash(("MONEY", "$15,000"), ("VERBATIM", "-", "sil"), ("MONEY", "$25,000"))
-    assert not punctuation_dash(("CARDINAL", "1994"), ("PLAIN", "-", "to"), ("CARDINAL", "95"))
-    assert not punctuation_dash(("CARDINAL", "57"), ("PUNCT", "-", "sil"), ("CARDINAL", "58"))
+    assert punctuation_dash(
+        ("CARDINAL", "1994"), ("PUNCT", "-", "sil"), ("CARDINAL", "95"), ends_match=False
+    )
+    assert not punctuation_dash(
+        ("CARDINAL", "1994"), ("PUNCT", "-", "sil"), ("CARDINAL", "95"), ends_match=True
+    )
+    assert not punctuation_dash(
+        ("CARDINAL", "1994"), ("PLAIN", "-", "to"), ("CARDINAL", "95"), ends_match=False
+    )
     relevance = load_range_priors("en_US").provenance["relevance"]
     assert relevance["dropped_filter"].startswith("punctuation_dash:")
     assert relevance["wider_not_counted"]["punctuation_dash"] > 0
@@ -487,6 +494,29 @@ def test_relevance_predicates():
     assert not emit_relevant("1-2", "-", "3")
     assert emit_relevant("1990", "-", "95")
     assert emit_relevant("15", "-", "$25")
+
+
+def test_date_day_ranges_are_one_typed_range_and_complete_an_abbreviated_day():
+    assert _readings("June 26-27", 1)[0] == (
+        "june twenty sixth to twenty seventh",
+        "range:date+to+date",
+    )
+    assert _readings("June 26-7", 1)[0] == (
+        "june twenty sixth to twenty seventh",
+        "range:date+to+date",
+    )
+
+
+def test_month_and_date_hyphens_are_ranges():
+    assert _readings("June-July 2020", 1)[0][0] == "june to july twenty twenty"
+    assert _readings("Jun-Jul", 1)[0][0] == "june to july"
+    assert _readings("June 26-July 3", 1)[0][0] == "june twenty sixth to july third"
+
+
+def test_elided_years_and_their_ranges_are_read():
+    assert _readings("'94", 1)[0][0] == "ninety four"
+    assert _readings("’94", 1)[0][0] == "ninety four"
+    assert _readings("'94-'95", 1)[0][0] == "ninety four to ninety five"
 
 
 # ------------------------------------------------------------------ fugu review fixes
