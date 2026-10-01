@@ -1461,6 +1461,17 @@ def _spoken_date_parts(
     return _compose(ordered, " ".join("{}" for _ in ordered))
 
 
+def _bare_four_digit(detection: Mapping, locale: str) -> bool:
+    """Whether a bare four-digit token has measured locale-specific choices."""
+    written = str(detection.get("text", ""))
+    return (
+        load_number_priors(locale) is not None
+        and len(written) == 4
+        and written.isascii()
+        and written.isdigit()
+    )
+
+
 def _spoken_date(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
@@ -1482,7 +1493,7 @@ def _spoken_date(
     if "y" in fields:
         parts.append(_year_leaf(Decimal(fields["y"]), locale))
     bare = str(detection.get("text", ""))
-    if set(fields) == {"y"} and len(bare) == 4 and bare.isascii() and bare.isdigit():
+    if set(fields) == {"y"} and _bare_four_digit(detection, locale):
         # A bare four-digit token may be a digit string.  Dates with any other
         # structure remain icukit's reading and never gain this choice.
         return _ranked(
@@ -1514,10 +1525,11 @@ def _bare_number_ranked(
     alternatives: Sequence[SpokenAlternative], detection: Mapping, locale: str
 ) -> tuple[SpokenAlternative, ...]:
     """Rank a bare four-digit date/cardinal/digit choice by its measured century row."""
+    if not _bare_four_digit(detection, locale):
+        return tuple(alternatives)
     written = str(detection.get("text", ""))
     table = load_number_priors(locale)
-    if table is None or len(written) != 4 or not written.isascii() or not written.isdigit():
-        return tuple(alternatives)
+    assert table is not None
 
     def choice(item: SpokenAlternative) -> str:
         if "numbering-year" in item.provenance:
@@ -2819,13 +2831,7 @@ def verbalize_edge(
     elif (
         context is not None
         and rerank_by_context
-        and not (
-            path == "date"
-            and type_ == "date:y"
-            and len(str(detection.get("text", ""))) == 4
-            and str(detection.get("text", "")).isascii()
-            and str(detection.get("text", "")).isdigit()
-        )
+        and not (path == "date" and type_ == "date:y" and _bare_four_digit(detection, locale))
     ):
         alternatives, choice = rerank(
             alternatives,

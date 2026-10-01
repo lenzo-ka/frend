@@ -1909,3 +1909,26 @@ def test_only_a_bare_four_digit_year_offers_a_digit_string():
         "two zero two four",
         "two o two four",
     } & {normalize_spoken(alternative.text) for alternative in structured}
+
+
+@pytest.mark.parametrize(
+    ("locale", "has_digit_alternative"),
+    [("en_US", True), ("ru_RU", False), ("es_ES", False)],
+)
+def test_bare_four_digit_year_offers_digits_only_with_a_measured_prior(
+    locale, has_digit_alternative
+):
+    from icukit.detectors import DateTimeValue
+
+    detection = _det("2024", "date:y", DateTimeValue((("y", 2024),), "gregorian"))
+    detection["text"] = "2024"
+    lattice = resolve_lattice([detection], source_text="2024", locale=locale)
+    edge = next(edge for edge in lattice.edges if edge.kind == "reading")
+    alternatives = verbalize_edge(
+        edge, source_text="2024", locale=locale, rerank_by_context=False
+    ).alternatives
+
+    assert (
+        any(item.provenance == "icu-rbnf:%spellout-cardinal" for item in alternatives)
+        is has_digit_alternative
+    )
