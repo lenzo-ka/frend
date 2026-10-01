@@ -19,7 +19,8 @@ Every measured table under `en/` is counted from the Google TN English corpus,
 training 00-89, runtime eval 90-94 and test 95-99, and frend keeps that split
 (`tools/google_tn_rows.py`: `TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`).
 A table counts training shards only: `type_priors.json` and
-`spelled_token_priors.json` all 90 (00-89), the sampled tables every tenth
+`spelled_token_priors.json` and `number_priors.json` all 90
+(00-89), the sampled tables every tenth
 (00, 10, ..., 80), and `range_priors.json` both (its emit counts all 90, its reading
 counts every tenth). The runtime-eval and test shards are held out
 (`HELD_OUT_SHARDS`) and no builder opens one. Shard 99 is the published test shard
@@ -49,7 +50,13 @@ from these counts on demand; no smoothing and no ratios are stored.
 
 ### Attribution
 
-This attribution applies to `type_priors.json` and `spoken_priors.json`: their counts are derived from the CC BY-SA 4.0 Google/Sproat "en_with_types" English text-normalization corpus (Sproat & Jaitly, *RNN Approaches to Text Normalization: A Challenge*, 2016; arXiv:1611.00068; https://github.com/rwsproat/text-normalization-data), are aggregate counts over the sample declared by each artifact, and retain provenance in the JSON; whether ShareAlike attaches to an aggregate is not asserted here either way.
+This attribution applies to `type_priors.json`, `spoken_priors.json`,
+and `number_priors.json`: their counts are derived
+from the CC BY-SA 4.0 Google/Sproat "en_with_types" English text-normalization corpus
+(Sproat & Jaitly, *RNN Approaches to Text Normalization: A Challenge*, 2016;
+arXiv:1611.00068; https://github.com/rwsproat/text-normalization-data), are aggregates
+over the sample declared by each artifact, and retain provenance in the JSON; whether
+ShareAlike attaches to an aggregate is not asserted here either way.
 
 **This data was filtered and aggregated**, not copied: surfaces containing a Unicode decimal digit (category `Nd`) use a fixed corpus-class → frend class mapping, while single uppercase-letter surfaces admit the corpus's own classes so their alphabetic and numeric interpretations share a denominator. Other surfaces and the PLAIN/PUNCT/LETTERS/VERBATIM/ELECTRONIC classes are dropped. Each retained surface is reduced to its `frend.shape` signature, and only the resulting integer `shape -> class` counts are retained. The `single_uppercase_letters` section preserves the corresponding per-letter aggregates for inspection. No corpus text is reproduced. The raw corpus itself is never vendored here.
 
@@ -211,9 +218,9 @@ holds only what is trained:
   zero): the joint source (`range:<left kind>+<connector>+<right kind>`) of the first
   builder-mode reading that says the corpus's reading of the triple.
 - `provenance.relevance`: what each part counts, and what it sets apart: triples no rule
-  can emit on, and the punctuation dash (kal's ruling A: a "-" said as nothing after a
-  year-shaped cardinal or beside money, "1994 - 95", "$15,000 - $25,000", is no range
-  reading and is counted nowhere).
+  can emit on, and R6's punctuation dash. A silent dash is valid when the actual range
+  reading says both ends correctly; only silent rows whose ends are misread are set
+  apart and counted nowhere.
 
 Only counts are stored; the shared attribution applies.
 
@@ -238,7 +245,7 @@ against its receipt) and compares byte for byte, so it needs the kalman mount.
   file, hash, size and label counts.
 - The range problems (`range:range`, `range:ratio`, `range:dimension`; the ranges
   plan's P6) are trained from their own stored set
-  (`frend/google/tn-en_with_types/p6-range-examples/548d6f67beab4223`, derived by
+  (`frend/google/tn-en_with_types/p6-range-examples/36373cb1123ca6d5`, derived by
   `--derive-range-examples` from the same shards 05, ..., 85: every range triple the
   rules can emit on, less the punctuation dashes, with its sentence either side), with
   the range family of features added; `index.json`'s `range_examples` names that set,
@@ -257,3 +264,14 @@ Festival classes, and frend's own first choice and its weight. A tree's top read
 replaces frend's first choice only at probability 0.7 or more. The trees hold only
 split values and label counts (and the frequent words); no corpus text. The shared
 attribution above applies.
+
+## `en/number_priors.json`
+
+Bare four-digit tokens alone receive DATE, CARDINAL and DIGIT alternatives. Structured
+icukit dates (month, day, era, decade or interval) retain their date structure and do
+not use this choice. `tools/build_number_priors.py` streams all training shards and
+stores raw class counts by the token's first two digits, plus an all-bucket fallback;
+there is no hand-set year or value window.
+
+The builder's `--check` mode verifies corpus identity and reproduces the shipped
+artifact byte for byte. The artifact retains no corpus text.

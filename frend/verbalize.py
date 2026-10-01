@@ -59,6 +59,7 @@ from frend.letters import (
     spelled_token_rule,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
+from frend.number_priors import load_number_priors
 from frend.ranges import (
     RangeValue,
     digit_groups,
@@ -1460,6 +1461,17 @@ def _spoken_date_parts(
     return _compose(ordered, " ".join("{}" for _ in ordered))
 
 
+def _bare_four_digit(detection: Mapping, locale: str) -> bool:
+    """Whether a bare four-digit token has measured locale-specific choices."""
+    written = str(detection.get("text", ""))
+    return (
+        load_number_priors(locale) is not None
+        and len(written) == 4
+        and written.isascii()
+        and written.isdigit()
+    )
+
+
 def _spoken_date(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
@@ -1480,6 +1492,13 @@ def _spoken_date(
         parts.append(_number_leaf(Decimal(fields["d"]), "ordinal", locale))
     if "y" in fields:
         parts.append(_year_leaf(Decimal(fields["y"]), locale))
+    bare = str(detection.get("text", ""))
+    if set(fields) == {"y"} and _bare_four_digit(detection, locale):
+        # A bare four-digit token may be a digit string.  Dates with any other
+        # structure remain icukit's reading and never gain this choice.
+        return _ranked(
+            [*_year_leaf(Decimal(fields["y"]), locale), *_spoken_digits(DigitsValue(bare), locale)]
+        )
     if set(fields) == {"M", "d", "y"}:
         template = "{} {}, {}"
     elif set(fields) == {"M", "d"}:
@@ -1500,6 +1519,32 @@ def _spoken_date(
         day_parts.append(_year_leaf(Decimal(fields["y"]), locale))
     day_first = _compose(day_parts, "the {} of " + " ".join("{}" for _ in day_parts[1:]))
     return _ranked([*month_first, *day_first])
+
+
+def _bare_number_ranked(
+    alternatives: Sequence[SpokenAlternative], detection: Mapping, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Rank a bare four-digit date/cardinal/digit choice by its measured century row."""
+    if not _bare_four_digit(detection, locale):
+        return tuple(alternatives)
+    written = str(detection.get("text", ""))
+    table = load_number_priors(locale)
+    assert table is not None
+
+    def choice(item: SpokenAlternative) -> str:
+        if "numbering-year" in item.provenance:
+            return "date"
+        if item.provenance.startswith("icu-rbnf:%spellout-cardinal"):
+            return "digit"
+        return "cardinal"
+
+    weighted = []
+    for item in alternatives:
+        prior = table.lookup(written, choice(item))
+        weighted.append(
+            item if prior is None else SpokenAlternative(item.text, item.provenance, prior.share)
+        )
+    return _ranked(weighted)
 
 
 def _spoken_number(
@@ -2709,6 +2754,8 @@ def verbalize_edge(
         alternatives = _rank_final(
             alternatives, kind, measurement_sub_key(kind, detection, locale=locale), locale
         )
+        if path == "date" and type_ == "date:y":
+            alternatives = _bare_number_ranked(alternatives, detection, locale)
     weekday = _capture(detection, "weekday") if path == "date" else None
     if weekday is not None:
         # The weekday is written but not in the date's value; it leads every form,
@@ -2781,7 +2828,11 @@ def verbalize_edge(
                 bos=context.bos,
                 eos=context.eos,
             )
-    elif context is not None and rerank_by_context:
+    elif (
+        context is not None
+        and rerank_by_context
+        and not (path == "date" and type_ == "date:y" and _bare_four_digit(detection, locale))
+    ):
         alternatives, choice = rerank(
             alternatives,
             context.text,

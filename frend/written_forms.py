@@ -11,6 +11,8 @@ speech stays ICU's (numbers, era names) or the corpus's:
 - an era written with dotted letters, attached to the year, or before it ("500
   B.C.", "4AD", "A.D. 1066"), as ``date:era``; "500 BC." is ICU's "500 BC" and a
   sentence-final period, left to icukit.
+- an apostrophe-elided two-digit year (``'94`` or ``’94``), as
+  ``date:elided-year``; ranges of them are joined by frend's range reader.
 
 The shapes are icukit's census families (``coverage/gap_families.py``).
 """
@@ -34,6 +36,7 @@ _SPACED_DIGITS = re.compile(r"(?<![\w.,:/-])\d(?: \d)+(?![\w.,:/-])")
 _ERA_WRITTEN = r"B\.C\.E\.|B\.C\.|A\.D\.|C\.E\."
 _ERA_AFTER = re.compile(rf"(?<![\w.])(\d{{1,4}})( ?)({_ERA_WRITTEN}|AD|BC)(?!\w)")
 _ERA_BEFORE = re.compile(r"(?<![\w.])(A\.D\.|AD)( ?)(\d{1,4})(?![\w.])")
+_ELIDED_YEAR = re.compile(r"(?<!\w)['’](\d{2})(?!\d)")
 _BEFORE_ERA = ("B",)
 
 
@@ -132,6 +135,27 @@ class WrittenFormsDetector:
                 )
             )
         if self.locale.partition("_")[0] == "en":
+            for match in _ELIDED_YEAR.finditer(text):
+                year = int(match.group(1))
+                found.append(
+                    _detection(
+                        text,
+                        match.start(),
+                        match.end(),
+                        "date:elided-year",
+                        DateTimeValue((("y", year),), "gregorian"),
+                        (
+                            Capture(
+                                "y",
+                                match.start(1),
+                                match.end(1),
+                                match.group(1),
+                                year,
+                                "numeric",
+                            ),
+                        ),
+                    )
+                )
             for match in _ERA_AFTER.finditer(text):
                 year, era = int(match.group(1)), match.group(3)
                 if era in ("AD", "BC") and match.group(2) == " ":

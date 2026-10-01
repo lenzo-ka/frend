@@ -129,39 +129,39 @@
   "relevance": {
    "emit": "range_triples passing R1-R3 on the 90 training shards, R6 rows dropped; negatives: single tokens <digits><sep><digits> by class",
    "joint": "range_triples passing R1-R3 and R7 on the sample shards, R6 rows dropped; credited by the first matching builder-mode candidate",
-   "dropped_filter": "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said 'sil', and (left CARDINAL written [12][0-9]{3} or a MONEY end)",
+   "dropped_filter": "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said 'sil', only when no builder-mode range candidate says both ends as the corpus does",
    "wider_not_counted": {
-    "not_emittable": 23242,
-    "punctuation_dash": 121241
+    "not_emittable": 23284,
+    "punctuation_dash": 236
    },
    "joint_outcomes": {
-    "credited": 102684,
+    "credited": 114578,
     "error": 9,
-    "no_end": 1569,
-    "not_emittable": 2313,
-    "punctuation_dash": 11962,
-    "unmatched": 46
+    "no_end": 1630,
+    "not_emittable": 2314,
+    "punctuation_dash": 35,
+    "unmatched": 17
    }
   },
   "builder": "tools/build_range_priors.py"
  },
  "readings": {
   "dash": {
-   "range": 889801,
+   "range": 1010764,
    "single_token": {
     "TELEPHONE": 30468
    }
   },
   "dash:1+1": {
-   "range": 99167,
+   "range": 99163,
    "single_token": {}
   },
   "dash:1+2": {
-   "range": 31463,
+   "range": 31462,
    "single_token": {}
   },
   "dash:1+3": {
-   "range": 3960,
+   "range": 3958,
    "single_token": {}
   },
   "dash:1+4": {
@@ -259,7 +259,7 @@
    }
   },
   "dash:2+3": {
-   "range": 11871,
+   "range": 11864,
    "single_token": {
     "TELEPHONE": 692
    }
@@ -301,7 +301,7 @@
    }
   },
   "dash:3+1": {
-   "range": 9070,
+   "range": 9069,
    "single_token": {
     "TELEPHONE": 63
    }
@@ -343,7 +343,7 @@
    }
   },
   "dash:3+3": {
-   "range": 123284,
+   "range": 123283,
    "single_token": {
     "TELEPHONE": 231
    }
@@ -385,7 +385,7 @@
    }
   },
   "dash:4+1": {
-   "range": 9567,
+   "range": 9575,
    "single_token": {
     "TELEPHONE": 30
    }
@@ -403,7 +403,7 @@
    }
   },
   "dash:4+2": {
-   "range": 40354,
+   "range": 106848,
    "single_token": {
     "TELEPHONE": 68
    }
@@ -415,7 +415,7 @@
    }
   },
   "dash:4+4": {
-   "range": 336034,
+   "range": 389718,
    "single_token": {
     "TELEPHONE": 8772
    }
@@ -633,7 +633,7 @@
    }
   },
   "dash:other": {
-   "range": 66628,
+   "range": 67421,
    "single_token": {}
   },
   "dimension": {
@@ -1073,41 +1073,47 @@
  },
  "kinds": {
   "dash": {
-   "total": 88077,
-   "matched": 88036,
-   "unmatched": 41,
+   "total": 99942,
+   "matched": 99930,
+   "unmatched": 12,
    "source_matched": {
     "range:cardinal+to+cardinal": 40332,
     "range:date+to+date": 33598,
+    "range:cardinal+silent+cardinal": 10716,
     "range:date+to+cardinal": 5106,
-    "range:cardinal+silent+cardinal": 2438,
     "range:cardinal+to+measure": 2254,
+    "range:date+silent+cardinal": 2101,
     "range:decimal+to+cardinal": 1843,
+    "range:date+silent+date": 1351,
     "range:date+to+measure": 496,
+    "range:cardinal+silent+digits": 482,
     "range:date+to+digits": 481,
-    "range:cardinal+silent+digits": 480,
+    "range:cardinal+silent+date": 237,
     "range:decimal+to+measure": 231,
     "range:decimal+to+decimal": 162,
     "range:time+to+time": 144,
     "range:cardinal+to+time": 126,
-    "range:cardinal+silent+date": 116,
     "range:cardinal+to+decimal": 60,
+    "range:money+silent+money": 42,
     "range:digits+silent+measure": 41,
     "range:digits+silent+digits": 31,
     "range:decimal+silent+digits": 22,
     "range:decimal+silent+date": 13,
     "range:digits+silent+cardinal": 12,
-    "range:date+silent+cardinal": 11,
     "range:date+silent+decimal": 7,
     "range:digits+silent+date": 7,
     "range:time+silent+cardinal": 5,
     "range:time+silent+digits": 5,
     "range:date+to+time": 4,
+    "range:money+silent+cardinal": 4,
     "range:cardinal+silent+decimal": 3,
     "range:cardinal+silent+measure": 3,
+    "range:date+silent+money": 3,
     "range:decimal+silent+cardinal": 3,
+    "range:cardinal+silent+money": 2,
     "range:cardinal+silent+time": 1,
-    "range:digits+silent+decimal": 1
+    "range:digits+silent+decimal": 1,
+    "range:money+silent+measure": 1
    },
    "sub_keys": {
     "1+1": {
@@ -1293,29 +1299,32 @@
      }
     },
     "4+1": {
-     "matched": 917,
+     "matched": 922,
      "source_matched": {
       "range:date+to+cardinal": 913,
+      "range:date+silent+cardinal": 4,
       "range:digits+silent+cardinal": 3,
-      "range:cardinal+silent+cardinal": 1
+      "range:cardinal+silent+cardinal": 2
      }
     },
     "4+2": {
-     "matched": 3679,
+     "matched": 8734,
      "source_matched": {
+      "range:cardinal+silent+cardinal": 4622,
       "range:date+to+cardinal": 3665,
-      "range:date+silent+cardinal": 8,
+      "range:date+silent+cardinal": 443,
       "range:digits+silent+cardinal": 3,
-      "range:cardinal+silent+cardinal": 2,
       "range:digits+silent+digits": 1
      }
     },
     "4+2:0": {
-     "matched": 333,
+     "matched": 1790,
      "source_matched": {
+      "range:date+silent+cardinal": 1393,
       "range:date+to+digits": 320,
+      "range:cardinal+silent+cardinal": 62,
       "range:digits+silent+digits": 11,
-      "range:cardinal+silent+digits": 2
+      "range:cardinal+silent+digits": 4
      }
     },
     "4+3": {
@@ -1335,11 +1344,14 @@
      }
     },
     "4+4": {
-     "matched": 33761,
+     "matched": 39086,
      "source_matched": {
       "range:date+to+date": 33598,
+      "range:cardinal+silent+cardinal": 3603,
+      "range:date+silent+date": 1351,
+      "range:date+silent+cardinal": 258,
       "range:date+to+cardinal": 149,
-      "range:cardinal+silent+cardinal": 8,
+      "range:cardinal+silent+date": 121,
       "range:digits+silent+date": 5,
       "range:digits+silent+digits": 1
      }
@@ -1450,7 +1462,7 @@
      }
     },
     "other": {
-     "matched": 5425,
+     "matched": 5477,
      "source_matched": {
       "range:cardinal+to+measure": 2254,
       "range:decimal+to+cardinal": 1843,
@@ -1460,6 +1472,7 @@
       "range:time+to+time": 144,
       "range:cardinal+to+time": 126,
       "range:cardinal+to+decimal": 60,
+      "range:money+silent+money": 42,
       "range:digits+silent+measure": 41,
       "range:decimal+silent+digits": 22,
       "range:decimal+silent+date": 13,
@@ -1467,12 +1480,16 @@
       "range:time+silent+cardinal": 5,
       "range:time+silent+digits": 5,
       "range:date+to+time": 4,
+      "range:money+silent+cardinal": 4,
       "range:cardinal+silent+decimal": 3,
       "range:cardinal+silent+measure": 3,
+      "range:date+silent+money": 3,
       "range:decimal+silent+cardinal": 3,
+      "range:cardinal+silent+money": 2,
       "range:cardinal+silent+time": 1,
       "range:date+to+cardinal": 1,
-      "range:digits+silent+decimal": 1
+      "range:digits+silent+decimal": 1,
+      "range:money+silent+measure": 1
      }
     }
    }

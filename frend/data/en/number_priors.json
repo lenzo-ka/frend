@@ -1,0 +1,515 @@
+{
+ "locale": "en",
+ "schema_version": 1,
+ "provenance": {
+  "locale": "en",
+  "corpus": "google-tn:en_with_types",
+  "shards": [
+   "output-00000-of-00100",
+   "output-00001-of-00100",
+   "output-00002-of-00100",
+   "output-00003-of-00100",
+   "output-00004-of-00100",
+   "output-00005-of-00100",
+   "output-00006-of-00100",
+   "output-00007-of-00100",
+   "output-00008-of-00100",
+   "output-00009-of-00100",
+   "output-00010-of-00100",
+   "output-00011-of-00100",
+   "output-00012-of-00100",
+   "output-00013-of-00100",
+   "output-00014-of-00100",
+   "output-00015-of-00100",
+   "output-00016-of-00100",
+   "output-00017-of-00100",
+   "output-00018-of-00100",
+   "output-00019-of-00100",
+   "output-00020-of-00100",
+   "output-00021-of-00100",
+   "output-00022-of-00100",
+   "output-00023-of-00100",
+   "output-00024-of-00100",
+   "output-00025-of-00100",
+   "output-00026-of-00100",
+   "output-00027-of-00100",
+   "output-00028-of-00100",
+   "output-00029-of-00100",
+   "output-00030-of-00100",
+   "output-00031-of-00100",
+   "output-00032-of-00100",
+   "output-00033-of-00100",
+   "output-00034-of-00100",
+   "output-00035-of-00100",
+   "output-00036-of-00100",
+   "output-00037-of-00100",
+   "output-00038-of-00100",
+   "output-00039-of-00100",
+   "output-00040-of-00100",
+   "output-00041-of-00100",
+   "output-00042-of-00100",
+   "output-00043-of-00100",
+   "output-00044-of-00100",
+   "output-00045-of-00100",
+   "output-00046-of-00100",
+   "output-00047-of-00100",
+   "output-00048-of-00100",
+   "output-00049-of-00100",
+   "output-00050-of-00100",
+   "output-00051-of-00100",
+   "output-00052-of-00100",
+   "output-00053-of-00100",
+   "output-00054-of-00100",
+   "output-00055-of-00100",
+   "output-00056-of-00100",
+   "output-00057-of-00100",
+   "output-00058-of-00100",
+   "output-00059-of-00100",
+   "output-00060-of-00100",
+   "output-00061-of-00100",
+   "output-00062-of-00100",
+   "output-00063-of-00100",
+   "output-00064-of-00100",
+   "output-00065-of-00100",
+   "output-00066-of-00100",
+   "output-00067-of-00100",
+   "output-00068-of-00100",
+   "output-00069-of-00100",
+   "output-00070-of-00100",
+   "output-00071-of-00100",
+   "output-00072-of-00100",
+   "output-00073-of-00100",
+   "output-00074-of-00100",
+   "output-00075-of-00100",
+   "output-00076-of-00100",
+   "output-00077-of-00100",
+   "output-00078-of-00100",
+   "output-00079-of-00100",
+   "output-00080-of-00100",
+   "output-00081-of-00100",
+   "output-00082-of-00100",
+   "output-00083-of-00100",
+   "output-00084-of-00100",
+   "output-00085-of-00100",
+   "output-00086-of-00100",
+   "output-00087-of-00100",
+   "output-00088-of-00100",
+   "output-00089-of-00100"
+  ],
+  "unit": "Google TN rows whose written token is exactly four ASCII digits and whose corpus class is DATE, CARDINAL, or DIGIT",
+  "bucket": "the token's first two digits; raw counts, with no year window",
+  "builder": "tools/build_number_priors.py"
+ },
+ "all": {
+  "date": 13980425,
+  "cardinal": 481194,
+  "digit": 107637
+ },
+ "centuries": {
+  "00": {
+   "cardinal": 2,
+   "digit": 3326
+  },
+  "01": {
+   "cardinal": 1,
+   "digit": 1388
+  },
+  "02": {
+   "digit": 1268
+  },
+  "03": {
+   "cardinal": 1,
+   "digit": 782
+  },
+  "04": {
+   "digit": 726
+  },
+  "05": {
+   "digit": 670
+  },
+  "06": {
+   "digit": 662
+  },
+  "07": {
+   "cardinal": 2,
+   "digit": 697
+  },
+  "08": {
+   "digit": 884
+  },
+  "09": {
+   "digit": 972
+  },
+  "10": {
+   "date": 56408,
+   "cardinal": 2614,
+   "digit": 3637
+  },
+  "11": {
+   "date": 42005,
+   "cardinal": 708,
+   "digit": 2008
+  },
+  "12": {
+   "date": 53263,
+   "cardinal": 691,
+   "digit": 1924
+  },
+  "13": {
+   "date": 109361,
+   "cardinal": 538,
+   "digit": 1293
+  },
+  "14": {
+   "date": 54883,
+   "cardinal": 483,
+   "digit": 1222
+  },
+  "15": {
+   "date": 108457,
+   "cardinal": 536,
+   "digit": 1315
+  },
+  "16": {
+   "date": 157495,
+   "cardinal": 450,
+   "digit": 1239
+  },
+  "17": {
+   "date": 258055,
+   "cardinal": 551,
+   "digit": 1213
+  },
+  "18": {
+   "date": 1236594,
+   "cardinal": 3831,
+   "digit": 3940
+  },
+  "19": {
+   "date": 6446487,
+   "cardinal": 108073,
+   "digit": 27292
+  },
+  "20": {
+   "date": 5457417,
+   "cardinal": 217229,
+   "digit": 32324
+  },
+  "21": {
+   "cardinal": 5725,
+   "digit": 661
+  },
+  "22": {
+   "cardinal": 4513,
+   "digit": 549
+  },
+  "23": {
+   "cardinal": 3647,
+   "digit": 419
+  },
+  "24": {
+   "cardinal": 3723,
+   "digit": 457
+  },
+  "25": {
+   "cardinal": 5238,
+   "digit": 573
+  },
+  "26": {
+   "cardinal": 4036,
+   "digit": 312
+  },
+  "27": {
+   "cardinal": 2898,
+   "digit": 261
+  },
+  "28": {
+   "cardinal": 2741,
+   "digit": 309
+  },
+  "29": {
+   "cardinal": 2327,
+   "digit": 291
+  },
+  "30": {
+   "cardinal": 9645,
+   "digit": 513
+  },
+  "31": {
+   "cardinal": 3856,
+   "digit": 458
+  },
+  "32": {
+   "cardinal": 2380,
+   "digit": 343
+  },
+  "33": {
+   "cardinal": 2317,
+   "digit": 352
+  },
+  "34": {
+   "cardinal": 1892,
+   "digit": 252
+  },
+  "35": {
+   "cardinal": 2783,
+   "digit": 294
+  },
+  "36": {
+   "cardinal": 2060,
+   "digit": 217
+  },
+  "37": {
+   "cardinal": 1862,
+   "digit": 198
+  },
+  "38": {
+   "cardinal": 1600,
+   "digit": 174
+  },
+  "39": {
+   "cardinal": 1434,
+   "digit": 177
+  },
+  "40": {
+   "cardinal": 5229,
+   "digit": 529
+  },
+  "41": {
+   "cardinal": 1760,
+   "digit": 338
+  },
+  "42": {
+   "cardinal": 1841,
+   "digit": 370
+  },
+  "43": {
+   "cardinal": 1340,
+   "digit": 273
+  },
+  "44": {
+   "cardinal": 1657,
+   "digit": 219
+  },
+  "45": {
+   "cardinal": 1670,
+   "digit": 312
+  },
+  "46": {
+   "cardinal": 1218,
+   "digit": 172
+  },
+  "47": {
+   "cardinal": 1199,
+   "digit": 202
+  },
+  "48": {
+   "cardinal": 1196,
+   "digit": 180
+  },
+  "49": {
+   "cardinal": 1144,
+   "digit": 139
+  },
+  "50": {
+   "cardinal": 10243,
+   "digit": 414
+  },
+  "51": {
+   "cardinal": 1379,
+   "digit": 234
+  },
+  "52": {
+   "cardinal": 1449,
+   "digit": 310
+  },
+  "53": {
+   "cardinal": 1125,
+   "digit": 208
+  },
+  "54": {
+   "cardinal": 1159,
+   "digit": 178
+  },
+  "55": {
+   "cardinal": 1299,
+   "digit": 254
+  },
+  "56": {
+   "cardinal": 1281,
+   "digit": 163
+  },
+  "57": {
+   "cardinal": 1378,
+   "digit": 124
+  },
+  "58": {
+   "cardinal": 1105,
+   "digit": 156
+  },
+  "59": {
+   "cardinal": 1061,
+   "digit": 120
+  },
+  "60": {
+   "cardinal": 3339,
+   "digit": 372
+  },
+  "61": {
+   "cardinal": 1340,
+   "digit": 219
+  },
+  "62": {
+   "cardinal": 1151,
+   "digit": 199
+  },
+  "63": {
+   "cardinal": 1049,
+   "digit": 175
+  },
+  "64": {
+   "cardinal": 935,
+   "digit": 168
+  },
+  "65": {
+   "cardinal": 1449,
+   "digit": 182
+  },
+  "66": {
+   "cardinal": 1020,
+   "digit": 130
+  },
+  "67": {
+   "cardinal": 860,
+   "digit": 122
+  },
+  "68": {
+   "cardinal": 1066,
+   "digit": 202
+  },
+  "69": {
+   "cardinal": 877,
+   "digit": 136
+  },
+  "70": {
+   "cardinal": 2887,
+   "digit": 218
+  },
+  "71": {
+   "cardinal": 976,
+   "digit": 181
+  },
+  "72": {
+   "cardinal": 998,
+   "digit": 205
+  },
+  "73": {
+   "cardinal": 921,
+   "digit": 122
+  },
+  "74": {
+   "cardinal": 985,
+   "digit": 127
+  },
+  "75": {
+   "cardinal": 1056,
+   "digit": 192
+  },
+  "76": {
+   "cardinal": 709,
+   "digit": 111
+  },
+  "77": {
+   "cardinal": 719,
+   "digit": 133
+  },
+  "78": {
+   "cardinal": 790,
+   "digit": 125
+  },
+  "79": {
+   "cardinal": 610,
+   "digit": 146
+  },
+  "80": {
+   "cardinal": 2759,
+   "digit": 280
+  },
+  "81": {
+   "cardinal": 714,
+   "digit": 145
+  },
+  "82": {
+   "cardinal": 717,
+   "digit": 132
+  },
+  "83": {
+   "cardinal": 563,
+   "digit": 121
+  },
+  "84": {
+   "cardinal": 545,
+   "digit": 100
+  },
+  "85": {
+   "cardinal": 748,
+   "digit": 207
+  },
+  "86": {
+   "cardinal": 711,
+   "digit": 104
+  },
+  "87": {
+   "cardinal": 638,
+   "digit": 701
+  },
+  "88": {
+   "cardinal": 907,
+   "digit": 240
+  },
+  "89": {
+   "cardinal": 486,
+   "digit": 116
+  },
+  "90": {
+   "cardinal": 2906,
+   "digit": 323
+  },
+  "91": {
+   "cardinal": 654,
+   "digit": 158
+  },
+  "92": {
+   "cardinal": 686,
+   "digit": 113
+  },
+  "93": {
+   "cardinal": 584,
+   "digit": 79
+  },
+  "94": {
+   "cardinal": 498,
+   "digit": 83
+  },
+  "95": {
+   "cardinal": 680,
+   "digit": 147
+  },
+  "96": {
+   "cardinal": 642,
+   "digit": 167
+  },
+  "97": {
+   "cardinal": 578,
+   "digit": 96
+  },
+  "98": {
+   "cardinal": 594,
+   "digit": 198
+  },
+  "99": {
+   "cardinal": 727,
+   "digit": 175
+  }
+ }
+}

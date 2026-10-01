@@ -60,10 +60,13 @@ def _corpus(root: Path) -> Path:
 
 def test_money_rows_are_counted(tmp_path):
     """The superset predicate reaches a money-left triple: "$15,000 - $25,000" said "to"
-    credits ``range:money+to+money`` (the silent one is R6's punctuation)."""
+    and the correctly read silent form are both valid range evidence."""
     document = _builder().build_document(_corpus(tmp_path / "corpus"))
     other = document["kinds"]["dash"]["sub_keys"]["other"]["source_matched"]
-    assert other == {"range:money+to+money": 1}
+    assert other == {
+        "range:money+silent+money": 1,
+        "range:money+to+money": 1,
+    }
 
 
 def test_relevance_predicates_in_the_builder(tmp_path):
@@ -71,28 +74,24 @@ def test_relevance_predicates_in_the_builder(tmp_path):
     and the unemittable date are counted apart, in the provenance."""
     document = _builder().build_document(_corpus(tmp_path / "corpus"))
     relevance = document["provenance"]["relevance"]
-    assert relevance["wider_not_counted"] == {"not_emittable": 1, "punctuation_dash": 2}
-    assert relevance["joint_outcomes"]["punctuation_dash"] == 2
+    assert relevance["wider_not_counted"] == {"not_emittable": 1, "punctuation_dash": 0}
+    assert relevance["joint_outcomes"] == {"credited": 5, "not_emittable": 1}
     readings = document["readings"]
     assert readings["dash:1+2"] == {"range": 1, "single_token": {}}
     assert readings["dash:3+4"] == {"range": 0, "single_token": {"TELEPHONE": 1}}
     assert readings["ratio:clock"] == {"range": 0, "single_token": {"TIME": 1}}
     sources = document["kinds"]["dash"]["source_matched"]
     assert sources == {
-        "range:cardinal+silent+cardinal": 1,
+        "range:cardinal+silent+cardinal": 2,
         "range:cardinal+to+cardinal": 1,
+        "range:money+silent+money": 1,
         "range:money+to+money": 1,
     }
 
 
-def test_a_builder_that_ignores_the_filter_learns_the_non_reading(tmp_path, monkeypatch):
-    """Break test for R6: without the filter, the year's punctuation dash is credited as
-    a silent range ("one thousand nine hundred ninety four ninety five")."""
-    builder = _builder()
-    from frend import ranges
-
-    monkeypatch.setattr(ranges, "punctuation_dash", lambda *rows: False)
-    document = builder.build_document(_corpus(tmp_path / "corpus"))
+def test_a_silent_dash_with_correctly_read_ends_is_kept(tmp_path):
+    """R6 refined: silence between correctly read ends is a valid range reading."""
+    document = _builder().build_document(_corpus(tmp_path / "corpus"))
     four_two = document["kinds"]["dash"]["sub_keys"]["4+2"]["source_matched"]
     assert four_two == {"range:cardinal+silent+cardinal": 1}
 
