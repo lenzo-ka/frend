@@ -10,7 +10,8 @@ The en_with_types corpus's README splits its 100 shards into three pools, named 
 * :data:`TEST_SHARDS`, ``output-00095-of-00100`` .. ``output-00099-of-00100``: held
   out. Shard 99 is the published test shard (Sproat & Jaitly 2016 test on its first
   100,000 lines), which ``tools/evaluate_google_tn.py`` reports; shard 95 is the one a
-  change is accepted and selected on (``--held-out-shard``).
+  change is accepted and selected on (``--held-out-shard --skip-report-shard`` keeps
+  decision runs from verifying or scoring shard 99).
 
 :data:`HELD_OUT_SHARDS` is the runtime-eval and test pools together. Every builder reads
 its shards through :func:`training_shards`, so no held-out shard can reach a table

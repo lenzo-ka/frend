@@ -352,8 +352,10 @@
     accepted and selected on shard 95, and shard 99 is reported once per change.
   - `tools/evaluate_google_tn.py --held-out-shard NAME` adds a held-out section: per
     token over NAME's first 100,000 lines, cut as the test shard is, and running text
-    over the whole shard. Shard 95's baseline: first choice 99.07%, any reading 99.28%,
-    sentences 90.79% (92,425 tokens); 13,167 running-text triples.
+    over the whole shard. Decision runs also pass `--skip-report-shard`, so shard 99 is
+    neither verified nor scored and the report contains only the held-out section.
+    Shard 95's baseline: first choice 99.07%, any reading 99.28%, sentences 90.79%
+    (92,425 tokens); 13,167 running-text triples.
 - Spell a chain of initials ("J.R.R. Tolkien" "j r r", "C.S. Lewis" "c s"): a
   capitals abbreviation icukit's lexicon lists with no expansion (a sentence-break
   entry) is now spelled rather than left as written, and a chain the lexicon does not
