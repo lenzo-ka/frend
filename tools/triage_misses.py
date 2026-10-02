@@ -34,7 +34,13 @@ from corpus_inputs import (  # noqa: E402
     verification_receipt,
     verified_inputs,
 )
-from evaluate_google_tn import _detectors, _in_context, _joined  # noqa: E402
+from evaluate_google_tn import (  # noqa: E402
+    _detectors,
+    _in_context,
+    _joined,
+    _validate_evaluation_profile,
+)
+from seen_strata import SENTENCE_STRATA, STRATA, load_vocabulary, vocabulary_receipt  # noqa: E402
 
 SOURCE_ID = "google/tn-en_with_types"
 LOCALE = "en_US"
@@ -273,7 +279,9 @@ def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     )
 
 
-def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classification | None]:
+def _score_token(
+    row, before: str, after: str, profile: str | None = None
+) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
     from frend import resolve_lattice
@@ -292,6 +300,7 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classi
         verbalized = verbalize_lattice(
             resolve_lattice(detections, source_text=written, locale=LOCALE),
             context=_in_context(written, before, after),
+            profile=profile,
         )
         first = normalize_spoken(_joined_reading(verbalized.best_path, alternatives=False)[0])
         if first == target:
@@ -333,7 +342,7 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classi
 
 
 def _score_sentence(item) -> dict[str, object]:
-    _shard, _sentence_index, sentence = item
+    _shard, _sentence_index, sentence, token_strata, profile = item
     first_count = 0
     any_count = 0
     capped_count = 0
@@ -341,22 +350,49 @@ def _score_sentence(item) -> dict[str, object]:
     family_counts: Counter[str] = Counter()
     fix_counts: Counter[str] = Counter()
     cross_counts: Counter[str] = Counter()
+    strata_counts = {
+        name: {
+            "tokens": 0,
+            "first": 0,
+            "any": 0,
+            "capped": 0,
+            "miss_counts": Counter(),
+            "family_counts": Counter(),
+            "fix_counts": Counter(),
+            "cross_counts": Counter(),
+        }
+        for name in STRATA
+    }
     for index, row in enumerate(sentence):
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
-        first, any_, capped, classification = _score_token(row, before, after)
+        first, any_, capped, classification = _score_token(row, before, after, profile)
         first_count += first
         any_count += any_
         capped_count += capped
+        stratum_counts = None if token_strata is None else strata_counts[token_strata[index]]
+        if stratum_counts is not None:
+            stratum_counts["tokens"] += 1
+            stratum_counts["first"] += first
+            stratum_counts["any"] += any_
+            stratum_counts["capped"] += capped
         if classification is None:
             continue
         miss_counts[classification.miss_class] += 1
+        if stratum_counts is not None:
+            stratum_counts["miss_counts"][classification.miss_class] += 1
         if classification.miss_class == "V":
             assert classification.family is not None and classification.fix_kind is not None
             family_counts[classification.family] += 1
             fix_counts[classification.fix_kind] += 1
             cross_counts[f"{classification.family}\t{classification.fix_kind}"] += 1
-    return {
+            if stratum_counts is not None:
+                stratum_counts["family_counts"][classification.family] += 1
+                stratum_counts["fix_counts"][classification.fix_kind] += 1
+                stratum_counts["cross_counts"][
+                    f"{classification.family}\t{classification.fix_kind}"
+                ] += 1
+    result = {
         "tokens": len(sentence),
         "first": first_count,
         "any": any_count,
@@ -372,6 +408,29 @@ def _score_sentence(item) -> dict[str, object]:
         "cross_counts": dict(cross_counts),
         "cross_sentences": sorted(cross_counts),
     }
+    if token_strata is not None:
+        result["strata"] = {}
+        for name in STRATA:
+            counts = strata_counts[name]
+            result["strata"][name] = {
+                **counts,
+                "token_sentence": counts["tokens"] > 0,
+                "miss_sentence": bool(counts["miss_counts"]),
+                "capped_sentence": counts["capped"] > 0,
+                "miss_sentences": sorted(counts["miss_counts"]),
+                "family_sentences": sorted(counts["family_counts"]),
+                "fix_sentences": sorted(counts["fix_counts"]),
+                "cross_sentences": sorted(counts["cross_counts"]),
+            }
+        non_trivial = [
+            token_strata[index]
+            for index, row in enumerate(sentence)
+            if row[2] not in {"<self>", "sil"}
+        ]
+        result["sentence_stratum"] = (
+            "ALL_SEEN" if all(name == "SEEN" for name in non_trivial) else "HAS_UNSEEN"
+        )
+    return result
 
 
 def _entry(tokens: int, sentences: int, sampled_tokens: int) -> dict[str, int | float]:
@@ -379,6 +438,88 @@ def _entry(tokens: int, sentences: int, sampled_tokens: int) -> dict[str, int | 
         "tokens": tokens,
         "share_sampled_tokens_pp": 100.0 * tokens / sampled_tokens if sampled_tokens else 0.0,
         "sentences": sentences,
+    }
+
+
+def _stratum_total() -> dict[str, object]:
+    return {
+        "tokens": 0,
+        "token_sentences": 0,
+        "first": 0,
+        "any": 0,
+        "capped": 0,
+        "capped_sentences": 0,
+        "miss_sentences_total": 0,
+        "miss_tokens": Counter(),
+        "miss_sentences": Counter(),
+        "family_tokens": Counter(),
+        "family_sentences": Counter(),
+        "fix_tokens": Counter(),
+        "fix_sentences": Counter(),
+        "cross_tokens": Counter(),
+        "cross_sentences": Counter(),
+    }
+
+
+def _add_stratum_result(total: dict[str, object], source: dict[str, object]) -> None:
+    total["tokens"] += int(source["tokens"])
+    total["token_sentences"] += bool(source["token_sentence"])
+    total["first"] += int(source["first"])
+    total["any"] += int(source["any"])
+    total["capped"] += int(source["capped"])
+    total["capped_sentences"] += bool(source["capped_sentence"])
+    total["miss_sentences_total"] += bool(source["miss_sentence"])
+    for target_name, source_name in (
+        ("miss_tokens", "miss_counts"),
+        ("miss_sentences", "miss_sentences"),
+        ("family_tokens", "family_counts"),
+        ("family_sentences", "family_sentences"),
+        ("fix_tokens", "fix_counts"),
+        ("fix_sentences", "fix_sentences"),
+        ("cross_tokens", "cross_counts"),
+        ("cross_sentences", "cross_sentences"),
+    ):
+        total[target_name].update(source[source_name])
+
+
+def _stratum_report(total: dict[str, object]) -> dict[str, object]:
+    tokens = total["tokens"]
+    misses = tokens - total["first"]
+    if sum(total["miss_tokens"].values()) != misses:
+        raise AssertionError("stratified miss classes do not partition first-choice misses")
+    return {
+        "sample": {"tokens": tokens, "sentences": total["token_sentences"]},
+        "accuracy": {
+            "first_choice_tokens": total["first"],
+            "first_choice": total["first"] / tokens if tokens else 0.0,
+            "any_reading_tokens": total["any"],
+            "any_reading": total["any"] / tokens if tokens else 0.0,
+        },
+        "misses": _entry(misses, total["miss_sentences_total"], tokens),
+        "capped": _entry(total["capped"], total["capped_sentences"], tokens),
+        "by_class": {
+            name: _entry(total["miss_tokens"][name], total["miss_sentences"][name], tokens)
+            for name in MISS_CLASSES
+        },
+        "v_by_family": {
+            name: _entry(total["family_tokens"][name], total["family_sentences"][name], tokens)
+            for name in FAMILIES
+        },
+        "v_by_fix_kind": {
+            name: _entry(total["fix_tokens"][name], total["fix_sentences"][name], tokens)
+            for name in FIX_KINDS
+        },
+        "v_family_by_fix_kind": {
+            family: {
+                fix: _entry(
+                    total["cross_tokens"][f"{family}\t{fix}"],
+                    total["cross_sentences"][f"{family}\t{fix}"],
+                    tokens,
+                )
+                for fix in FIX_KINDS
+            }
+            for family in FAMILIES
+        },
     }
 
 
@@ -392,6 +533,9 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
     fix_sentences: Counter[str] = Counter()
     cross_tokens: Counter[str] = Counter()
     cross_sentences: Counter[str] = Counter()
+    strata_totals = {name: _stratum_total() for name in STRATA}
+    sentence_strata = {name: Counter() for name in SENTENCE_STRATA}
+    has_strata = False
     for result in results:
         tokens += int(result["tokens"])
         first += int(result["first"])
@@ -408,6 +552,13 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
         fix_sentences.update(result["fix_sentences"])
         cross_tokens.update(result["cross_counts"])
         cross_sentences.update(result["cross_sentences"])
+        if "strata" in result:
+            has_strata = True
+            sentence_name = result["sentence_stratum"]
+            sentence_strata[sentence_name]["sentences"] += 1
+            sentence_strata[sentence_name]["first"] += bool(result["sentence_first"])
+            for name in STRATA:
+                _add_stratum_result(strata_totals[name], result["strata"][name])
 
     misses = tokens - first
     if sum(miss_tokens.values()) != misses:
@@ -417,7 +568,7 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
     if sum(fix_tokens.values()) != miss_tokens["V"]:
         raise AssertionError("V fix kinds do not partition V")
 
-    return {
+    report = {
         "sample": {"tokens": tokens, "sentences": sampled_sentences},
         "accuracy": {
             "first_choice_tokens": first,
@@ -452,6 +603,24 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
             for family in FAMILIES
         },
     }
+    if has_strata:
+        report["strata"] = {
+            "sentence_rule": "ALL_SEEN ignores corpus <self> and sil rows",
+            "tokens": {name: _stratum_report(strata_totals[name]) for name in STRATA},
+            "sentences": {
+                name: {
+                    "sentences": sentence_strata[name]["sentences"],
+                    "first_choice_sentences": sentence_strata[name]["first"],
+                    "first_choice_sentence_accuracy": (
+                        sentence_strata[name]["first"] / sentence_strata[name]["sentences"]
+                        if sentence_strata[name]["sentences"]
+                        else 0.0
+                    ),
+                }
+                for name in SENTENCE_STRATA
+            },
+        }
+    return report
 
 
 def _head() -> str:
@@ -482,11 +651,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--sentences-per-shard", type=int, default=MAX_SENTENCES_PER_SHARD)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
+    parser.add_argument("--profile", choices=("google-tn",), default=None)
+    parser.add_argument("--strata", type=Path, default=None, metavar="VOCAB")
     args = parser.parse_args(argv)
     if not 1 <= args.sentences_per_shard <= MAX_SENTENCES_PER_SHARD:
         parser.error(f"--sentences-per-shard must be in 1..{MAX_SENTENCES_PER_SHARD}")
     if args.workers < 1:
         parser.error("--workers must be positive")
+    profile = _validate_evaluation_profile(args.profile, LOCALE)
 
     corpus_dir = (args.corpus_dir or store_root(SOURCE_ID)).resolve(strict=True)
     verified = verified_inputs(
@@ -512,6 +684,26 @@ def main(argv: list[str] | None = None) -> int:
         selected_indexes[corpus_input.relative_path] = [index for index, _rows in sample]
         selected.extend((corpus_input.relative_path, index, rows) for index, rows in sample)
 
+    vocabulary = None
+    if args.strata is not None:
+        vocabulary = load_vocabulary(
+            args.strata, (row[1] for _shard, _index, sentence in selected for row in sentence)
+        )
+    work = [
+        (
+            shard,
+            index,
+            sentence,
+            (
+                None
+                if vocabulary is None
+                else tuple("SEEN" if row[1] in vocabulary.seen else "UNSEEN" for row in sentence)
+            ),
+            profile,
+        )
+        for shard, index, sentence in selected
+    ]
+
     fingerprint_payload = {
         "corpus_fingerprint": corpus_receipt["fingerprint"],
         "seed": args.seed,
@@ -523,7 +715,7 @@ def main(argv: list[str] | None = None) -> int:
     ).hexdigest()
 
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        results = pool.map(_score_sentence, selected, chunksize=16)
+        results = pool.map(_score_sentence, work, chunksize=16)
         report = _aggregate(results, len(selected))
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -547,6 +739,10 @@ def main(argv: list[str] | None = None) -> int:
         "corpus_verification": corpus_receipt,
         "outputs": {"counts": counts_path.name},
     }
+    if profile is not None:
+        receipt["profile"] = profile
+    if vocabulary is not None:
+        receipt["strata_vocabulary"] = vocabulary_receipt(vocabulary)
     _write_json(counts_path, report)
     _write_json(receipt_path, receipt)
     print(json.dumps({"counts": report, "receipt": receipt}, indent=2, sort_keys=True))

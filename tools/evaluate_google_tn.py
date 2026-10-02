@@ -43,6 +43,12 @@ from corpus_inputs import (  # noqa: E402
     verified_inputs,
     write_verification_receipt,
 )
+from seen_strata import (  # noqa: E402
+    SENTENCE_STRATA,
+    STRATA,
+    load_vocabulary,
+    vocabulary_receipt,
+)
 
 _TEST_FILE = "output-00099-of-00100"
 _TEST_LINES = 100_000
@@ -197,7 +203,13 @@ def _map(function, items, workers: int, chunksize: int) -> list:
         return list(pool.map(function, items, chunksize=chunksize))
 
 
-def _per_token(sentences, workers: int, locale: str = "en_US", profile: str | None = None) -> dict:
+def _per_token(
+    sentences,
+    workers: int,
+    locale: str = "en_US",
+    profile: str | None = None,
+    strata_seen: frozenset[str] | None = None,
+) -> dict:
     """First-choice, any-reading and whole-sentence accuracy over every token of
     ``sentences``, overall and per class."""
     rows = [
@@ -226,7 +238,7 @@ def _per_token(sentences, workers: int, locale: str = "en_US", profile: str | No
         at += len(sentence)
         correct_sentences += all(first for _, first, _ in outcome)
     tokens, count = total["tokens"], len(sentences)
-    return {
+    report = {
         "tokens": tokens,
         "sentences": count,
         "first_choice_accuracy": total["first"] / tokens if tokens else 0.0,
@@ -241,6 +253,64 @@ def _per_token(sentences, workers: int, locale: str = "en_US", profile: str | No
             for name, counts in sorted(by_class.items(), key=lambda kv: -kv[1]["tokens"])
         },
     }
+    if strata_seen is None:
+        return report
+
+    by_stratum: dict[str, Counter] = {name: Counter() for name in STRATA}
+    class_strata: dict[str, dict[str, Counter]] = defaultdict(
+        lambda: {name: Counter() for name in STRATA}
+    )
+    for row, (corpus_class, first, any_) in zip(rows, results, strict=True):
+        stratum = "SEEN" if row[0][1] in strata_seen else "UNSEEN"
+        counts = by_stratum[stratum]
+        counts["tokens"] += 1
+        counts["first"] += first
+        counts["any"] += any_
+        class_counts = class_strata[corpus_class][stratum]
+        class_counts["tokens"] += 1
+        class_counts["first"] += first
+        class_counts["any"] += any_
+
+    def token_entry(counts: Counter) -> dict[str, int | float]:
+        count = counts["tokens"]
+        return {
+            "tokens": count,
+            "first_choice_tokens": counts["first"],
+            "first_choice_accuracy": counts["first"] / count if count else 0.0,
+            "any_reading_tokens": counts["any"],
+            "any_reading_accuracy": counts["any"] / count if count else 0.0,
+        }
+
+    report["strata"] = {
+        "sentence_rule": "ALL_SEEN ignores corpus <self> and sil rows",
+        "tokens": {name: token_entry(by_stratum[name]) for name in STRATA},
+        "sentences": {},
+    }
+    for name, row in report["classes"].items():
+        row["strata"] = {stratum: token_entry(class_strata[name][stratum]) for stratum in STRATA}
+
+    sentence_counts: dict[str, Counter] = {name: Counter() for name in SENTENCE_STRATA}
+    at = 0
+    for sentence in sentences:
+        outcome = results[at : at + len(sentence)]
+        at += len(sentence)
+        non_trivial = [row for row in sentence if row[2] not in {"<self>", "sil"}]
+        stratum = "ALL_SEEN" if all(row[1] in strata_seen for row in non_trivial) else "HAS_UNSEEN"
+        sentence_counts[stratum]["sentences"] += 1
+        sentence_counts[stratum]["first"] += all(first for _, first, _ in outcome)
+    report["strata"]["sentences"] = {
+        name: {
+            "sentences": sentence_counts[name]["sentences"],
+            "first_choice_sentences": sentence_counts[name]["first"],
+            "sentence_accuracy": (
+                sentence_counts[name]["first"] / sentence_counts[name]["sentences"]
+                if sentence_counts[name]["sentences"]
+                else 0.0
+            ),
+        }
+        for name in SENTENCE_STRATA
+    }
+    return report
 
 
 def _running_text_rows(
@@ -282,16 +352,29 @@ def _held_out(
     workers: int,
     locale: str = "en_US",
     profile: str | None = None,
+    strata_path: Path | None = None,
 ) -> dict:
     """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
     as the paper cuts the test shard, and running text over the whole shard."""
     corpus_input = inputs[name]
     whole = _rows(corpus_input, None)
-    return {
+    per_token_sentences = _rows(corpus_input, _TEST_LINES)
+    match = None
+    if strata_path is not None:
+        match = load_vocabulary(
+            strata_path, (row[1] for sentence in per_token_sentences for row in sentence)
+        )
+    report = {
         "shard": name,
         "per_token": {
             "lines": f"first {_TEST_LINES} lines of {name}",
-            **_per_token(_rows(corpus_input, _TEST_LINES), workers, locale, profile),
+            **_per_token(
+                per_token_sentences,
+                workers,
+                locale,
+                profile,
+                None if match is None else match.seen,
+            ),
         },
         "running_text": {
             "lines": f"all lines of {name}",
@@ -299,6 +382,9 @@ def _held_out(
             "rows": _running_text_rows(whole, workers, locale, profile),
         },
     }
+    if match is not None:
+        report["strata_vocabulary"] = vocabulary_receipt(match)
+    return report
 
 
 def evaluate(
@@ -309,6 +395,7 @@ def evaluate(
     locale: str = "en_US",
     skip_report_shard: bool = False,
     profile: str | None = None,
+    strata_path: Path | None = None,
 ) -> dict:
     profile = _validate_evaluation_profile(profile, locale)
     if skip_report_shard and held_out_shard == _TEST_FILE:
@@ -320,7 +407,14 @@ def evaluate(
     report = {}
     if not skip_report_shard:
         sentences = _rows(inputs[_TEST_FILE])
-        per_token = _per_token(sentences, workers, locale, profile)
+        match = None
+        if strata_path is not None:
+            match = load_vocabulary(
+                strata_path, (row[1] for sentence in sentences for row in sentence)
+            )
+        per_token = _per_token(
+            sentences, workers, locale, profile, None if match is None else match.seen
+        )
         report = {
             "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
             **{key: per_token[key] for key in ("tokens", "sentences")},
@@ -339,8 +433,13 @@ def evaluate(
                 "the published models read the sentence whole"
             ),
         }
+        if match is not None:
+            report["strata"] = per_token["strata"]
+            report["strata_vocabulary"] = vocabulary_receipt(match)
     if held_out_shard is not None:
-        report["held_out"] = _held_out(inputs, held_out_shard, workers, locale, profile)
+        report["held_out"] = _held_out(
+            inputs, held_out_shard, workers, locale, profile, strata_path
+        )
     return report
 
 
@@ -362,6 +461,10 @@ def _render(report: dict) -> str:
                 f"{100 * row['any_reading']:>8.1f}%"
             )
         lines.append("")
+        if "strata" in report:
+            lines.extend(_render_strata(report["strata"]))
+            lines.extend(_render_class_strata(report["classes"]))
+            lines.append("")
         lines.append(report["note"])
         lines.append("")
         lines.append('Running text: number, separator, number rejoined as written ("5-10")')
@@ -385,6 +488,8 @@ def _render(report: dict) -> str:
             f"any reading: {100 * tokens['any_reading_accuracy']:.2f}%   "
             f"sentences all right: {100 * tokens['sentence_accuracy']:.2f}%"
         )
+        if "strata" in tokens:
+            lines.extend(_render_strata(tokens["strata"]))
         text = held["running_text"]
         lines.append(f"Held-out running text: {text['lines']} ({text['triples']} triples)")
         for row in text["rows"]:
@@ -393,6 +498,40 @@ def _render(report: dict) -> str:
                 f"{100 * row['first_choice']:>8.1f}%{100 * row['any_reading']:>8.1f}%"
             )
     return "\n".join(lines)
+
+
+def _render_strata(strata: dict) -> list[str]:
+    lines = ["Token strata:", f"{'stratum':12s}{'tokens':>9s}{'first':>15s}{'any':>15s}"]
+    for name in STRATA:
+        row = strata["tokens"][name]
+        lines.append(
+            f"{name:12s}{row['tokens']:>9d}"
+            f"{row['first_choice_tokens']:>8d} {100 * row['first_choice_accuracy']:>5.1f}%"
+            f"{row['any_reading_tokens']:>8d} {100 * row['any_reading_accuracy']:>5.1f}%"
+        )
+    lines.append("Sentence strata:")
+    lines.append(f"{'stratum':12s}{'sentences':>11s}{'all right':>15s}")
+    for name in SENTENCE_STRATA:
+        row = strata["sentences"][name]
+        lines.append(
+            f"{name:12s}{row['sentences']:>11d}"
+            f"{row['first_choice_sentences']:>8d} {100 * row['sentence_accuracy']:>5.1f}%"
+        )
+    lines.append(strata["sentence_rule"])
+    return lines
+
+
+def _render_class_strata(classes: dict) -> list[str]:
+    lines = ["Class token strata:", f"{'class/stratum':19s}{'tokens':>8s}{'first':>9s}{'any':>9s}"]
+    for class_name, class_row in classes.items():
+        for stratum in STRATA:
+            row = class_row["strata"][stratum]
+            lines.append(
+                f"{f'{class_name}/{stratum}':19s}{row['tokens']:>8d}"
+                f"{100 * row['first_choice_accuracy']:>8.1f}%"
+                f"{100 * row['any_reading_accuracy']:>8.1f}%"
+            )
+    return lines
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -404,6 +543,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--profile", choices=("google-tn",), default=None)
+    parser.add_argument(
+        "--strata",
+        type=Path,
+        default=None,
+        metavar="VOCAB",
+        help="split aggregate metrics by a verified external training vocabulary",
+    )
     parser.add_argument("--json", type=Path, default=None, help="also write the report here")
     parser.add_argument(
         "--held-out-shard",
@@ -444,6 +590,7 @@ def main(argv: list[str] | None = None) -> int:
         locale=args.locale,
         skip_report_shard=args.skip_report_shard,
         profile=args.profile,
+        strata_path=args.strata,
     )
     print(_render(report))
     if args.json:
