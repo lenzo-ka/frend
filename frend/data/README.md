@@ -25,7 +25,8 @@ A table counts training shards only: `type_priors.json` and
 counts every tenth). The runtime-eval and test shards are held out
 (`HELD_OUT_SHARDS`) and no builder opens one. Shard 99 is the published test shard
 the evaluator reports; shard 95 is the held-out running-text shard changes are
-accepted on (`--held-out-shard`); 90-94 are a second held-out pool.
+accepted on (`--held-out-shard`); decision runs add `--skip-report-shard` so they do
+not verify or score shard 99. Shards 90-94 are a second held-out pool.
 
 ## `en/exceptions.json`
 

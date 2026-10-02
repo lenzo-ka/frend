@@ -227,6 +227,86 @@ def test_held_out_shard_flag_reads_the_whole_named_shard(tmp_path, monkeypatch):
     ]
 
 
+def test_skip_report_shard_never_verifies_shard_99(tmp_path, monkeypatch):
+    evaluate = _evaluator()
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    for name in ("output-00090-of-00100", "output-00099-of-00100"):
+        (corpus / name).write_text("CARDINAL\t12\ttwelve\n<eos>\t<eos>\n", encoding="utf-8")
+
+    from corpus_inputs import VerifiedInput
+
+    verified_paths: list[Path] = []
+
+    def verified(source_id, paths, **_kwargs):
+        verified_paths.extend(paths)
+        return tuple(
+            VerifiedInput(
+                source_id,
+                path.name,
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+                "shippable-share-alike",
+                path.resolve(),
+            )
+            for path in paths
+        )
+
+    monkeypatch.setattr(evaluate, "verified_inputs", verified)
+    report_path = tmp_path / "report.json"
+    assert (
+        evaluate.main(
+            [
+                "--corpus-dir",
+                str(corpus),
+                "--locale",
+                "en_US",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "runtime-eval",
+                "--receipt",
+                str(tmp_path / "receipt.json"),
+                "--workers",
+                "1",
+                "--json",
+                str(report_path),
+                "--held-out-shard",
+                "output-00090-of-00100",
+                "--skip-report-shard",
+            ]
+        )
+        == 0
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert not any(str(path).endswith("output-00099-of-00100") for path in verified_paths)
+    assert "test_set" not in report
+    assert set(report) == {"held_out"}
+    rendered = evaluate._render(report)
+    assert rendered.startswith("Held out:")
+    assert "Test set:" not in rendered
+
+
+def test_skip_report_shard_requires_held_out_shard(tmp_path):
+    evaluate = _evaluator()
+    with pytest.raises(SystemExit) as exc_info:
+        evaluate.main(
+            [
+                "--corpus-dir",
+                str(tmp_path),
+                "--locale",
+                "en_US",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "runtime-eval",
+                "--receipt",
+                str(tmp_path / "receipt.json"),
+                "--skip-report-shard",
+            ]
+        )
+    assert exc_info.value.code != 0
+
+
 def test_a_corpus_of_only_held_out_shards_fails_loudly(tmp_path):
     """With nothing but the held-out shards (90-99), the spoken-family builders refuse
     to build rather than measure nothing (every tenth of them is 00090)."""

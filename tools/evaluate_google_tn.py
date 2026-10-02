@@ -275,57 +275,67 @@ def evaluate(
     held_out_shard: str | None = None,
     *,
     locale: str = "en_US",
+    skip_report_shard: bool = False,
 ) -> dict:
-    sentences = _rows(inputs[_TEST_FILE])
-    per_token = _per_token(sentences, workers, locale)
-    report = {
-        "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
-        **{key: per_token[key] for key in ("tokens", "sentences")},
-        **{
-            key: per_token[key]
-            for key in ("first_choice_accuracy", "any_reading_accuracy", "sentence_accuracy")
-        },
-        "classes": per_token["classes"],
-        "running_text": _running_text_rows(sentences, workers, locale),
-        "note": (
-            "frend reads each token alone, its sentence as context; "
-            "the published models read the sentence whole"
-        ),
-    }
+    report = {}
+    if not skip_report_shard:
+        sentences = _rows(inputs[_TEST_FILE])
+        per_token = _per_token(sentences, workers, locale)
+        report = {
+            "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
+            **{key: per_token[key] for key in ("tokens", "sentences")},
+            **{
+                key: per_token[key]
+                for key in (
+                    "first_choice_accuracy",
+                    "any_reading_accuracy",
+                    "sentence_accuracy",
+                )
+            },
+            "classes": per_token["classes"],
+            "running_text": _running_text_rows(sentences, workers, locale),
+            "note": (
+                "frend reads each token alone, its sentence as context; "
+                "the published models read the sentence whole"
+            ),
+        }
     if held_out_shard is not None:
         report["held_out"] = _held_out(inputs, held_out_shard, workers, locale)
     return report
 
 
 def _render(report: dict) -> str:
-    lines = [
-        f"Test set: {report['test_set']} ({report['tokens']} tokens, "
-        f"{report['sentences']} sentences)",
-        f"First choice: {100 * report['first_choice_accuracy']:.2f}%   "
-        f"any reading: {100 * report['any_reading_accuracy']:.2f}%   "
-        f"sentences all right: {100 * report['sentence_accuracy']:.2f}%",
-        "",
-        f"{'class':12s}{'tokens':>8s}{'first':>9s}{'any':>9s}",
-    ]
-    for name, row in report["classes"].items():
-        lines.append(
-            f"{name:12s}{row['tokens']:>8d}{100 * row['first_choice']:>8.1f}%"
-            f"{100 * row['any_reading']:>8.1f}%"
-        )
-    lines.append("")
-    lines.append(report["note"])
-    lines.append("")
-    lines.append('Running text: number, separator, number rejoined as written ("5-10")')
-    lines.append(f"{'sep':5s}{'corpus middle':16s}{'count':>7s}{'first':>9s}{'any':>9s}")
-    for row in report["running_text"]:
-        lines.append(
-            f"{row['separator']:5s}{row['corpus_middle']:16s}{row['count']:>7d}"
-            f"{100 * row['first_choice']:>8.1f}%{100 * row['any_reading']:>8.1f}%"
-        )
+    lines = []
+    if "test_set" in report:
+        lines = [
+            f"Test set: {report['test_set']} ({report['tokens']} tokens, "
+            f"{report['sentences']} sentences)",
+            f"First choice: {100 * report['first_choice_accuracy']:.2f}%   "
+            f"any reading: {100 * report['any_reading_accuracy']:.2f}%   "
+            f"sentences all right: {100 * report['sentence_accuracy']:.2f}%",
+            "",
+            f"{'class':12s}{'tokens':>8s}{'first':>9s}{'any':>9s}",
+        ]
+        for name, row in report["classes"].items():
+            lines.append(
+                f"{name:12s}{row['tokens']:>8d}{100 * row['first_choice']:>8.1f}%"
+                f"{100 * row['any_reading']:>8.1f}%"
+            )
+        lines.append("")
+        lines.append(report["note"])
+        lines.append("")
+        lines.append('Running text: number, separator, number rejoined as written ("5-10")')
+        lines.append(f"{'sep':5s}{'corpus middle':16s}{'count':>7s}{'first':>9s}{'any':>9s}")
+        for row in report["running_text"]:
+            lines.append(
+                f"{row['separator']:5s}{row['corpus_middle']:16s}{row['count']:>7d}"
+                f"{100 * row['first_choice']:>8.1f}%{100 * row['any_reading']:>8.1f}%"
+            )
     held = report.get("held_out")
     if held:
         tokens = held["per_token"]
-        lines.append("")
+        if lines:
+            lines.append("")
         lines.append(
             f"Held out: {tokens['lines']} ({tokens['tokens']} tokens, "
             f"{tokens['sentences']} sentences)"
@@ -361,9 +371,19 @@ def main(argv: list[str] | None = None) -> int:
         help="also score shard NAME: per token over its first 100,000 lines, running "
         "text over all of it (acceptance is on output-00095-of-00100)",
     )
+    parser.add_argument(
+        "--skip-report-shard",
+        action="store_true",
+        help="do not verify or score published report shard 99; emit only the held-out "
+        "section (used for decision runs; requires --held-out-shard naming another shard)",
+    )
     args = parser.parse_args(argv)
+    if args.skip_report_shard and args.held_out_shard is None:
+        parser.error("--skip-report-shard requires --held-out-shard")
+    if args.skip_report_shard and args.held_out_shard == _TEST_FILE:
+        parser.error("--skip-report-shard requires a held-out shard other than report shard 99")
     corpus_dir = args.corpus_dir or _default_corpus_dir()
-    names = [_TEST_FILE]
+    names = [] if args.skip_report_shard else [_TEST_FILE]
     if args.held_out_shard is not None and args.held_out_shard not in names:
         names.append(args.held_out_shard)
     verified = verified_inputs(
@@ -375,7 +395,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     inputs = {item.relative_path: item for item in verified}
-    report = evaluate(inputs, args.workers, args.held_out_shard, locale=args.locale)
+    report = evaluate(
+        inputs,
+        args.workers,
+        args.held_out_shard,
+        locale=args.locale,
+        skip_report_shard=args.skip_report_shard,
+    )
     print(_render(report))
     if args.json:
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
