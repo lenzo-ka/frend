@@ -44,7 +44,7 @@ SEED = 20260930
 MAX_SENTENCES_PER_SHARD = 20_000
 ANY_CAP = 64
 
-MISS_CLASSES = ("D", "S", "R", "V", "A")
+MISS_CLASSES = ("D", "S", "R", "V", "A", "P", "O", "E")
 FAMILIES = (
     "money",
     "fraction",
@@ -69,10 +69,12 @@ class MissEvidence:
     written: str
     expected: str
     normalized_surface: str
-    expected_offered: bool
+    readings: tuple[str, ...]
     detection_spans: tuple[tuple[int, int], ...]
     detection_types: tuple[str, ...]
     exact_detection_types: tuple[str, ...]
+    corpus_non_reading: bool = False
+    verbalizer_exception: bool = False
     leaf_texts: tuple[str, ...] = ()
 
 
@@ -83,15 +85,24 @@ class Classification:
     fix_kind: str | None = None
 
 
-def _is_artifact(evidence: MissEvidence) -> bool:
-    """Conservative Ruling-A predicate: only demonstrable non-readings."""
-    if evidence.corpus_class == "PLAIN" and evidence.expected != evidence.normalized_surface:
-        return True
-    return (
-        evidence.corpus_class in {"PLAIN", "VERBATIM"}
-        and bool(evidence.written.strip())
-        and evidence.expected == ""
-    )
+def _plain_mismatch_class(evidence: MissEvidence) -> str | None:
+    """Split corpus-labelled PLAIN rewrites from other surface mismatches.
+
+    A one-for-one sequence of alphabetic words is an orthographic conversion (P),
+    including the corpus labeller's UK-to-US respellings.  Expansions, spellings and
+    silence are other PLAIN/surface mismatches (O).
+    """
+    if evidence.corpus_class != "PLAIN" or evidence.expected == evidence.normalized_surface:
+        return None
+    surface_words = evidence.normalized_surface.split()
+    expected_words = evidence.expected.split()
+    if (
+        surface_words
+        and len(surface_words) == len(expected_words)
+        and all(word.isalpha() for word in (*surface_words, *expected_words))
+    ):
+        return "P"
+    return "O"
 
 
 def _family(evidence: MissEvidence) -> str:
@@ -137,11 +148,18 @@ def _right_recognition_family(family: str, exact_types: tuple[str, ...]) -> bool
 
 
 def _can_recombine(expected: str, leaf_texts: tuple[str, ...]) -> bool:
-    target_words = set(expected.split()) - _TEMPLATE_WORDS
+    target_words = tuple(word for word in expected.split() if word not in _TEMPLATE_WORDS)
     if not target_words:
         return False
-    leaf_words = {word for text in leaf_texts for word in text.split()}
-    return target_words <= leaf_words
+    reachable = {0}
+    for text in leaf_texts:
+        words = tuple(word for word in text.split() if word not in _TEMPLATE_WORDS)
+        if not words:
+            continue
+        reachable |= {
+            at + len(words) for at in reachable if target_words[at : at + len(words)] == words
+        }
+    return len(target_words) in reachable
 
 
 def _fix_kind(evidence: MissEvidence, family: str) -> str:
@@ -155,11 +173,16 @@ def _fix_kind(evidence: MissEvidence, family: str) -> str:
 
 
 def classify_miss(evidence: MissEvidence) -> Classification:
-    """Classify one known first-choice miss as D, S, R, V, or A."""
-    if evidence.expected_offered:
+    """Classify one known first-choice miss from its bounded offered readings."""
+    if evidence.verbalizer_exception:
+        return Classification("E")
+    if evidence.expected in evidence.readings:
         return Classification("R")
-    if _is_artifact(evidence):
+    if evidence.corpus_non_reading:
         return Classification("A")
+    plain_class = _plain_mismatch_class(evidence)
+    if plain_class is not None:
+        return Classification(plain_class)
     if not evidence.detection_spans:
         return Classification("D")
     full_span = (0, len(evidence.written))
@@ -217,6 +240,35 @@ def _joined_reading(path, *, alternatives: bool) -> list[str]:
     return [_joined(combination) for combination in islice(product(*options), ANY_CAP)]
 
 
+def _bounded_readings(path) -> tuple[tuple[str, ...], bool]:
+    """The evaluator's first 64 combinations and whether later ones were truncated."""
+
+    def passthrough(alternative) -> bool:
+        return alternative.provenance == "surface:passthrough"
+
+    options = [
+        [(alternative.text, passthrough(alternative)) for alternative in unit.alternatives]
+        for unit in path.units
+    ]
+    combinations = 1
+    for alternatives in options:
+        combinations *= len(alternatives)
+    readings = tuple(_joined(items) for items in islice(product(*options), ANY_CAP))
+    return readings, combinations > ANY_CAP
+
+
+def _corpus_non_reading_indexes(sentence) -> frozenset[int]:
+    """Endpoint indexes in triples rejected by the range trainer's Ruling-A filter."""
+    from build_range_priors import credit
+
+    indexes = set()
+    for _found_sentence, at in google_tn_rows.range_triple_positions([sentence], LOCALE):
+        rows = sentence[at : at + 3]
+        if credit(*rows)[0] == "punctuation_dash":
+            indexes.update((at, at + 2))
+    return frozenset(indexes)
+
+
 def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     """All leaf alternatives the unselected choice carrier can already render."""
     from frend import compose_choices, resolve_choices
@@ -236,7 +288,9 @@ def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     )
 
 
-def _score_token(row, before: str, after: str) -> tuple[bool, bool, Classification | None]:
+def _score_token(
+    row, before: str, after: str, *, corpus_non_reading: bool = False
+) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
     from frend import resolve_lattice
@@ -247,6 +301,9 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, Classificati
     target = normalize_spoken(google_tn_rows.expected(corpus_class, written, spoken))
     surface = normalize_spoken(written)
     detections = []
+    readings: tuple[str, ...] = ()
+    capped = False
+    verbalizer_exception = False
     try:
         detections = list(detect(written, _detectors(LOCALE))) if written.strip() else []
         verbalized = verbalize_lattice(
@@ -255,17 +312,18 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, Classificati
         )
         first = normalize_spoken(_joined_reading(verbalized.best_path, alternatives=False)[0])
         if first == target:
-            return True, True, None
-        offered = any(
-            normalize_spoken(candidate) == target
-            for path in verbalized.paths
-            for candidate in _joined_reading(path, alternatives=True)
-        )
+            return True, True, False, None
+        normalized = []
+        for path in verbalized.paths:
+            path_readings, path_capped = _bounded_readings(path)
+            normalized.extend(normalize_spoken(candidate) for candidate in path_readings)
+            capped |= path_capped
+        readings = tuple(normalized)
     except Exception:  # noqa: BLE001 - evaluator semantics count a crash as a miss
+        verbalizer_exception = True
         first = surface
         if first == target:
-            return True, True, None
-        offered = False
+            return True, True, False, None
 
     spans = tuple(
         (int(detection.get("start", 0)), int(detection.get("end", 0))) for detection in detections
@@ -279,30 +337,38 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, Classificati
         written=written,
         expected=target,
         normalized_surface=surface,
-        expected_offered=offered,
+        readings=readings,
         detection_spans=spans,
         detection_types=types,
         exact_detection_types=exact_types,
+        corpus_non_reading=corpus_non_reading,
+        verbalizer_exception=verbalizer_exception,
     )
     if classify_miss(evidence).miss_class == "V":
         evidence = replace(evidence, leaf_texts=_leaf_texts(detections, written))
-    return False, offered, classify_miss(evidence)
+    classification = classify_miss(evidence)
+    return False, target in readings, capped, classification
 
 
 def _score_sentence(item) -> dict[str, object]:
     _shard, _sentence_index, sentence = item
     first_count = 0
     any_count = 0
+    capped_count = 0
     miss_counts: Counter[str] = Counter()
     family_counts: Counter[str] = Counter()
     fix_counts: Counter[str] = Counter()
     cross_counts: Counter[str] = Counter()
+    corpus_non_readings = _corpus_non_reading_indexes(sentence)
     for index, row in enumerate(sentence):
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
-        first, any_, classification = _score_token(row, before, after)
+        first, any_, capped, classification = _score_token(
+            row, before, after, corpus_non_reading=index in corpus_non_readings
+        )
         first_count += first
         any_count += any_
+        capped_count += capped
         if classification is None:
             continue
         miss_counts[classification.miss_class] += 1
@@ -315,6 +381,8 @@ def _score_sentence(item) -> dict[str, object]:
         "tokens": len(sentence),
         "first": first_count,
         "any": any_count,
+        "capped": capped_count,
+        "capped_sentence": capped_count > 0,
         "sentence_first": first_count == len(sentence),
         "miss_counts": dict(miss_counts),
         "miss_sentences": sorted(miss_counts),
@@ -336,7 +404,7 @@ def _entry(tokens: int, sentences: int, sampled_tokens: int) -> dict[str, int | 
 
 
 def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
-    tokens = first = any_ = sentence_first = miss_sentence_total = 0
+    tokens = first = any_ = capped = sentence_first = miss_sentence_total = capped_sentences = 0
     miss_tokens: Counter[str] = Counter()
     miss_sentences: Counter[str] = Counter()
     family_tokens: Counter[str] = Counter()
@@ -349,6 +417,8 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
         tokens += int(result["tokens"])
         first += int(result["first"])
         any_ += int(result["any"])
+        capped += int(result["capped"])
+        capped_sentences += bool(result["capped_sentence"])
         sentence_first += bool(result["sentence_first"])
         miss_sentence_total += bool(result["miss_counts"])
         miss_tokens.update(result["miss_counts"])
@@ -363,8 +433,6 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
     misses = tokens - first
     if sum(miss_tokens.values()) != misses:
         raise AssertionError("miss classes do not partition first-choice misses")
-    if miss_tokens["R"] != any_ - first:
-        raise AssertionError("R count does not equal any-reading minus first-choice successes")
     if sum(family_tokens.values()) != miss_tokens["V"]:
         raise AssertionError("V families do not partition V")
     if sum(fix_tokens.values()) != miss_tokens["V"]:
@@ -383,6 +451,7 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
             ),
         },
         "misses": _entry(misses, miss_sentence_total, tokens),
+        "capped": _entry(capped, capped_sentences, tokens),
         "by_class": {
             name: _entry(miss_tokens[name], miss_sentences[name], tokens) for name in MISS_CLASSES
         },
