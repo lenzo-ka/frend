@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -10,6 +11,7 @@ from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import cache, lru_cache
 from itertools import product
+from pathlib import Path
 from types import MappingProxyType
 
 import icu
@@ -57,9 +59,11 @@ from frend.letters import (
     spelled,
     spelled_token_prior,
     spelled_token_rule,
+    split_acronym_surface,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.number_priors import load_number_priors
+from frend.profiles import GOOGLE_TN, google_tn_profile_path, validate_profile
 from frend.ranges import (
     RangeValue,
     digit_groups,
@@ -1035,7 +1039,9 @@ _MARKS.freeze()
 
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
-def _spoken_letters(value: LettersValue, locale: str) -> tuple[SpokenAlternative, ...]:
+def _spoken_letters(
+    value: LettersValue, locale: str, profile: str | None = None
+) -> tuple[SpokenAlternative, ...]:
     """A letter token spelled or read as a word, weighted by its measured population.
 
     Capital runs use the acronym prior; relevant bounded non-uppercase tokens use their
@@ -1088,7 +1094,13 @@ def _spoken_letters(value: LettersValue, locale: str) -> tuple[SpokenAlternative
             form.provenance,
             form.weight,
         )
-        for form in _with_acronym_readings(letters, (), locale)
+        for form in _with_acronym_readings(
+            letters,
+            (),
+            locale,
+            profile=profile,
+            surface_subkey=split_acronym_surface(value.surface)[1],
+        )
     )
     if not readings:
         raise NotImplementedError(f"no authoritative letter names for {locale}")
@@ -1115,8 +1127,49 @@ def _acronym_priors_for(locale: str) -> dict[str, dict[str, int]]:
     return {} if table is None else table["keys"]
 
 
+def _acronym_surface_priors(
+    *, locale: str = "en_US"
+) -> tuple[dict[str, dict[str, dict[str, int]]], int, Decimal]:
+    """Load Google-TN exact surfaces from its configured, external profile file."""
+    return _acronym_surface_priors_for(str(google_tn_profile_path()), canonical_locale(locale))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _acronym_surface_priors_for(
+    path_text: str, locale: str
+) -> tuple[dict[str, dict[str, dict[str, int]]], int, Decimal]:
+    path = Path(path_text)
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{GOOGLE_TN!r} profile data is missing at {path}; build it from your licensed "
+            "Google TN corpus with tools/build_acronym_priors.py --profile-out PATH"
+        )
+    table = json.loads(path.read_text(encoding="utf-8"))
+    if table.get("profile") != GOOGLE_TN:
+        raise ValueError(f"invalid {GOOGLE_TN!r} profile data at {path}: wrong profile name")
+    table_locale = canonical_locale(str(table.get("locale", "")))
+    if locale.split("_", 1)[0] != table_locale.split("_", 1)[0]:
+        raise ValueError(
+            f"{GOOGLE_TN!r} profile data at {path} is for {table_locale}, not {locale}"
+        )
+    selection = table.get("selection", {})
+    surfaces = table.get("surfaces")
+    if not isinstance(surfaces, dict):
+        raise ValueError(f"invalid {GOOGLE_TN!r} profile data at {path}: no surfaces table")
+    return (
+        surfaces,
+        int(selection.get("minimum_support", 0)),
+        Decimal(str(selection.get("parent_strength", 0))),
+    )
+
+
 def _with_acronym_readings(
-    surface: str, alternatives: tuple[SpokenAlternative, ...], locale: str
+    surface: str,
+    alternatives: tuple[SpokenAlternative, ...],
+    locale: str,
+    *,
+    profile: str | None = None,
+    surface_subkey: str = "bare",
 ) -> tuple[SpokenAlternative, ...]:
     """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
 
@@ -1124,8 +1177,10 @@ def _with_acronym_readings(
     weights "f b i", the rest weights "fbi" (``data/en/acronym_priors.json``,
     ``tools/build_acronym_priors.py``), by the acronym's own counts where icukit's lexicon
     lists it or icukit reads it as a Roman numeral, blended toward its consonant-vowel
-    pattern and then its shape (``letter_key``: length, vowel). icukit's long forms
-    follow. A spelled form icukit already gives ("M D") takes the weight, not a copy.
+    pattern and then its shape (``letter_key``: length, vowel). An adequately supported
+    exact surface and suffix row then replaces that share, smoothed toward it; a sparse
+    or absent row leaves it unchanged. icukit's long forms follow. A spelled form
+    icukit already gives ("M D") takes the weight, not a copy.
     """
     letters = "".join(ch for ch in surface if ch.isalpha() or _MARKS.contains(ch))
     if len(letters) < 2 or not letters.isupper():
@@ -1154,6 +1209,16 @@ def _with_acronym_readings(
             # over its shape's; a Roman numeral's number readings are not counted here.
             own = {label: table[key].get(label, 0) for label in ("spelled", "word")}
             share = blend(own, share)
+    if profile == GOOGLE_TN:
+        surfaces, minimum_support, parent_strength = _acronym_surface_priors(locale=locale)
+        surface_counts = surfaces.get(letters, {}).get(surface_subkey, {})
+        support = sum(surface_counts.get(label, 0) for label in ("spelled", "word"))
+        if support >= minimum_support > 0:
+            # Sparse rows abstain completely, leaving the established shape/CV prior
+            # unchanged. Retaining the suffix prevents a plural from training a bare run.
+            share = (Decimal(surface_counts.get("spelled", 0)) + parent_strength * share) / (
+                support + parent_strength
+            )
     # Each capital by its own lower case ("İB" is "i b", "ΟΣ" "ο σ"), not the run's.
     forms = [SpokenAlternative(spelling.text, "measured:acronym-spelled", share)]
     if letters == surface:
@@ -2533,6 +2598,7 @@ def verbalize_edge(
     context: TextContext | None = None,
     rerank_by_context: bool = True,
     context_threshold: float = CONTEXT_THRESHOLD,
+    profile: str | None = None,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
@@ -2548,6 +2614,9 @@ def verbalize_edge(
     trees' builder mode).
     """
     locale = canonical_locale(locale)
+    profile = validate_profile(profile)
+    if profile == GOOGLE_TN:
+        _acronym_surface_priors(locale=locale)
     if context is None and source_text is not None:
         context = TextContext(source_text)
     elif context is not None and source_text is not None:
@@ -2638,7 +2707,9 @@ def verbalize_edge(
                             else letter_form,
                         )
             else:
-                alternatives = _with_acronym_readings(value.surface, expanded, locale)
+                alternatives = _with_acronym_readings(
+                    value.surface, expanded, locale, profile=profile
+                )
                 if is_chain(written) and not written.isupper():
                     # A dotted chain of any case is spelled ("e.g." "e g", "j.r.r." "j r
                     # r"): the corpus spells every one it writes.
@@ -2696,7 +2767,7 @@ def verbalize_edge(
             key_value = value.text
             path = "symbol"
         elif isinstance(value, LettersValue):
-            alternatives = _spoken_letters(value, locale)
+            alternatives = _spoken_letters(value, locale, profile)
             if not value.suffix:
                 # A run that is a lexicon abbreviation in capitals ("MR", "DR") is also
                 # offered its expansions.
@@ -2854,6 +2925,7 @@ def verbalize_lattice(
     locale: str | None = None,
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
+    profile: str | None = None,
 ) -> VerbalizedLattice:
     """Verbalize every projected path without expanding alternatives across units.
 
@@ -2861,6 +2933,9 @@ def verbalize_lattice(
     source text itself): it is what the context trees read (``verbalize_edge``).
     """
     effective = lattice.locale
+    profile = validate_profile(profile)
+    if profile == GOOGLE_TN:
+        _acronym_surface_priors(locale=effective)
     if locale is not None and canonical_locale(locale) != effective:
         raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
     edges = {edge.id: edge for edge in lattice.edges}
@@ -2875,6 +2950,7 @@ def verbalize_lattice(
                     locale=effective,
                     supplements=supplements,
                     context=context,
+                    profile=profile,
                 )
                 for edge_id in path.edge_ids
             ),

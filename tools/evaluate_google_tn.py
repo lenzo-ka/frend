@@ -77,10 +77,10 @@ def _joined(texts_and_passthrough) -> str:
     return out
 
 
-def _score(item: tuple[tuple[str, str, str], str, str, str]) -> tuple[str, bool, bool]:
-    (corpus_class, written, spoken), before, after, locale = item
+def _score(item: tuple[tuple[str, str, str], str, str, str, str | None]) -> tuple[str, bool, bool]:
+    (corpus_class, written, spoken), before, after, locale, profile = item
     first, any_ = _score_text(
-        written, _expected(corpus_class, written, spoken), before, after, locale
+        written, _expected(corpus_class, written, spoken), before, after, locale, profile
     )
     return corpus_class, first, any_
 
@@ -101,6 +101,7 @@ def _score_text(
     before: str = "",
     after: str = "",
     locale: str = "en_US",
+    profile: str | None = None,
 ) -> tuple[bool, bool]:
     """Whether frend's first reading of ``written``, and whether any reading, says ``target``.
 
@@ -119,7 +120,10 @@ def _score_text(
         verbalized = verbalize_lattice(
             resolve_lattice(detections, source_text=written, locale=locale),
             context=_in_context(written, before, after),
+            profile=profile,
         )
+    except FileNotFoundError:
+        raise
     except Exception:  # noqa: BLE001 - a crash is a miss, counted, not hidden
         return target == normalize_spoken(written), False
 
@@ -147,10 +151,10 @@ _range_denominators = google_tn_rows.range_candidate_denominators
 
 
 def _score_joined(
-    item: tuple[tuple[str, str, str, str], tuple[str, str], str],
+    item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None],
 ) -> tuple[str, str, bool, bool]:
-    (separator, middle, written, target), (before, after), locale = item
-    return (separator, middle, *_score_text(written, target, before, after, locale))
+    (separator, middle, written, target), (before, after), locale, profile = item
+    return (separator, middle, *_score_text(written, target, before, after, locale, profile))
 
 
 def _rows(corpus_input: VerifiedInput, limit: int | None = _TEST_LINES):
@@ -181,7 +185,7 @@ def _map(function, items, workers: int, chunksize: int) -> list:
         return list(pool.map(function, items, chunksize=chunksize))
 
 
-def _per_token(sentences, workers: int, locale: str = "en_US") -> dict:
+def _per_token(sentences, workers: int, locale: str = "en_US", profile: str | None = None) -> dict:
     """First-choice, any-reading and whole-sentence accuracy over every token of
     ``sentences``, overall and per class."""
     rows = [
@@ -190,6 +194,7 @@ def _per_token(sentences, workers: int, locale: str = "en_US") -> dict:
             " ".join(r[1] for r in sentence[:index]),
             " ".join(r[1] for r in sentence[index + 1 :]),
             locale,
+            profile,
         )
         for sentence in sentences
         for index, row in enumerate(sentence)
@@ -226,12 +231,14 @@ def _per_token(sentences, workers: int, locale: str = "en_US") -> dict:
     }
 
 
-def _running_text_rows(sentences, workers: int, locale: str = "en_US") -> list[dict]:
+def _running_text_rows(
+    sentences, workers: int, locale: str = "en_US", profile: str | None = None
+) -> list[dict]:
     """Each number, separator, number triple of ``sentences`` rejoined as written and
     scored, grouped by separator and the corpus's reading of it."""
     items = list(
         (
-            (row, context, locale)
+            (row, context, locale, profile)
             for row, context in zip(
                 _running_text(sentences, locale),
                 google_tn_rows.running_text_contexts(sentences, locale),
@@ -258,7 +265,11 @@ def _running_text_rows(sentences, workers: int, locale: str = "en_US") -> list[d
 
 
 def _held_out(
-    inputs: dict[str, VerifiedInput], name: str, workers: int, locale: str = "en_US"
+    inputs: dict[str, VerifiedInput],
+    name: str,
+    workers: int,
+    locale: str = "en_US",
+    profile: str | None = None,
 ) -> dict:
     """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
     as the paper cuts the test shard, and running text over the whole shard."""
@@ -268,12 +279,12 @@ def _held_out(
         "shard": name,
         "per_token": {
             "lines": f"first {_TEST_LINES} lines of {name}",
-            **_per_token(_rows(corpus_input, _TEST_LINES), workers, locale),
+            **_per_token(_rows(corpus_input, _TEST_LINES), workers, locale, profile),
         },
         "running_text": {
             "lines": f"all lines of {name}",
             "triples": len(_running_text(whole, locale)),
-            "rows": _running_text_rows(whole, workers, locale),
+            "rows": _running_text_rows(whole, workers, locale, profile),
         },
     }
 
@@ -285,6 +296,7 @@ def evaluate(
     *,
     locale: str = "en_US",
     skip_report_shard: bool = False,
+    profile: str | None = None,
 ) -> dict:
     if skip_report_shard and held_out_shard == _TEST_FILE:
         raise ValueError(
@@ -295,7 +307,7 @@ def evaluate(
     report = {}
     if not skip_report_shard:
         sentences = _rows(inputs[_TEST_FILE])
-        per_token = _per_token(sentences, workers, locale)
+        per_token = _per_token(sentences, workers, locale, profile)
         report = {
             "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
             **{key: per_token[key] for key in ("tokens", "sentences")},
@@ -308,14 +320,14 @@ def evaluate(
                 )
             },
             "classes": per_token["classes"],
-            "running_text": _running_text_rows(sentences, workers, locale),
+            "running_text": _running_text_rows(sentences, workers, locale, profile),
             "note": (
                 "frend reads each token alone, its sentence as context; "
                 "the published models read the sentence whole"
             ),
         }
     if held_out_shard is not None:
-        report["held_out"] = _held_out(inputs, held_out_shard, workers, locale)
+        report["held_out"] = _held_out(inputs, held_out_shard, workers, locale, profile)
     return report
 
 
@@ -378,6 +390,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pool", action="append", required=True, dest="pools")
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
+    parser.add_argument("--profile", choices=("google-tn",), default=None)
     parser.add_argument("--json", type=Path, default=None, help="also write the report here")
     parser.add_argument(
         "--held-out-shard",
@@ -417,6 +430,7 @@ def main(argv: list[str] | None = None) -> int:
         args.held_out_shard,
         locale=args.locale,
         skip_report_shard=args.skip_report_shard,
+        profile=args.profile,
     )
     print(_render(report))
     if args.json:

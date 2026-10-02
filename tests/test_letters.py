@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from icukit.abbreviation_recognize import AbbreviationDetector
 from icukit.detectors import detect
@@ -136,6 +138,108 @@ def test_a_lexicon_acronym_keeps_its_own_measure():
     assert _read("FBI")[0][0] == "f b i"
 
 
+def _profile_table(path, surfaces, *, minimum_support=1):
+    path.write_text(
+        json.dumps(
+            {
+                "locale": "en",
+                "profile": "google-tn",
+                "selection": {"minimum_support": minimum_support, "parent_strength": 1},
+                "surfaces": surfaces,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_profile_off_is_the_main_output_byte_for_byte(monkeypatch):
+    """The default cannot even consult profile data, and its baseline bytes stay fixed."""
+    from frend import verbalize
+
+    monkeypatch.setattr(
+        verbalize,
+        "_acronym_surface_priors",
+        lambda **_kwargs: (_ for _ in ()).throw(AssertionError("profile table consulted")),
+    )
+    assert repr((_read("AIDS"), _read("CE"), _read("PAR's"))).encode() == (
+        b"([['a i d s', 'aids']], [['ce', 'c e']], [[\"par's\", \"p a r's\"]])"
+    )
+
+
+def test_google_tn_profile_uses_the_external_surface_table(tmp_path, monkeypatch):
+    from frend import verbalize
+
+    table = tmp_path / "acronym_surfaces.json"
+    _profile_table(table, {"GWR": {"bare": {"word": 5}}})
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(table))
+    verbalize._acronym_surface_priors_for.cache_clear()
+    lattice = resolve_lattice(list(detect("GWR", _DETECTORS)), source_text="GWR")
+    assert verbalize_lattice(lattice).best_path.units[0].best.text == "g w r"
+    unit = verbalize_lattice(lattice, profile="google-tn").best_path.units[0]
+    assert unit.best.text == "gwr"
+
+
+def test_google_tn_profile_requires_its_external_table(tmp_path, monkeypatch):
+    from frend import verbalize
+
+    missing = tmp_path / "missing.json"
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(missing))
+    verbalize._acronym_surface_priors_for.cache_clear()
+    lattice = resolve_lattice(list(detect("XYZ", _DETECTORS)), source_text="XYZ")
+    with pytest.raises(FileNotFoundError, match="profile data is missing.*--profile-out"):
+        verbalize_lattice(lattice, profile="google-tn")
+
+
+def test_surface_prior_abstains_below_its_selected_support(monkeypatch):
+    """A sparse contrary row must not perturb the established shape/CV fallback."""
+    from frend import verbalize
+
+    fallback = {"*": {"spelled": 0, "word": 10}}
+    monkeypatch.setattr(verbalize, "_acronym_priors", lambda **_kwargs: fallback)
+    monkeypatch.setattr(
+        verbalize,
+        "_acronym_surface_priors",
+        lambda **_kwargs: ({"XYZ": {"bare": {"spelled": 4}}}, 5, 0),
+    )
+    forms = verbalize._with_acronym_readings("XYZ", (), "en_US", profile="google-tn")
+    assert max(forms, key=lambda item: item.weight).text == "xyz"
+
+    monkeypatch.setattr(
+        verbalize,
+        "_acronym_surface_priors",
+        lambda **_kwargs: ({"XYZ": {"bare": {"spelled": 5}}}, 5, 0),
+    )
+    forms = verbalize._with_acronym_readings("XYZ", (), "en_US", profile="google-tn")
+    assert max(forms, key=lambda item: item.weight).text == "x y z"
+
+
+def test_acronym_surface_prior_keeps_suffix_subkeys_separate(monkeypatch):
+    """Bare, plural and possessive evidence each reaches only its own reading."""
+    from frend import verbalize
+    from frend.letters import LettersValue
+
+    fallback = {"*": {"spelled": 0, "word": 10}}
+    monkeypatch.setattr(verbalize, "_acronym_priors", lambda **_kwargs: fallback)
+    surfaces = {
+        "ABC": {
+            "bare": {"word": 5},
+            "plural": {"spelled": 5},
+            "possessive": {"word": 5},
+        }
+    }
+    monkeypatch.setattr(verbalize, "_acronym_surface_priors", lambda **_kwargs: (surfaces, 5, 0))
+    bare = verbalize._spoken_letters(LettersValue("ABC", "ABC", ""), "en_US", "google-tn")
+    plural = verbalize._spoken_letters(LettersValue("ABCs", "ABC", "s"), "en_US", "google-tn")
+    possessive = verbalize._spoken_letters(LettersValue("ABC's", "ABC", "'s"), "en_US", "google-tn")
+
+    def best(forms):
+        return max(forms, key=lambda item: item.weight).provenance
+
+    assert best(bare) == "measured:acronym-word"
+    assert best(plural) == "measured:acronym-spelled"
+    assert best(possessive) == "measured:acronym-word"
+
+
 def test_capitals_the_lexicon_lists_without_expansion_are_spelled():
     # icukit's lexicon lists "J.R.R." (a sentence-break exception) with no expansion.
     assert _read("J.R.R. Tolkien") == [["j r r"]]
@@ -234,6 +338,23 @@ def test_the_builder_counts_the_numerals_the_reader_defers(tmp_path):
     counted by the builder (under ``roman:II`` too) and left by the reader to icukit."""
     assert _counted(tmp_path, "II")
     assert _spans("II") == []
+
+
+def test_the_builder_strips_and_separates_acronym_suffixes(tmp_path):
+    shard = tmp_path / "output-00000-of-00001"
+    shard.write_text(
+        "PLAIN\tABC\tabc\nLETTERS\tABCs\ta b c s\nPLAIN\tABC's\tabc s\n",
+        encoding="utf-8",
+    )
+    builder = _acronym_builder()
+    assert "surfaces" not in builder.build_document(tmp_path)
+    assert builder.build_profile_document(tmp_path)["surfaces"] == {
+        "ABC": {
+            "bare": {"word": 1},
+            "plural": {"spelled": 1},
+            "possessive": {"word": 1},
+        }
+    }
 
 
 # Decomposed input is one run, with exact spans (fugu P3 review, finding 1).
