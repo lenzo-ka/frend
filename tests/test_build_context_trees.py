@@ -30,6 +30,13 @@ def _builder():
     return module
 
 
+def _toy_builder(*, excluded_problems: dict[str, str] | None = None):
+    """Load the builder with exclusions scoped to the toy training universe."""
+    builder = _builder()
+    builder.EXCLUDED_PROBLEMS = excluded_problems or {}
+    return builder
+
+
 def _dash(index: int, gold: str, left: str, right: str, shard: str = "00005") -> dict:
     return {
         "problem": "dash+to",
@@ -98,7 +105,7 @@ def test_trees_are_trained_reproducibly_and_name_their_examples(tmp_path):
     """Two builds from one stored set write the same bytes; the index names the corpus
     and the set's fingerprint; the lone hyphen between numbers is a connector problem
     with its "to" reading; the main set's dash is replaced by the dash set's."""
-    builder = _builder()
+    builder = _toy_builder()
     examples = _example_set(tmp_path / "set")
     first = _out(tmp_path / "a")
     second = _out(tmp_path / "b")
@@ -120,6 +127,33 @@ def test_trees_are_trained_reproducibly_and_name_their_examples(tmp_path):
     metadata = read_cart_metadata((first / tree["file"]).read_bytes())
     assert metadata["source"] == "google/tn-en_with_types"
     assert metadata["examples"] == "feedfacefeedface"
+
+
+def test_stale_exclusion_keys_are_refused_and_named(tmp_path):
+    problem = (
+        "cldr-symbol:dash\tcldr-symbol:hyphen\tcldr-symbol:hyphen-minus\t"
+        "cldr-symbol:minus\tlexical:en_US\tsurface:silence"
+    )
+    stale = (f"{problem}-drift", f"{problem}-renamed")
+    builder = _toy_builder(
+        excluded_problems={
+            problem: "synthetic matched exclusion",
+            stale[0]: "synthetic stale exclusion",
+            stale[1]: "second synthetic stale exclusion",
+        }
+    )
+    with pytest.raises(SystemExit) as raised:
+        builder.build(
+            _example_set(tmp_path / "set"),
+            _out(tmp_path / "out"),
+            workers=1,
+            cache=tmp_path / "cache",
+            log=lambda _: None,
+        )
+    message = str(raised.value)
+    assert repr(stale[0]) in message
+    assert repr(stale[1]) in message
+    assert repr(problem) not in message
 
 
 def test_q16_apportionment_preserves_the_winning_probability():
@@ -236,16 +270,24 @@ def _range_set(root: Path, *, shard: str = "00005", count: int = 60) -> Path:
     return root
 
 
-def test_range_problems_are_trained():
-    """The shipped index holds a tree for each separator class's range problem, each
-    naming the range set's own fingerprint and relevance; the main set's fingerprint is
-    unchanged."""
+def test_range_problem_is_trained_and_dormant_siblings_are_excluded():
+    """The useful range tree ships; dormant range keys are stated exclusions."""
+    builder = _builder()
     index = json.loads((_CONTEXT / "index.json").read_text(encoding="utf-8"))
-    for problem in ("range:range", "range:ratio", "range:dimension"):
-        entry = index["trees"][problem]
-        assert entry["examples_fingerprint"] == index["range_examples"]["fingerprint"]
-        assert entry["relevance"]["dropped_filter"].startswith("punctuation_dash:")
-        assert "R" in entry["families"]
+    entry = index["trees"]["range:range"]
+    assert entry["examples_fingerprint"] == index["range_examples"]["fingerprint"]
+    assert entry["relevance"]["dropped_filter"].startswith("punctuation_dash:")
+    assert "R" in entry["families"]
+    assert index["excluded_problems"] == dict(sorted(builder.EXCLUDED_PROBLEMS.items()))
+    assert len(builder._DORMANT_PROBLEMS) == 54
+    assert len(builder.EXCLUDED_PROBLEMS) == 56
+    assert "range:range" not in builder.EXCLUDED_PROBLEMS
+    for problem, measured in {
+        "range:ratio": "0/169 overrides",
+        "range:dimension": "0/12 overrides",
+    }.items():
+        assert problem not in index["trees"]
+        assert measured in index["excluded_problems"][problem]
     assert index["provenance"]["examples"]["fingerprint"] == "d1fcf656b9eb98dc"
     assert index["range_examples"]["fingerprint"] != "d1fcf656b9eb98dc"
 
@@ -266,7 +308,7 @@ def test_the_range_set_leaves_the_main_trees_as_they_are(tmp_path):
     """A build with a range set writes the main set's trees byte for byte as a build
     without it (the range problems draw with a generator of their own and do not reach
     the frequent words)."""
-    builder = _builder()
+    builder = _toy_builder()
     examples = _example_set(tmp_path / "set")
     plain = _out(tmp_path / "a")
     ranged_out = _out(tmp_path / "b")

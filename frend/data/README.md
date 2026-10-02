@@ -243,14 +243,19 @@ against its receipt) and compares byte for byte, so it needs the kalman mount.
   problem, read also for a separator written inside a range, "5-10"; the en dash,
   which the set never writes between numbers, reads the hyphen's), and every tree's
   file, hash, size and label counts.
-- The range problems (`range:range`, `range:ratio`, `range:dimension`; the ranges
-  plan's P6) are trained from their own stored set
+- Only the `range:range` problem from the ranges plan's P6 is trained, using its own stored set
   (`frend/google/tn-en_with_types/p6-range-examples/36373cb1123ca6d5`, derived by
   `--derive-range-examples` from the same shards 05, ..., 85: every range triple the
   rules can emit on, less the punctuation dashes, with its sentence either side), with
   the range family of features added; `index.json`'s `range_examples` names that set,
-  and each range tree its fingerprint. The main set's trees are built exactly as
-  without it (`--check --no-range-examples` compares them alone).
+  and the trained range tree names its fingerprint. `range:ratio` and `range:dimension`
+  are excluded because neither made an override on the seeded samples of shards 90--94
+  or shard 95. The main set's trees are built exactly as without the range set
+  (`--check --no-range-examples` compares them alone).
+- `index.json` also states exact problem keys omitted after held-out measurement. The
+  retained `range:range` tree is trained, indexed, and consulted at runtime;
+  `range:ratio`, `range:dimension`, and 54 P7 problem keys are excluded because they
+  made no override on seeded samples of both shards 90--94 and shard 95.
 - `trees/<id>.cart`: the trees, cartlet model format 2, each naming its source and the
   set's fingerprint in its metadata; read with cartlet's dependency-free runner.
 - `festival_classes.json`: Festival's hand-curated lists (`lib/tokenpos.scm`: regnal

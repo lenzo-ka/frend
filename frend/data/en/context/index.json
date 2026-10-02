@@ -52,9 +52,10 @@
   },
   "problems": {
    "seen": 579,
-   "trees": 113,
+   "trees": 57,
    "too_few_examples": 342,
-   "always_first": 127
+   "always_first": 127,
+   "excluded": 56
   }
  },
  "frequent_words": [
@@ -276,6 +277,64 @@
    "read_as": "-"
   }
  },
+ "excluded_problems": {
+  "cldr-symbol:bang\tcldr-symbol:exclamation\tcldr-symbol:exclamation mark\tcldr-symbol:mark\tcldr-symbol:point\tsurface:silence": "dormant: 0/377 overrides on seeded runtime-eval shards 90-94; 0/82 on seeded acceptance shard 95",
+  "cldr-symbol:colon\tsurface:silence": "dormant: 0/8168 overrides on seeded runtime-eval shards 90-94; 0/1603 on seeded acceptance shard 95",
+  "cldr-symbol:comma\tsurface:silence": "dormant: 0/54594 overrides on seeded runtime-eval shards 90-94; 0/10811 on seeded acceptance shard 95",
+  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL": "dormant: 0/677 overrides on seeded runtime-eval shards 90-94; 0/149 on seeded acceptance shard 95",
+  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": "dormant: 0/72 overrides on seeded runtime-eval shards 90-94; 0/16 on seeded acceptance shard 95",
+  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": "dormant: 0/8 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": "dormant: 0/3611 overrides on seeded runtime-eval shards 90-94; 0/776 on seeded acceptance shard 95",
+  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": "dormant: 0/95 overrides on seeded runtime-eval shards 90-94; 0/14 on seeded acceptance shard 95",
+  "icu-name:letter\tsurface:silence": "dormant: 0/5176 overrides on seeded runtime-eval shards 90-94; 0/875 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": "dormant: 0/2 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": "dormant: 0/7 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": "dormant: 0/0 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": "dormant: 0/0 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": "dormant: 0/15 overrides on seeded runtime-eval shards 90-94; 0/4 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": "dormant: 0/98 overrides on seeded runtime-eval shards 90-94; 0/14 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US#2": "dormant: 0/20 overrides on seeded runtime-eval shards 90-94; 0/3 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US": "dormant: 0/6 overrides on seeded runtime-eval shards 90-94; 0/3 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": "dormant: 0/9 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US": "dormant: 0/32 overrides on seeded runtime-eval shards 90-94; 0/8 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2": "dormant: 0/120 overrides on seeded runtime-eval shards 90-94; 0/26 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US": "dormant: 0/13 overrides on seeded runtime-eval shards 90-94; 0/4 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": "dormant: 0/2 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US#2": "dormant: 0/8 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": "dormant: 0/9 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": "dormant: 0/42 overrides on seeded runtime-eval shards 90-94; 0/13 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": "dormant: 0/1 overrides on seeded runtime-eval shards 90-94; 0/3 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": "dormant: 0/43 overrides on seeded runtime-eval shards 90-94; 0/7 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": "dormant: 0/0 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": "dormant: 0/7 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icu-rbnf:%spellout-numbering+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone#2\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters#2\ticu-rbnf:%spellout-numbering+surface:letters": "dormant: 0/1 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icukit-abbreviation:given-name\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/2 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icukit-abbreviation:month/date\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/6 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95",
+  "icukit-abbreviation:month/date\tsurface:as-written": "dormant: 0/80 overrides on seeded runtime-eval shards 90-94; 0/19 on seeded acceptance shard 95",
+  "icukit-abbreviation:number/precedes-number\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/17 overrides on seeded runtime-eval shards 90-94; 0/3 on seeded acceptance shard 95",
+  "icukit-abbreviation:organization\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/584 overrides on seeded runtime-eval shards 90-94; 0/127 on seeded acceptance shard 95",
+  "icukit-abbreviation:organization\tsurface:as-written": "dormant: 0/18 overrides on seeded runtime-eval shards 90-94; 0/4 on seeded acceptance shard 95",
+  "icukit-abbreviation:organization/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/136 overrides on seeded runtime-eval shards 90-94; 0/21 on seeded acceptance shard 95",
+  "icukit-abbreviation:organization/follows-name\tsurface:as-written": "dormant: 0/251 overrides on seeded runtime-eval shards 90-94; 0/44 on seeded acceptance shard 95",
+  "icukit-abbreviation:organization/follows-name\tsurface:as-written\tsurface:spelled": "dormant: 0/132 overrides on seeded runtime-eval shards 90-94; 0/22 on seeded acceptance shard 95",
+  "icukit-abbreviation:other\ticukit-abbreviation:other#2\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/180 overrides on seeded runtime-eval shards 90-94; 0/28 on seeded acceptance shard 95",
+  "icukit-abbreviation:other\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/1205 overrides on seeded runtime-eval shards 90-94; 0/228 on seeded acceptance shard 95",
+  "icukit-abbreviation:other/measurement\ticukit-abbreviation:place/precedes-name\tsurface:as-written\tsurface:spelled": "dormant: 0/9 overrides on seeded runtime-eval shards 90-94; 0/1 on seeded acceptance shard 95",
+  "icukit-abbreviation:phrase\tsurface:as-written\tsurface:spelled": "dormant: 0/116 overrides on seeded runtime-eval shards 90-94; 0/26 on seeded acceptance shard 95",
+  "icukit-abbreviation:place/address\ticukit-abbreviation:saint/precedes-name\tsurface:as-written\tsurface:spelled": "dormant: 0/3 overrides on seeded runtime-eval shards 90-94; 0/1 on seeded acceptance shard 95",
+  "icukit-abbreviation:place/address\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/1 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icukit-abbreviation:region\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/36 overrides on seeded runtime-eval shards 90-94; 0/5 on seeded acceptance shard 95",
+  "icukit-abbreviation:region\tsurface:as-written\tsurface:spelled": "dormant: 0/16 overrides on seeded runtime-eval shards 90-94; 0/4 on seeded acceptance shard 95",
+  "icukit-abbreviation:thoroughfare/address\tsurface:as-written": "dormant: 0/14 overrides on seeded runtime-eval shards 90-94; 0/5 on seeded acceptance shard 95",
+  "icukit-abbreviation:title\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/73 overrides on seeded runtime-eval shards 90-94; 0/14 on seeded acceptance shard 95",
+  "icukit-abbreviation:title\tsurface:as-written\tsurface:spelled": "dormant: 0/1 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icukit-abbreviation:title/follows-name\ticukit-abbreviation:title/precedes-name\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/6 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "icukit-abbreviation:title/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": "dormant: 0/12 overrides on seeded runtime-eval shards 90-94; 0/1 on seeded acceptance shard 95",
+  "icukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": "dormant: 0/200 overrides on seeded runtime-eval shards 90-94; 0/34 on seeded acceptance shard 95",
+  "measured:electronic\tmeasured:electronic#2": "dormant: 0/3 overrides on seeded runtime-eval shards 90-94; 0/0 on seeded acceptance shard 95",
+  "range:dimension": "dormant: 0/12 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95",
+  "range:ratio": "dormant: 0/169 overrides on seeded runtime-eval shards 90-94; 0/27 on seeded acceptance shard 95"
+ },
  "range_examples": {
   "derivation": "frend/google/tn-en_with_types/p6-range-examples",
   "fingerprint": "36373cb1123ca6d5",
@@ -322,19 +381,6 @@
    "sha256": "b52affe5aaef94964aff476f1c5019cddb080688eca14b114adaddf07cc1bd10",
    "seen": 379
   },
-  "cldr-symbol:bang\tcldr-symbol:exclamation\tcldr-symbol:exclamation mark\tcldr-symbol:mark\tcldr-symbol:point\tsurface:silence": {
-   "examples": 28314,
-   "labels": {
-    "cldr-symbol:exclamation mark": 5,
-    "surface:silence": 28309
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/920535cba10a.cart",
-   "sha256": "960c5374d9af06b54962bf63d799a3f8a22cb2c386477fc9340f3b57bcf69cc0",
-   "seen": 28314
-  },
   "cldr-symbol:cent\tcldr-symbol:per\tcldr-symbol:per-cent\tcldr-symbol:percent\tsurface:silence": {
    "examples": 246,
    "labels": {
@@ -346,32 +392,6 @@
    "file": "trees/86fe09d7eff2.cart",
    "sha256": "b99427420d248356be40e70d41321d58eeffff0e6292f5f9ca1ee340dc98a98e",
    "seen": 246
-  },
-  "cldr-symbol:colon\tsurface:silence": {
-   "examples": 33683,
-   "labels": {
-    "cldr-symbol:colon": 2,
-    "surface:silence": 33681
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/43bdf6f44fab.cart",
-   "sha256": "f5e8282705577cdea9713c09579e15ef35f08c3910036f429f992e8afb6ad3e2",
-   "seen": 33683
-  },
-  "cldr-symbol:comma\tsurface:silence": {
-   "examples": 30002,
-   "labels": {
-    "cldr-symbol:comma": 1,
-    "surface:silence": 30001
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/c219aae837e8.cart",
-   "sha256": "8dd332d3da5e04595ef37ecf301009e54b6d8c74759cdf082ebd643a7350d014",
-   "seen": 30002
   },
   "cldr-symbol:dash\tcldr-symbol:hyphen\tcldr-symbol:hyphen-minus\tcldr-symbol:minus\tlexical:en_US\tsurface:silence": {
    "examples": 60000,
@@ -437,32 +457,6 @@
    "sha256": "4f57bb6851112ede2ab3ba12a6fa96777577a74df321c501efa4635c493c9714",
    "seen": 910
   },
-  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL": {
-   "examples": 37733,
-   "labels": {
-    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 18591,
-    "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL": 19142
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/de898b164e0d.cart",
-   "sha256": "f6fcdeab70aaa11285fb88dd584efee1f4f72c5f5aa5a5a0c06419f4dc7198fe",
-   "seen": 37733
-  },
-  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": {
-   "examples": 6063,
-   "labels": {
-    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2663,
-    "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": 3400
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/3dce3c6ac32b.cart",
-   "sha256": "55b82b887eb63bee5a795f40cfbae41774de7cd9c9200d8fee21fa16c7be17c9",
-   "seen": 6063
-  },
   "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
    "examples": 30637,
    "labels": {
@@ -475,58 +469,6 @@
    "file": "trees/d110d44cade4.cart",
    "sha256": "f9841770303e55952a5f9651942c9a4c429bcee236fbc38243dcc63a9196e327",
    "seen": 30637
-  },
-  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
-   "examples": 672,
-   "labels": {
-    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 285,
-    "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 387
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/5636100b74c7.cart",
-   "sha256": "614f2dcfd10357c95cfa5761effd3fd51c401c672bf0c2d77bfa248033fbcca4",
-   "seen": 672
-  },
-  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
-   "examples": 31570,
-   "labels": {
-    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 13712,
-    "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 17858
-   },
-   "nodes": 7,
-   "leaves": 4,
-   "depth": 3,
-   "file": "trees/635e794f0fbb.cart",
-   "sha256": "ec24f1e5eab8b860179de20788b9e6cb8a4dab8b4bc12dfca5f4a923ee3f0e6c",
-   "seen": 31570
-  },
-  "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": {
-   "examples": 7878,
-   "labels": {
-    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 4080,
-    "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 3798
-   },
-   "nodes": 7,
-   "leaves": 4,
-   "depth": 3,
-   "file": "trees/37559c83c020.cart",
-   "sha256": "4413763ca2cb3c87b03460907d177a015676359c0f2f4c6157bc7607c36e19e6",
-   "seen": 7878
-  },
-  "icu-name:letter\tsurface:silence": {
-   "examples": 30000,
-   "labels": {
-    "icu-name:letter": 3218,
-    "surface:silence": 26782
-   },
-   "nodes": 13,
-   "leaves": 7,
-   "depth": 6,
-   "file": "trees/0274023d0843.cart",
-   "sha256": "404f07112ba2646d471b9a4aad10d91e3d57fadfcce30810570d4e4103140c9c",
-   "seen": 30000
   },
   "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering": {
    "examples": 33983,
@@ -553,31 +495,6 @@
    "file": "trees/18cc1535c691.cart",
    "sha256": "f0249aa4b13bf0b409b68b07555e7b7537ee801995b1362449c588a4b296928d",
    "seen": 30660
-  },
-  "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": {
-   "examples": 146,
-   "labels": {
-    "icu-rbnf:%spellout-numbering": 27,
-    "icu-rbnf:%spellout-numbering-year": 119
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/e87ef1858ea1.cart",
-   "sha256": "b9ccc83f5f7a77bb26fad5ad9a9a343815e3b9c4fe61a5d9d68c450a9266e298",
-   "seen": 146
-  },
-  "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": {
-   "examples": 581,
-   "labels": {
-    "icu-rbnf:%spellout-numbering-year": 581
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/5b9562999112.cart",
-   "sha256": "3b2975fbe88118a393b701efaec65f343edf42c91485b819af817c28ab8488e1",
-   "seen": 581
   },
   "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-numbering": {
    "examples": 44829,
@@ -617,18 +534,6 @@
    "file": "trees/554fc9bf40a9.cart",
    "sha256": "659b1bc6221515a5a3a20d1d63b7e3faa66ffa5e48d16ddb9184a9ad67136c47",
    "seen": 394
-  },
-  "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": {
-   "examples": 75,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": 75
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/223fe35e2609.cart",
-   "sha256": "04a0d250cee0e08a9893a14a88f95198b97d1a4648419feb3fe6881911591b1d",
-   "seen": 75
   },
   "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": {
    "examples": 148,
@@ -689,18 +594,6 @@
    "file": "trees/328a30953c3e.cart",
    "sha256": "973f7c63966e79ecd65271d9dcba3a29ad7a293ea511631fa97500b159c60450",
    "seen": 336
-  },
-  "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": {
-   "examples": 51,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": 51
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/3b30c29ec0bc.cart",
-   "sha256": "da4e79b7768e1a06a9bca62561c63852e0c5d362cde2c6805048c792853533f0",
-   "seen": 51
   },
   "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2": {
    "examples": 919,
@@ -769,58 +662,6 @@
    "sha256": "04db0850cd0b2b45d25ca8a829dd0ed63e87f0c5adb68734a9a1ec181f5282d8",
    "seen": 30051
   },
-  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": {
-   "examples": 1327,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 9,
-    "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 1318
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/b75f6ac3aed9.cart",
-   "sha256": "795bf3d7719b7200d2550e1082219c08676ba1f3a072d6760524d4eb90140f3d",
-   "seen": 1327
-  },
-  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
-   "examples": 6980,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 6935,
-    "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": 45
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/4e8b400e07fc.cart",
-   "sha256": "3af7243fcf7c222fa31609304e0e3d5b9e66482164d3b4653ef77f1c6e67d679",
-   "seen": 6980
-  },
-  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US#2": {
-   "examples": 1948,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 1926,
-    "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": 22
-   },
-   "nodes": 5,
-   "leaves": 3,
-   "depth": 2,
-   "file": "trees/03918c73c1cd.cart",
-   "sha256": "eec2b22cd758b374936818491229701a1e2a07c5706c90eb61906f0324eebd7e",
-   "seen": 1948
-  },
-  "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US": {
-   "examples": 301,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 3,
-    "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 298
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/3c45a1cd70fa.cart",
-   "sha256": "822d070f1abe981341d00e68473036cdbfddb6bf38afd94430a9685cbe6341b9",
-   "seen": 301
-  },
   "icu-rbnf:%spellout-numbering+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering+surface:letters\ticu-rbnf:%spellout-numbering-verbose+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering-verbose+surface:letters\ticu-rbnf:%spellout-numbering-year+icu-datetime:GGGG\ticu-rbnf:%spellout-numbering-year+surface:letters": {
    "examples": 382,
    "labels": {
@@ -868,18 +709,6 @@
    "file": "trees/de2bdedc2381.cart",
    "sha256": "b2e23a26478105694af706e6b76510e090a53f81d60f28296b843e648843f040",
    "seen": 97
-  },
-  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": {
-   "examples": 450,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 450
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/5e3242ca3bab.cart",
-   "sha256": "5170701defd3695a4eebb83f8c0bf0444d3f1585046949174db5fcafa5bc4045",
-   "seen": 450
   },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-measure:wide+lexical:en_US": {
    "examples": 286,
@@ -941,32 +770,6 @@
    "sha256": "ff99733fe123446e91362c96146e836f09bcc3c0cec94ea66292cb036071d83e",
    "seen": 88
   },
-  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US": {
-   "examples": 2803,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-measure:wide": 30,
-    "icu-rbnf:%spellout-numbering+lexical:en_US": 2773
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/07b225c3e125.cart",
-   "sha256": "1513b27e02a5c9548336de87f2c088007c70886ab378d83dd53345f302320d9d",
-   "seen": 2803
-  },
-  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2": {
-   "examples": 9979,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+lexical:en_US": 9935,
-    "icu-rbnf:%spellout-numbering+lexical:en_US#2": 44
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/cfc4be36d32e.cart",
-   "sha256": "70699d5840cef5a1c6ff2a3ecffe72e009fcccc3549ba431a83cd07711173200",
-   "seen": 9979
-  },
   "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US#2": {
    "examples": 20923,
    "labels": {
@@ -980,135 +783,6 @@
    "sha256": "619435358d1671734153cfb00ab36dd3b614f7bb8429ccda41373ba8b06b1ec9",
    "seen": 20923
   },
-  "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US": {
-   "examples": 1266,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-measure:wide": 19,
-    "icu-rbnf:%spellout-numbering+lexical:en_US": 1247
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/86f2ab7caa1a.cart",
-   "sha256": "698da0fd2ea69164940d5e394c8344d6f815096054b78e8f77f4beb32ffbae7b",
-   "seen": 1266
-  },
-  "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": {
-   "examples": 110,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US": 3,
-    "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 107
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/1021dd530b5e.cart",
-   "sha256": "bf80e2905de41de13c53a761103637064d4b0a29898f98875d5805ea50eb5590",
-   "seen": 110
-  },
-  "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US#2": {
-   "examples": 554,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": 542,
-    "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US#2": 12
-   },
-   "nodes": 9,
-   "leaves": 5,
-   "depth": 4,
-   "file": "trees/80019304b2d9.cart",
-   "sha256": "ab32142e3bb073d32d4a6e72c0bdaa25f562749a117cb23ecd1436b6dae8fe3e",
-   "seen": 554
-  },
-  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": {
-   "examples": 522,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 1,
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 521
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/0968969291ba.cart",
-   "sha256": "3474ffb63f615c7b6f92466ee6703e5213c9a8f9d98651b10f6a6caa1f33c3ce",
-   "seen": 522
-  },
-  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
-   "examples": 3595,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 3564,
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": 31
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/d9447d7813ae.cart",
-   "sha256": "3726728f781cce0ab49ee083d640c01ff123c6e4fdc0284f67cc01ef6b2c08e1",
-   "seen": 3595
-  },
-  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
-   "examples": 226,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 225,
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": 1
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/35d322f8cfab.cart",
-   "sha256": "6d592d72e3fc7979d2fcfe0f8ebd7d6a17f930d6f78e6f3caab155fd73f1ea5a",
-   "seen": 226
-  },
-  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": {
-   "examples": 2909,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": 2909
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/8e93ce0feb19.cart",
-   "sha256": "b8d4612781a4188fdfd11648bb9a68679060e87d42f211d630f9115b36ab0c9f",
-   "seen": 2909
-  },
-  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": {
-   "examples": 90,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 3,
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 87
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/6ecba2c79f68.cart",
-   "sha256": "18ce38f8b0d3673ec6cc1d402978d4da12f9a71ff3dbca1920fe25d9caed1592",
-   "seen": 90
-  },
-  "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": {
-   "examples": 509,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 506,
-    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": 3
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/03625199bb4a.cart",
-   "sha256": "a0d33eb4a09bf48748ae9a5d8e4eb99a767fec4f07054d6125893a5f47376b31",
-   "seen": 509
-  },
-  "icu-rbnf:%spellout-numbering+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone#2\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters#2\ticu-rbnf:%spellout-numbering+surface:letters": {
-   "examples": 103,
-   "labels": {
-    "icu-rbnf:%spellout-numbering+lexical:en_US+surface:letters": 49,
-    "icu-rbnf:%spellout-numbering+lexical:en_US+surface:letters#2": 54
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/ed6725393463.cart",
-   "sha256": "be4b62fa8d2cfda359435976163bd7ecf02b9ad3a096ffffe5594baee1468b8f",
-   "seen": 103
-  },
   "icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-ordinal+lexical:en_US\tlexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US": {
    "examples": 394,
    "labels": {
@@ -1121,60 +795,6 @@
    "file": "trees/574c74980184.cart",
    "sha256": "373f5c4a89eed8d2e2f1f2ad360a9f8a3508b4f03a6aec023a00b970e553c188",
    "seen": 394
-  },
-  "icukit-abbreviation:given-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 265,
-   "labels": {
-    "measured:acronym-spelled": 193,
-    "measured:acronym-word": 72
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/cb6d68dfcd3c.cart",
-   "sha256": "b9eec457b78af8d92dd9987cfda5c6ac51c358dcc221f40bf79e7af93cb3caba",
-   "seen": 265
-  },
-  "icukit-abbreviation:month/date\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 320,
-   "labels": {
-    "icukit-abbreviation:month/date": 52,
-    "measured:acronym-spelled": 29,
-    "measured:acronym-word": 239
-   },
-   "nodes": 15,
-   "leaves": 8,
-   "depth": 6,
-   "file": "trees/3ce2056a8b72.cart",
-   "sha256": "4e8f2f58a148cfa47f09dab84ae21ad870d778f53525e77710effe890620fdcc",
-   "seen": 320
-  },
-  "icukit-abbreviation:month/date\tsurface:as-written": {
-   "examples": 6688,
-   "labels": {
-    "icukit-abbreviation:month/date": 510,
-    "surface:as-written": 6178
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/0ca2e35c182f.cart",
-   "sha256": "0bb72b2ff0a36562084fe5b038772f2ab23d7043ce3b58047f53b6bacac732aa",
-   "seen": 6688
-  },
-  "icukit-abbreviation:number/precedes-number\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 1167,
-   "labels": {
-    "icukit-abbreviation:number/precedes-number": 31,
-    "measured:acronym-spelled": 1008,
-    "measured:acronym-word": 128
-   },
-   "nodes": 5,
-   "leaves": 3,
-   "depth": 2,
-   "file": "trees/2fef2a7f6f37.cart",
-   "sha256": "380af29bb1b355cffb064f5f0e99dd28801135140c4a26a38cad20a629557e6e",
-   "seen": 1167
   },
   "icukit-abbreviation:number/precedes-number\tsurface:as-written": {
    "examples": 30020,
@@ -1202,86 +822,6 @@
    "sha256": "17b45e70f29da88f7ea80ea16db40d8321ce6a2f3a0f8f2dbc1219b50df91c24",
    "seen": 30235
   },
-  "icukit-abbreviation:organization\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 30212,
-   "labels": {
-    "icukit-abbreviation:organization": 1,
-    "measured:acronym-spelled": 28968,
-    "measured:acronym-word": 1243
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/a5bf4548a39d.cart",
-   "sha256": "628b89e61c61df511b80f7032e40d7cd3294196d41b78424ea2ae521c0e5e44b",
-   "seen": 30212
-  },
-  "icukit-abbreviation:organization\tsurface:as-written": {
-   "examples": 1387,
-   "labels": {
-    "icukit-abbreviation:organization": 702,
-    "surface:as-written": 685
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/eeb8d86cc71b.cart",
-   "sha256": "77947137d654c20d4c7f0bcdd0a298dacbe2dde77e8fd6a3ff4a5f1cd7429d2c",
-   "seen": 1387
-  },
-  "icukit-abbreviation:organization/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 11070,
-   "labels": {
-    "icukit-abbreviation:organization/follows-name": 107,
-    "measured:acronym-spelled": 10808,
-    "measured:acronym-word": 155
-   },
-   "nodes": 5,
-   "leaves": 3,
-   "depth": 2,
-   "file": "trees/5463c3b40aed.cart",
-   "sha256": "1b5c9334c2294336aa6a397bb9a5ded565aa957bd648eca134c9245bb5415cc5",
-   "seen": 11070
-  },
-  "icukit-abbreviation:organization/follows-name\tsurface:as-written": {
-   "examples": 19577,
-   "labels": {
-    "icukit-abbreviation:organization/follows-name": 1302,
-    "surface:as-written": 18275
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/7ce9656c3ecc.cart",
-   "sha256": "d49f08b3c9cf6666c1ed226b7bc0b7246efda687c6173499b002008ca1b1eb6f",
-   "seen": 19577
-  },
-  "icukit-abbreviation:organization/follows-name\tsurface:as-written\tsurface:spelled": {
-   "examples": 10465,
-   "labels": {
-    "icukit-abbreviation:organization/follows-name": 10431,
-    "surface:spelled": 34
-   },
-   "nodes": 7,
-   "leaves": 4,
-   "depth": 3,
-   "file": "trees/9933163c88a2.cart",
-   "sha256": "6816d96a59fc5449a5b4b15153d3300f9d9e33fbd2ff5d86639edbe7c27ffd4c",
-   "seen": 10465
-  },
-  "icukit-abbreviation:other\ticukit-abbreviation:other#2\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 13179,
-   "labels": {
-    "measured:acronym-spelled": 12915,
-    "measured:acronym-word": 264
-   },
-   "nodes": 13,
-   "leaves": 7,
-   "depth": 6,
-   "file": "trees/4393630c8d2d.cart",
-   "sha256": "5030faa995235bf9c882b0d8649ed38a0df23c60968ab6be56e9499ee6dfe569",
-   "seen": 13179
-  },
   "icukit-abbreviation:other\ticukit-abbreviation:other/measurement\tsurface:as-written": {
    "examples": 1284,
    "labels": {
@@ -1294,46 +834,6 @@
    "file": "trees/b1ae6a87f4dd.cart",
    "sha256": "d76ccb3deab524e1bc3956d00564f95bccd3a070a136c5479d3f4582adbb759b",
    "seen": 1284
-  },
-  "icukit-abbreviation:other\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 31142,
-   "labels": {
-    "measured:acronym-spelled": 31095,
-    "measured:acronym-word": 47
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/b8df4e4d9e41.cart",
-   "sha256": "c03d7a857cbaa6248539b6ff23a6dbd64bc6a4f546dff384df2aebffbb0a46a7",
-   "seen": 31142
-  },
-  "icukit-abbreviation:other/measurement\ticukit-abbreviation:place/precedes-name\tsurface:as-written\tsurface:spelled": {
-   "examples": 427,
-   "labels": {
-    "icukit-abbreviation:other/measurement": 2,
-    "surface:spelled": 425
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/bace0ffbdb93.cart",
-   "sha256": "8f2477a5a77a00b5f683691c3f81aa4db021ac77ae1ab6984904d02777f5f5c7",
-   "seen": 427
-  },
-  "icukit-abbreviation:phrase\tsurface:as-written\tsurface:spelled": {
-   "examples": 9137,
-   "labels": {
-    "icukit-abbreviation:phrase": 8642,
-    "surface:as-written": 1,
-    "surface:spelled": 494
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/d2ad3e0a81de.cart",
-   "sha256": "871d770e206022aa341421c56df0ec5985d45c18b6e1062421cb0e6507bae136",
-   "seen": 9137
   },
   "icukit-abbreviation:place\ticukit-abbreviation:place/precedes-name\tsurface:as-written\tsurface:spelled": {
    "examples": 1347,
@@ -1348,33 +848,6 @@
    "sha256": "71f1409d0036a23fabbe527c01809cde0c28f0325e3378a6ed779b5de0a98800",
    "seen": 1347
   },
-  "icukit-abbreviation:place/address\ticukit-abbreviation:saint/precedes-name\tsurface:as-written\tsurface:spelled": {
-   "examples": 243,
-   "labels": {
-    "surface:as-written": 1,
-    "surface:spelled": 242
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/aa4393d96dc9.cart",
-   "sha256": "82eeaf1834819ae6944ede52b5e69b807f4b652a3cc33b009f5d56de54ed2b25",
-   "seen": 243
-  },
-  "icukit-abbreviation:place/address\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 92,
-   "labels": {
-    "icukit-abbreviation:place/address": 35,
-    "measured:acronym-spelled": 17,
-    "measured:acronym-word": 40
-   },
-   "nodes": 5,
-   "leaves": 3,
-   "depth": 2,
-   "file": "trees/59aadc4b0ff1.cart",
-   "sha256": "7a2fc5cbd9406fc60d1537e4fb15bf9925d493acdefefb0a7ed0a3227cb8b3b1",
-   "seen": 92
-  },
   "icukit-abbreviation:place/address\tsurface:as-written\tsurface:spelled": {
    "examples": 1244,
    "labels": {
@@ -1387,32 +860,6 @@
    "file": "trees/075cba7551ac.cart",
    "sha256": "b5a41fc540be9c0aa528a257ea42653a88b8c4e0f213ce66ba4ff118b2adc301",
    "seen": 1244
-  },
-  "icukit-abbreviation:region\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 2671,
-   "labels": {
-    "measured:acronym-spelled": 2160,
-    "measured:acronym-word": 511
-   },
-   "nodes": 13,
-   "leaves": 7,
-   "depth": 5,
-   "file": "trees/3e0b706fb788.cart",
-   "sha256": "acee55c2cd2683addafdbc5d4bd353e6ebae41da7e903d584378a251e4a22960",
-   "seen": 2671
-  },
-  "icukit-abbreviation:region\tsurface:as-written\tsurface:spelled": {
-   "examples": 1460,
-   "labels": {
-    "surface:as-written": 796,
-    "surface:spelled": 664
-   },
-   "nodes": 5,
-   "leaves": 3,
-   "depth": 2,
-   "file": "trees/d034617a2c3d.cart",
-   "sha256": "cbadc23bbd6a9990dae839cf22d81d46d065144fdc4847617038fadd6afe4749",
-   "seen": 1460
   },
   "icukit-abbreviation:region/address\tmeasured:acronym-spelled\tmeasured:acronym-word": {
    "examples": 31665,
@@ -1498,19 +945,6 @@
    "sha256": "44e3400ec1ced2907d30873d65229d302b3ecf2cab0303cb973baee6bde250f7",
    "seen": 1502
   },
-  "icukit-abbreviation:thoroughfare/address\tsurface:as-written": {
-   "examples": 1400,
-   "labels": {
-    "icukit-abbreviation:thoroughfare/address": 1170,
-    "surface:as-written": 230
-   },
-   "nodes": 7,
-   "leaves": 4,
-   "depth": 3,
-   "file": "trees/c47c8fc4d6cb.cart",
-   "sha256": "f6c8b0d210301eb89ab379bde8614eba4848f109f826d9e67b80aea997423c00",
-   "seen": 1400
-  },
   "icukit-abbreviation:thoroughfare/address\tsurface:as-written\tsurface:spelled": {
    "examples": 787,
    "labels": {
@@ -1524,45 +958,6 @@
    "sha256": "357f870ea420f22a3e91ce8e9c3f19ec22edb3086d5a62e7d22fc8304d4cf7c1",
    "seen": 787
   },
-  "icukit-abbreviation:title\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 5577,
-   "labels": {
-    "measured:acronym-spelled": 5526,
-    "measured:acronym-word": 51
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/27bf380a9737.cart",
-   "sha256": "24d8837ad7ef22f9de7bd104aa0f149c49a745e91c7665baa6691ac0055faa17",
-   "seen": 5577
-  },
-  "icukit-abbreviation:title\tsurface:as-written\tsurface:spelled": {
-   "examples": 64,
-   "labels": {
-    "surface:as-written": 63,
-    "surface:spelled": 1
-   },
-   "nodes": 1,
-   "leaves": 1,
-   "depth": 0,
-   "file": "trees/1d6310da7613.cart",
-   "sha256": "e78492d79cac575d79ba2539433f1a257afc50d7c3ea3d161bda099825f41690",
-   "seen": 64
-  },
-  "icukit-abbreviation:title/follows-name\ticukit-abbreviation:title/precedes-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 601,
-   "labels": {
-    "icukit-abbreviation:title/follows-name": 479,
-    "measured:acronym-spelled": 122
-   },
-   "nodes": 7,
-   "leaves": 4,
-   "depth": 3,
-   "file": "trees/c5acdd634b93.cart",
-   "sha256": "370e3b61191c4962dd8f0f436333083c57939e0aaf9937bd677185d982e47a08",
-   "seen": 601
-  },
   "icukit-abbreviation:title/follows-name\ticukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": {
    "examples": 2992,
    "labels": {
@@ -1575,19 +970,6 @@
    "file": "trees/d92b41b57938.cart",
    "sha256": "e144e595b8278373f7e00eec9c97c9c0d68f21c7ed07aa718ba337907bbd2161",
    "seen": 2992
-  },
-  "icukit-abbreviation:title/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": {
-   "examples": 892,
-   "labels": {
-    "icukit-abbreviation:title/follows-name": 880,
-    "measured:acronym-spelled": 12
-   },
-   "nodes": 5,
-   "leaves": 3,
-   "depth": 2,
-   "file": "trees/00c7edf44b9a.cart",
-   "sha256": "6a2fbe60a901e63d9cdd8c4a5f0285ceed1a4de657d5a152c734f6094b78474c",
-   "seen": 892
   },
   "icukit-abbreviation:title/follows-name\tsurface:as-written\tsurface:spelled": {
    "examples": 8189,
@@ -1630,20 +1012,6 @@
    "sha256": "87e7c0d0cb2251c000ad6ffb428cfe4fc2acc7e9a29925c15feb980f660c0581",
    "seen": 13687
   },
-  "icukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": {
-   "examples": 14655,
-   "labels": {
-    "icukit-abbreviation:title/precedes-name": 8724,
-    "surface:as-written": 3354,
-    "surface:spelled": 2577
-   },
-   "nodes": 15,
-   "leaves": 8,
-   "depth": 6,
-   "file": "trees/c02413f857d2.cart",
-   "sha256": "a772a0ce0081043c22699b5bc62312d694ed4e4381c2b118b23c5c2adb71100a",
-   "seen": 14655
-  },
   "icukit-abbreviation:weekday/date\tmeasured:acronym-spelled\tmeasured:acronym-word": {
    "examples": 601,
    "labels": {
@@ -1684,19 +1052,6 @@
    "sha256": "9b4d1eb1dd562a23a73c78aa6ad58e6c7063599201d77074e1cafea37f99e2fb",
    "seen": 58558
   },
-  "measured:electronic\tmeasured:electronic#2": {
-   "examples": 115,
-   "labels": {
-    "measured:electronic": 110,
-    "measured:electronic#2": 5
-   },
-   "nodes": 3,
-   "leaves": 2,
-   "depth": 1,
-   "file": "trees/f7ad01f708df.cart",
-   "sha256": "bdc00c090f7702c3d53c64bc437855e911ff7fc89029510d71ca3d098ec7119d",
-   "seen": 115
-  },
   "measured:electronic\tmeasured:electronic#2\tmeasured:electronic#3\tmeasured:electronic#4": {
    "examples": 25860,
    "labels": {
@@ -1730,42 +1085,6 @@
    "file": "trees/55c6141177f9.cart",
    "sha256": "aba0d32dd2269069b109648ad0200b99163880e4c3203895196c012328fc2887",
    "seen": 12352
-  },
-  "range:dimension": {
-   "examples": 998,
-   "labels": {
-    "range:cardinal+by+cardinal": 725,
-    "range:cardinal+by+date": 2,
-    "range:cardinal+by+measure": 121,
-    "range:cardinal+letter+cardinal": 37,
-    "range:cardinal+letter+decimal": 7,
-    "range:cardinal+letter+digits": 32,
-    "range:date+by+cardinal": 4,
-    "range:decimal+letter+cardinal": 29,
-    "range:decimal+letter+decimal": 9,
-    "range:decimal+letter+digits": 1,
-    "range:decimal+letter+measure": 27,
-    "range:digits+letter+cardinal": 1,
-    "range:time+letter+cardinal": 3
-   },
-   "nodes": 17,
-   "leaves": 9,
-   "depth": 5,
-   "file": "trees/3efba0f2f3f2.cart",
-   "sha256": "dec9f872323d0fa3ca9f430023ffd7854a61a86a7f20200372caae23f32a8724",
-   "seen": 998,
-   "families": [
-    "B",
-    "F",
-    "W",
-    "C",
-    "R"
-   ],
-   "examples_fingerprint": "36373cb1123ca6d5",
-   "relevance": {
-    "joint": "range_triples passing R1-R3 and R7 on the sample shards, R6 rows dropped; credited by the first matching builder-mode candidate",
-    "dropped_filter": "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said 'sil', only when no builder-mode range candidate says both ends as the corpus does"
-   }
   },
   "range:range": {
    "examples": 60000,
@@ -1814,56 +1133,6 @@
    "file": "trees/aa808c894ba0.cart",
    "sha256": "427e28a671cfe9be0cae4d213caa831564f402533ffcb634b1f6ea01b81f344b",
    "seen": 98895,
-   "families": [
-    "B",
-    "F",
-    "W",
-    "C",
-    "R"
-   ],
-   "examples_fingerprint": "36373cb1123ca6d5",
-   "relevance": {
-    "joint": "range_triples passing R1-R3 and R7 on the sample shards, R6 rows dropped; credited by the first matching builder-mode candidate",
-    "dropped_filter": "punctuation_dash: middle VERBATIM|PUNCT written '-'|'–' said 'sil', only when no builder-mode range candidate says both ends as the corpus does"
-   }
-  },
-  "range:ratio": {
-   "examples": 13431,
-   "labels": {
-    "range:cardinal+silent+cardinal": 57,
-    "range:cardinal+silent+date": 2,
-    "range:cardinal+silent+decimal": 8,
-    "range:cardinal+silent+digits": 133,
-    "range:cardinal+silent+measure": 10,
-    "range:cardinal+silent+money": 39,
-    "range:cardinal+silent+time": 1,
-    "range:cardinal+to+cardinal": 12084,
-    "range:cardinal+to+date": 131,
-    "range:date+silent+cardinal": 3,
-    "range:date+silent+decimal": 3,
-    "range:date+silent+digits": 6,
-    "range:date+silent+measure": 5,
-    "range:date+silent+money": 6,
-    "range:date+to+cardinal": 670,
-    "range:date+to+date": 54,
-    "range:decimal+silent+cardinal": 176,
-    "range:decimal+silent+date": 1,
-    "range:decimal+silent+digits": 1,
-    "range:decimal+silent+measure": 1,
-    "range:digits+silent+cardinal": 17,
-    "range:digits+silent+date": 13,
-    "range:digits+silent+decimal": 1,
-    "range:digits+silent+digits": 5,
-    "range:digits+silent+measure": 1,
-    "range:digits+silent+money": 1,
-    "range:money+silent+money": 2
-   },
-   "nodes": 83,
-   "leaves": 42,
-   "depth": 14,
-   "file": "trees/7cd29f8897af.cart",
-   "sha256": "a666df1b69be1afda6b8b9bd2b5f227dd760490e3edce93dffbb56c28394cd0c",
-   "seen": 13431,
    "families": [
     "B",
     "F",
