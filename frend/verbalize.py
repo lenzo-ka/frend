@@ -1136,14 +1136,36 @@ def _acronym_surface_priors(
     *, locale: str = "en_US"
 ) -> tuple[dict[str, dict[str, dict[str, int]]], int, Decimal]:
     """Load Google-TN exact surfaces from its configured, external profile file."""
+    _table_locale, surfaces, minimum_support, parent_strength, _source_shards = (
+        _acronym_surface_profile(locale=locale)
+    )
+    return surfaces, minimum_support, parent_strength
+
+
+def _acronym_surface_profile(*, locale: str = "en_US"):
+    """Load the acronym table, including its verified source identities."""
     key = _profile_file_key(google_tn_profile_path())
-    table_locale, surfaces, minimum_support, parent_strength = _acronym_surface_priors_for(*key)
+    table_locale, surfaces, minimum_support, parent_strength, source_shards = (
+        _acronym_surface_priors_for(*key)
+    )
     locale = canonical_locale(locale)
     if locale.split("_", 1)[0] != table_locale.split("_", 1)[0]:
         raise ValueError(
             f"{GOOGLE_TN!r} profile data at {key[0]} is for {table_locale}, not {locale}"
         )
-    return surfaces, minimum_support, parent_strength
+    return table_locale, surfaces, minimum_support, parent_strength, source_shards
+
+
+def _google_tn_britishisms(*, locale: str = "en_US"):
+    """Load both profile tables and require their verified corpus identities to agree."""
+    *_settings, acronym_shards = _acronym_surface_profile(locale=locale)
+    britishisms = load_britishisms(locale=locale)
+    if acronym_shards != britishisms.source_shards:
+        raise ValueError(
+            f"{GOOGLE_TN!r} profile table source-shard digests do not match: "
+            "acronym and spelling tables must be rebuilt from the same verified inventory"
+        )
+    return britishisms
 
 
 _PROFILE_FILE_KEYS: dict[str, tuple[tuple[int, int, int, int, int], tuple[str, int, int, str]]] = {}
@@ -1189,7 +1211,13 @@ def _profile_file_key(path: Path) -> tuple[str, int, int, str]:
 @lru_cache(maxsize=LOCALE_CACHE)
 def _acronym_surface_priors_for(
     path_text: str, mtime_ns: int, size: int, sha256: str
-) -> tuple[str, dict[str, dict[str, dict[str, int]]], int, Decimal]:
+) -> tuple[
+    str,
+    dict[str, dict[str, dict[str, int]]],
+    int,
+    Decimal,
+    tuple[tuple[str, str], ...],
+]:
     path = Path(path_text)
     try:
         content = path.read_bytes()
@@ -1263,6 +1291,7 @@ def _acronym_surface_priors_for(
         surfaces,
         minimum_support,
         parent_strength,
+        tuple(sorted((item["relative_path"], item["sha256"]) for item in source_shards)),
     )
 
 
@@ -3099,8 +3128,7 @@ def verbalize_lattice(
     profile = validate_profile(profile)
     britishisms = None
     if profile == GOOGLE_TN:
-        _acronym_surface_priors(locale=effective)
-        britishisms = load_britishisms(locale=effective)
+        britishisms = _google_tn_britishisms(locale=effective)
     if locale is not None and canonical_locale(locale) != effective:
         raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
     edges = {edge.id: edge for edge in lattice.edges}

@@ -9,12 +9,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import unicodedata
 from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
-from difflib import SequenceMatcher
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -24,12 +22,11 @@ if str(_REPO) not in sys.path:
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
 from google_tn_rows import TRAINING_SHARDS, corpus_label, full_training_set  # noqa: E402
 
-from frend.britishisms import EDIT_RULES  # noqa: E402
+from frend.britishisms import CASE_SHAPES, EDIT_RULES, PAIR_CLASSES, case_shape  # noqa: E402
 from frend.profiles import GOOGLE_TN, google_tn_britishisms_path  # noqa: E402
 
 _SUPPORTS = (1, 2, 3, 5, 10, 20, 50)
 _THRESHOLDS = (0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1.0)
-_MAY_EDIT = re.compile(r"is|our|re|ogue|mme|ll|yse|ae|oe")
 
 
 def _training_files(corpus_dir: Path) -> list[Path]:
@@ -70,65 +67,75 @@ def _open(item):
     return Path(item).open(encoding="utf-8")
 
 
-def _distance(left: str, right: str) -> int:
-    previous = list(range(len(right) + 1))
-    for left_index, left_char in enumerate(left, 1):
-        current = [left_index]
-        for right_index, right_char in enumerate(right, 1):
-            current.append(
-                min(
-                    current[-1] + 1,
-                    previous[right_index] + 1,
-                    previous[right_index - 1] + (left_char != right_char),
-                )
-            )
-        previous = current
-    return previous[-1]
+def _is_respelling(written: str, output: str) -> bool:
+    """Whether one or two declared UK-to-US edits produce ``output`` exactly."""
+    frontier = {written}
+    for _depth in range(2):
+        following = set()
+        for form in frontier:
+            for rule in EDIT_RULES:
+                candidate = rule.apply(form)
+                if candidate == output:
+                    return True
+                if candidate != form:
+                    following.add(candidate)
+        frontier = following
+    return False
 
 
-def orthographic_pair(written: str, output: str) -> bool:
-    """The literal relevance filter for a one-word orthographic conversion."""
-    if written == output or not written.isalpha() or not output.isalpha():
-        return False
-    if any(rule.apply(written) == output for rule in EDIT_RULES):
-        return True
-    unmarked = "".join(
-        char for char in unicodedata.normalize("NFKD", written) if not unicodedata.combining(char)
+def _without_diacritics(word: str) -> str:
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFKD", word)
+        if not unicodedata.combining(char) and unicodedata.category(char) != "Lm"
     )
-    if unmarked == output:
-        return True
-    return (
-        abs(len(written) - len(output)) <= 3
-        and _distance(written, output) <= 3
-        and SequenceMatcher(None, written, output).ratio() >= 0.72
-    )
+
+
+def _is_subsequence(shorter: str, longer: str) -> bool:
+    at = iter(longer)
+    return all(char in at for char in shorter)
+
+
+def pair_class(written: str, output: str) -> str:
+    """Classify every one-word alphabetic conversion into one of four audited classes."""
+    if _is_respelling(written, output):
+        return "respelling"
+    if _without_diacritics(written) == output:
+        return "diacritic"
+    if len(written) < len(output) and _is_subsequence(written, output):
+        return "expansion/abbreviation"
+    return "other"
 
 
 class Counts:
     def __init__(self) -> None:
-        self.left: Counter[str] = Counter()
-        self.converted: dict[str, Counter[str]] = defaultdict(Counter)
-        self.rule_rows: dict[str, Counter[str]] = defaultdict(Counter)
-        self.rule_total: Counter[str] = Counter()
-        self.rule_converted: Counter[str] = Counter()
+        self.left: Counter[tuple[str, str]] = Counter()
+        self.converted: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
+        self.rule_rows: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
+        self.rule_total: Counter[tuple[str, str]] = Counter()
+        self.rule_converted: Counter[tuple[str, str]] = Counter()
 
     def add(self, written: str, target: str) -> None:
-        if target == written:
-            self.left[written] += 1
-        elif orthographic_pair(written, target):
-            self.converted[written][target] += 1
-        if _MAY_EDIT.search(written) is None:
+        shape = case_shape(written)
+        if shape is None:
             return
+        word = written.casefold()
+        output = target.casefold()
+        key = (word, shape)
+        if output == word:
+            self.left[key] += 1
+        else:
+            self.converted[key][output] += 1
         matched = False
         for rule in EDIT_RULES:
-            candidate = rule.apply(written)
-            if candidate == written:
+            candidate = rule.apply(word)
+            if candidate == word:
                 continue
-            self.rule_total[rule.name] += 1
-            self.rule_converted[rule.name] += target == candidate
+            self.rule_total[(rule.name, shape)] += 1
+            self.rule_converted[(rule.name, shape)] += output == candidate
             matched = True
         if matched:
-            self.rule_rows[written][target] += 1
+            self.rule_rows[key][output] += 1
 
     def update(self, other: Counts) -> None:
         self.left.update(other.left)
@@ -139,12 +146,10 @@ class Counts:
         self.rule_total.update(other.rule_total)
         self.rule_converted.update(other.rule_converted)
 
-    def outcomes(self, word: str) -> Counter[str]:
-        if word in self.rule_rows:
-            return Counter(self.rule_rows[word])
-        found = Counter(self.converted.get(word, ()))
-        if self.left[word]:
-            found[word] += self.left[word]
+    def outcomes(self, key: tuple[str, str]) -> Counter[str]:
+        found = Counter(self.converted.get(key, ()))
+        if self.left[key]:
+            found[key[0]] += self.left[key]
         return found
 
 
@@ -155,8 +160,8 @@ def _read_item(item) -> tuple[bool, Counts]:
             parts = line.rstrip("\n").split("\t")
             if len(parts) < 3 or parts[0] != "PLAIN":
                 continue
-            written = parts[1].casefold()
-            target = written if parts[2] == "<self>" else parts[2].casefold()
+            written = parts[1]
+            target = written if parts[2] == "<self>" else parts[2]
             if written.isalpha() and target.isalpha():
                 counts.add(written, target)
     number = _shard_number(item)
@@ -179,112 +184,194 @@ def _read_counts(items, jobs: int = 1) -> tuple[Counts, Counts]:
     return training, development
 
 
-def _exact_prediction(counts: Counts, word: str, support: int) -> str | None:
-    conversions = counts.converted.get(word)
-    if not conversions:
+def _exact_prediction(
+    counts: Counts,
+    key: tuple[str, str],
+    supports: dict[str, int],
+) -> tuple[str, str] | None:
+    candidates = [
+        (converted, target, pair_class(key[0], target), counts.left[key])
+        for target, converted in counts.converted.get(key, {}).items()
+        if pair_class(key[0], target) in supports
+    ]
+    if not candidates:
         return None
-    target, converted = conversions.most_common(1)[0]
-    return target if converted >= support and converted > counts.left[word] else None
+    converted, target, class_name, left = max(candidates)
+    if converted >= supports[class_name] and converted > left:
+        return target, class_name
+    return None
 
 
-def _rule_models(counts: Counts) -> dict[str, dict[str, object]]:
+def _rule_models(counts: Counts) -> dict[str, dict[str, dict[str, object]]]:
     models = {}
     for rule in EDIT_RULES:
-        stems = {
-            stem
-            for word, outcomes in counts.rule_rows.items()
-            if (stem := rule.stem(word)) is not None and outcomes[rule.apply(word)] > 0
-        }
-        eligible = converted = 0
-        for word, outcomes in counts.rule_rows.items():
-            if rule.stem(word) not in stems:
-                continue
-            eligible += sum(outcomes.values())
-            converted += outcomes[rule.apply(word)]
-        models[rule.name] = {
-            "stems": stems,
-            "converted": converted,
-            "eligible": eligible,
-            "rate": converted / eligible if eligible else 0.0,
-        }
+        models[rule.name] = {}
+        for shape in CASE_SHAPES:
+            stems = {
+                stem
+                for (word, row_shape), outcomes in counts.rule_rows.items()
+                if row_shape == shape
+                and (stem := rule.stem(word)) is not None
+                and outcomes[rule.apply(word)] > 0
+            }
+            eligible = converted = 0
+            for (word, row_shape), outcomes in counts.rule_rows.items():
+                if row_shape != shape or rule.stem(word) not in stems:
+                    continue
+                eligible += sum(outcomes.values())
+                converted += outcomes[rule.apply(word)]
+            models[rule.name][shape] = {
+                "stems": stems,
+                "converted": converted,
+                "eligible": eligible,
+                "rate": converted / eligible if eligible else 0.0,
+            }
     return models
 
 
-def _enabled_rules(models: dict[str, dict[str, object]], threshold: float) -> tuple[str, ...]:
-    return tuple(
-        rule.name
+def _enabled_rules(models, threshold: float, respelling: bool) -> dict[str, frozenset[str]]:
+    if not respelling:
+        return {}
+    return {
+        rule.name: frozenset(
+            shape
+            for shape in CASE_SHAPES
+            if models[rule.name][shape]["eligible"]
+            and models[rule.name][shape]["rate"] >= threshold
+        )
         for rule in EDIT_RULES
-        if models[rule.name]["eligible"] and models[rule.name]["rate"] >= threshold
-    )
+        if any(
+            models[rule.name][shape]["eligible"] and models[rule.name][shape]["rate"] >= threshold
+            for shape in CASE_SHAPES
+        )
+    }
 
 
 def _predict(
     counts: Counts,
-    word: str,
-    support: int,
-    enabled: tuple[str, ...],
-    models: dict[str, dict[str, object]],
-) -> str:
-    if exact := _exact_prediction(counts, word, support):
+    key: tuple[str, str],
+    supports: dict[str, int],
+    enabled: dict[str, frozenset[str]],
+    models,
+    fold_case: bool,
+) -> tuple[str, str | None]:
+    word, shape = key
+    if exact := _exact_prediction(counts, key, supports):
         return exact
-    enabled_set = set(enabled)
+    if shape != "lower" and fold_case:
+        if exact := _exact_prediction(counts, (word, "lower"), supports):
+            return exact
     for rule in EDIT_RULES:
-        if (
-            rule.name in enabled_set
-            and rule.stem(word) in models[rule.name]["stems"]
-            and (candidate := rule.apply(word)) != word
-        ):
-            return candidate
-    return word
+        rule_shape = shape
+        if rule_shape not in enabled.get(rule.name, ()) and shape != "lower" and fold_case:
+            rule_shape = "lower"
+        if rule_shape not in enabled.get(rule.name, ()):
+            continue
+        candidate = rule.apply(word)
+        if candidate != word and rule.stem(word) in models[rule.name][rule_shape]["stems"]:
+            return candidate, "respelling"
+    return word, None
 
 
-def _selection(training: Counts, development: Counts) -> tuple[int, float, list[dict]]:
-    models = _rule_models(training)
-    modeled_words = {
-        word
-        for word in development.rule_rows
-        if any(rule.stem(word) in models[rule.name]["stems"] for rule in EDIT_RULES)
+def _score_predictions(development: Counts, predict) -> dict:
+    totals = Counter()
+    by_class: dict[str, Counter] = defaultdict(Counter)
+    keys = set(development.left) | set(development.converted) | set(development.rule_rows)
+    for key in keys:
+        prediction, class_name = predict(key)
+        if prediction == key[0] or class_name is None:
+            continue
+        outcomes = development.outcomes(key)
+        fixed = outcomes[prediction]
+        broken = outcomes[key[0]]
+        changed = sum(outcomes.values())
+        still_wrong = changed - fixed - broken
+        values = {
+            "changed_tokens": changed,
+            "fixed_tokens": fixed,
+            "broken_tokens": broken,
+            "changed_still_wrong": still_wrong,
+            "net_tokens": fixed - broken,
+        }
+        totals.update(values)
+        by_class[class_name].update(values)
+    return {
+        **dict(totals),
+        "by_class": {name: dict(by_class[name]) for name in PAIR_CLASSES},
     }
-    words = (
-        set(development.converted)
-        | modeled_words
-        | (set(training.converted) & set(development.left))
-    )
+
+
+def _select_classes(training: Counts, development: Counts):
+    selected = {}
+    report = {}
+    for class_name in PAIR_CLASSES:
+        candidates = []
+        for support in _SUPPORTS:
+            score = _score_predictions(
+                development,
+                lambda key, s=support, c=class_name: (
+                    _exact_prediction(training, key, {c: s}) or (key[0], None)
+                ),
+            )
+            candidates.append({"minimum_support": support, **score})
+        best = max(
+            candidates,
+            key=lambda row: (
+                row.get("net_tokens", 0),
+                -row.get("broken_tokens", 0),
+                row["minimum_support"],
+            ),
+        )
+        enabled = best.get("net_tokens", 0) > 0
+        if enabled:
+            selected[class_name] = best["minimum_support"]
+        report[class_name] = {"enabled": enabled, **best, "candidates": candidates}
+    return selected, report
+
+
+def _selection(training: Counts, development: Counts):
+    supports, classes = _select_classes(training, development)
+    models = _rule_models(training)
     candidates = []
-    for support in _SUPPORTS:
-        for threshold in _THRESHOLDS:
-            enabled = _enabled_rules(models, threshold)
-            delta = fixed = false = changed = 0
-            for word in words:
-                outcomes = development.outcomes(word)
-                prediction = _predict(training, word, support, enabled, models)
-                if prediction == word:
-                    continue
-                changed += sum(outcomes.values())
-                fixed += outcomes[prediction]
-                false += outcomes[word]
-                delta += outcomes[prediction] - outcomes[word]
+    for threshold in _THRESHOLDS:
+        enabled = _enabled_rules(models, threshold, "respelling" in supports)
+        for fold_case in (False, True):
+            score = _score_predictions(
+                development,
+                lambda key, e=enabled, f=fold_case: _predict(training, key, supports, e, models, f),
+            )
             candidates.append(
                 {
-                    "minimum_support": support,
                     "rule_rate_threshold": threshold,
-                    "net_tokens": delta,
-                    "fixed_tokens": fixed,
-                    "false_conversions": false,
-                    "changed_population": changed,
-                    "enabled_rules": list(enabled),
+                    "case_folding": fold_case,
+                    "enabled_rules": {
+                        name: sorted(shapes) for name, shapes in sorted(enabled.items())
+                    },
+                    **score,
                 }
             )
     selected = max(
         candidates,
         key=lambda row: (
-            row["net_tokens"],
-            -row["false_conversions"],
-            row["minimum_support"],
+            row.get("net_tokens", 0),
+            -row.get("broken_tokens", 0),
+            -int(row["case_folding"]),
             row["rule_rate_threshold"],
         ),
     )
-    return selected["minimum_support"], selected["rule_rate_threshold"], candidates
+    without_folding = next(
+        row
+        for row in candidates
+        if row["rule_rate_threshold"] == selected["rule_rate_threshold"]
+        and row["case_folding"] is False
+    )
+    case_folding = {
+        "enabled": selected["case_folding"],
+        "net_tokens": selected.get("net_tokens", 0) - without_folding.get("net_tokens", 0),
+        "fixed_tokens": selected.get("fixed_tokens", 0) - without_folding.get("fixed_tokens", 0),
+        "broken_tokens": selected.get("broken_tokens", 0) - without_folding.get("broken_tokens", 0),
+    }
+    return supports, classes, selected, case_folding, candidates
 
 
 def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1) -> dict:
@@ -292,30 +379,43 @@ def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1) -> dict:
     if inputs is not None:
         _require_training_inputs(items)
     training, development = _read_counts(items, jobs)
-    support, threshold, candidates = _selection(training, development)
-    combined_words = set(training.converted) | set(development.converted)
-    pairs = {}
-    for word in sorted(combined_words):
-        conversions = training.converted.get(word, Counter()) + development.converted.get(
-            word, Counter()
-        )
-        target, converted = conversions.most_common(1)[0]
-        pairs[word] = {
+    supports, classes, selected, case_folding, candidates = _selection(training, development)
+    combined = Counts()
+    combined.update(training)
+    combined.update(development)
+    pairs: dict[str, dict[str, dict[str, object]]] = defaultdict(dict)
+    for key in sorted(combined.converted):
+        word, shape = key
+        choices = [
+            (converted, target, pair_class(word, target))
+            for target, converted in combined.converted[key].items()
+            if pair_class(word, target) in supports
+        ]
+        if not choices:
+            continue
+        converted, target, class_name = max(choices)
+        left = combined.left[key]
+        if converted < supports[class_name] or converted <= left:
+            continue
+        pairs[word][shape] = {
+            "class": class_name,
             "target": target,
             "converted": converted,
-            "left": training.left[word] + development.left[word],
+            "left": left,
         }
-    models = _rule_models(training)
-    enabled = set(_enabled_rules(models, threshold))
+    models = _rule_models(combined)
+    enabled = _enabled_rules(models, selected["rule_rate_threshold"], "respelling" in supports)
     rules = {}
     for rule in EDIT_RULES:
-        model = models[rule.name]
         rules[rule.name] = {
-            "converted": model["converted"],
-            "eligible": model["eligible"],
-            "rate": model["rate"],
-            "stems": sorted(model["stems"]),
-            "enabled": rule.name in enabled,
+            shape: {
+                "converted": models[rule.name][shape]["converted"],
+                "eligible": models[rule.name][shape]["eligible"],
+                "rate": models[rule.name][shape]["rate"],
+                "stems": sorted(models[rule.name][shape]["stems"]),
+                "enabled": shape in enabled.get(rule.name, ()),
+            }
+            for shape in CASE_SHAPES
         }
     names = [
         item.relative_path if hasattr(item, "relative_path") else Path(item).name for item in items
@@ -331,22 +431,29 @@ def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1) -> dict:
             "source_shards": _source_shards(items),
             "shards": names,
             "relevance_filter": (
-                "PLAIN; written and output are one alphabetic word; casefolded output "
-                "is self or passes orthographic_pair"
+                "PLAIN; written and output are one alphabetic word in lower, Title, or UPPER "
+                "case; every differing pair is classified before development selection"
             ),
         },
         "selection": {
             "candidate_minimum_support": list(_SUPPORTS),
             "candidate_rule_rate_threshold": list(_THRESHOLDS),
-            "minimum_support": support,
-            "rule_rate_threshold": threshold,
+            "admitted_classes": list(supports),
+            "class_minimum_support": supports,
+            "classes": classes,
+            "case_folding": case_folding,
+            "rule_rate_threshold": selected["rule_rate_threshold"],
+            "development_contribution": selected["by_class"],
             "selection_training_shards": [f"output-{index:05d}-of-00100" for index in range(80)],
             "development_shards": [f"output-{index:05d}-of-00100" for index in range(80, 90)],
-            "objective": "maximize net corrected PLAIN tokens, then minimize false conversions",
+            "objective": (
+                "admit each pair class only for positive development net; then maximize net "
+                "corrected PLAIN tokens, minimize broken tokens, and prefer case isolation"
+            ),
             "candidates": candidates,
         },
         "rules": rules,
-        "pairs": pairs,
+        "pairs": dict(pairs),
     }
 
 

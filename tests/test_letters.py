@@ -147,7 +147,11 @@ def _profile_table(path, surfaces, *, minimum_support=1):
                 "profile": "google-tn",
                 "provenance": {
                     "source_shards": [
-                        {"relative_path": "output-00000-of-00100", "sha256": "0" * 64}
+                        {
+                            "relative_path": f"output-{index:05d}-of-00100",
+                            "sha256": "0" * 64,
+                        }
+                        for index in range(90)
                     ]
                 },
                 "schema_version": 1,
@@ -174,7 +178,12 @@ def _profile_table(path, surfaces, *, minimum_support=1):
                 },
                 "rules": {},
                 "schema_version": 1,
-                "selection": {"minimum_support": 1, "rule_rate_threshold": 1.0},
+                "selection": {
+                    "admitted_classes": [],
+                    "case_folding": {"enabled": False},
+                    "class_minimum_support": {},
+                    "rule_rate_threshold": 1.0,
+                },
             }
         ),
         encoding="utf-8",

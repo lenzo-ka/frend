@@ -35,7 +35,7 @@ def _builder():
         ("re-to-er", "theatre", "theater"),
         ("ogue-to-og", "synagogue", "synagog"),
         ("mme-to-m", "programme", "program"),
-        ("doubled-l", "travelled", "traveled"),
+        ("doubled-consonant", "travelled", "traveled"),
     ],
 )
 def test_each_edit_type_changes_its_fixture(rule, written, expected):
@@ -52,42 +52,44 @@ def test_builder_counts_converted_and_left_and_validates_on_80_89(tmp_path):
         encoding="utf-8",
     )
     development.write_text(
-        "PLAIN\tcolours\tcolors\nPLAIN\tflour\t<self>\n",
+        "PLAIN\tcolour\tcolor\nPLAIN\tcolours\tcolors\nPLAIN\tflour\t<self>\n",
         encoding="utf-8",
     )
     document = _builder().build_document(tmp_path)
-    assert document["pairs"]["colour"] == {
+    assert document["pairs"]["colour"]["lower"] == {
+        "class": "respelling",
         "target": "color",
-        "converted": 3,
+        "converted": 4,
         "left": 1,
     }
-    assert document["rules"]["our-to-or"]["converted"] == 3
-    assert document["rules"]["our-to-or"]["eligible"] == 4
-    assert document["rules"]["our-to-or"]["stems"] == ["col"]
-    assert document["rules"]["our-to-or"]["enabled"] is True
+    assert document["rules"]["our-to-or"]["lower"]["converted"] == 5
+    assert document["rules"]["our-to-or"]["lower"]["eligible"] == 6
+    assert document["rules"]["our-to-or"]["lower"]["stems"] == ["col"]
+    assert document["rules"]["our-to-or"]["lower"]["enabled"] is True
+    assert document["selection"]["classes"]["respelling"]["enabled"] is True
     assert document["selection"]["development_shards"][0] == "output-00080-of-00100"
 
 
-def _profile(path: Path, *, pairs, rules=None, support=1):
+def _shards(digest="0" * 64):
+    return [
+        {"relative_path": f"output-{index:05d}-of-00100", "sha256": digest} for index in range(90)
+    ]
+
+
+def _profile(path: Path, *, pairs, rules=None, support=1, fold=False, digest="0" * 64):
     path.write_text(
         json.dumps(
             {
                 "locale": "en",
                 "pairs": pairs,
                 "profile": "google-tn",
-                "provenance": {
-                    "source_shards": [
-                        {
-                            "relative_path": f"output-{index:05d}-of-00100",
-                            "sha256": "0" * 64,
-                        }
-                        for index in range(90)
-                    ]
-                },
+                "provenance": {"source_shards": _shards(digest)},
                 "rules": rules or {},
                 "schema_version": 1,
                 "selection": {
-                    "minimum_support": support,
+                    "admitted_classes": ["respelling"],
+                    "case_folding": {"enabled": fold},
+                    "class_minimum_support": {"respelling": support},
                     "rule_rate_threshold": 0.9,
                 },
             }
@@ -96,17 +98,13 @@ def _profile(path: Path, *, pairs, rules=None, support=1):
     )
 
 
-def _acronym_profile(path: Path):
+def _acronym_profile(path: Path, *, digest="0" * 64):
     path.write_text(
         json.dumps(
             {
                 "locale": "en",
                 "profile": "google-tn",
-                "provenance": {
-                    "source_shards": [
-                        {"relative_path": "output-00000-of-00100", "sha256": "0" * 64}
-                    ]
-                },
+                "provenance": {"source_shards": _shards(digest)},
                 "schema_version": 1,
                 "selection": {"minimum_support": 1, "parent_strength": 1},
                 "surfaces": {},
@@ -130,7 +128,16 @@ def test_profile_off_is_byte_identical_and_profile_on_respects_support(tmp_path,
     _acronym_profile(acronym)
     _profile(
         britishisms,
-        pairs={"theatre": {"target": "theater", "converted": 4, "left": 0}},
+        pairs={
+            "theatre": {
+                "lower": {
+                    "class": "respelling",
+                    "target": "theater",
+                    "converted": 4,
+                    "left": 0,
+                }
+            }
+        },
         support=5,
     )
     monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(acronym))
@@ -145,10 +152,76 @@ def test_profile_off_is_byte_identical_and_profile_on_respects_support(tmp_path,
     assert _best("Theatre", "google-tn") == "Theatre"
     _profile(
         britishisms,
-        pairs={"theatre": {"target": "theater", "converted": 5, "left": 0}},
+        pairs={
+            "theatre": {
+                "lower": {
+                    "class": "respelling",
+                    "target": "theater",
+                    "converted": 5,
+                    "left": 0,
+                }
+            }
+        },
         support=5,
     )
-    assert _best("Theatre", "google-tn") == "Theater"
+    assert _best("theatre", "google-tn") == "theater"
+    assert _best("Theatre", "google-tn") == "Theatre"
+
+
+def test_case_shapes_require_their_own_evidence_unless_selected_folding_allows_it(
+    tmp_path, monkeypatch
+):
+    acronym = tmp_path / "acronym_surfaces.json"
+    britishisms = tmp_path / "britishisms.json"
+    _acronym_profile(acronym)
+    pairs = {
+        "colour": {
+            "lower": {
+                "class": "respelling",
+                "target": "color",
+                "converted": 5,
+                "left": 0,
+            },
+            "title": {
+                "class": "respelling",
+                "target": "color",
+                "converted": 5,
+                "left": 0,
+            },
+        }
+    }
+    _profile(britishisms, pairs=pairs)
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(acronym))
+    monkeypatch.setenv("FREND_GOOGLE_TN_BRITISHISMS_PATH", str(britishisms))
+    assert _best("colour", "google-tn") == "color"
+    assert _best("Colour", "google-tn") == "Color"
+    assert _best("COLOUR", "google-tn") == "COLOUR"
+
+    _profile(britishisms, pairs=pairs, fold=True)
+    assert _best("COLOUR", "google-tn") == "COLOR"
+
+
+def test_builder_classifies_pairs_and_only_admits_dev_positive_classes(tmp_path):
+    for index in range(90):
+        (tmp_path / f"output-{index:05d}-of-00100").write_text("", encoding="utf-8")
+    training = tmp_path / "output-00000-of-00100"
+    development = tmp_path / "output-00080-of-00100"
+    training.write_text(
+        "PLAIN\tcolour\tcolor\nPLAIN\tcafé\tcafe\nPLAIN\tbrdg\tbridge\nPLAIN\tbarbecue\tbarbeque\n",
+        encoding="utf-8",
+    )
+    development.write_text(
+        "PLAIN\tcolour\tcolor\nPLAIN\tcafé\t<self>\nPLAIN\tbrdg\t<self>\nPLAIN\tbarbecue\t<self>\n",
+        encoding="utf-8",
+    )
+    document = _builder().build_document(tmp_path)
+    classes = document["selection"]["classes"]
+    assert classes["respelling"]["enabled"] is True
+    assert classes["diacritic"]["enabled"] is False
+    assert classes["expansion/abbreviation"]["enabled"] is False
+    assert classes["other"]["enabled"] is False
+    assert list(document["pairs"]) == ["colour"]
+    assert document["pairs"]["colour"]["lower"]["class"] == "respelling"
 
 
 def test_profile_rule_generalizes_only_for_a_learned_stem(tmp_path, monkeypatch):
@@ -160,11 +233,13 @@ def test_profile_rule_generalizes_only_for_a_learned_stem(tmp_path, monkeypatch)
         pairs={},
         rules={
             "our-to-or": {
-                "converted": 3,
-                "eligible": 4,
-                "rate": 0.75,
-                "enabled": True,
-                "stems": ["col"],
+                "lower": {
+                    "converted": 3,
+                    "eligible": 4,
+                    "rate": 0.75,
+                    "enabled": True,
+                    "stems": ["col"],
+                }
             }
         },
     )
@@ -172,6 +247,17 @@ def test_profile_rule_generalizes_only_for_a_learned_stem(tmp_path, monkeypatch)
     monkeypatch.setenv("FREND_GOOGLE_TN_BRITISHISMS_PATH", str(britishisms))
     assert _best("colours", "google-tn") == "colors"
     assert _best("flour", "google-tn") == "flour"
+
+
+def test_profile_tables_must_name_identical_source_shard_digests(tmp_path, monkeypatch):
+    acronym = tmp_path / "acronym_surfaces.json"
+    britishisms = tmp_path / "britishisms.json"
+    _acronym_profile(acronym, digest="0" * 64)
+    _profile(britishisms, pairs={}, digest="1" * 64)
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(acronym))
+    monkeypatch.setenv("FREND_GOOGLE_TN_BRITISHISMS_PATH", str(britishisms))
+    with pytest.raises(ValueError, match="source-shard digests do not match"):
+        _best("colour", "google-tn")
 
 
 def test_builder_refuses_held_out_input(tmp_path):

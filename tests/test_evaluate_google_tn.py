@@ -89,6 +89,18 @@ def test_scoring_rejects_a_profile_for_another_locale(tmp_path, monkeypatch):
         evaluate._score_text("ABC", "abc", profile="google-tn")
 
 
+def test_a_verbalization_error_is_always_a_miss_even_for_a_self_target(monkeypatch):
+    evaluate = _evaluator()
+    from frend import verbalize
+
+    monkeypatch.setattr(
+        verbalize,
+        "verbalize_lattice",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(ValueError("profile table changed")),
+    )
+    assert evaluate._score_text("word", "word") == (False, False)
+
+
 # ------------------------------------------------------------------ held-out shards
 
 # The corpus README's split: training 00-89, runtime eval 90-94, test 95-99.
