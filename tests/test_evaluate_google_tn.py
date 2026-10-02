@@ -49,6 +49,46 @@ def test_silence_and_non_numbers_and_overlaps():
     assert [item[2] for item in evaluate._running_text([chain])] == ["1-2"]
 
 
+def test_scoring_rejects_an_unknown_profile_before_recovery():
+    evaluate = _evaluator()
+    with pytest.raises(ValueError, match="known profiles: 'google-tn'"):
+        evaluate._score_text("ABC", "abc", profile="typo")
+
+
+def test_scoring_rejects_malformed_profile_json(tmp_path, monkeypatch):
+    evaluate = _evaluator()
+    table = tmp_path / "acronym_surfaces.json"
+    table.write_text("{not json", encoding="utf-8")
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(table))
+    with pytest.raises(json.JSONDecodeError):
+        evaluate._score_text("ABC", "abc", profile="google-tn")
+
+
+def test_scoring_rejects_a_profile_for_another_locale(tmp_path, monkeypatch):
+    evaluate = _evaluator()
+    table = tmp_path / "acronym_surfaces.json"
+    table.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "profile": "google-tn",
+                "locale": "ru",
+                "provenance": {
+                    "source_shards": [
+                        {"relative_path": "output-00000-of-00100", "sha256": "0" * 64}
+                    ]
+                },
+                "selection": {"minimum_support": 1, "parent_strength": 1},
+                "surfaces": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(table))
+    with pytest.raises(ValueError, match="is for ru, not en_US"):
+        evaluate._score_text("ABC", "abc", profile="google-tn")
+
+
 # ------------------------------------------------------------------ held-out shards
 
 # The corpus README's split: training 00-89, runtime eval 90-94, test 95-99.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 from icukit.abbreviation_recognize import AbbreviationDetector
@@ -144,6 +145,12 @@ def _profile_table(path, surfaces, *, minimum_support=1):
             {
                 "locale": "en",
                 "profile": "google-tn",
+                "provenance": {
+                    "source_shards": [
+                        {"relative_path": "output-00000-of-00100", "sha256": "0" * 64}
+                    ]
+                },
+                "schema_version": 1,
                 "selection": {"minimum_support": minimum_support, "parent_strength": 1},
                 "surfaces": surfaces,
             }
@@ -188,6 +195,35 @@ def test_google_tn_profile_requires_its_external_table(tmp_path, monkeypatch):
     lattice = resolve_lattice(list(detect("XYZ", _DETECTORS)), source_text="XYZ")
     with pytest.raises(FileNotFoundError, match="profile data is missing.*--profile-out"):
         verbalize_lattice(lattice, profile="google-tn")
+
+
+def test_google_tn_profile_reloads_a_replaced_table(tmp_path, monkeypatch):
+    from frend import verbalize
+
+    table = tmp_path / "acronym_surfaces.json"
+    replacement = tmp_path / "replacement.json"
+    _profile_table(table, {"GWR": {"bare": {"word": 5}}})
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(table))
+    verbalize._acronym_surface_priors_for.cache_clear()
+    assert verbalize._acronym_surface_priors()[0]["GWR"]["bare"] == {"word": 5}
+
+    _profile_table(replacement, {"GWR": {"bare": {"spelled": 5}}})
+    replacement.replace(table)
+    assert verbalize._acronym_surface_priors()[0]["GWR"]["bare"] == {"spelled": 5}
+
+
+def test_google_tn_profile_detects_deletion_after_loading(tmp_path, monkeypatch):
+    from frend import verbalize
+
+    table = tmp_path / "acronym_surfaces.json"
+    _profile_table(table, {"GWR": {"bare": {"word": 5}}})
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(table))
+    verbalize._acronym_surface_priors_for.cache_clear()
+    verbalize._acronym_surface_priors()
+    table.unlink()
+
+    with pytest.raises(FileNotFoundError, match="profile data is missing"):
+        verbalize._acronym_surface_priors()
 
 
 def test_surface_prior_abstains_below_its_selected_support(monkeypatch):
@@ -238,6 +274,21 @@ def test_acronym_surface_prior_keeps_suffix_subkeys_separate(monkeypatch):
     assert best(bare) == "measured:acronym-word"
     assert best(plural) == "measured:acronym-spelled"
     assert best(possessive) == "measured:acronym-word"
+
+
+def test_dotted_acronym_never_uses_the_bare_surface_row(monkeypatch):
+    from frend import verbalize
+
+    monkeypatch.setattr(
+        verbalize, "_acronym_priors", lambda **_kwargs: {"*": {"spelled": 10, "word": 0}}
+    )
+    monkeypatch.setattr(
+        verbalize,
+        "_acronym_surface_priors",
+        lambda **_kwargs: ({"US": {"bare": {"word": 100}}}, 1, 1),
+    )
+    forms = verbalize._with_acronym_readings("U.S.", (), "en_US", profile="google-tn")
+    assert [(form.text, form.weight) for form in forms] == [("u s", 1)]
 
 
 def test_capitals_the_lexicon_lists_without_expansion_are_spelled():
@@ -355,6 +406,66 @@ def test_the_builder_strips_and_separates_acronym_suffixes(tmp_path):
             "possessive": {"word": 1},
         }
     }
+
+
+def test_profile_builder_records_verified_shard_digests(tmp_path):
+    import hashlib
+
+    builder = _acronym_builder()
+    from corpus_inputs import VerifiedInput
+
+    shard = tmp_path / "output-00000-of-00100"
+    shard.write_text("PLAIN\tABC\tabc\n", encoding="utf-8")
+    digest = hashlib.sha256(shard.read_bytes()).hexdigest()
+    verified = VerifiedInput(
+        "google/tn-en_with_types",
+        shard.name,
+        digest,
+        "shippable-share-alike",
+        shard,
+    )
+    profile = builder.build_profile_document(tmp_path, inputs=[verified])
+    assert profile["schema_version"] == 1
+    assert profile["provenance"]["source_shards"] == [
+        {"relative_path": shard.name, "sha256": digest}
+    ]
+    assert profile["selection"]["selection_training_shards"][0] == "output-00000-of-00100"
+
+
+def test_profile_builder_refuses_a_supplied_shard_95(tmp_path):
+    builder = _acronym_builder()
+    from corpus_inputs import VerifiedInput
+
+    shard = tmp_path / "output-00095-of-00100"
+    shard.write_text("PLAIN\tABC\tabc\n", encoding="utf-8")
+    supplied = VerifiedInput("source", shard.name, "unused", "license", shard)
+    with pytest.raises(ValueError, match="training shards 00-89.*output-00095"):
+        builder.build_profile_document(tmp_path, inputs=[supplied])
+
+
+def test_profile_output_must_be_outside_the_repository(monkeypatch):
+    builder = _acronym_builder()
+    destination = Path(__file__).resolve().parents[1] / "frend" / "data" / "profile.json"
+    monkeypatch.setattr(
+        builder,
+        "_default_corpus_dir",
+        lambda: (_ for _ in ()).throw(AssertionError("corpus must not be opened")),
+    )
+    with pytest.raises(ValueError, match="--profile-out must be outside"):
+        builder.main(
+            [
+                "--locale",
+                "en_US",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "training",
+                "--receipt",
+                str(destination.with_suffix(".receipt.json")),
+                "--profile-out",
+                str(destination),
+            ]
+        )
 
 
 # Decomposed input is one run, with exact spans (fugu P3 review, finding 1).

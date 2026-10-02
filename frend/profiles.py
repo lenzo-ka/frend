@@ -14,7 +14,7 @@ _PROFILE_PATH_ENV = "FREND_GOOGLE_TN_PROFILE_PATH"
 def validate_profile(profile: str | None) -> str | None:
     """Return a supported profile name; the default ``None`` is general-purpose frend."""
     if profile not in (None, GOOGLE_TN):
-        raise ValueError(f"unknown conformance profile {profile!r}; expected {GOOGLE_TN!r} or None")
+        raise ValueError(f"unknown conformance profile {profile!r}; known profiles: {GOOGLE_TN!r}")
     return profile
 
 

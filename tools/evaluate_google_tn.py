@@ -49,6 +49,17 @@ _TEST_LINES = 100_000
 _ANY_CAP = 64
 
 
+def _validate_evaluation_profile(profile: str | None, locale: str) -> str | None:
+    """Validate the selected profile and its table before entering scoring recovery."""
+    from frend.profiles import GOOGLE_TN, validate_profile
+    from frend.verbalize import _acronym_surface_priors
+
+    profile = validate_profile(profile)
+    if profile == GOOGLE_TN:
+        _acronym_surface_priors(locale=locale)
+    return profile
+
+
 def _canonical_held_out_shard(value: str) -> str:
     if value not in google_tn_rows.HELD_OUT_SHARDS:
         raise argparse.ArgumentTypeError(
@@ -114,6 +125,7 @@ def _score_text(
     from frend.spoken_priors import normalize_spoken
     from frend.verbalize import verbalize_lattice
 
+    profile = _validate_evaluation_profile(profile, locale)
     target = normalize_spoken(target)
     try:
         detections = list(detect(written, _detectors(locale))) if written.strip() else []
@@ -298,6 +310,7 @@ def evaluate(
     skip_report_shard: bool = False,
     profile: str | None = None,
 ) -> dict:
+    profile = _validate_evaluation_profile(profile, locale)
     if skip_report_shard and held_out_shard == _TEST_FILE:
         raise ValueError(
             "skip_report_shard=True requires held_out_shard other than report shard 99"

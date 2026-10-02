@@ -40,7 +40,12 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from build_spoken_priors import _default_corpus_dir, _files  # noqa: E402
-from google_tn_rows import corpus_label, full_training_set, training_shards  # noqa: E402
+from google_tn_rows import (  # noqa: E402
+    TRAINING_SHARDS,
+    corpus_label,
+    full_training_set,
+    training_shards,
+)
 
 from frend.electronic import letter_key  # noqa: E402
 from frend.letters import cv_pattern, is_letter_run, is_roman, split_acronym_surface  # noqa: E402
@@ -83,6 +88,29 @@ def _sampled_inputs(inputs) -> list:
     return items[::10]
 
 
+def _profile_source_shards(inputs) -> list[dict[str, str]]:
+    """The verified identities used for the external profile, when supplied.
+
+    Direct-path fixture builds have no verification claim. Production builds receive
+    :class:`corpus_inputs.VerifiedInput` objects and record every pinned digest.
+    """
+    return [
+        {"relative_path": item.relative_path, "sha256": item.sha256}
+        for item in inputs
+        if isinstance(getattr(item, "sha256", None), str)
+    ]
+
+
+def _require_training_inputs(inputs) -> None:
+    outside = sorted(
+        item.relative_path for item in inputs if item.relative_path not in TRAINING_SHARDS
+    )
+    if outside:
+        raise ValueError(
+            f"profile inputs must be Google TN training shards 00-89; got {outside[0]!r}"
+        )
+
+
 def build_documents(
     corpus_dir: Path, *, inputs=None, minimum_support: int = SURFACE_MINIMUM_SUPPORT
 ) -> tuple[dict, dict]:
@@ -91,6 +119,8 @@ def build_documents(
     surfaces: dict[str, dict[str, Counter]] = defaultdict(lambda: defaultdict(Counter))
     acronyms = _lexicon_acronyms()
     all_files = list(inputs) if inputs is not None else _training_files(corpus_dir)
+    if inputs is not None:
+        _require_training_inputs(all_files)
     sampled_files = _sampled_inputs(all_files) if inputs is not None else _files(corpus_dir)
     sampled_names = {
         path.relative_path if inputs is not None else path.name for path in sampled_files
@@ -164,12 +194,14 @@ def build_documents(
         "keys": {key: dict(sorted(labels.items())) for key, labels in sorted(counts.items())},
     }
     profile = {
+        "schema_version": 1,
         "profile": GOOGLE_TN,
         "locale": "en",
         "provenance": {
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "corpus": corpus_label(corpus_dir),
             "license": "CC BY-SA 4.0",
+            "source_shards": _profile_source_shards(all_files),
             "shards": [
                 path.relative_path if inputs is not None else path.name for path in all_files
             ],
@@ -219,6 +251,16 @@ def _render(document: dict) -> str:
     return json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
 
 
+def _external_profile_output(path: Path) -> Path:
+    """Resolve ``path`` and refuse any profile artifact inside this repository."""
+    resolved = path.expanduser().resolve()
+    if resolved.is_relative_to(_REPO.resolve()):
+        raise ValueError(
+            f"--profile-out must be outside the repository and package tree: {resolved}"
+        )
+    return resolved
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--corpus-dir", type=Path, default=None)
@@ -235,6 +277,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
+    profile_out = _external_profile_output(args.profile_out or google_tn_profile_path())
     corpus_dir = args.corpus_dir or _default_corpus_dir()
     from corpus_inputs import verified_inputs, write_verification_receipt
 
@@ -246,7 +289,6 @@ def main(argv: list[str] | None = None) -> int:
         root=corpus_dir,
     )
     write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
-    profile_out = args.profile_out or google_tn_profile_path()
     document, profile_document = build_documents(corpus_dir, inputs=verified)
     rendered = _render(document)
     profile_rendered = _render(profile_document)
