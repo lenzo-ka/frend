@@ -34,7 +34,12 @@ from corpus_inputs import (  # noqa: E402
     verification_receipt,
     verified_inputs,
 )
-from evaluate_google_tn import _detectors, _in_context, _joined  # noqa: E402
+from evaluate_google_tn import (  # noqa: E402
+    _detectors,
+    _in_context,
+    _joined,
+    _validate_evaluation_profile,
+)
 
 SOURCE_ID = "google/tn-en_with_types"
 LOCALE = "en_US"
@@ -273,7 +278,9 @@ def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     )
 
 
-def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classification | None]:
+def _score_token(
+    row, before: str, after: str, profile: str | None = None
+) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
     from frend import resolve_lattice
@@ -292,6 +299,7 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classi
         verbalized = verbalize_lattice(
             resolve_lattice(detections, source_text=written, locale=LOCALE),
             context=_in_context(written, before, after),
+            profile=profile,
         )
         first = normalize_spoken(_joined_reading(verbalized.best_path, alternatives=False)[0])
         if first == target:
@@ -333,7 +341,7 @@ def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classi
 
 
 def _score_sentence(item) -> dict[str, object]:
-    _shard, _sentence_index, sentence = item
+    _shard, _sentence_index, sentence, profile = item
     first_count = 0
     any_count = 0
     capped_count = 0
@@ -344,7 +352,7 @@ def _score_sentence(item) -> dict[str, object]:
     for index, row in enumerate(sentence):
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
-        first, any_, capped, classification = _score_token(row, before, after)
+        first, any_, capped, classification = _score_token(row, before, after, profile)
         first_count += first
         any_count += any_
         capped_count += capped
@@ -482,6 +490,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--sentences-per-shard", type=int, default=MAX_SENTENCES_PER_SHARD)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
+    parser.add_argument("--profile", choices=("google-tn",), default=None)
     args = parser.parse_args(argv)
     if not 1 <= args.sentences_per_shard <= MAX_SENTENCES_PER_SHARD:
         parser.error(f"--sentences-per-shard must be in 1..{MAX_SENTENCES_PER_SHARD}")
@@ -489,6 +498,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--workers must be positive")
 
     corpus_dir = (args.corpus_dir or store_root(SOURCE_ID)).resolve(strict=True)
+    profile = _validate_evaluation_profile(args.profile, LOCALE)
     verified = verified_inputs(
         SOURCE_ID,
         [corpus_dir / name for name in SHARDS],
@@ -510,7 +520,9 @@ def main(argv: list[str] | None = None) -> int:
             "sampled_sentences": len(sample),
         }
         selected_indexes[corpus_input.relative_path] = [index for index, _rows in sample]
-        selected.extend((corpus_input.relative_path, index, rows) for index, rows in sample)
+        selected.extend(
+            (corpus_input.relative_path, index, rows, profile) for index, rows in sample
+        )
 
     fingerprint_payload = {
         "corpus_fingerprint": corpus_receipt["fingerprint"],
@@ -532,6 +544,7 @@ def main(argv: list[str] | None = None) -> int:
     receipt = {
         "schema_version": 1,
         "head": _head(),
+        "profile": profile,
         "versions": {
             "frend": _version("frend"),
             "icukit": _version("icukit"),

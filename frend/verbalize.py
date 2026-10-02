@@ -1690,14 +1690,29 @@ def _spoken_date(
 
 
 def _bare_number_ranked(
-    alternatives: Sequence[SpokenAlternative], detection: Mapping, locale: str
+    alternatives: Sequence[SpokenAlternative],
+    detection: Mapping,
+    locale: str,
+    *,
+    context: TextContext | None = None,
+    start: int = 0,
+    end: int = 0,
+    profile: str | None = None,
 ) -> tuple[SpokenAlternative, ...]:
-    """Rank a bare four-digit date/cardinal/digit choice by its measured century row."""
+    """Rank a bare four-digit date/cardinal/digit choice by its selected count row."""
     if not _bare_four_digit(detection, locale):
         return tuple(alternatives)
     written = str(detection.get("text", ""))
     table = load_number_priors(locale)
     assert table is not None
+    before = after = ""
+    if profile == GOOGLE_TN and context is not None:
+        absolute_start = context.offset + start
+        absolute_end = context.offset + end
+        left = context.text[:absolute_start].rstrip().rsplit(maxsplit=1)
+        right = context.text[absolute_end:].lstrip().split(maxsplit=1)
+        before = left[-1] if left else ""
+        after = right[0] if right else ""
 
     def choice(item: SpokenAlternative) -> str:
         if "numbering-year" in item.provenance:
@@ -1708,7 +1723,11 @@ def _bare_number_ranked(
 
     weighted = []
     for item in alternatives:
-        prior = table.lookup(written, choice(item))
+        prior = (
+            table.lookup_profile(written, choice(item), before, after, locale)
+            if profile == GOOGLE_TN
+            else table.lookup(written, choice(item))
+        )
         weighted.append(
             item if prior is None else SpokenAlternative(item.text, item.provenance, prior.share)
         )
@@ -2927,7 +2946,15 @@ def verbalize_edge(
             alternatives, kind, measurement_sub_key(kind, detection, locale=locale), locale
         )
         if path == "date" and type_ == "date:y":
-            alternatives = _bare_number_ranked(alternatives, detection, locale)
+            alternatives = _bare_number_ranked(
+                alternatives,
+                detection,
+                locale,
+                context=context,
+                start=edge.start,
+                end=edge.end,
+                profile=profile,
+            )
     weekday = _capture(detection, "weekday") if path == "date" else None
     if weekday is not None:
         # The weekday is written but not in the date's value; it leads every form,

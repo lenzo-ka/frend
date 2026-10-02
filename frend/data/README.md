@@ -291,5 +291,16 @@ not use this choice. `tools/build_number_priors.py` streams all training shards 
 stores raw class counts by the token's first two digits, plus an all-bucket fallback;
 there is no hand-set year or value window.
 
+The off-by-default `google-tn` profile additionally uses an aggregate key selected on
+shards 80--89 after fitting candidates on 00--79. The candidates combine decade,
+numeric structure (leading zero, round hundred, round thousand or ordinary), and the
+same coarse neighboring-token classes used by the context features. The selected
+decade + structure + left/right-neighbor table is then rebuilt from all 00--89; an
+unseen key falls back to the century row. Only raw class counts and selection totals
+ship in `number_priors.json`: a row counts the year, cardinal or digit alternative whose
+normalized text matches the corpus spoken form. No corpus text is retained, and this
+section's shared Google TN attribution applies. The additional table is consulted only
+for `profile="google-tn"`.
+
 The builder's `--check` mode verifies corpus identity and reproduces the shipped
 artifact byte for byte. The artifact retains no corpus text.
