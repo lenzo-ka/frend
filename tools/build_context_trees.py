@@ -1003,6 +1003,15 @@ def build(
             and problem not in EXCLUDED_PROBLEMS
         ]  # fmt: skip
         excluded += sum(problem in EXCLUDED_PROBLEMS for problem in range_kept)
+    exclusions_in_scope = {
+        problem
+        for problem in EXCLUDED_PROBLEMS
+        if range_examples is not None or not problem.startswith("range:")
+    }
+    unmatched_exclusions = sorted(exclusions_in_scope - seen.keys())
+    if unmatched_exclusions:
+        names = "\n".join(f"- {problem!r}" for problem in unmatched_exclusions)
+        raise SystemExit(f"excluded problem keys not seen in training:\n{names}")
     jobs.sort(key=lambda job: -len(job[1]))
     trees = {}
     blobs = {}
