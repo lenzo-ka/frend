@@ -44,7 +44,7 @@ SEED = 20260930
 MAX_SENTENCES_PER_SHARD = 20_000
 ANY_CAP = 64
 
-MISS_CLASSES = ("D", "S", "R", "V", "A", "P", "O", "E")
+MISS_CLASSES = ("D", "S", "R", "V", "P", "O", "E")
 FAMILIES = (
     "money",
     "fraction",
@@ -73,7 +73,6 @@ class MissEvidence:
     detection_spans: tuple[tuple[int, int], ...]
     detection_types: tuple[str, ...]
     exact_detection_types: tuple[str, ...]
-    corpus_non_reading: bool = False
     verbalizer_exception: bool = False
     leaf_texts: tuple[str, ...] = ()
 
@@ -178,8 +177,6 @@ def classify_miss(evidence: MissEvidence) -> Classification:
         return Classification("E")
     if evidence.expected in evidence.readings:
         return Classification("R")
-    if evidence.corpus_non_reading:
-        return Classification("A")
     plain_class = _plain_mismatch_class(evidence)
     if plain_class is not None:
         return Classification(plain_class)
@@ -257,18 +254,6 @@ def _bounded_readings(path) -> tuple[tuple[str, ...], bool]:
     return readings, combinations > ANY_CAP
 
 
-def _corpus_non_reading_indexes(sentence) -> frozenset[int]:
-    """Endpoint indexes in triples rejected by the range trainer's Ruling-A filter."""
-    from build_range_priors import credit
-
-    indexes = set()
-    for _found_sentence, at in google_tn_rows.range_triple_positions([sentence], LOCALE):
-        rows = sentence[at : at + 3]
-        if credit(*rows)[0] == "punctuation_dash":
-            indexes.update((at, at + 2))
-    return frozenset(indexes)
-
-
 def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     """All leaf alternatives the unselected choice carrier can already render."""
     from frend import compose_choices, resolve_choices
@@ -288,9 +273,7 @@ def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     )
 
 
-def _score_token(
-    row, before: str, after: str, *, corpus_non_reading: bool = False
-) -> tuple[bool, bool, bool, Classification | None]:
+def _score_token(row, before: str, after: str) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
     from frend import resolve_lattice
@@ -341,7 +324,6 @@ def _score_token(
         detection_spans=spans,
         detection_types=types,
         exact_detection_types=exact_types,
-        corpus_non_reading=corpus_non_reading,
         verbalizer_exception=verbalizer_exception,
     )
     if classify_miss(evidence).miss_class == "V":
@@ -359,13 +341,10 @@ def _score_sentence(item) -> dict[str, object]:
     family_counts: Counter[str] = Counter()
     fix_counts: Counter[str] = Counter()
     cross_counts: Counter[str] = Counter()
-    corpus_non_readings = _corpus_non_reading_indexes(sentence)
     for index, row in enumerate(sentence):
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
-        first, any_, capped, classification = _score_token(
-            row, before, after, corpus_non_reading=index in corpus_non_readings
-        )
+        first, any_, capped, classification = _score_token(row, before, after)
         first_count += first
         any_count += any_
         capped_count += capped

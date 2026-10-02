@@ -29,7 +29,6 @@ def _evidence(module, **changes):
         "detection_spans": (),
         "detection_types": (),
         "exact_detection_types": (),
-        "corpus_non_reading": False,
         "verbalizer_exception": False,
         "leaf_texts": (),
     }
@@ -37,23 +36,25 @@ def _evidence(module, **changes):
     return module.MissEvidence(**fields)
 
 
-def test_classifier_partitions_d_s_r_a_p_o_and_e():
+def test_classifier_partitions_d_s_r_v_p_o_and_e():
     triage = _triage()
-    assert triage.classify_miss(_evidence(triage)).miss_class == "D"
+    examples = [_evidence(triage)]
     wrong_span = _evidence(
         triage,
         detection_spans=((0, 3),),
         detection_types=("number:decimal",),
     )
-    assert triage.classify_miss(wrong_span).miss_class == "S"
+    examples.append(wrong_span)
     target = "january second two thousand three"
-    assert triage.classify_miss(_evidence(triage, readings=("wrong", target))).miss_class == "R"
-    artifact = _evidence(
-        triage,
-        corpus_non_reading=True,
-        detection_spans=((0, 6),),
+    examples.append(_evidence(triage, readings=("wrong", target)))
+    examples.append(
+        _evidence(
+            triage,
+            detection_spans=((0, 6),),
+            detection_types=("date:flexible",),
+            exact_detection_types=("date:flexible",),
+        )
     )
-    assert triage.classify_miss(artifact).miss_class == "A"
     respelling = _evidence(
         triage,
         corpus_class="PLAIN",
@@ -61,7 +62,7 @@ def test_classifier_partitions_d_s_r_a_p_o_and_e():
         expected="theater",
         normalized_surface="theatre",
     )
-    assert triage.classify_miss(respelling).miss_class == "P"
+    examples.append(respelling)
     other_plain = _evidence(
         triage,
         corpus_class="PLAIN",
@@ -69,9 +70,12 @@ def test_classifier_partitions_d_s_r_a_p_o_and_e():
         expected="p d f",
         normalized_surface="pdf",
     )
-    assert triage.classify_miss(other_plain).miss_class == "O"
+    examples.append(other_plain)
     exception = _evidence(triage, verbalizer_exception=True, detection_spans=((0, 6),))
-    assert triage.classify_miss(exception).miss_class == "E"
+    examples.append(exception)
+
+    classes = tuple(triage.classify_miss(evidence).miss_class for evidence in examples)
+    assert classes == triage.MISS_CLASSES == ("D", "S", "R", "V", "P", "O", "E")
 
 
 def test_r_is_derived_from_bounded_readings_and_cap_is_reported():
@@ -102,23 +106,6 @@ def test_r_is_derived_from_bounded_readings_and_cap_is_reported():
         ).miss_class
         == "V"
     )
-
-
-def test_ruling_a_indexes_reuse_the_range_training_verdict(monkeypatch):
-    triage = _triage()
-    import build_range_priors
-
-    sentence = (
-        ("CARDINAL", "1994", "one thousand nine hundred ninety four"),
-        ("PUNCT", "-", "sil"),
-        ("CARDINAL", "95", "ninety five"),
-    )
-    monkeypatch.setattr(
-        build_range_priors,
-        "credit",
-        lambda *_rows: ("punctuation_dash", None, None),
-    )
-    assert triage._corpus_non_reading_indexes(sentence) == frozenset({0, 2})
 
 
 def test_template_recombination_preserves_order_and_multiplicity():
