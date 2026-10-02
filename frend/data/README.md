@@ -118,12 +118,24 @@ Whether an acronym is spelled or said as a word, measured from the corpus by
 `tools/build_acronym_priors.py` (`--check` repeats the sample and compares byte for
 byte): an all-capitals token of two or more letters counts as spelled when the corpus
 files it as LETTERS ("FBI" "f b i") and as a word when it files it as PLAIN ("NASA").
-Counts are kept by the token's shape (`letter_key`: case, length, whether a vowel letter
-occurs), by its consonant-vowel pattern up to seven letters (`cv:cvc`), by the surface
-for an acronym icukit's lexicon lists (`surface:NASA`) and for a Roman numeral icukit
-reads (`roman:II`, which also counts the corpus's CARDINAL and ORDINAL readings as
-`numeral`), with `*` pooling all; no corpus text is stored. The shared attribution above
-applies.
+The packaged table remains sampled every tenth training shard: counts are kept by the
+token's shape (`letter_key`: case, length, whether a vowel letter occurs), by its
+consonant-vowel pattern up to seven letters (`cv:cvc`), by the surface for an acronym
+icukit's lexicon lists (`surface:NASA`) and for a Roman numeral icukit reads (`roman:II`,
+which also counts the corpus's CARDINAL and ORDINAL readings as `numeral`), with `*`
+pooling all. It stores no corpus surface inventory.
+
+The off-by-default `google-tn` conformance profile uses a separate exact-surface table
+built from the caller's own licensed corpus. `tools/build_acronym_priors.py` writes it
+outside the package to `--profile-out`; the default is
+`FREND_GOOGLE_TN_PROFILE_PATH`, then the user's cache under
+`frend/profiles/google-tn/acronym_surfaces.json`. It counts training shards 00--89,
+preserves case, and strips only the detector's suffix into `bare`, `plural`, or
+`possessive`. An exact row is used only at the development-selected support floor;
+below it, the established shape/CV ranking is unchanged. The file records the floor,
+smoothing strength, and the 00--79 training / 80--89 development split. Because it
+contains corpus surfaces verbatim it is never included in frend's package; the shared
+Google TN attribution and CC BY-SA 4.0 license above apply to that derived file.
 
 ## `en/spelled_token_priors.json`
 

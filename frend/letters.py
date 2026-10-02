@@ -42,6 +42,7 @@ __all__ = [
     "capital_script",
     "capitals",
     "cv_pattern",
+    "split_acronym_surface",
     "is_letter_run",
     "is_spelled_token",
     "is_roman",
@@ -142,6 +143,23 @@ def is_letter_run(token: str) -> bool:
     readings)."""
     units = capitals(token)
     return units is not None and len(units) >= 2 and capital_script(token) is not None
+
+
+def split_acronym_surface(token: str) -> tuple[str, str] | None:
+    """Return an acronym's NFC base and suffix subkey, or ``None``.
+
+    The suffix grammar is the detector's: a lower-case ``s`` is plural and either
+    apostrophe followed by ``s`` is possessive. An upper-case final ``S`` remains part
+    of the case-preserved base (``AIDS`` is bare, while ``AIDS's`` is possessive).
+    """
+    token = _NFC.normalize(token)
+    if token.endswith(("'s", "’s")):
+        letters, subkey = token[:-2], "possessive"
+    elif token.endswith("s"):
+        letters, subkey = token[:-1], "plural"
+    else:
+        letters, subkey = token, "bare"
+    return (letters, subkey) if is_letter_run(letters) else None
 
 
 @lru_cache(maxsize=4096)
