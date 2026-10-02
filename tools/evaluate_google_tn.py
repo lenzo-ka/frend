@@ -52,11 +52,11 @@ _ANY_CAP = 64
 def _validate_evaluation_profile(profile: str | None, locale: str) -> str | None:
     """Validate the selected profile and its table before entering scoring recovery."""
     from frend.profiles import GOOGLE_TN, validate_profile
-    from frend.verbalize import _acronym_surface_priors
+    from frend.verbalize import _google_tn_britishisms
 
     profile = validate_profile(profile)
     if profile == GOOGLE_TN:
-        _acronym_surface_priors(locale=locale)
+        _google_tn_britishisms(locale=locale)
     return profile
 
 
@@ -137,7 +137,7 @@ def _score_text(
     except FileNotFoundError:
         raise
     except Exception:  # noqa: BLE001 - a crash is a miss, counted, not hidden
-        return target == normalize_spoken(written), False
+        return False, False
 
     def passthrough(alternative) -> bool:
         return alternative.provenance == "surface:passthrough"

@@ -137,6 +137,20 @@ smoothing strength, and the 00--79 training / 80--89 development split. Because 
 contains corpus surfaces verbatim it is never included in frend's package; the shared
 Google TN attribution and CC BY-SA 4.0 license above apply to that derived file.
 
+The same profile's PLAIN-token spelling table is built by
+`tools/build_britishisms.py`. Its default external path is the acronym table's directory
+under `britishisms.json`, overridable with `FREND_GOOGLE_TN_BRITISHISMS_PATH`. Written
+forms retain separate lower, Title, and UPPER evidence and record converted and left-as-is
+counts over shards 00--89. Every differing pair is classified as respelling, diacritic
+removal, expansion/abbreviation, or other. Shards 00--79 train the exact pairs and a small
+fixed inventory of edit types (`our` to `or`, `ise` to `ize`, `re` to `er`, `ogue` to
+`og`, `mme` to `m`, doubled consonants, and related measured suffixes); shards 80--89
+choose which pair classes to admit, their support floors, the common edit-rate threshold,
+and whether lowercase evidence may back off another case shape. The loader requires
+digests for all 90 training shards and the profile refuses to score unless they exactly
+match the acronym table's verified shard digests. The default profile never reads either
+external table, so its output is unchanged.
+
 ## `en/spelled_token_priors.json`
 
 Spell-or-say exceptions for non-uppercase tokens of two through six letters in the
