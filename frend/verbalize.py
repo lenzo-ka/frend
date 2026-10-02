@@ -10,6 +10,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
+from difflib import SequenceMatcher
 from functools import cache, lru_cache
 from itertools import product
 from pathlib import Path
@@ -31,6 +32,7 @@ from frend.abbreviation_variants import (
     measures_spelled,
     upper_variant_expansions,
 )
+from frend.britishisms import load_britishisms, respell_from_table
 from frend.context import (
     CONTEXT_THRESHOLD,
     ContextChoice,
@@ -3020,6 +3022,66 @@ def verbalize_edge(
     )
 
 
+def _respelling_chunks(source: str, target: str) -> tuple[str, ...]:
+    """Align ``target`` onto ``source`` code points while preserving unit geometry."""
+    chunks = [""] * len(source)
+    for tag, left_start, _left_end, right_start, right_end in SequenceMatcher(
+        None, source, target
+    ).get_opcodes():
+        if tag == "equal":
+            for offset, char in enumerate(target[right_start:right_end]):
+                chunks[left_start + offset] = char
+        elif tag == "replace":
+            at = left_start if left_start < len(chunks) else len(chunks) - 1
+            if at >= 0:
+                chunks[at] += target[right_start:right_end]
+        elif tag == "insert":
+            at = max(0, left_start - 1)
+            if chunks:
+                chunks[at] += target[right_start:right_end]
+    return tuple(chunks)
+
+
+def _respell_passthrough_words(units, edge_ids, edges, source_text, table):
+    """Respell complete alphabetic passthrough runs, leaving spoken readings untouched."""
+    changed = list(units)
+    at = 0
+    while at < len(edge_ids):
+        edge = edges[edge_ids[at]]
+        if edge.kind != "passthrough" or not source_text[edge.start : edge.end].isalpha():
+            at += 1
+            continue
+        end = at + 1
+        last = edge.end
+        while end < len(edge_ids):
+            following = edges[edge_ids[end]]
+            if (
+                following.kind != "passthrough"
+                or following.start != last
+                or not source_text[following.start : following.end].isalpha()
+            ):
+                break
+            last = following.end
+            end += 1
+        word = source_text[edge.start : last]
+        if (edge.start and source_text[edge.start - 1].isalpha()) or (
+            last < len(source_text) and source_text[last].isalpha()
+        ):
+            at = end
+            continue
+        converted = respell_from_table(word, table)
+        if converted != word:
+            for index, chunk in zip(
+                range(at, end), _respelling_chunks(word, converted), strict=True
+            ):
+                changed[index] = dataclasses.replace(
+                    changed[index],
+                    alternatives=(SpokenAlternative(chunk, "surface:passthrough"),),
+                )
+        at = end
+    return tuple(changed)
+
+
 def verbalize_lattice(
     lattice: ReadingLattice,
     *,
@@ -3035,30 +3097,63 @@ def verbalize_lattice(
     """
     effective = lattice.locale
     profile = validate_profile(profile)
+    britishisms = None
     if profile == GOOGLE_TN:
         _acronym_surface_priors(locale=effective)
+        britishisms = load_britishisms(locale=effective)
     if locale is not None and canonical_locale(locale) != effective:
         raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
     edges = {edge.id: edge for edge in lattice.edges}
-    paths = tuple(
-        VerbalizedPath(
-            path.rank,
-            path.edge_ids,
-            units := tuple(
-                verbalize_edge(
-                    edges[edge_id],
-                    source_text=lattice.source_text,
-                    locale=effective,
-                    supplements=supplements,
-                    context=context,
-                    profile=profile,
-                )
-                for edge_id in path.edge_ids
-            ),
-            " ".join(unit.best.text for unit in units),
+    if britishisms is None:
+        paths = tuple(
+            VerbalizedPath(
+                path.rank,
+                path.edge_ids,
+                units := tuple(
+                    verbalize_edge(
+                        edges[edge_id],
+                        source_text=lattice.source_text,
+                        locale=effective,
+                        supplements=supplements,
+                        context=context,
+                        profile=profile,
+                    )
+                    for edge_id in path.edge_ids
+                ),
+                " ".join(unit.best.text for unit in units),
+            )
+            for path in lattice.paths
         )
-        for path in lattice.paths
-    )
+        by_rank = {path.rank: path for path in paths}
+        return VerbalizedLattice(
+            paths, by_rank[lattice.best_path.rank], lattice.ambiguous, lattice.truncated
+        )
+    paths = []
+    for path in lattice.paths:
+        units = tuple(
+            verbalize_edge(
+                edges[edge_id],
+                source_text=lattice.source_text,
+                locale=effective,
+                supplements=supplements,
+                context=context,
+                profile=profile,
+            )
+            for edge_id in path.edge_ids
+        )
+        if britishisms is not None and lattice.source_text is not None:
+            units = _respell_passthrough_words(
+                units, path.edge_ids, edges, lattice.source_text, britishisms
+            )
+        paths.append(
+            VerbalizedPath(
+                path.rank,
+                path.edge_ids,
+                units,
+                " ".join(unit.best.text for unit in units),
+            )
+        )
+    paths = tuple(paths)
     by_rank = {path.rank: path for path in paths}
     return VerbalizedLattice(
         paths, by_rank[lattice.best_path.rank], lattice.ambiguous, lattice.truncated

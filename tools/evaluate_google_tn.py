@@ -51,12 +51,14 @@ _ANY_CAP = 64
 
 def _validate_evaluation_profile(profile: str | None, locale: str) -> str | None:
     """Validate the selected profile and its table before entering scoring recovery."""
+    from frend.britishisms import load_britishisms
     from frend.profiles import GOOGLE_TN, validate_profile
     from frend.verbalize import _acronym_surface_priors
 
     profile = validate_profile(profile)
     if profile == GOOGLE_TN:
         _acronym_surface_priors(locale=locale)
+        load_britishisms(locale=locale)
     return profile
 
 

@@ -157,6 +157,28 @@ def _profile_table(path, surfaces, *, minimum_support=1):
         ),
         encoding="utf-8",
     )
+    path.with_name("britishisms.json").write_text(
+        json.dumps(
+            {
+                "locale": "en",
+                "pairs": {},
+                "profile": "google-tn",
+                "provenance": {
+                    "source_shards": [
+                        {
+                            "relative_path": f"output-{index:05d}-of-00100",
+                            "sha256": "0" * 64,
+                        }
+                        for index in range(90)
+                    ]
+                },
+                "rules": {},
+                "schema_version": 1,
+                "selection": {"minimum_support": 1, "rule_rate_threshold": 1.0},
+            }
+        ),
+        encoding="utf-8",
+    )
 
 
 def test_profile_off_is_the_main_output_byte_for_byte(monkeypatch):
