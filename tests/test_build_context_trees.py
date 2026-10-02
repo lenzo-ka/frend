@@ -236,16 +236,24 @@ def _range_set(root: Path, *, shard: str = "00005", count: int = 60) -> Path:
     return root
 
 
-def test_range_problems_are_trained():
-    """The shipped index holds a tree for each separator class's range problem, each
-    naming the range set's own fingerprint and relevance; the main set's fingerprint is
-    unchanged."""
+def test_range_problem_is_trained_and_dormant_siblings_are_excluded():
+    """The useful range tree ships; dormant range keys are stated exclusions."""
+    builder = _builder()
     index = json.loads((_CONTEXT / "index.json").read_text(encoding="utf-8"))
-    for problem in ("range:range", "range:ratio", "range:dimension"):
-        entry = index["trees"][problem]
-        assert entry["examples_fingerprint"] == index["range_examples"]["fingerprint"]
-        assert entry["relevance"]["dropped_filter"].startswith("punctuation_dash:")
-        assert "R" in entry["families"]
+    entry = index["trees"]["range:range"]
+    assert entry["examples_fingerprint"] == index["range_examples"]["fingerprint"]
+    assert entry["relevance"]["dropped_filter"].startswith("punctuation_dash:")
+    assert "R" in entry["families"]
+    assert index["excluded_problems"] == dict(sorted(builder.EXCLUDED_PROBLEMS.items()))
+    assert len(builder._DORMANT_PROBLEMS) == 54
+    assert len(builder.EXCLUDED_PROBLEMS) == 56
+    assert "range:range" not in builder.EXCLUDED_PROBLEMS
+    for problem, measured in {
+        "range:ratio": "0/169 overrides",
+        "range:dimension": "0/12 overrides",
+    }.items():
+        assert problem not in index["trees"]
+        assert measured in index["excluded_problems"][problem]
     assert index["provenance"]["examples"]["fingerprint"] == "d1fcf656b9eb98dc"
     assert index["range_examples"]["fingerprint"] != "d1fcf656b9eb98dc"
 

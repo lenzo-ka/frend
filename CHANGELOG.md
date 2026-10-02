@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Prune context trees by measured held-out use: omit 54 dormant P7 problem keys and
+  the dormant `range:ratio` and `range:dimension` problems while retaining the useful
+  `range:range` tree and its runtime reranking.
 - Tests print each test's duration beside its result (pytest `console_output_style = "times"`), locally and in CI, so a slow path shows up where it runs.
 - Raised the tiergraph floor to `tiergraph>=0.4.2`, which caches each graph's fold plan and
   sets the Decimal context once per fold: the same output, with far less fixed cost per fold.

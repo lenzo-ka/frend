@@ -305,6 +305,17 @@ def test_four_plus_two_prior_order(no_context_trees):
     assert "nineteen ninety two to ninety three" in [r for r, _ in readings]
 
 
+def test_joined_year_span_uses_the_range_tree_in_running_text():
+    """The retained ``range:range`` tree fixes a joined span from the held-out probe."""
+    before = "Count Alessandro Contini Bonacossi ( 18 March"
+    after = "October 1955 ) was an Italian politician , art collector , dealer and philatelist ."
+    (unit,) = _token_in_sentence(before, "1878-22", after)
+    assert normalize_spoken(unit.best.text) == "eighteen seventy eight to twenty two"
+    assert unit.context is not None
+    assert unit.context.problem == "range:range"
+    assert unit.context.applied
+
+
 def test_silence_is_offered_inside_a_written_range():
     """The silent connector is offered inside a written range (main offered "to" and the
     minus sign only)."""

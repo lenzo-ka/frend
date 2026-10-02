@@ -251,6 +251,10 @@ against its receipt) and compares byte for byte, so it needs the kalman mount.
   the range family of features added; `index.json`'s `range_examples` names that set,
   and each range tree its fingerprint. The main set's trees are built exactly as
   without it (`--check --no-range-examples` compares them alone).
+- `index.json` also states exact problem keys omitted after held-out measurement. The
+  retained `range:range` tree is trained, indexed, and consulted at runtime;
+  `range:ratio`, `range:dimension`, and 54 P7 problem keys are excluded because they
+  made no override on seeded samples of both shards 90--94 and shard 95.
 - `trees/<id>.cart`: the trees, cartlet model format 2, each naming its source and the
   set's fingerprint in its metadata; read with cartlet's dependency-free runner.
 - `festival_classes.json`: Festival's hand-curated lists (`lib/tokenpos.scm`: regnal

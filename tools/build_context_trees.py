@@ -1,3 +1,4 @@
+# ruff: noqa: E501 -- exact measured problem keys are deliberately written in full.
 """Train frend's context trees (``frend/data/en/context/``) from the stored example set.
 
 The example set is P7 stage A's (``frend/google/tn-en_with_types/p7-examples/<fingerprint>``
@@ -31,6 +32,8 @@ every record's origin checked to be training shards, 00 to 89) and, reproducibly
    over families B, F, W and C (``frend.context.features``), written as ``.cart``
    (``.json`` where a tree does not fit ``.cart``'s string table). A problem whose
    every example keeps frend's first choice ships no tree: it could never change one.
+   ``EXCLUDED_PROBLEMS`` also omits exact problem keys measured as dormant on both the
+   runtime-eval and acceptance samples, and states the measurement for each exclusion.
 
 **Range problems** (the ranges plan's P6) come from their own stored set, with its own
 receipt and fingerprint (``--range-examples``; derived by ``--derive-range-examples``
@@ -45,7 +48,9 @@ and its label the source of the first reading that says the corpus's. At most 60
 problem, drawn with the seed (a generator of its own, so the main set's draws are
 unchanged); trained over families B, F, W, C and R (``frend.context.
 range_example_features``), with the main set's frequent words. The main set, its
-frequent words and its trees are exactly as they are without the range set.
+frequent words and its trees are exactly as they are without the range set. The useful
+``range:range`` problem remains trained; the measured-dormant ``range:ratio`` and
+``range:dimension`` problems are exact-key exclusions.
 
 Writes ``index.json`` (provenance, the frequent words, the connectors, and each tree's
 file, size and label counts) and ``trees/`` beside ``festival_classes.json``, which is
@@ -110,10 +115,187 @@ _MOUNT_TIMEOUT = "900"
 _FILES = ("receipt.json", "examples.jsonl.gz", "dash_examples.jsonl.gz")
 _RANGE_FILES = ("receipt.json", "range_examples.jsonl.gz")
 RANGE_EXAMPLES_ROOT = Path("/Volumes/k02/processed/frend/google/tn-en_with_types/p6-range-examples")
-DEFAULT_RANGE_EXAMPLES = RANGE_EXAMPLES_ROOT / "548d6f67beab4223"
+DEFAULT_RANGE_EXAMPLES = RANGE_EXAMPLES_ROOT / "36373cb1123ca6d5"
 RANGE_DERIVATION = "frend/google/tn-en_with_types/p6-range-examples"
 # P7's example shards, the range set's too.
 RANGE_SHARDS = tuple(f"output-{index:05d}-of-00100" for index in range(5, 90, 10))
+
+# Exact problem-key exclusions measured on seed 20260930: 20,000 sentences per shard,
+# selection fingerprints 7418d655... (runtime-eval 90--94) and a09b04d6... (shard 95).
+# A dormant tree is omitted only when it made no override in either population.
+_DORMANT_PROBLEMS = {
+    "cldr-symbol:bang\tcldr-symbol:exclamation\tcldr-symbol:exclamation mark\tcldr-symbol:mark\tcldr-symbol:point\tsurface:silence": (
+        377,
+        82,
+    ),
+    "cldr-symbol:colon\tsurface:silence": (8168, 1603),
+    "cldr-symbol:comma\tsurface:silence": (54594, 10811),
+    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL": (
+        677,
+        149,
+    ),
+    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US": (
+        72,
+        16,
+    ),
+    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": (
+        8,
+        0,
+    ),
+    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose\ticu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": (
+        3611,
+        776,
+    ),
+    "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year\ticu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": (
+        95,
+        14,
+    ),
+    "icu-name:letter\tsurface:silence": (5176, 875),
+    "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": (
+        2,
+        2,
+    ),
+    "icu-rbnf:%spellout-cardinal\ticu-rbnf:%spellout-cardinal+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-year": (
+        7,
+        2,
+    ),
+    "icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering": (
+        0,
+        0,
+    ),
+    "icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US+lexical:en_US": (
+        0,
+        0,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": (
+        15,
+        4,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": (
+        98,
+        14,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US#2": (
+        20,
+        3,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-compact:long+lexical:en_US": (
+        6,
+        3,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": (
+        9,
+        0,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US": (
+        32,
+        8,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US#2": (
+        120,
+        26,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+lexical:en_US": (
+        13,
+        4,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US": (
+        2,
+        0,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US\ticu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US#2": (
+        8,
+        2,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": (
+        9,
+        2,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": (
+        42,
+        13,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": (
+        1,
+        3,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US": (
+        43,
+        7,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": (
+        0,
+        0,
+    ),
+    "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US\ticu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US#2": (
+        7,
+        0,
+    ),
+    "icu-rbnf:%spellout-numbering+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone\ticu-rbnf:%spellout-numbering+lexical:en_US+icukit-abbreviation:time-zone#2\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters\ticu-rbnf:%spellout-numbering+lexical:en_US+surface:letters#2\ticu-rbnf:%spellout-numbering+surface:letters": (
+        1,
+        0,
+    ),
+    "icukit-abbreviation:given-name\tmeasured:acronym-spelled\tmeasured:acronym-word": (2, 0),
+    "icukit-abbreviation:month/date\tmeasured:acronym-spelled\tmeasured:acronym-word": (6, 2),
+    "icukit-abbreviation:month/date\tsurface:as-written": (80, 19),
+    "icukit-abbreviation:number/precedes-number\tmeasured:acronym-spelled\tmeasured:acronym-word": (
+        17,
+        3,
+    ),
+    "icukit-abbreviation:organization\tmeasured:acronym-spelled\tmeasured:acronym-word": (584, 127),
+    "icukit-abbreviation:organization\tsurface:as-written": (18, 4),
+    "icukit-abbreviation:organization/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": (
+        136,
+        21,
+    ),
+    "icukit-abbreviation:organization/follows-name\tsurface:as-written": (251, 44),
+    "icukit-abbreviation:organization/follows-name\tsurface:as-written\tsurface:spelled": (132, 22),
+    "icukit-abbreviation:other\ticukit-abbreviation:other#2\tmeasured:acronym-spelled\tmeasured:acronym-word": (
+        180,
+        28,
+    ),
+    "icukit-abbreviation:other\tmeasured:acronym-spelled\tmeasured:acronym-word": (1205, 228),
+    "icukit-abbreviation:other/measurement\ticukit-abbreviation:place/precedes-name\tsurface:as-written\tsurface:spelled": (
+        9,
+        1,
+    ),
+    "icukit-abbreviation:phrase\tsurface:as-written\tsurface:spelled": (116, 26),
+    "icukit-abbreviation:place/address\ticukit-abbreviation:saint/precedes-name\tsurface:as-written\tsurface:spelled": (
+        3,
+        1,
+    ),
+    "icukit-abbreviation:place/address\tmeasured:acronym-spelled\tmeasured:acronym-word": (1, 0),
+    "icukit-abbreviation:region\tmeasured:acronym-spelled\tmeasured:acronym-word": (36, 5),
+    "icukit-abbreviation:region\tsurface:as-written\tsurface:spelled": (16, 4),
+    "icukit-abbreviation:thoroughfare/address\tsurface:as-written": (14, 5),
+    "icukit-abbreviation:title\tmeasured:acronym-spelled\tmeasured:acronym-word": (73, 14),
+    "icukit-abbreviation:title\tsurface:as-written\tsurface:spelled": (1, 0),
+    "icukit-abbreviation:title/follows-name\ticukit-abbreviation:title/precedes-name\tmeasured:acronym-spelled\tmeasured:acronym-word": (
+        6,
+        0,
+    ),
+    "icukit-abbreviation:title/follows-name\tmeasured:acronym-spelled\tmeasured:acronym-word": (
+        12,
+        1,
+    ),
+    "icukit-abbreviation:title/precedes-name\tsurface:as-written\tsurface:spelled": (200, 34),
+    "measured:electronic\tmeasured:electronic#2": (3, 0),
+}
+EXCLUDED_PROBLEMS = {
+    **{
+        problem: (
+            f"dormant: 0/{runtime_n} overrides on seeded runtime-eval shards 90-94; "
+            f"0/{acceptance_n} on seeded acceptance shard 95"
+        )
+        for problem, (runtime_n, acceptance_n) in _DORMANT_PROBLEMS.items()
+    },
+    "range:ratio": (
+        "dormant: 0/169 overrides on seeded runtime-eval shards 90-94; 0/27 on seeded acceptance shard 95"
+    ),
+    "range:dimension": (
+        "dormant: 0/12 overrides on seeded runtime-eval shards 90-94; 0/2 on seeded acceptance shard 95"
+    ),
+}
 
 
 # ---------------------------------------------------------------------------------------
@@ -796,6 +978,7 @@ def build(
         for problem in sorted(kept)
         if len(kept[problem]) >= MIN_EXAMPLES
         and any(ex["label"] != ex["first"] for ex in kept[problem])
+        and problem not in EXCLUDED_PROBLEMS
     ]
     skipped_small = sum(1 for p in kept if len(kept[p]) < MIN_EXAMPLES)
     skipped_first = sum(
@@ -803,6 +986,7 @@ def build(
         for p in kept
         if len(kept[p]) >= MIN_EXAMPLES and all(ex["label"] == ex["first"] for ex in kept[p])
     )
+    excluded = sum(problem in EXCLUDED_PROBLEMS for problem in kept)
     ranged = None
     if range_examples is not None:
         ranged = _range_trees(
@@ -816,7 +1000,9 @@ def build(
             for problem in sorted(range_kept)
             if len(range_kept[problem]) >= MIN_EXAMPLES
             and any(ex["label"] != ex["first"] for ex in range_kept[problem])
+            and problem not in EXCLUDED_PROBLEMS
         ]  # fmt: skip
+        excluded += sum(problem in EXCLUDED_PROBLEMS for problem in range_kept)
     jobs.sort(key=lambda job: -len(job[1]))
     trees = {}
     blobs = {}
@@ -904,10 +1090,14 @@ def build(
                 "trees": len(trees),
                 "too_few_examples": skipped_small,
                 "always_first": skipped_first,
+                "excluded": excluded,
             },
         },
         "frequent_words": frequent_words,
         "connectors": dict(sorted(connectors.items())),
+        "excluded_problems": {
+            problem: EXCLUDED_PROBLEMS[problem] for problem in sorted(EXCLUDED_PROBLEMS)
+        },
         **(
             {
                 "range_examples": {
