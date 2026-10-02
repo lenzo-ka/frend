@@ -1,0 +1,509 @@
+"""Classify first-choice misses on Google TN runtime-eval shards.
+
+Only aggregate counts leave this process. Corpus text is used transiently by workers
+and is never written to the report or receipt.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.metadata
+import json
+import os
+import random
+import subprocess
+import sys
+from collections import Counter
+from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass, replace
+from itertools import islice, product
+from pathlib import Path
+
+_REPO = Path(__file__).resolve().parents[1]
+_TOOLS = Path(__file__).resolve().parent
+for _path in (_REPO, _TOOLS):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
+
+import google_tn_rows  # noqa: E402
+from corpus_inputs import (  # noqa: E402
+    VerifiedInput,
+    open_verified,
+    store_root,
+    verification_receipt,
+    verified_inputs,
+)
+from evaluate_google_tn import _detectors, _in_context, _joined  # noqa: E402
+
+SOURCE_ID = "google/tn-en_with_types"
+LOCALE = "en_US"
+POOLS = ("runtime_eval",)
+SHARDS = tuple(f"output-{number:05d}-of-00100" for number in range(90, 95))
+SEED = 20260930
+MAX_SENTENCES_PER_SHARD = 20_000
+ANY_CAP = 64
+
+MISS_CLASSES = ("D", "S", "R", "V", "A")
+FAMILIES = (
+    "money",
+    "fraction",
+    "measure",
+    "date",
+    "time",
+    "range",
+    "telephone/ID",
+    "cardinal/digit",
+    "letters",
+    "other",
+)
+FIX_KINDS = ("recognition change", "template-fixable", "new entry", "unknown")
+_TEMPLATE_WORDS = frozenset({"and", "minus", "of", "over", "point", "sil", "the", "to"})
+
+
+@dataclass(frozen=True)
+class MissEvidence:
+    """The decision surface used by :func:`classify_miss`."""
+
+    corpus_class: str
+    written: str
+    expected: str
+    normalized_surface: str
+    expected_offered: bool
+    detection_spans: tuple[tuple[int, int], ...]
+    detection_types: tuple[str, ...]
+    exact_detection_types: tuple[str, ...]
+    leaf_texts: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class Classification:
+    miss_class: str
+    family: str | None = None
+    fix_kind: str | None = None
+
+
+def _is_artifact(evidence: MissEvidence) -> bool:
+    """Conservative Ruling-A predicate: only demonstrable non-readings."""
+    if evidence.corpus_class == "PLAIN" and evidence.expected != evidence.normalized_surface:
+        return True
+    return (
+        evidence.corpus_class in {"PLAIN", "VERBATIM"}
+        and bool(evidence.written.strip())
+        and evidence.expected == ""
+    )
+
+
+def _family(evidence: MissEvidence) -> str:
+    types = evidence.detection_types
+    if any(type_.startswith("range:") for type_ in types):
+        return "range"
+    by_class = {
+        "MONEY": "money",
+        "FRACTION": "fraction",
+        "MEASURE": "measure",
+        "DATE": "date",
+        "TIME": "time",
+        "TELEPHONE": "telephone/ID",
+        "ADDRESS": "telephone/ID",
+        "CARDINAL": "cardinal/digit",
+        "DIGIT": "cardinal/digit",
+        "DECIMAL": "cardinal/digit",
+        "ORDINAL": "cardinal/digit",
+        "LETTERS": "letters",
+    }
+    family = by_class.get(evidence.corpus_class)
+    if family is not None:
+        return family
+    if any(type_.startswith(("letter", "letters", "abbreviation", "acronym")) for type_ in types):
+        return "letters"
+    return "other"
+
+
+def _right_recognition_family(family: str, exact_types: tuple[str, ...]) -> bool:
+    prefixes = {
+        "money": ("currency", "money"),
+        "fraction": ("fraction",),
+        "measure": ("measure", "percent", "unit"),
+        "date": ("date",),
+        "time": ("duration", "time"),
+        "range": ("range",),
+        "telephone/ID": ("id", "phone", "telephone"),
+        "cardinal/digit": ("cardinal", "digit", "number", "ordinal"),
+        "letters": ("abbreviation", "acronym", "letter", "letters"),
+        "other": (),
+    }[family]
+    return family == "other" or any(type_.startswith(prefixes) for type_ in exact_types)
+
+
+def _can_recombine(expected: str, leaf_texts: tuple[str, ...]) -> bool:
+    target_words = set(expected.split()) - _TEMPLATE_WORDS
+    if not target_words:
+        return False
+    leaf_words = {word for text in leaf_texts for word in text.split()}
+    return target_words <= leaf_words
+
+
+def _fix_kind(evidence: MissEvidence, family: str) -> str:
+    if not _right_recognition_family(family, evidence.exact_detection_types):
+        return "recognition change"
+    if _can_recombine(evidence.expected, evidence.leaf_texts):
+        return "template-fixable"
+    if family in {"money", "fraction", "measure", "letters", "other"}:
+        return "new entry"
+    return "unknown"
+
+
+def classify_miss(evidence: MissEvidence) -> Classification:
+    """Classify one known first-choice miss as D, S, R, V, or A."""
+    if evidence.expected_offered:
+        return Classification("R")
+    if _is_artifact(evidence):
+        return Classification("A")
+    if not evidence.detection_spans:
+        return Classification("D")
+    full_span = (0, len(evidence.written))
+    if full_span not in evidence.detection_spans:
+        return Classification("S")
+    family = _family(evidence)
+    return Classification("V", family, _fix_kind(evidence, family))
+
+
+def _reservoir_sample(
+    corpus_input: VerifiedInput, count: int, seed: int
+) -> tuple[list[tuple[int, tuple[tuple[str, str, str], ...]]], int]:
+    """Uniformly sample at most ``count`` complete sentences from one verified shard."""
+    rng = random.Random(seed)
+    sample: list[tuple[int, tuple[tuple[str, str, str], ...]]] = []
+    current: list[tuple[str, str, str]] = []
+    sentence_index = 0
+
+    def consider(rows: list[tuple[str, str, str]]) -> None:
+        nonlocal sentence_index
+        item = (sentence_index, tuple(rows))
+        if sentence_index < count:
+            sample.append(item)
+        else:
+            replacement = rng.randrange(sentence_index + 1)
+            if replacement < count:
+                sample[replacement] = item
+        sentence_index += 1
+
+    with open_verified(corpus_input) as handle:
+        for line in handle:
+            parts = line.rstrip("\n").split("\t")
+            if parts[0] == "<eos>":
+                if current:
+                    consider(current)
+                current = []
+            elif len(parts) >= 3:
+                current.append((parts[0], parts[1], parts[2]))
+    if current:
+        consider(current)
+    sample.sort(key=lambda item: item[0])
+    return sample, sentence_index
+
+
+def _joined_reading(path, *, alternatives: bool) -> list[str]:
+    def passthrough(alternative) -> bool:
+        return alternative.provenance == "surface:passthrough"
+
+    if not alternatives:
+        return [_joined((unit.best.text, passthrough(unit.best)) for unit in path.units)]
+    options = [
+        [(alternative.text, passthrough(alternative)) for alternative in unit.alternatives]
+        for unit in path.units
+    ]
+    return [_joined(combination) for combination in islice(product(*options), ANY_CAP)]
+
+
+def _leaf_texts(detections, written: str) -> tuple[str, ...]:
+    """All leaf alternatives the unselected choice carrier can already render."""
+    from frend import compose_choices, resolve_choices
+    from frend.spoken_priors import normalize_spoken
+
+    try:
+        graph = compose_choices(
+            resolve_choices(detections, source_text=written, locale=LOCALE), locale=LOCALE
+        )
+    except Exception:  # noqa: BLE001 - unknown is safer than hiding a miss
+        return ()
+    return tuple(
+        normalize_spoken(alternative.text)
+        for unit in graph.units
+        if unit.provenance is not None
+        for alternative in unit.alternatives
+    )
+
+
+def _score_token(row, before: str, after: str) -> tuple[bool, bool, Classification | None]:
+    from icukit.detectors import detect
+
+    from frend import resolve_lattice
+    from frend.spoken_priors import normalize_spoken
+    from frend.verbalize import verbalize_lattice
+
+    corpus_class, written, spoken = row
+    target = normalize_spoken(google_tn_rows.expected(corpus_class, written, spoken))
+    surface = normalize_spoken(written)
+    detections = []
+    try:
+        detections = list(detect(written, _detectors(LOCALE))) if written.strip() else []
+        verbalized = verbalize_lattice(
+            resolve_lattice(detections, source_text=written, locale=LOCALE),
+            context=_in_context(written, before, after),
+        )
+        first = normalize_spoken(_joined_reading(verbalized.best_path, alternatives=False)[0])
+        if first == target:
+            return True, True, None
+        offered = any(
+            normalize_spoken(candidate) == target
+            for path in verbalized.paths
+            for candidate in _joined_reading(path, alternatives=True)
+        )
+    except Exception:  # noqa: BLE001 - evaluator semantics count a crash as a miss
+        first = surface
+        if first == target:
+            return True, True, None
+        offered = False
+
+    spans = tuple(
+        (int(detection.get("start", 0)), int(detection.get("end", 0))) for detection in detections
+    )
+    types = tuple(str(detection.get("type", "")) for detection in detections)
+    exact_types = tuple(
+        type_ for type_, span in zip(types, spans, strict=True) if span == (0, len(written))
+    )
+    evidence = MissEvidence(
+        corpus_class=corpus_class,
+        written=written,
+        expected=target,
+        normalized_surface=surface,
+        expected_offered=offered,
+        detection_spans=spans,
+        detection_types=types,
+        exact_detection_types=exact_types,
+    )
+    if classify_miss(evidence).miss_class == "V":
+        evidence = replace(evidence, leaf_texts=_leaf_texts(detections, written))
+    return False, offered, classify_miss(evidence)
+
+
+def _score_sentence(item) -> dict[str, object]:
+    _shard, _sentence_index, sentence = item
+    first_count = 0
+    any_count = 0
+    miss_counts: Counter[str] = Counter()
+    family_counts: Counter[str] = Counter()
+    fix_counts: Counter[str] = Counter()
+    cross_counts: Counter[str] = Counter()
+    for index, row in enumerate(sentence):
+        before = " ".join(other[1] for other in sentence[:index])
+        after = " ".join(other[1] for other in sentence[index + 1 :])
+        first, any_, classification = _score_token(row, before, after)
+        first_count += first
+        any_count += any_
+        if classification is None:
+            continue
+        miss_counts[classification.miss_class] += 1
+        if classification.miss_class == "V":
+            assert classification.family is not None and classification.fix_kind is not None
+            family_counts[classification.family] += 1
+            fix_counts[classification.fix_kind] += 1
+            cross_counts[f"{classification.family}\t{classification.fix_kind}"] += 1
+    return {
+        "tokens": len(sentence),
+        "first": first_count,
+        "any": any_count,
+        "sentence_first": first_count == len(sentence),
+        "miss_counts": dict(miss_counts),
+        "miss_sentences": sorted(miss_counts),
+        "family_counts": dict(family_counts),
+        "family_sentences": sorted(family_counts),
+        "fix_counts": dict(fix_counts),
+        "fix_sentences": sorted(fix_counts),
+        "cross_counts": dict(cross_counts),
+        "cross_sentences": sorted(cross_counts),
+    }
+
+
+def _entry(tokens: int, sentences: int, sampled_tokens: int) -> dict[str, int | float]:
+    return {
+        "tokens": tokens,
+        "share_sampled_tokens_pp": 100.0 * tokens / sampled_tokens if sampled_tokens else 0.0,
+        "sentences": sentences,
+    }
+
+
+def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
+    tokens = first = any_ = sentence_first = miss_sentence_total = 0
+    miss_tokens: Counter[str] = Counter()
+    miss_sentences: Counter[str] = Counter()
+    family_tokens: Counter[str] = Counter()
+    family_sentences: Counter[str] = Counter()
+    fix_tokens: Counter[str] = Counter()
+    fix_sentences: Counter[str] = Counter()
+    cross_tokens: Counter[str] = Counter()
+    cross_sentences: Counter[str] = Counter()
+    for result in results:
+        tokens += int(result["tokens"])
+        first += int(result["first"])
+        any_ += int(result["any"])
+        sentence_first += bool(result["sentence_first"])
+        miss_sentence_total += bool(result["miss_counts"])
+        miss_tokens.update(result["miss_counts"])
+        miss_sentences.update(result["miss_sentences"])
+        family_tokens.update(result["family_counts"])
+        family_sentences.update(result["family_sentences"])
+        fix_tokens.update(result["fix_counts"])
+        fix_sentences.update(result["fix_sentences"])
+        cross_tokens.update(result["cross_counts"])
+        cross_sentences.update(result["cross_sentences"])
+
+    misses = tokens - first
+    if sum(miss_tokens.values()) != misses:
+        raise AssertionError("miss classes do not partition first-choice misses")
+    if miss_tokens["R"] != any_ - first:
+        raise AssertionError("R count does not equal any-reading minus first-choice successes")
+    if sum(family_tokens.values()) != miss_tokens["V"]:
+        raise AssertionError("V families do not partition V")
+    if sum(fix_tokens.values()) != miss_tokens["V"]:
+        raise AssertionError("V fix kinds do not partition V")
+
+    return {
+        "sample": {"tokens": tokens, "sentences": sampled_sentences},
+        "accuracy": {
+            "first_choice_tokens": first,
+            "first_choice": first / tokens if tokens else 0.0,
+            "any_reading_tokens": any_,
+            "any_reading": any_ / tokens if tokens else 0.0,
+            "first_choice_sentences": sentence_first,
+            "first_choice_sentence_accuracy": (
+                sentence_first / sampled_sentences if sampled_sentences else 0.0
+            ),
+        },
+        "misses": _entry(misses, miss_sentence_total, tokens),
+        "by_class": {
+            name: _entry(miss_tokens[name], miss_sentences[name], tokens) for name in MISS_CLASSES
+        },
+        "v_by_family": {
+            name: _entry(family_tokens[name], family_sentences[name], tokens) for name in FAMILIES
+        },
+        "v_by_fix_kind": {
+            name: _entry(fix_tokens[name], fix_sentences[name], tokens) for name in FIX_KINDS
+        },
+        "v_family_by_fix_kind": {
+            family: {
+                fix: _entry(
+                    cross_tokens[f"{family}\t{fix}"],
+                    cross_sentences[f"{family}\t{fix}"],
+                    tokens,
+                )
+                for fix in FIX_KINDS
+            }
+            for family in FAMILIES
+        },
+    }
+
+
+def _head() -> str:
+    return subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=_REPO,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+def _version(distribution: str) -> str:
+    try:
+        return importlib.metadata.version(distribution)
+    except importlib.metadata.PackageNotFoundError:
+        return "unknown"
+
+
+def _write_json(path: Path, payload: dict[str, object]) -> None:
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--sentences-per-shard", type=int, default=MAX_SENTENCES_PER_SHARD)
+    parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
+    args = parser.parse_args(argv)
+    if not 1 <= args.sentences_per_shard <= MAX_SENTENCES_PER_SHARD:
+        parser.error(f"--sentences-per-shard must be in 1..{MAX_SENTENCES_PER_SHARD}")
+    if args.workers < 1:
+        parser.error("--workers must be positive")
+
+    corpus_dir = (args.corpus_dir or store_root(SOURCE_ID)).resolve(strict=True)
+    verified = verified_inputs(
+        SOURCE_ID,
+        [corpus_dir / name for name in SHARDS],
+        locale=LOCALE,
+        pools=POOLS,
+        root=corpus_dir,
+    )
+    corpus_receipt = verification_receipt(verified, locale=LOCALE, pools=POOLS)
+
+    selected = []
+    inventory = {}
+    selected_indexes = {}
+    for offset, corpus_input in enumerate(verified):
+        sample, available = _reservoir_sample(
+            corpus_input, args.sentences_per_shard, args.seed + offset
+        )
+        inventory[corpus_input.relative_path] = {
+            "available_sentences": available,
+            "sampled_sentences": len(sample),
+        }
+        selected_indexes[corpus_input.relative_path] = [index for index, _rows in sample]
+        selected.extend((corpus_input.relative_path, index, rows) for index, rows in sample)
+
+    fingerprint_payload = {
+        "corpus_fingerprint": corpus_receipt["fingerprint"],
+        "seed": args.seed,
+        "sentence_cap_per_shard": args.sentences_per_shard,
+        "selected_sentence_indexes": selected_indexes,
+    }
+    sample_fingerprint = hashlib.sha256(
+        json.dumps(fingerprint_payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+    with ProcessPoolExecutor(max_workers=args.workers) as pool:
+        results = pool.map(_score_sentence, selected, chunksize=16)
+        report = _aggregate(results, len(selected))
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    counts_path = args.output_dir / "counts.json"
+    receipt_path = args.output_dir / "receipt.json"
+    receipt = {
+        "schema_version": 1,
+        "head": _head(),
+        "versions": {
+            "frend": _version("frend"),
+            "icukit": _version("icukit"),
+            "tiergraph": _version("tiergraph"),
+        },
+        "sample": {
+            "seed": args.seed,
+            "sentence_cap_per_shard": args.sentences_per_shard,
+            "shards": list(SHARDS),
+            "inventory": inventory,
+            "fingerprint": sample_fingerprint,
+        },
+        "corpus_verification": corpus_receipt,
+        "outputs": {"counts": counts_path.name},
+    }
+    _write_json(counts_path, report)
+    _write_json(receipt_path, receipt)
+    print(json.dumps({"counts": report, "receipt": receipt}, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
