@@ -49,6 +49,15 @@ _TEST_LINES = 100_000
 _ANY_CAP = 64
 
 
+def _canonical_held_out_shard(value: str) -> str:
+    if value not in google_tn_rows.HELD_OUT_SHARDS:
+        raise argparse.ArgumentTypeError(
+            "must exactly match a pinned held-out shard name "
+            "(output-00090-of-00100 through output-00099-of-00100)"
+        )
+    return value
+
+
 def _detectors(locale: str = "en_US"):
     """The evaluator's readers: the shared profile for ``locale``."""
     from reading_profile import reading_detectors
@@ -277,6 +286,12 @@ def evaluate(
     locale: str = "en_US",
     skip_report_shard: bool = False,
 ) -> dict:
+    if skip_report_shard and held_out_shard == _TEST_FILE:
+        raise ValueError(
+            "skip_report_shard=True requires held_out_shard other than report shard 99"
+        )
+    if skip_report_shard and _TEST_FILE in inputs:
+        raise ValueError("skip_report_shard=True forbids report shard 99 in inputs")
     report = {}
     if not skip_report_shard:
         sentences = _rows(inputs[_TEST_FILE])
@@ -368,6 +383,7 @@ def main(argv: list[str] | None = None) -> int:
         "--held-out-shard",
         default=None,
         metavar="NAME",
+        type=_canonical_held_out_shard,
         help="also score shard NAME: per token over its first 100,000 lines, running "
         "text over all of it (acceptance is on output-00095-of-00100)",
     )
