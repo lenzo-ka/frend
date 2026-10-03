@@ -1,0 +1,168 @@
+from __future__ import annotations
+
+import importlib.util
+import sys
+from pathlib import Path
+
+import pytest
+
+import frend
+from frend import InputValidationError, NormalizedText
+
+
+def _evaluator():
+    tools = Path(__file__).resolve().parents[1] / "tools"
+    if str(tools) not in sys.path:
+        sys.path.insert(0, str(tools))
+    spec = importlib.util.spec_from_file_location(
+        "normalize_evaluator", tools / "evaluate_google_tn.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_normalize_returns_a_string_by_default():
+    result = frend.normalize("I paid $12.")
+    assert isinstance(result, str)
+    assert "twelve" in result
+
+
+def test_offsets_tile_output_and_slice_the_original_source():
+    source = "I paid $12.\n\nIt was 5% off."
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    at = 0
+    for unit in result.units:
+        assert unit.output_span[0] == at
+        assert unit.output_span[1] >= unit.output_span[0]
+        assert result.text[slice(*unit.output_span)]
+        at = unit.output_span[1]
+        start, end = unit.source_span
+        assert 0 <= start < end <= len(source)
+        assert source[start:end]
+    assert at == len(result.text)
+    separators = [unit for unit in result.units if unit.provenance.endswith("whitespace")]
+    assert len(separators) == 1
+    assert source[slice(*separators[0].source_span)] == "\n\n"
+    assert result.text[slice(*separators[0].output_span)] == " "
+    assert "\n" not in result.text
+
+
+def _assert_alignment_tiles(source: str, result: NormalizedText):
+    output_at = 0
+    source_at = 0
+    for unit in result.units:
+        assert unit.output_span[0] == output_at
+        assert unit.source_span[0] == source_at
+        output_at = unit.output_span[1]
+        source_at = unit.source_span[1]
+    assert output_at == len(result.text)
+    assert source_at == len(source)
+
+
+@pytest.mark.parametrize(
+    ("source", "without_boundary_whitespace"),
+    [
+        ("\nPlain text.", "Plain text."),
+        ("  a.  b.  ", "a.  b."),
+        ("a.\n\nb", "a. b"),
+        (" \n ", ""),
+    ],
+)
+def test_boundary_whitespace_is_trimmed_or_collapsed_without_losing_source_coverage(
+    source, without_boundary_whitespace
+):
+    assert frend.normalize(source) == frend.normalize(without_boundary_whitespace)
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+    for unit in result.units:
+        source_text = source[slice(*unit.source_span)]
+        if unit.provenance.endswith("whitespace"):
+            assert source_text.isspace()
+            output_text = result.text[slice(*unit.output_span)]
+            assert output_text == (" " if "inter-sentence" in unit.provenance else "")
+
+
+def test_trailing_text_without_terminal_punctuation_is_preserved():
+    source = "a. trailing text without terminal punctuation"
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+    assert result.units[-1].source_span[1] == len(source)
+    assert result.text.endswith("punctuation")
+
+
+def test_non_ascii_offsets_are_code_point_exact_and_tile_both_texts():
+    source = "\U0001f600 \U00010400 e\u0301 \u6f22\u5b57."
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+    source_slices = [source[slice(*unit.source_span)] for unit in result.units]
+    assert source_slices == list(source)
+    assert "".join(source_slices) == source
+
+
+def test_first_choice_agrees_with_the_evaluator_join_on_a_fixture():
+    evaluator = _evaluator()
+    source = "I paid $12 on Jan 2."
+    from icukit.detectors import detect
+
+    from frend import resolve_lattice, verbalize_lattice
+
+    detections = list(detect(source, evaluator._detectors("en_US")))
+    path = verbalize_lattice(resolve_lattice(detections, source_text=source)).best_path
+    expected = evaluator._joined(
+        (unit.best.text, unit.best.provenance == "surface:passthrough") for unit in path.units
+    )
+    assert frend.normalize(source) == expected
+
+
+def test_input_limit_refusals_pass_through():
+    with pytest.raises(InputValidationError, match="max_input_chars=3"):
+        frend.normalize("four", max_input_chars=3)
+    with pytest.raises(InputValidationError, match="NUL"):
+        frend.normalize("bad\x00text")
+
+
+def test_sentence_over_unit_bound_names_the_missing_icukit_forced_break():
+    with pytest.raises(
+        InputValidationError, match=r"sentence has 4.*max_unit_chars=3.*forced sentence break"
+    ):
+        frend.normalize("four", max_unit_chars=3)
+
+
+def test_document_input_is_validated_once(monkeypatch):
+    import importlib
+
+    electronic_module = importlib.import_module("frend.electronic")
+    lattice_module = importlib.import_module("frend.lattice")
+    normalize_module = importlib.import_module("frend.normalize")
+    verbalize_module = importlib.import_module("frend.verbalize")
+    original = normalize_module.validate_input
+    calls = []
+
+    def recording_validate(*args, **kwargs):
+        calls.append((args, kwargs))
+        return original(*args, **kwargs)
+
+    for module in (normalize_module, electronic_module, lattice_module, verbalize_module):
+        monkeypatch.setattr(module, "validate_input", recording_validate)
+    text = "a" * 100 + ". " + "b" * 10 + "\x01" + "b" * 10 + "."
+    assert frend.normalize(text)
+    assert len(calls) == 1
+
+
+def test_text_mode_skips_offset_record_construction(monkeypatch):
+    import importlib
+
+    normalize_module = importlib.import_module("frend.normalize")
+
+    monkeypatch.setattr(
+        normalize_module,
+        "NormalizedUnit",
+        lambda *_args, **_kwargs: pytest.fail("text mode constructed offset bookkeeping"),
+    )
+    assert isinstance(frend.normalize("12"), str)

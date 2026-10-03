@@ -35,6 +35,7 @@ from frend.lattice import (
     resolve_lattice,
     route_geometry,
 )
+from frend.normalize import NormalizedText, NormalizedUnit, normalize
 from frend.runtime import freeze_after_setup
 from frend.verbalize import (
     SpokenAlternative,
@@ -54,6 +55,8 @@ __all__ = [
     "InputValidationError",
     "LatticeNode",
     "MAX_NON_TEXT_SHARE",
+    "NormalizedText",
+    "NormalizedUnit",
     "PriorSummary",
     "ReadingEdge",
     "ReadingLattice",
@@ -68,6 +71,7 @@ __all__ = [
     "__version__",
     "compose_choices",
     "freeze_after_setup",
+    "normalize",
     "resolve",
     "resolve_lattice",
     "resolve_choices",

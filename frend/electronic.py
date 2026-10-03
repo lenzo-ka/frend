@@ -187,6 +187,10 @@ class ElectronicDetector:
 
     def detect(self, text: str) -> list[dict]:
         validate_input(text, max_input_chars=self.max_input_chars)
+        return self._detect_validated(text)
+
+    def _detect_validated(self, text: str) -> list[dict]:
+        """Detect in text already checked by an enclosing document API."""
         found: list[tuple[int, int, str]] = []
         for base, segment in _bounded_segments(text, max(self.max_url_chars, self.max_email_chars)):
             if len(segment) <= self.max_url_chars:
@@ -228,6 +232,13 @@ class ElectronicDetector:
                 }
             )
         return sorted(detections, key=lambda d: (d["start"], d["end"]))
+
+
+class _ValidatedElectronicDetector(ElectronicDetector):
+    """Electronic detector for an enclosing path that already validated its input."""
+
+    def detect(self, text: str) -> list[dict]:
+        return self._detect_validated(text)
 
 
 def decode_letter_notation(spoken: str) -> str:

@@ -623,6 +623,32 @@ def resolve_lattice(
     too. This API does not silently claim a bound it does not have.
     """
     validate_input(source_text, max_input_chars=max_input_chars)
+    return _resolve_lattice_validated(
+        detections,
+        locale=locale,
+        output_cap=output_cap,
+        feature_sources=feature_sources,
+        source_text=source_text,
+        class_prior=class_prior,
+        class_prior_source=class_prior_source,
+        max_input_chars=max_input_chars,
+        max_unit_chars=max_unit_chars,
+    )
+
+
+def _resolve_lattice_validated(
+    detections: Sequence[Detection],
+    *,
+    locale: str = "en_US",
+    output_cap: int = 1,
+    feature_sources: Sequence[FeatureSource] | None = None,
+    source_text: str | None = None,
+    class_prior: Mapping[str, Decimal | int] | None = None,
+    class_prior_source: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+) -> ReadingLattice:
+    """Resolve text whose enclosing document API has already validated it."""
     if source_text is not None:
         validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:
