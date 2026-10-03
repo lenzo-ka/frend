@@ -12,6 +12,12 @@ from __future__ import annotations
 __version__ = "0.1.0"
 
 from frend.fold_resolve import Resolution, resolve
+from frend.input_limits import (
+    DEFAULT_MAX_INPUT_CHARS,
+    MAX_NON_TEXT_SHARE,
+    InputValidationError,
+    validate_input,
+)
 from frend.lattice import (
     ChoiceGraph,
     ChoiceLattice,
@@ -41,7 +47,10 @@ from frend.verbalize import (
 __all__ = [
     "ChoiceGraph",
     "ChoiceLattice",
+    "DEFAULT_MAX_INPUT_CHARS",
+    "InputValidationError",
     "LatticeNode",
+    "MAX_NON_TEXT_SHARE",
     "PriorSummary",
     "ReadingEdge",
     "ReadingLattice",
@@ -63,4 +72,5 @@ __all__ = [
     "register_curated_alternative",
     "verbalize_edge",
     "verbalize_lattice",
+    "validate_input",
 ]

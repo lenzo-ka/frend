@@ -29,6 +29,21 @@ URLs, email addresses and bare domains are recognized by frend itself (ICU has n
 recognition, and icukit leaves them to frend), and spoken as the corpus is measured to
 say them.
 
+### Input limits
+
+The public resolution and verbalization entry points accept at most 4,194,304 Unicode
+code points by default (`max_input_chars`). They refuse rather than truncate input over
+that document-sized budget. They also refuse byte strings, NUL characters, and text in
+which more than 1% of code points are non-whitespace controls, unassigned code points,
+or lone surrogates. Decode bytes as strict UTF-8 and remove markup before calling frend.
+
+Callers with larger documents should sentence-break first and submit bounded sentence
+batches while preserving their offsets and order. At an untrusted ingress, call
+`validate_input` before passing the text to icukit's detectors; the resolution and
+verbalization entry points repeat the check. Passing `max_input_chars=None` turns off
+only frend's size check for a caller that already enforces an equivalent bound; the
+plain-text checks remain active.
+
 Status: recognize, resolve and verbalize are built, including a keep-all mode that
 carries every reading and its spoken forms instead of one best cover. A word-level
 alignment graph built from that output exports as finite-state grammar and acceptor text

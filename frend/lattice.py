@@ -26,6 +26,7 @@ from frend.fold_resolve import (
     _select,
     _span_priors,
 )
+from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
 from frend.locale_data import canonical_locale
 from frend.type_priors import FeatureSource, ReadingPrior, ResolveContext
 
@@ -349,6 +350,7 @@ def resolve_choices(
     source_text: str | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
 ) -> ChoiceLattice:
     """Carry every distinct reading as a scored edge, filtering none of them.
 
@@ -393,6 +395,7 @@ def resolve_choices(
     The composed graph has a separate bound in different units. Composition
     through :func:`compose_choices` requires ``source_text``.
     """
+    validate_input(source_text, max_input_chars=max_input_chars)
     if not isinstance(reading_cap, int) or isinstance(reading_cap, bool) or reading_cap < 1:
         raise ValueError(f"reading_cap must be a positive integer, got {reading_cap!r}")
 
@@ -536,6 +539,7 @@ def compose_choices(
     *,
     locale: str | None = None,
     supplements: CuratedSupplements | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
 ) -> ChoiceGraph:
     """Join every choice edge to its spoken forms without selecting a route.
 
@@ -545,17 +549,18 @@ def compose_choices(
     after each edge is verbalized, so this cannot bound the cost of verbalizing
     one intrinsically pathological edge once.
     """
+    validate_input(lattice.source_text, max_input_chars=max_input_chars)
     effective = lattice.locale
     if locale is not None and canonical_locale(locale) != effective:
         raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
     if lattice.source_text is None:
         raise ValueError("source_text is required to compose passthrough spoken forms")
-    from frend.verbalize import verbalize_edge
+    from frend.verbalize import _verbalize_edge
 
     units = []
     spoken_total = 0
     for edge in lattice.edges:
-        unit = verbalize_edge(
+        unit = _verbalize_edge(
             edge, source_text=lattice.source_text, locale=effective, supplements=supplements
         )
         units.append(unit)
@@ -578,6 +583,7 @@ def resolve_lattice(
     source_text: str | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
 ) -> ReadingLattice:
     """Resolve detections into an immutable, distilled reading lattice.
 
@@ -596,6 +602,7 @@ def resolve_lattice(
     reading as a scored edge without enumerating any cover, and is defined there
     too. This API does not silently claim a bound it does not have.
     """
+    validate_input(source_text, max_input_chars=max_input_chars)
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:
         raise ValueError(f"output_cap must be a positive integer, got {output_cap!r}")
 
