@@ -604,6 +604,7 @@ def resolve_lattice(
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    _input_validated: bool = False,
 ) -> ReadingLattice:
     """Resolve detections into an immutable, distilled reading lattice.
 
@@ -622,7 +623,8 @@ def resolve_lattice(
     reading as a scored edge without enumerating any cover, and is defined there
     too. This API does not silently claim a bound it does not have.
     """
-    validate_input(source_text, max_input_chars=max_input_chars)
+    if not _input_validated:
+        validate_input(source_text, max_input_chars=max_input_chars)
     if source_text is not None:
         validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:

@@ -29,6 +29,22 @@ URLs, email addresses and bare domains are recognized by frend itself (ICU has n
 recognition, and icukit leaves them to frend), and spoken as the corpus is measured to
 say them.
 
+### Usage
+
+```python
+import frend
+
+spoken = frend.normalize("Meet me at 5:30. It costs $12.")
+aligned = frend.normalize("Meet me at 5:30.", offsets=True)
+print(aligned.text)
+for unit in aligned.units:
+    print(unit.output_span, unit.source_span, unit.reader, unit.provenance)
+```
+
+`normalize` sentence-breaks documents with icukit and returns the first-choice spoken
+text. Pass `offsets=True` when a screen reader or aligner also needs the source mapping;
+inter-sentence whitespace is one space in the returned text.
+
 ### Input limits
 
 The recognizer's document-scale guard accepts at most 4,194,304 Unicode code points by
@@ -44,12 +60,13 @@ feed, vertical tab, form feed, carriage return, and U+0085 NEXT LINE. All other 
 White_Space characters have separator categories and are accepted. Decode bytes as
 strict UTF-8 and remove markup before calling frend.
 
-Callers should sentence-break documents and submit bounded sentences while preserving
-their offsets and order. At an untrusted ingress, call
-`validate_input` before passing the text to icukit's detectors; the resolution and
-verbalization entry points repeat the check. Passing `max_input_chars=None` turns off
-only the document check, and `max_unit_chars=None` turns off only the separate work
-bound; the plain-text checks remain active.
+`normalize` sentence-breaks documents before resolution. Callers of the lower-level
+resolution APIs should sentence-break documents themselves and preserve sentence
+offsets and order. At an untrusted ingress, call `validate_input` before passing text
+directly to icukit's detectors; the resolution and verbalization entry points repeat
+the check. Passing `max_input_chars=None` turns off only the document check, and
+`max_unit_chars=None` turns off only the separate work bound; the plain-text checks
+remain active.
 
 `ElectronicDetector` validates its input before recognition. It does not emit a prefix
 of an oversized address: a contiguous URL/domain candidate over 8,192 code points or an
