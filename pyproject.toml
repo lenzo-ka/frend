@@ -38,6 +38,7 @@ Issues = "https://github.com/lenzo-ka/frend/issues"
 
 [project.optional-dependencies]
 dev = [
+    "numpy>=2.0",
     "pytest>=9.0",
     "ruff>=0.6",
 ]
