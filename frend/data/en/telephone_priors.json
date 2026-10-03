@@ -1,5 +1,5 @@
 {
- "schema_version": 2,
+ "schema_version": 3,
  "locale": "en",
  "provenance": {
   "builder": "tools/build_telephone_priors.py",
@@ -98,31 +98,38 @@
    "output-00089-of-00100"
   ],
   "selection": "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a strict TELEPHONE majority among all corpus classes for the exact shape",
-  "left_context": "case-folded immediately preceding corpus token, counted by that token's gold class; with at least 3 observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for selected shapes",
+  "left_context": "surface-free character-class shape of the immediately preceding corpus token, counted by that token's gold class; with at least 3 observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for selected shapes",
   "reading": "raw counts of whole grouped readings classified against ICU cardinal and digit spellout, with zero/o from the locale lexical table"
  },
  "left_contexts": {
-  "-": {
+  "digit:5-8": {
+   "classes": {
+    "VERBATIM": 11
+   },
+   "prediction": "VERBATIM"
+  },
+  "punct-pd:1": {
    "classes": {
     "VERBATIM": 23
    },
    "prediction": "VERBATIM"
   },
-  "17857": {
-   "classes": {
-    "VERBATIM": 4
-   },
-   "prediction": "VERBATIM"
-  },
-  "::": {
+  "punct-po:2": {
    "classes": {
     "ELECTRONIC": 3
    },
    "prediction": "ELECTRONIC"
   },
-  "isbn": {
+  "upper:4": {
    "classes": {
-    "LETTERS": 3
+    "LETTERS": 4
+   },
+   "prediction": "LETTERS"
+  },
+  "upper:5-8": {
+   "classes": {
+    "LETTERS": 2,
+    "PLAIN": 1
    },
    "prediction": "LETTERS"
   }

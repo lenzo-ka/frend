@@ -20,6 +20,31 @@ __all__ = [
 _CANDIDATE = re.compile(r"[(0-9][0-9() .-]*[0-9](?!\w)")
 _SPACED_DASH = re.compile(r"\s-|\-\s")
 _LEFT_TOKEN = re.compile(r"(\S+)\s*$")
+_LEFT_CONTEXT_CLASSES = frozenset(
+    {
+        "digit",
+        "letter",
+        "lower",
+        "mark",
+        "mixed-letter",
+        "other",
+        "punct-pc",
+        "punct-pd",
+        "punct-pe",
+        "punct-pf",
+        "punct-pi",
+        "punct-po",
+        "punct-ps",
+        "separator",
+        "symbol-sc",
+        "symbol-sk",
+        "symbol-sm",
+        "symbol-so",
+        "title",
+        "upper",
+    }
+)
+_LEFT_CONTEXT_LENGTHS = frozenset({"1", "2", "3", "4", "5-8", "9+"})
 
 
 def telephone_shape(text: str) -> str:
@@ -83,10 +108,88 @@ def _valid_left_boundary(text: str, start: int) -> bool:
     return not (previous.isalnum() or unicodedata.category(previous).startswith("S"))
 
 
+def _length_bucket(length: int) -> str:
+    if length <= 4:
+        return str(length)
+    return "5-8" if length <= 8 else "9+"
+
+
+def _left_context_shape(token: str) -> str | None:
+    """A surface-free character-class shape for one non-space token."""
+    if not token or any(char.isspace() for char in token):
+        return None
+    runs: list[tuple[str, str]] = []
+    at = 0
+    while at < len(token):
+        category = unicodedata.category(token[at])
+        if token[at].isalpha():
+            family = "letter"
+        elif token[at].isdecimal():
+            family = "digit"
+        elif category.startswith("P"):
+            family = f"punct-{category.casefold()}"
+        elif category.startswith("S"):
+            family = f"symbol-{category.casefold()}"
+        elif category.startswith("M"):
+            family = "mark"
+        elif category.startswith("Z"):
+            family = "separator"
+        else:
+            family = "other"
+        end = at + 1
+        while end < len(token):
+            next_category = unicodedata.category(token[end])
+            if family == "letter":
+                same = token[end].isalpha()
+            elif family == "digit":
+                same = token[end].isdecimal()
+            elif family.startswith("punct-"):
+                same = next_category.casefold() == family.removeprefix("punct-")
+            elif family.startswith("symbol-"):
+                same = next_category.casefold() == family.removeprefix("symbol-")
+            elif family == "mark":
+                same = next_category.startswith("M")
+            elif family == "separator":
+                same = next_category.startswith("Z")
+            else:
+                same = not (
+                    token[end].isalpha() or token[end].isdecimal() or next_category[0] in "PMSZ"
+                )
+            if not same:
+                break
+            end += 1
+        run = token[at:end]
+        if family == "letter":
+            if run.isupper():
+                family = "upper"
+            elif run.islower():
+                family = "lower"
+            elif run.istitle():
+                family = "title"
+            elif any(char.isupper() or char.islower() for char in run):
+                family = "mixed-letter"
+        runs.append((family, _length_bucket(len(run))))
+        at = end
+    return "+".join(f"{family}:{length}" for family, length in runs)
+
+
+def _is_left_context_shape(value: str) -> bool:
+    """Whether ``value`` uses only the fixed, surface-free shape alphabet."""
+    if not value:
+        return False
+    runs = value.split("+")
+    return all(
+        run.count(":") == 1
+        and run.split(":", 1)[0] in _LEFT_CONTEXT_CLASSES
+        and run.split(":", 1)[1] in _LEFT_CONTEXT_LENGTHS
+        for run in runs
+    )
+
+
 def _left_context(text: str, start: int) -> str | None:
-    """The case-folded non-space token immediately before a candidate."""
+    """The character-class shape of the non-space token before a candidate."""
     match = _LEFT_TOKEN.search(text[:start])
-    return match.group(1).casefold() if match is not None else None
+    return _left_context_shape(match.group(1)) if match is not None else None
 
 
 @dataclass(frozen=True)
@@ -104,7 +207,7 @@ def _prior(
     document = measured_table("telephone_priors", locale)
     if document is None:
         return {}, frozenset()
-    if document.get("schema_version") != 2:
+    if document.get("schema_version") != 3:
         raise ValueError("invalid telephone prior table: wrong schema version")
     rows = document.get("shapes")
     if not isinstance(rows, dict):
@@ -145,7 +248,7 @@ def _prior(
         if (
             not isinstance(context, str)
             or not context
-            or context != context.casefold()
+            or not _is_left_context_shape(context)
             or not isinstance(classes, dict)
             or not classes
             or not all(

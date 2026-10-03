@@ -19,7 +19,13 @@ for _path in (_REPO, _TOOLS):
 from google_tn_rows import corpus_label, full_training_set, training_shards  # noqa: E402
 
 from frend.spoken_priors import normalize_spoken  # noqa: E402
-from frend.telephone import _phone_groups, telephone_reading_key, telephone_shape  # noqa: E402
+from frend.telephone import (  # noqa: E402
+    _is_left_context_shape,
+    _left_context_shape,
+    _phone_groups,
+    telephone_reading_key,
+    telephone_shape,
+)
 from frend.verbalize import _number_leaf, _spoken_digits  # noqa: E402
 from frend.written_forms import DigitsValue  # noqa: E402
 
@@ -89,7 +95,9 @@ def _piece(path):
             classes[shape][corpus_class] += 1
             if previous is not None:
                 previous_class, previous_written = previous
-                left_contexts[(shape, previous_written.casefold())][previous_class] += 1
+                context_shape = _left_context_shape(previous_written)
+                if context_shape is not None:
+                    left_contexts[(shape, context_shape)][previous_class] += 1
             if corpus_class != "TELEPHONE":
                 previous = (corpus_class, written)
                 continue
@@ -161,8 +169,10 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 "classes": dict(sorted(counts.items())),
                 "prediction": prediction,
             }
+    if not all(_is_left_context_shape(context) for context in vetoes):
+        raise ValueError("left-context prior contains a token outside the fixed shape alphabet")
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "locale": "en",
         "provenance": {
             "builder": "tools/build_telephone_priors.py",
@@ -174,8 +184,9 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 "strict TELEPHONE majority among all corpus classes for the exact shape"
             ),
             "left_context": (
-                "case-folded immediately preceding corpus token, counted by that "
-                "token's gold class; with at least 3 observations, veto typed "
+                "surface-free character-class shape of the immediately preceding "
+                "corpus token, counted by that token's gold class; with at least 3 "
+                "observations, veto typed "
                 "(not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for "
                 "selected shapes"
             ),

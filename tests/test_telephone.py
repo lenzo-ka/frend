@@ -119,6 +119,16 @@ def test_locale_without_a_measured_table_has_no_telephone_opinion():
     assert TelephoneDetector("ru_RU").detect("212-868-4444") == []
 
 
+def test_shipped_left_context_keys_use_only_the_fixed_shape_alphabet():
+    document = telephone_module.measured_table("telephone_priors", "en_US")
+    assert document is not None
+    assert document["left_contexts"]
+    assert all(
+        telephone_module._is_left_context_shape(context) for context in document["left_contexts"]
+    )
+    assert not telephone_module._is_left_context_shape("isbn")
+
+
 def test_builder_counts_shapes_readings_and_left_context_from_corpus_rows(tmp_path):
     tools = Path(__file__).resolve().parents[1] / "tools"
     if str(tools) not in sys.path:
@@ -144,7 +154,7 @@ def test_builder_counts_shapes_readings_and_left_context_from_corpus_rows(tmp_pa
     )
     document = builder.build_document(tmp_path)
     assert document["left_contexts"] == {
-        "isbn": {"classes": {"LETTERS": 3}, "prediction": "LETTERS"}
+        "upper:4": {"classes": {"LETTERS": 3}, "prediction": "LETTERS"}
     }
     assert document["shapes"]["N3-N3-N4"] == {
         "classes": {"CARDINAL": 1, "TELEPHONE": 3},
