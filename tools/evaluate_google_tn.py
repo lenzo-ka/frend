@@ -36,6 +36,11 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 import google_tn_rows  # noqa: E402
+from bootstrap_intervals import (  # noqa: E402
+    CI_LEVEL,
+    DEFAULT_INTERVAL_SEED,
+    percentile_ratio_intervals,
+)
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
 from corpus_inputs import (  # noqa: E402
     VerifiedInput,
@@ -211,6 +216,11 @@ def _per_token(
     locale: str = "en_US",
     profile: str | None = None,
     strata_seen: frozenset[str] | None = None,
+    *,
+    intervals: int = 0,
+    interval_seed: int = DEFAULT_INTERVAL_SEED,
+    record_prefix: str = "sample",
+    record_sink: list[dict] | None = None,
 ) -> dict:
     """First-choice, any-reading and whole-sentence accuracy over every token of
     ``sentences``, overall and per class."""
@@ -235,10 +245,23 @@ def _per_token(
     for counts in by_class.values():
         total.update(counts)
     correct_sentences, at = 0, 0
-    for sentence in sentences:
+    sentence_records = []
+    for sentence_index, sentence in enumerate(sentences):
         outcome = results[at : at + len(sentence)]
         at += len(sentence)
-        correct_sentences += all(first for _, first, _ in outcome)
+        first_count = sum(first for _, first, _ in outcome)
+        any_count = sum(any_ for _, _, any_ in outcome)
+        sentence_first = first_count == len(sentence)
+        correct_sentences += sentence_first
+        sentence_records.append(
+            {
+                "id": f"{record_prefix}:{sentence_index}",
+                "tokens": len(sentence),
+                "first": first_count,
+                "any": any_count,
+                "sentence_first": sentence_first,
+            }
+        )
     tokens, count = total["tokens"], len(sentences)
     report = {
         "tokens": tokens,
@@ -256,6 +279,10 @@ def _per_token(
         },
     }
     if strata_seen is None:
+        if intervals:
+            _add_evaluation_intervals(report, sentence_records, intervals, interval_seed)
+        if record_sink is not None:
+            record_sink.extend(sentence_records)
         return report
 
     by_stratum: dict[str, Counter] = {name: Counter() for name in STRATA}
@@ -293,11 +320,30 @@ def _per_token(
 
     sentence_counts: dict[str, Counter] = {name: Counter() for name in SENTENCE_STRATA}
     at = 0
-    for sentence in sentences:
+    for sentence, record in zip(sentences, sentence_records, strict=True):
         outcome = results[at : at + len(sentence)]
         at += len(sentence)
         token_strata = tuple("SEEN" if row[1] in strata_seen else "UNSEEN" for row in sentence)
-        for stratum in sentence_strata(sentence, token_strata):
+        record["strata"] = {
+            "tokens": {
+                name: {
+                    "tokens": sum(value == name for value in token_strata),
+                    "first": sum(
+                        first
+                        for value, (_, first, _) in zip(token_strata, outcome, strict=True)
+                        if value == name
+                    ),
+                    "any": sum(
+                        any_
+                        for value, (_, _, any_) in zip(token_strata, outcome, strict=True)
+                        if value == name
+                    ),
+                }
+                for name in STRATA
+            },
+            "sentences": list(sentence_strata(sentence, token_strata)),
+        }
+        for stratum in record["strata"]["sentences"]:
             sentence_counts[stratum]["sentences"] += 1
             sentence_counts[stratum]["first"] += all(first for _, first, _ in outcome)
     report["strata"]["sentences"] = {
@@ -312,7 +358,68 @@ def _per_token(
         }
         for name in SENTENCE_STRATA
     }
+    if intervals:
+        _add_evaluation_intervals(report, sentence_records, intervals, interval_seed)
+    if record_sink is not None:
+        record_sink.extend(sentence_records)
     return report
+
+
+def _add_evaluation_intervals(
+    report: dict, records: list[dict], replicates: int, seed: int
+) -> None:
+    ones = [1] * len(records)
+    metrics = {
+        "first_choice_accuracy": (
+            [row["first"] for row in records],
+            [row["tokens"] for row in records],
+        ),
+        "any_reading_accuracy": (
+            [row["any"] for row in records],
+            [row["tokens"] for row in records],
+        ),
+        "sentence_accuracy": ([row["sentence_first"] for row in records], ones),
+    }
+    has_strata = bool(records and "strata" in records[0])
+    if has_strata:
+        for name in STRATA:
+            metrics[f"token_stratum:{name}:first_choice_accuracy"] = (
+                [row["strata"]["tokens"][name]["first"] for row in records],
+                [row["strata"]["tokens"][name]["tokens"] for row in records],
+            )
+            metrics[f"token_stratum:{name}:any_reading_accuracy"] = (
+                [row["strata"]["tokens"][name]["any"] for row in records],
+                [row["strata"]["tokens"][name]["tokens"] for row in records],
+            )
+        for name in SENTENCE_STRATA:
+            membership = [name in row["strata"]["sentences"] for row in records]
+            metrics[f"sentence_stratum:{name}:sentence_accuracy"] = (
+                [
+                    member and row["sentence_first"]
+                    for member, row in zip(membership, records, strict=True)
+                ],
+                membership,
+            )
+    bounds = percentile_ratio_intervals(metrics, replicates, seed)
+    report["intervals"] = {
+        "method": "sentence-cluster percentile bootstrap",
+        "confidence": CI_LEVEL,
+        "replicates": replicates,
+        "seed": seed,
+        "first_choice_accuracy": bounds["first_choice_accuracy"],
+        "any_reading_accuracy": bounds["any_reading_accuracy"],
+        "sentence_accuracy": bounds["sentence_accuracy"],
+    }
+    if has_strata:
+        for name in STRATA:
+            report["strata"]["tokens"][name]["intervals"] = {
+                metric: bounds[f"token_stratum:{name}:{metric}"]
+                for metric in ("first_choice_accuracy", "any_reading_accuracy")
+            }
+        for name in SENTENCE_STRATA:
+            report["strata"]["sentences"][name]["intervals"] = {
+                "sentence_accuracy": bounds[f"sentence_stratum:{name}:sentence_accuracy"]
+            }
 
 
 def _running_text_rows(
@@ -355,6 +462,9 @@ def _held_out(
     locale: str = "en_US",
     profile: str | None = None,
     strata_path: Path | None = None,
+    intervals: int = 0,
+    interval_seed: int = DEFAULT_INTERVAL_SEED,
+    record_sink: list[dict] | None = None,
 ) -> dict:
     """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
     as the paper cuts the test shard, and running text over the whole shard."""
@@ -376,6 +486,10 @@ def _held_out(
                 locale,
                 profile,
                 None if match is None else match.seen,
+                intervals=intervals,
+                interval_seed=interval_seed,
+                record_prefix=name,
+                record_sink=record_sink,
             ),
         },
         "running_text": {
@@ -398,6 +512,9 @@ def evaluate(
     skip_report_shard: bool = False,
     profile: str | None = None,
     strata_path: Path | None = None,
+    intervals: int = 0,
+    interval_seed: int = DEFAULT_INTERVAL_SEED,
+    record_sink: list[dict] | None = None,
 ) -> dict:
     profile = _validate_evaluation_profile(profile, locale)
     if skip_report_shard and held_out_shard == _TEST_FILE:
@@ -415,7 +532,15 @@ def evaluate(
                 strata_path, (row[1] for sentence in sentences for row in sentence)
             )
         per_token = _per_token(
-            sentences, workers, locale, profile, None if match is None else match.seen
+            sentences,
+            workers,
+            locale,
+            profile,
+            None if match is None else match.seen,
+            intervals=intervals,
+            interval_seed=interval_seed,
+            record_prefix=_TEST_FILE,
+            record_sink=record_sink,
         )
         report = {
             "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
@@ -438,9 +563,19 @@ def evaluate(
         if match is not None:
             report["strata"] = per_token["strata"]
             report["strata_vocabulary"] = vocabulary_receipt(match)
+        if intervals:
+            report["intervals"] = per_token["intervals"]
     if held_out_shard is not None:
         report["held_out"] = _held_out(
-            inputs, held_out_shard, workers, locale, profile, strata_path
+            inputs,
+            held_out_shard,
+            workers,
+            locale,
+            profile,
+            strata_path,
+            intervals,
+            interval_seed,
+            record_sink,
         )
     return report
 
@@ -457,6 +592,8 @@ def _render(report: dict) -> str:
             "",
             f"{'class':12s}{'tokens':>8s}{'first':>9s}{'any':>9s}",
         ]
+        if "intervals" in report:
+            lines.insert(2, _render_interval_line(report["intervals"]))
         for name, row in report["classes"].items():
             lines.append(
                 f"{name:12s}{row['tokens']:>8d}{100 * row['first_choice']:>8.1f}%"
@@ -490,6 +627,8 @@ def _render(report: dict) -> str:
             f"any reading: {100 * tokens['any_reading_accuracy']:.2f}%   "
             f"sentences all right: {100 * tokens['sentence_accuracy']:.2f}%"
         )
+        if "intervals" in tokens:
+            lines.append(_render_interval_line(tokens["intervals"]))
         if "strata" in tokens:
             lines.extend(_render_strata(tokens["strata"]))
         text = held["running_text"]
@@ -502,6 +641,17 @@ def _render(report: dict) -> str:
     return "\n".join(lines)
 
 
+def _render_interval_line(intervals: dict) -> str:
+    def percent(name: str) -> str:
+        low, high = intervals[name]
+        return f"[{100 * low:.2f}%, {100 * high:.2f}%]"
+
+    return (
+        f"95% sentence-bootstrap CI: first {percent('first_choice_accuracy')}   "
+        f"any {percent('any_reading_accuracy')}   sentences {percent('sentence_accuracy')}"
+    )
+
+
 def _render_strata(strata: dict) -> list[str]:
     lines = ["Token strata:", f"{'stratum':12s}{'tokens':>9s}{'first':>15s}{'any':>15s}"]
     for name in STRATA:
@@ -511,6 +661,13 @@ def _render_strata(strata: dict) -> list[str]:
             f"{row['first_choice_tokens']:>8d} {100 * row['first_choice_accuracy']:>5.1f}%"
             f"{row['any_reading_tokens']:>8d} {100 * row['any_reading_accuracy']:>5.1f}%"
         )
+        if "intervals" in row:
+            first_low, first_high = row["intervals"]["first_choice_accuracy"]
+            any_low, any_high = row["intervals"]["any_reading_accuracy"]
+            lines.append(
+                f"  95% CI first [{100 * first_low:.1f}%, {100 * first_high:.1f}%] "
+                f"any [{100 * any_low:.1f}%, {100 * any_high:.1f}%]"
+            )
     lines.append("Sentence strata:")
     lines.append(f"{'stratum':25s}{'sentences':>11s}{'all right':>15s}")
     for name in SENTENCE_STRATA:
@@ -519,6 +676,9 @@ def _render_strata(strata: dict) -> list[str]:
             f"{name:25s}{row['sentences']:>11d}"
             f"{row['first_choice_sentences']:>8d} {100 * row['sentence_accuracy']:>5.1f}%"
         )
+        if "intervals" in row:
+            low, high = row["intervals"]["sentence_accuracy"]
+            lines.append(f"  95% CI [{100 * low:.1f}%, {100 * high:.1f}%]")
     lines.append(strata["sentence_rule"])
     return lines
 
@@ -554,6 +714,21 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--json", type=Path, default=None, help="also write the report here")
     parser.add_argument(
+        "--intervals",
+        type=int,
+        default=0,
+        metavar="N",
+        help="add sentence-cluster percentile intervals from N bootstrap replicates",
+    )
+    parser.add_argument("--interval-seed", type=int, default=DEFAULT_INTERVAL_SEED)
+    parser.add_argument(
+        "--per-sentence-out",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="write text-free per-sentence sufficient statistics outside the repository",
+    )
+    parser.add_argument(
         "--held-out-shard",
         default=None,
         metavar="NAME",
@@ -572,6 +747,10 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--skip-report-shard requires --held-out-shard")
     if args.skip_report_shard and args.held_out_shard == _TEST_FILE:
         parser.error("--skip-report-shard requires a held-out shard other than report shard 99")
+    if args.intervals < 0:
+        parser.error("--intervals must be nonnegative")
+    if args.per_sentence_out is not None and args.per_sentence_out.resolve().is_relative_to(_REPO):
+        parser.error("--per-sentence-out must be outside the repository")
     corpus_dir = args.corpus_dir or _default_corpus_dir()
     names = [] if args.skip_report_shard else [_TEST_FILE]
     if args.held_out_shard is not None and args.held_out_shard not in names:
@@ -585,6 +764,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
     inputs = {item.relative_path: item for item in verified}
+    records = [] if args.per_sentence_out is not None else None
     report = evaluate(
         inputs,
         args.workers,
@@ -593,10 +773,29 @@ def main(argv: list[str] | None = None) -> int:
         skip_report_shard=args.skip_report_shard,
         profile=args.profile,
         strata_path=args.strata,
+        intervals=args.intervals,
+        interval_seed=args.interval_seed,
+        record_sink=records,
     )
     print(_render(report))
     if args.json:
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.per_sentence_out is not None:
+        args.per_sentence_out.parent.mkdir(parents=True, exist_ok=True)
+        args.per_sentence_out.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "unit": "sentence",
+                    "profile": args.profile,
+                    "records": records,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     return 0
 
 

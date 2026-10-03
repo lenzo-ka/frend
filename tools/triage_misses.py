@@ -27,6 +27,11 @@ for _path in (_REPO, _TOOLS):
         sys.path.insert(0, str(_path))
 
 import google_tn_rows  # noqa: E402
+from bootstrap_intervals import (  # noqa: E402
+    CI_LEVEL,
+    DEFAULT_INTERVAL_SEED,
+    percentile_ratio_intervals,
+)
 from corpus_inputs import (  # noqa: E402
     VerifiedInput,
     open_verified,
@@ -287,7 +292,11 @@ def _leaf_texts(detections, written: str) -> tuple[str, ...]:
 
 
 def _score_token(
-    row, before: str, after: str, profile: str | None = None
+    row,
+    before: str,
+    after: str,
+    profile: str | None = None,
+    classify_misses: bool = True,
 ) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
@@ -324,6 +333,9 @@ def _score_token(
         if first == target:
             return True, True, False, None
 
+    if not classify_misses:
+        return False, target in readings, capped, None
+
     spans = tuple(
         (int(detection.get("start", 0)), int(detection.get("end", 0))) for detection in detections
     )
@@ -349,7 +361,8 @@ def _score_token(
 
 
 def _score_sentence(item) -> dict[str, object]:
-    _shard, _sentence_index, sentence, token_strata, profile = item
+    shard, sentence_index, sentence, token_strata, profile, *options = item
+    classify_misses = options[0] if options else True
     first_count = 0
     any_count = 0
     capped_count = 0
@@ -373,7 +386,10 @@ def _score_sentence(item) -> dict[str, object]:
     for index, row in enumerate(sentence):
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
-        first, any_, capped, classification = _score_token(row, before, after, profile)
+        if classify_misses:
+            first, any_, capped, classification = _score_token(row, before, after, profile)
+        else:
+            first, any_, capped, classification = _score_token(row, before, after, profile, False)
         first_count += first
         any_count += any_
         capped_count += capped
@@ -400,6 +416,7 @@ def _score_sentence(item) -> dict[str, object]:
                     f"{classification.family}\t{classification.fix_kind}"
                 ] += 1
     result = {
+        "id": f"{shard}:{sentence_index}",
         "tokens": len(sentence),
         "first": first_count,
         "any": any_count,
@@ -482,12 +499,14 @@ def _add_stratum_result(total: dict[str, object], source: dict[str, object]) -> 
         total[target_name].update(source[source_name])
 
 
-def _stratum_report(total: dict[str, object], sampled_tokens: int) -> dict[str, object]:
+def _stratum_report(
+    total: dict[str, object], sampled_tokens: int, classify_misses: bool = True
+) -> dict[str, object]:
     tokens = total["tokens"]
     misses = tokens - total["first"]
-    if sum(total["miss_tokens"].values()) != misses:
+    if classify_misses and sum(total["miss_tokens"].values()) != misses:
         raise AssertionError("stratified miss classes do not partition first-choice misses")
-    return {
+    report = {
         "sample": {"tokens": tokens, "sentences": total["token_sentences"]},
         "accuracy": {
             "first_choice_tokens": total["first"],
@@ -523,9 +542,21 @@ def _stratum_report(total: dict[str, object], sampled_tokens: int) -> dict[str, 
             for family in FAMILIES
         },
     }
+    if not classify_misses:
+        for key in ("misses", "by_class", "v_by_family", "v_by_fix_kind", "v_family_by_fix_kind"):
+            report.pop(key)
+    return report
 
 
-def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
+def _aggregate(
+    results,
+    sampled_sentences: int,
+    intervals: int = 0,
+    interval_seed: int = DEFAULT_INTERVAL_SEED,
+    record_sink: list[dict] | None = None,
+    classify_misses: bool = True,
+) -> dict[str, object]:
+    interval_metrics = {} if intervals else None
     tokens = first = any_ = capped = sentence_first = miss_sentence_total = capped_sentences = 0
     miss_tokens: Counter[str] = Counter()
     miss_sentences: Counter[str] = Counter()
@@ -539,13 +570,19 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
     sentence_strata = {name: Counter() for name in SENTENCE_STRATA}
     has_strata = False
     for result in results:
+        if interval_metrics is not None:
+            _append_interval_metrics(interval_metrics, result, classify_misses)
+        if record_sink is not None:
+            record_sink.append(_per_sentence_record(result))
         tokens += int(result["tokens"])
         first += int(result["first"])
         any_ += int(result["any"])
         capped += int(result["capped"])
         capped_sentences += bool(result["capped_sentence"])
         sentence_first += bool(result["sentence_first"])
-        miss_sentence_total += bool(result["miss_counts"])
+        miss_sentence_total += (
+            bool(result["miss_counts"]) if classify_misses else not result["sentence_first"]
+        )
         miss_tokens.update(result["miss_counts"])
         miss_sentences.update(result["miss_sentences"])
         family_tokens.update(result["family_counts"])
@@ -563,11 +600,11 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
                 _add_stratum_result(strata_totals[name], result["strata"][name])
 
     misses = tokens - first
-    if sum(miss_tokens.values()) != misses:
+    if classify_misses and sum(miss_tokens.values()) != misses:
         raise AssertionError("miss classes do not partition first-choice misses")
-    if sum(family_tokens.values()) != miss_tokens["V"]:
+    if classify_misses and sum(family_tokens.values()) != miss_tokens["V"]:
         raise AssertionError("V families do not partition V")
-    if sum(fix_tokens.values()) != miss_tokens["V"]:
+    if classify_misses and sum(fix_tokens.values()) != miss_tokens["V"]:
         raise AssertionError("V fix kinds do not partition V")
 
     report = {
@@ -605,10 +642,16 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
             for family in FAMILIES
         },
     }
+    if not classify_misses:
+        for key in ("by_class", "v_by_family", "v_by_fix_kind", "v_family_by_fix_kind"):
+            report.pop(key)
     if has_strata:
         report["strata"] = {
             "sentence_rule": SENTENCE_RULE,
-            "tokens": {name: _stratum_report(strata_totals[name], tokens) for name in STRATA},
+            "tokens": {
+                name: _stratum_report(strata_totals[name], tokens, classify_misses)
+                for name in STRATA
+            },
             "sentences": {
                 name: {
                     "sentences": sentence_strata[name]["sentences"],
@@ -622,7 +665,134 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
                 for name in SENTENCE_STRATA
             },
         }
+    if intervals:
+        _add_triage_intervals(report, interval_metrics, intervals, interval_seed)
     return report
+
+
+def _add_triage_intervals(
+    report: dict[str, object], metrics: dict, replicates: int, seed: int
+) -> None:
+    bounds = percentile_ratio_intervals(metrics, replicates, seed)
+    _attach_triage_intervals(report, bounds, replicates, seed)
+
+
+def _append_metric(
+    metrics: dict, name: str, numerator: int | bool, denominator: int | bool
+) -> None:
+    numerators, denominators = metrics.setdefault(name, ([], []))
+    numerators.append(numerator)
+    denominators.append(denominator)
+
+
+def _append_interval_metrics(metrics: dict, result: dict, classify_misses: bool) -> None:
+    tokens = result["tokens"]
+    _append_metric(metrics, "first_choice", result["first"], tokens)
+    _append_metric(metrics, "any_reading", result["any"], tokens)
+    _append_metric(metrics, "first_choice_sentence_accuracy", result["sentence_first"], 1)
+    if classify_misses:
+        for name in MISS_CLASSES:
+            _append_metric(metrics, f"class:{name}", result["miss_counts"].get(name, 0), tokens)
+    if "strata" in result:
+        _append_strata_interval_metrics(metrics, result, classify_misses)
+
+
+def _append_strata_interval_metrics(metrics: dict, result: dict, classify_misses: bool) -> None:
+    for stratum in STRATA:
+        _append_token_stratum_metrics(metrics, result, stratum, classify_misses)
+    for stratum in SENTENCE_STRATA:
+        _append_sentence_stratum_metric(metrics, result, stratum)
+
+
+def _append_token_stratum_metrics(
+    metrics: dict, result: dict, stratum: str, classify_misses: bool
+) -> None:
+    row = result["strata"][stratum]
+    _append_metric(metrics, f"token_stratum:{stratum}:first", row["first"], row["tokens"])
+    _append_metric(metrics, f"token_stratum:{stratum}:any", row["any"], row["tokens"])
+    if classify_misses:
+        for name in MISS_CLASSES:
+            _append_metric(
+                metrics,
+                f"token_stratum:{stratum}:class:{name}",
+                row["miss_counts"].get(name, 0),
+                result["tokens"],
+            )
+
+
+def _append_sentence_stratum_metric(metrics: dict, result: dict, stratum: str) -> None:
+    member = stratum in result["sentence_strata"]
+    _append_metric(
+        metrics,
+        f"sentence_stratum:{stratum}",
+        member and result["sentence_first"],
+        member,
+    )
+
+
+def _attach_triage_intervals(report, bounds, replicates, seed) -> None:
+    report["intervals"] = {
+        "method": "sentence-cluster percentile bootstrap",
+        "confidence": CI_LEVEL,
+        "replicates": replicates,
+        "seed": seed,
+    }
+    _attach_overall_intervals(report, bounds)
+    if "strata" in report:
+        _attach_strata_intervals(report["strata"], bounds)
+
+
+def _attach_overall_intervals(report, bounds) -> None:
+    accuracy = report["accuracy"]
+    for name in ("first_choice", "any_reading", "first_choice_sentence_accuracy"):
+        accuracy[f"{name}_ci95"] = bounds[name]
+    if "by_class" in report:
+        for name in MISS_CLASSES:
+            report["by_class"][name]["share_sampled_tokens_pp_ci95"] = [
+                100.0 * value for value in bounds[f"class:{name}"]
+            ]
+
+
+def _attach_strata_intervals(strata, bounds) -> None:
+    for stratum in STRATA:
+        row = strata["tokens"][stratum]
+        row["accuracy"]["first_choice_ci95"] = bounds[f"token_stratum:{stratum}:first"]
+        row["accuracy"]["any_reading_ci95"] = bounds[f"token_stratum:{stratum}:any"]
+        if "by_class" in row:
+            for name in MISS_CLASSES:
+                row["by_class"][name]["share_sampled_tokens_pp_ci95"] = [
+                    100.0 * value for value in bounds[f"token_stratum:{stratum}:class:{name}"]
+                ]
+    for stratum in SENTENCE_STRATA:
+        strata["sentences"][stratum]["first_choice_sentence_accuracy_ci95"] = bounds[
+            f"sentence_stratum:{stratum}"
+        ]
+
+
+def _per_sentence_payload(records: list[dict], profile: str | None) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "unit": "sentence",
+        "profile": profile,
+        "records": records,
+    }
+
+
+def _per_sentence_record(result: dict) -> dict[str, object]:
+    record = {key: result[key] for key in ("id", "tokens", "first", "any", "sentence_first")}
+    if "strata" in result:
+        record["strata"] = _per_sentence_strata(result)
+    return record
+
+
+def _per_sentence_strata(result: dict) -> dict[str, object]:
+    return {
+        "tokens": {
+            name: {key: result["strata"][name][key] for key in ("tokens", "first", "any")}
+            for name in STRATA
+        },
+        "sentences": result["sentence_strata"],
+    }
 
 
 def _head() -> str:
@@ -654,12 +824,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sentences-per-shard", type=int, default=MAX_SENTENCES_PER_SHARD)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--profile", choices=("google-tn",), default=None)
+    parser.add_argument(
+        "--accuracy-only",
+        action="store_true",
+        help="skip post-miss triage classification while retaining accuracy and strata",
+    )
     parser.add_argument("--strata", type=Path, default=None, metavar="VOCAB")
+    parser.add_argument("--intervals", type=int, default=0, metavar="N")
+    parser.add_argument("--interval-seed", type=int, default=DEFAULT_INTERVAL_SEED)
+    parser.add_argument("--per-sentence-out", type=Path, default=None, metavar="PATH")
     args = parser.parse_args(argv)
     if not 1 <= args.sentences_per_shard <= MAX_SENTENCES_PER_SHARD:
         parser.error(f"--sentences-per-shard must be in 1..{MAX_SENTENCES_PER_SHARD}")
     if args.workers < 1:
         parser.error("--workers must be positive")
+    if args.intervals < 0:
+        parser.error("--intervals must be nonnegative")
+    if args.per_sentence_out is not None and args.per_sentence_out.resolve().is_relative_to(_REPO):
+        parser.error("--per-sentence-out must be outside the repository")
     profile = _validate_evaluation_profile(args.profile, LOCALE)
 
     corpus_dir = (args.corpus_dir or store_root(SOURCE_ID)).resolve(strict=True)
@@ -702,6 +884,7 @@ def main(argv: list[str] | None = None) -> int:
                 else tuple("SEEN" if row[1] in vocabulary.seen else "UNSEEN" for row in sentence)
             ),
             profile,
+            not args.accuracy_only,
         )
         for shard, index, sentence in selected
     ]
@@ -716,9 +899,17 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(fingerprint_payload, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
 
+    records = [] if args.per_sentence_out is not None else None
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         results = pool.map(_score_sentence, work, chunksize=16)
-        report = _aggregate(results, len(selected))
+        report = _aggregate(
+            results,
+            len(selected),
+            args.intervals,
+            args.interval_seed,
+            records,
+            not args.accuracy_only,
+        )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     counts_path = args.output_dir / "counts.json"
@@ -743,10 +934,15 @@ def main(argv: list[str] | None = None) -> int:
     }
     if profile is not None:
         receipt["profile"] = profile
+    if args.accuracy_only:
+        receipt["accuracy_only"] = True
     if vocabulary is not None:
         receipt["strata_vocabulary"] = vocabulary_receipt(vocabulary)
     _write_json(counts_path, report)
     _write_json(receipt_path, receipt)
+    if args.per_sentence_out is not None:
+        args.per_sentence_out.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(args.per_sentence_out, _per_sentence_payload(records, profile))
     print(json.dumps({"counts": report, "receipt": receipt}, indent=2, sort_keys=True))
     return 0
 
