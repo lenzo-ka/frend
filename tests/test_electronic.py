@@ -8,8 +8,11 @@ import pytest
 from icukit.detectors import detect
 from icukit.recognize import FlexibleDateDetector, FlexibleNumberDetector
 
-from frend import resolve, resolve_lattice
+import frend.electronic as electronic
+from frend import InputValidationError, resolve, resolve_lattice
 from frend.electronic import (
+    DEFAULT_MAX_EMAIL_CHARS,
+    DEFAULT_MAX_URL_CHARS,
     ElectronicDetector,
     decode_letter_notation,
     load_electronic_priors,
@@ -41,6 +44,37 @@ def _spans(text):
 )
 def test_detector_finds_maximal_spans_without_trailing_punctuation(text, expected):
     assert _spans(text) == expected
+
+
+def test_detector_refuses_oversized_candidates_without_emitting_a_prefix():
+    url_prefix = "http://example.com/"
+    exact_url = url_prefix + "a" * (DEFAULT_MAX_URL_CHARS - len(url_prefix))
+    assert _spans(exact_url) == [("electronic:url", exact_url)]
+    assert _spans(exact_url + "a") == []
+
+    email_suffix = "@example.org"
+    exact_email = "a" * (DEFAULT_MAX_EMAIL_CHARS - len(email_suffix)) + email_suffix
+    assert _spans(exact_email) == [("electronic:email", exact_email)]
+    assert _spans("a" + exact_email) == []
+
+
+def test_detector_caps_are_configurable_and_input_is_validated_first():
+    assert ElectronicDetector(max_url_chars=11).detect("example.com")
+    assert ElectronicDetector(max_url_chars=10).detect("example.com") == []
+    assert ElectronicDetector(max_url_chars=5).detect("a@example.org")[0]["type"] == (
+        "electronic:email"
+    )
+    with pytest.raises(InputValidationError, match="NUL"):
+        ElectronicDetector().detect("example.com\x00")
+
+
+def test_detector_validation_runs_before_candidate_scanning(monkeypatch):
+    def unexpected_scan(*_args):
+        raise AssertionError("recognition started before validation")
+
+    monkeypatch.setattr(electronic, "_bounded_segments", unexpected_scan)
+    with pytest.raises(InputValidationError, match="NUL"):
+        ElectronicDetector().detect("example.com\x00")
 
 
 @pytest.mark.parametrize(

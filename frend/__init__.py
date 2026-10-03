@@ -14,9 +14,11 @@ __version__ = "0.1.0"
 from frend.fold_resolve import Resolution, resolve
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
+    DEFAULT_MAX_UNIT_CHARS,
     MAX_NON_TEXT_SHARE,
     InputValidationError,
     validate_input,
+    validate_unit_length,
 )
 from frend.lattice import (
     ChoiceGraph,
@@ -48,6 +50,7 @@ __all__ = [
     "ChoiceGraph",
     "ChoiceLattice",
     "DEFAULT_MAX_INPUT_CHARS",
+    "DEFAULT_MAX_UNIT_CHARS",
     "InputValidationError",
     "LatticeNode",
     "MAX_NON_TEXT_SHARE",
@@ -73,4 +76,5 @@ __all__ = [
     "verbalize_edge",
     "verbalize_lattice",
     "validate_input",
+    "validate_unit_length",
 ]

@@ -26,7 +26,12 @@ from frend.fold_resolve import (
     _select,
     _span_priors,
 )
-from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
+from frend.input_limits import (
+    DEFAULT_MAX_INPUT_CHARS,
+    DEFAULT_MAX_UNIT_CHARS,
+    validate_input,
+    validate_unit_length,
+)
 from frend.locale_data import canonical_locale
 from frend.type_priors import FeatureSource, ReadingPrior, ResolveContext
 
@@ -351,6 +356,7 @@ def resolve_choices(
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> ChoiceLattice:
     """Carry every distinct reading as a scored edge, filtering none of them.
 
@@ -396,6 +402,8 @@ def resolve_choices(
     through :func:`compose_choices` requires ``source_text``.
     """
     validate_input(source_text, max_input_chars=max_input_chars)
+    if source_text is not None:
+        validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
     if not isinstance(reading_cap, int) or isinstance(reading_cap, bool) or reading_cap < 1:
         raise ValueError(f"reading_cap must be a positive integer, got {reading_cap!r}")
 
@@ -408,6 +416,11 @@ def resolve_choices(
             unique.append(detection)
     candidates, detected_length = _candidates(unique)
     text_length = len(source_text) if source_text is not None else detected_length
+    validate_unit_length(
+        text_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
     if text_length < detected_length:
         raise ValueError(
             f"source_text length {text_length} is shorter than detection extent {detected_length}"
@@ -540,6 +553,7 @@ def compose_choices(
     locale: str | None = None,
     supplements: CuratedSupplements | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> ChoiceGraph:
     """Join every choice edge to its spoken forms without selecting a route.
 
@@ -550,6 +564,11 @@ def compose_choices(
     one intrinsically pathological edge once.
     """
     validate_input(lattice.source_text, max_input_chars=max_input_chars)
+    validate_unit_length(
+        lattice.text_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
     effective = lattice.locale
     if locale is not None and canonical_locale(locale) != effective:
         raise ValueError(f"locale {locale!r} does not match lattice locale {effective!r}")
@@ -584,6 +603,7 @@ def resolve_lattice(
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> ReadingLattice:
     """Resolve detections into an immutable, distilled reading lattice.
 
@@ -603,6 +623,8 @@ def resolve_lattice(
     too. This API does not silently claim a bound it does not have.
     """
     validate_input(source_text, max_input_chars=max_input_chars)
+    if source_text is not None:
+        validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:
         raise ValueError(f"output_cap must be a positive integer, got {output_cap!r}")
 
@@ -617,6 +639,11 @@ def resolve_lattice(
         return key_cache[identity]
 
     text_length = len(source_text) if source_text is not None else detected_length
+    validate_unit_length(
+        text_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
     if text_length < detected_length:
         raise ValueError(
             f"source_text length {text_length} is shorter than detection extent {detected_length}"

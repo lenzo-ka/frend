@@ -31,18 +31,33 @@ say them.
 
 ### Input limits
 
-The public resolution and verbalization entry points accept at most 4,194,304 Unicode
-code points by default (`max_input_chars`). They refuse rather than truncate input over
-that document-sized budget. They also refuse byte strings, NUL characters, and text in
-which more than 1% of code points are non-whitespace controls, unassigned code points,
-or lone surrogates. Decode bytes as strict UTF-8 and remove markup before calling frend.
+The recognizer's document-scale guard accepts at most 4,194,304 Unicode code points by
+default (`max_input_chars`). Lattice/choice resolution and verbalization have a
+separate `max_unit_chars` work bound of 8,192 code points because they construct
+per-position graph state. They refuse rather than truncate over either bound, and the
+unit-bound error tells callers to sentence-break first.
 
-Callers with larger documents should sentence-break first and submit bounded sentence
-batches while preserving their offsets and order. At an untrusted ingress, call
+Plain-text validation also refuses byte strings, NUL characters, every lone surrogate,
+and text in which more than 1% of all code points have category `Cn` (unassigned) or
+category `Cc` (control) other than the `Cc` members of Unicode White_Space: tab, line
+feed, vertical tab, form feed, carriage return, and U+0085 NEXT LINE. All other Unicode
+White_Space characters have separator categories and are accepted. Decode bytes as
+strict UTF-8 and remove markup before calling frend.
+
+Callers should sentence-break documents and submit bounded sentences while preserving
+their offsets and order. At an untrusted ingress, call
 `validate_input` before passing the text to icukit's detectors; the resolution and
 verbalization entry points repeat the check. Passing `max_input_chars=None` turns off
-only frend's size check for a caller that already enforces an equivalent bound; the
-plain-text checks remain active.
+only the document check, and `max_unit_chars=None` turns off only the separate work
+bound; the plain-text checks remain active.
+
+`ElectronicDetector` validates its input before recognition. It does not emit a prefix
+of an oversized address: a contiguous URL/domain candidate over 8,192 code points or an
+email candidate over 254 code points is omitted. Both recognition caps are configurable.
+They are engineering work limits informed by, but not dictated by, the protocols: RFC
+9110 recommends that HTTP senders and recipients support URIs of at least 8,000 octets
+(a minimum, not a maximum), while RFC 5321 limits an SMTP forward or reverse path to 256
+octets. frend's caps count Unicode code points, not protocol octets.
 
 Status: recognize, resolve and verbalize are built, including a keep-all mode that
 carries every reading and its spoken forms instead of one best cover. A word-level

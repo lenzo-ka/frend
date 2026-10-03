@@ -7,6 +7,7 @@ import pytest
 
 from frend import (
     DEFAULT_MAX_INPUT_CHARS,
+    DEFAULT_MAX_UNIT_CHARS,
     InputValidationError,
     compose_choices,
     resolve,
@@ -17,6 +18,7 @@ from frend import (
     verbalize_lattice,
 )
 from frend.context import TextContext
+from frend.electronic import ElectronicDetector
 from frend.fold_resolve import resolve_cover
 
 
@@ -55,10 +57,26 @@ def test_default_document_budget_refuses_without_building_a_huge_lattice():
         resolve_lattice([], source_text=text)
 
 
-@pytest.mark.parametrize("char", ["\x01", "\u0378", "\ud800"])
+@pytest.mark.parametrize("char", ["\x01", "\u0378"])
 def test_high_non_text_share_is_refused(char):
     with pytest.raises(InputValidationError, match="non-text share"):
         validate_input("ordinary" + char)
+
+
+def test_lone_surrogate_is_refused_independently_of_share():
+    with pytest.raises(InputValidationError, match="lone surrogate"):
+        validate_input("a" * 10_000 + "\ud800")
+
+
+def test_non_text_share_threshold_is_inclusive_at_exactly_one_percent():
+    assert validate_input("a" * 99 + "\x01") == "a" * 99 + "\x01"
+    with pytest.raises(InputValidationError, match=r"2/199.*1.01%"):
+        validate_input("a" * 197 + "\x01\x02")
+
+
+def test_multilingual_format_private_use_and_whitespace_text_is_accepted():
+    text = "漢字 ไทย e\u0301 👩\u200d💻️ \u200eRTL\u200f \ue000\t\n\r\f\v\x85"
+    assert validate_input(text) == text
 
 
 def test_budget_can_be_lowered_or_disabled_but_plain_text_guard_remains():
@@ -79,3 +97,45 @@ def test_under_budget_and_budget_disabled_output_match_main_byte_for_byte():
     expected = "e134b486e7b08b53c37948f26b0b8a8cba1cc656cc76f11964f9392795185f32"
     assert repr(default) == repr(disabled)
     assert hashlib.sha256(repr(default).encode()).hexdigest() == expected
+
+
+def test_recognized_reading_output_matches_main_byte_for_byte():
+    text = "Email jane.doe@example.org today."
+    detections = ElectronicDetector().detect(text)
+    result = verbalize_lattice(resolve_lattice(detections, source_text=text))
+    expected = "49612cab37913d15a9cc50baf1da02de1a2fd3bd5280bcdb4cd447e2dc0fd0a4"
+    assert hashlib.sha256(repr(result).encode()).hexdigest() == expected
+
+
+@pytest.mark.parametrize("resolver", [resolve_choices, resolve_lattice])
+def test_omitted_source_uses_detection_extent_for_unit_bound(resolver):
+    detection = {
+        "start": 0,
+        "end": DEFAULT_MAX_UNIT_CHARS + 1,
+        "type": "unsupported:test",
+        "text": "x",
+    }
+    with pytest.raises(InputValidationError, match=r"8193.*max_unit_chars=8192.*sentence-break"):
+        resolver([detection])
+    with pytest.raises(InputValidationError, match=r"8193.*max_input_chars=1.*sentence-break"):
+        resolver([detection], max_input_chars=1, max_unit_chars=None)
+
+
+@pytest.mark.parametrize("resolver", [resolve_choices, resolve_lattice])
+def test_resolution_unit_bound_is_separate_and_configurable(resolver):
+    text = "x" * (DEFAULT_MAX_UNIT_CHARS + 1)
+    with pytest.raises(InputValidationError, match="sentence-break"):
+        resolver([], source_text=text)
+    assert resolver([], source_text=text, max_unit_chars=None).text_length == len(text)
+
+
+def test_verbalize_paths_enforce_the_unit_bound():
+    text = "x" * (DEFAULT_MAX_UNIT_CHARS + 1)
+    lattice = resolve_lattice([], source_text=text, max_unit_chars=None)
+    choices = resolve_choices([], source_text=text, max_unit_chars=None)
+    with pytest.raises(InputValidationError, match="sentence-break"):
+        verbalize_lattice(lattice)
+    with pytest.raises(InputValidationError, match="sentence-break"):
+        verbalize_edge(lattice.edges[0], source_text=text)
+    with pytest.raises(InputValidationError, match="sentence-break"):
+        compose_choices(choices)

@@ -53,7 +53,12 @@ from frend.electronic import (
     separator_names,
     tld_positions,
 )
-from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
+from frend.input_limits import (
+    DEFAULT_MAX_INPUT_CHARS,
+    DEFAULT_MAX_UNIT_CHARS,
+    validate_input,
+    validate_unit_length,
+)
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import (
     LettersValue,
@@ -2735,10 +2740,19 @@ def verbalize_edge(
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedUnit:
     """Validate the source text, then verbalize one edge."""
     validate_input(source_text, max_input_chars=max_input_chars)
     validate_input(context.text if context is not None else None, max_input_chars=max_input_chars)
+    unit_length = len(source_text) if source_text is not None else edge.end
+    validate_unit_length(
+        unit_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
+    if context is not None:
+        validate_unit_length(len(context.text), max_unit_chars=max_unit_chars)
     return _verbalize_edge(
         edge,
         source_text=source_text,
@@ -3149,6 +3163,7 @@ def verbalize_lattice(
     context: TextContext | None = None,
     profile: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedLattice:
     """Verbalize every projected path without expanding alternatives across units.
 
@@ -3157,6 +3172,13 @@ def verbalize_lattice(
     """
     validate_input(lattice.source_text, max_input_chars=max_input_chars)
     validate_input(context.text if context is not None else None, max_input_chars=max_input_chars)
+    validate_unit_length(
+        lattice.text_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
+    if context is not None:
+        validate_unit_length(len(context.text), max_unit_chars=max_unit_chars)
     effective = lattice.locale
     profile = validate_profile(profile)
     britishisms = None
