@@ -111,6 +111,49 @@ def test_a_verbalization_error_is_always_a_miss_even_for_a_self_target(monkeypat
     assert evaluate._score_text("word", "word") == (False, False)
 
 
+def test_default_detection_keeps_the_historical_call_without_k(monkeypatch):
+    evaluate = _evaluator()
+    from icukit import detectors
+
+    calls = []
+
+    def legacy_detect(text, readers):
+        calls.append((text, readers))
+        return []
+
+    monkeypatch.setattr(detectors, "detect", legacy_detect)
+    evaluate._score_text("word", "word")
+    assert len(calls) == 1
+    assert calls[0][0] == "word"
+
+
+def test_opt_in_detection_passes_k(monkeypatch):
+    evaluate = _evaluator()
+    from icukit import detectors
+
+    calls = []
+
+    def kbest_detect(text, readers, *, k=None):
+        calls.append((text, readers, k))
+        return []
+
+    monkeypatch.setattr(detectors, "detect", kbest_detect)
+    evaluate._score_text("word", "word", detect_k=1)
+    assert len(calls) == 1
+    assert calls[0][0] == "word"
+    assert calls[0][2] == 1
+
+
+def test_detect_k_refuses_an_icukit_without_k():
+    evaluate = _evaluator()
+
+    def legacy_detect(_text, _readers):
+        return []
+
+    with pytest.raises(RuntimeError, match="installed icukit does not provide it"):
+        evaluate._require_detect_k(1, legacy_detect)
+
+
 # ------------------------------------------------------------------ held-out shards
 
 # The corpus README's split: training 00-89, runtime eval 90-94, test 95-99.

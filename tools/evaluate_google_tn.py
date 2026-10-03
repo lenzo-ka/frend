@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import inspect
 import json
 import os
 import sys
@@ -91,6 +92,28 @@ def _detectors(locale: str = "en_US"):
     return reading_detectors(locale)
 
 
+def _require_detect_k(detect_k: int, detect_function=None) -> None:
+    """Refuse the opt-in mode before corpus work when icukit lacks the required API."""
+    if detect_function is None:
+        from icukit.detectors import detect as detect_function
+
+    try:
+        parameters = inspect.signature(detect_function).parameters
+    except (TypeError, ValueError) as error:
+        raise RuntimeError(
+            "--detect-k requires an icukit detect() whose signature exposes keyword 'k'"
+        ) from error
+    if "k" not in parameters:
+        raise RuntimeError(
+            "--detect-k requires an icukit detect() with keyword 'k'; "
+            "the installed icukit does not provide it"
+        )
+    try:
+        detect_function("", (), k=detect_k)
+    except (TypeError, ValueError) as error:
+        raise RuntimeError(f"installed icukit rejects --detect-k {detect_k}: {error}") from error
+
+
 _expected = google_tn_rows.expected
 
 
@@ -103,10 +126,18 @@ def _joined(texts_and_passthrough) -> str:
     return out
 
 
-def _score(item: tuple[tuple[str, str, str], str, str, str, str | None]) -> tuple[str, bool, bool]:
-    (corpus_class, written, spoken), before, after, locale, profile = item
+def _score(
+    item: tuple[tuple[str, str, str], str, str, str, str | None, int | None],
+) -> tuple[str, bool, bool]:
+    (corpus_class, written, spoken), before, after, locale, profile, detect_k = item
     first, any_ = _score_text(
-        written, _expected(corpus_class, written, spoken), before, after, locale, profile
+        written,
+        _expected(corpus_class, written, spoken),
+        before,
+        after,
+        locale,
+        profile,
+        detect_k,
     )
     return corpus_class, first, any_
 
@@ -128,6 +159,7 @@ def _score_text(
     after: str = "",
     locale: str = "en_US",
     profile: str | None = None,
+    detect_k: int | None = None,
 ) -> tuple[bool, bool]:
     """Whether frend's first reading of ``written``, and whether any reading, says ``target``.
 
@@ -143,7 +175,13 @@ def _score_text(
     profile = _validate_evaluation_profile(profile, locale)
     target = normalize_spoken(target)
     try:
-        detections = list(detect(written, _detectors(locale))) if written.strip() else []
+        if not written.strip():
+            detections = []
+        elif detect_k is None:
+            # Keep the historical call exactly unchanged unless the option is selected.
+            detections = list(detect(written, _detectors(locale)))
+        else:
+            detections = list(detect(written, _detectors(locale), k=detect_k))
         verbalized = verbalize_lattice(
             resolve_lattice(detections, source_text=written, locale=locale),
             context=_in_context(written, before, after),
@@ -178,10 +216,14 @@ _range_denominators = google_tn_rows.range_candidate_denominators
 
 
 def _score_joined(
-    item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None],
+    item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None, int | None],
 ) -> tuple[str, str, bool, bool]:
-    (separator, middle, written, target), (before, after), locale, profile = item
-    return (separator, middle, *_score_text(written, target, before, after, locale, profile))
+    (separator, middle, written, target), (before, after), locale, profile, detect_k = item
+    return (
+        separator,
+        middle,
+        *_score_text(written, target, before, after, locale, profile, detect_k),
+    )
 
 
 def _rows(corpus_input: VerifiedInput, limit: int | None = _TEST_LINES):
@@ -218,6 +260,7 @@ def _per_token(
     locale: str = "en_US",
     profile: str | None = None,
     strata_seen: frozenset[str] | None = None,
+    detect_k: int | None = None,
     *,
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
@@ -233,6 +276,7 @@ def _per_token(
             " ".join(r[1] for r in sentence[index + 1 :]),
             locale,
             profile,
+            detect_k,
         )
         for sentence in sentences
         for index, row in enumerate(sentence)
@@ -439,13 +483,17 @@ def _add_evaluation_intervals(
 
 
 def _running_text_rows(
-    sentences, workers: int, locale: str = "en_US", profile: str | None = None
+    sentences,
+    workers: int,
+    locale: str = "en_US",
+    profile: str | None = None,
+    detect_k: int | None = None,
 ) -> list[dict]:
     """Each number, separator, number triple of ``sentences`` rejoined as written and
     scored, grouped by separator and the corpus's reading of it."""
     items = list(
         (
-            (row, context, locale, profile)
+            (row, context, locale, profile, detect_k)
             for row, context in zip(
                 _running_text(sentences, locale),
                 google_tn_rows.running_text_contexts(sentences, locale),
@@ -477,6 +525,7 @@ def _held_out(
     workers: int,
     locale: str = "en_US",
     profile: str | None = None,
+    detect_k: int | None = None,
     strata_path: Path | None = None,
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
@@ -502,6 +551,7 @@ def _held_out(
                 locale,
                 profile,
                 None if match is None else match.seen,
+                detect_k,
                 intervals=intervals,
                 interval_seed=interval_seed,
                 record_prefix=name,
@@ -511,7 +561,7 @@ def _held_out(
         "running_text": {
             "lines": f"all lines of {name}",
             "triples": len(_running_text(whole, locale)),
-            "rows": _running_text_rows(whole, workers, locale, profile),
+            "rows": _running_text_rows(whole, workers, locale, profile, detect_k),
         },
     }
     if match is not None:
@@ -527,6 +577,7 @@ def evaluate(
     locale: str = "en_US",
     skip_report_shard: bool = False,
     profile: str | None = None,
+    detect_k: int | None = None,
     strata_path: Path | None = None,
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
@@ -553,6 +604,7 @@ def evaluate(
             locale,
             profile,
             None if match is None else match.seen,
+            detect_k,
             intervals=intervals,
             interval_seed=interval_seed,
             record_prefix=_TEST_FILE,
@@ -570,7 +622,7 @@ def evaluate(
                 )
             },
             "classes": per_token["classes"],
-            "running_text": _running_text_rows(sentences, workers, locale, profile),
+            "running_text": _running_text_rows(sentences, workers, locale, profile, detect_k),
             "note": (
                 "frend reads each token alone, its sentence as context; "
                 "the published models read the sentence whole"
@@ -588,6 +640,7 @@ def evaluate(
             workers,
             locale,
             profile,
+            detect_k,
             strata_path,
             intervals,
             interval_seed,
@@ -752,6 +805,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--profile", choices=("google-tn",), default=None)
     parser.add_argument(
+        "--detect-k",
+        type=int,
+        default=None,
+        metavar="K",
+        help="opt in to icukit detect(..., k=K); default keeps the historical call unchanged",
+    )
+    parser.add_argument(
         "--strata",
         type=Path,
         default=None,
@@ -795,6 +855,11 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--skip-report-shard requires a held-out shard other than report shard 99")
     if args.intervals < 0:
         parser.error("--intervals must be nonnegative")
+    if args.detect_k is not None:
+        try:
+            _require_detect_k(args.detect_k)
+        except RuntimeError as error:
+            parser.error(str(error))
     if args.per_sentence_out is not None and args.per_sentence_out.resolve().is_relative_to(_REPO):
         parser.error("--per-sentence-out must be outside the repository")
     corpus_dir = args.corpus_dir or _default_corpus_dir()
@@ -820,6 +885,7 @@ def main(argv: list[str] | None = None) -> int:
         locale=args.locale,
         skip_report_shard=args.skip_report_shard,
         profile=args.profile,
+        detect_k=args.detect_k,
         strata_path=args.strata,
         intervals=args.intervals,
         interval_seed=args.interval_seed,
