@@ -6,6 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
+
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
@@ -19,10 +21,11 @@ def _tool(name: str):
     return module
 
 
-def _payload(first: int, *, tokens: int = 1) -> dict:
+def _payload(first: int, *, tokens: int = 1, fingerprint: str = "sample-a") -> dict:
     return {
         "schema_version": 1,
         "unit": "sentence",
+        "sample_fingerprint": fingerprint,
         "records": [
             {
                 "id": "shard:0",
@@ -35,13 +38,44 @@ def _payload(first: int, *, tokens: int = 1) -> dict:
     }
 
 
-def test_paired_identical_arms_have_exact_zero_interval():
+def _two_sentence_payload() -> dict:
+    return {
+        "schema_version": 1,
+        "unit": "sentence",
+        "sample_fingerprint": "sample-a",
+        "records": [
+            {
+                "id": f"shard:{index}",
+                "tokens": 1,
+                "first": index,
+                "any": index,
+                "sentence_first": bool(index),
+            }
+            for index in (0, 1)
+        ],
+    }
+
+
+def test_paired_two_sentence_identical_arms_have_exact_zero_interval():
     compare = _tool("compare_runs")
-    payload = _payload(1)
-    report = compare.compare(payload, payload, 100, 7)
+    a_payload = _two_sentence_payload()
+    b_payload = {**a_payload, "records": list(reversed(a_payload["records"]))}
+    report = compare.compare(a_payload, b_payload, 1000, 7)
     for row in report["metrics"].values():
         assert row["delta_ci95_pp"] == [0.0, 0.0]
+        assert row["delta_ci95_defined_replicates"] == 1000
         assert row["delta_ci_excludes_zero"] is False
+
+
+def test_compare_refuses_mismatched_sample_fingerprints():
+    compare = _tool("compare_runs")
+    with pytest.raises(ValueError, match="same sample fingerprint"):
+        compare.compare(
+            _payload(0, fingerprint="sample-a"),
+            _payload(1, fingerprint="sample-b"),
+            10,
+            7,
+        )
 
 
 def test_paired_fixed_one_sentence_gain_has_exact_interval():
@@ -65,9 +99,65 @@ def test_interval_seed_is_deterministic():
 def test_resampling_clusters_on_sentences_not_tokens():
     bootstrap = _tool("bootstrap_intervals")
     metrics = {"accuracy": ([100, 0], [100, 1])}
-    low, high = bootstrap.percentile_ratio_intervals(metrics, 1000, 20261002)["accuracy"]
+    result = bootstrap.percentile_ratio_intervals(metrics, 1000, 20261002)["accuracy"]
+    low, high = result["ci95"]
     assert low == 0.0
     assert high == 1.0
+    assert result["defined_replicates"] == 1000
+
+
+def test_ratio_intervals_drop_undefined_draws_and_apply_reliability_floor():
+    bootstrap = _tool("bootstrap_intervals")
+    mostly_defined = bootstrap.percentile_ratio_intervals(
+        {"rare": ([1] * 4 + [0] * 96, [1] * 4 + [0] * 96)}, 1000, 7
+    )["rare"]
+    assert mostly_defined["ci95"] == [1.0, 1.0]
+    assert 950 <= mostly_defined["defined_replicates"] < 1000
+
+    unreliable = bootstrap.percentile_ratio_intervals(
+        {"rare": ([1] + [0] * 99, [1] + [0] * 99)}, 1000, 7
+    )["rare"]
+    assert unreliable["ci95"] is None
+    assert unreliable["defined_replicates"] < 950
+
+
+def test_paired_intervals_drop_undefined_draws_and_apply_reliability_floor():
+    bootstrap = _tool("bootstrap_intervals")
+    vector = [1] * 4 + [0] * 96
+    result = bootstrap.paired_delta_intervals({"rare": (vector, vector, vector, vector)}, 1000, 7)[
+        "rare"
+    ]
+    assert result["ci95"] == [0.0, 0.0]
+    assert 950 <= result["defined_replicates"] < 1000
+
+    sparse = [1] + [0] * 99
+    unreliable = bootstrap.paired_delta_intervals(
+        {"rare": (sparse, sparse, sparse, sparse)}, 1000, 7
+    )["rare"]
+    assert unreliable["ci95"] is None
+    assert unreliable["defined_replicates"] < 950
+
+
+def test_sentence_payloads_carry_sample_identity():
+    evaluate = _tool("evaluate_google_tn")
+    triage = _tool("triage_misses")
+    records = _two_sentence_payload()["records"]
+
+    first = evaluate._per_sentence_payload(records, None, "corpus-a")
+    second = evaluate._per_sentence_payload(records, "google-tn", "corpus-a")
+    assert first["sample_fingerprint"] == second["sample_fingerprint"]
+    assert (
+        first["sample_fingerprint"]
+        != evaluate._per_sentence_payload(records, None, "corpus-b")["sample_fingerprint"]
+    )
+    assert (
+        first["sample_fingerprint"]
+        != evaluate._per_sentence_payload(records[:1], None, "corpus-a")["sample_fingerprint"]
+    )
+    assert (
+        triage._per_sentence_payload(records, None, "existing-fingerprint")["sample_fingerprint"]
+        == "existing-fingerprint"
+    )
 
 
 def test_evaluator_adds_intervals_and_text_free_sentence_records(monkeypatch):
@@ -82,6 +172,7 @@ def test_evaluator_adds_intervals_and_text_free_sentence_records(monkeypatch):
     report = evaluate._per_token(sentences, 1, intervals=100, record_sink=records)
     assert report["intervals"]["replicates"] == 100
     assert report["intervals"]["first_choice_accuracy"] == [0.0, 1.0]
+    assert report["intervals"]["defined_replicates"]["first_choice_accuracy"] == 100
     assert records == [
         {"id": "sample:0", "tokens": 1, "first": 1, "any": 1, "sentence_first": True},
         {"id": "sample:1", "tokens": 1, "first": 0, "any": 1, "sentence_first": False},
@@ -100,6 +191,7 @@ def test_triage_reports_each_class_interval_in_percentage_points(monkeypatch):
     result = triage._score_sentence(("shard", 0, sentence, None, None))
     report = triage._aggregate([result], 1, intervals=100)
     assert report["by_class"]["D"]["share_sampled_tokens_pp_ci95"] == [100.0, 100.0]
+    assert report["by_class"]["D"]["share_sampled_tokens_pp_ci95_defined_replicates"] == 100
     assert report["by_class"]["S"]["share_sampled_tokens_pp_ci95"] == [0.0, 0.0]
 
 
@@ -117,6 +209,7 @@ def test_accuracy_only_skips_classification_but_keeps_intervals(monkeypatch):
     report = triage._aggregate([result], 1, intervals=100, classify_misses=False)
     assert calls == [False]
     assert report["accuracy"]["first_choice_ci95"] == [0.0, 0.0]
+    assert report["accuracy"]["first_choice_ci95_defined_replicates"] == 100
     assert report["accuracy"]["any_reading_ci95"] == [1.0, 1.0]
     assert "by_class" not in report
     assert "by_class" not in report["strata"]["tokens"]["UNSEEN"]

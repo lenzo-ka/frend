@@ -23,6 +23,7 @@ Only counts are printed and written; no corpus text.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -39,6 +40,7 @@ import google_tn_rows  # noqa: E402
 from bootstrap_intervals import (  # noqa: E402
     CI_LEVEL,
     DEFAULT_INTERVAL_SEED,
+    MIN_DEFINED_FRACTION,
     percentile_ratio_intervals,
 )
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
@@ -406,19 +408,33 @@ def _add_evaluation_intervals(
         "confidence": CI_LEVEL,
         "replicates": replicates,
         "seed": seed,
-        "first_choice_accuracy": bounds["first_choice_accuracy"],
-        "any_reading_accuracy": bounds["any_reading_accuracy"],
-        "sentence_accuracy": bounds["sentence_accuracy"],
+        "minimum_defined_fraction": MIN_DEFINED_FRACTION,
+        "first_choice_accuracy": bounds["first_choice_accuracy"]["ci95"],
+        "any_reading_accuracy": bounds["any_reading_accuracy"]["ci95"],
+        "sentence_accuracy": bounds["sentence_accuracy"]["ci95"],
+        "defined_replicates": {
+            name: bounds[name]["defined_replicates"]
+            for name in ("first_choice_accuracy", "any_reading_accuracy", "sentence_accuracy")
+        },
     }
     if has_strata:
         for name in STRATA:
             report["strata"]["tokens"][name]["intervals"] = {
-                metric: bounds[f"token_stratum:{name}:{metric}"]
+                metric: bounds[f"token_stratum:{name}:{metric}"]["ci95"]
+                for metric in ("first_choice_accuracy", "any_reading_accuracy")
+            }
+            report["strata"]["tokens"][name]["intervals"]["defined_replicates"] = {
+                metric: bounds[f"token_stratum:{name}:{metric}"]["defined_replicates"]
                 for metric in ("first_choice_accuracy", "any_reading_accuracy")
             }
         for name in SENTENCE_STRATA:
             report["strata"]["sentences"][name]["intervals"] = {
-                "sentence_accuracy": bounds[f"sentence_stratum:{name}:sentence_accuracy"]
+                "sentence_accuracy": bounds[f"sentence_stratum:{name}:sentence_accuracy"]["ci95"],
+                "defined_replicates": {
+                    "sentence_accuracy": bounds[f"sentence_stratum:{name}:sentence_accuracy"][
+                        "defined_replicates"
+                    ]
+                },
             }
 
 
@@ -643,7 +659,11 @@ def _render(report: dict) -> str:
 
 def _render_interval_line(intervals: dict) -> str:
     def percent(name: str) -> str:
-        low, high = intervals[name]
+        bounds = intervals[name]
+        if bounds is None:
+            defined = intervals["defined_replicates"][name]
+            return f"unreliable ({defined}/{intervals['replicates']} draws defined)"
+        low, high = bounds
         return f"[{100 * low:.2f}%, {100 * high:.2f}%]"
 
     return (
@@ -662,11 +682,9 @@ def _render_strata(strata: dict) -> list[str]:
             f"{row['any_reading_tokens']:>8d} {100 * row['any_reading_accuracy']:>5.1f}%"
         )
         if "intervals" in row:
-            first_low, first_high = row["intervals"]["first_choice_accuracy"]
-            any_low, any_high = row["intervals"]["any_reading_accuracy"]
             lines.append(
-                f"  95% CI first [{100 * first_low:.1f}%, {100 * first_high:.1f}%] "
-                f"any [{100 * any_low:.1f}%, {100 * any_high:.1f}%]"
+                f"  95% CI first {_render_stratum_interval(row, 'first_choice_accuracy')} "
+                f"any {_render_stratum_interval(row, 'any_reading_accuracy')}"
             )
     lines.append("Sentence strata:")
     lines.append(f"{'stratum':25s}{'sentences':>11s}{'all right':>15s}")
@@ -677,10 +695,38 @@ def _render_strata(strata: dict) -> list[str]:
             f"{row['first_choice_sentences']:>8d} {100 * row['sentence_accuracy']:>5.1f}%"
         )
         if "intervals" in row:
-            low, high = row["intervals"]["sentence_accuracy"]
-            lines.append(f"  95% CI [{100 * low:.1f}%, {100 * high:.1f}%]")
+            lines.append(f"  95% CI {_render_stratum_interval(row, 'sentence_accuracy')}")
     lines.append(strata["sentence_rule"])
     return lines
+
+
+def _render_stratum_interval(row: dict, name: str) -> str:
+    intervals = row["intervals"]
+    bounds = intervals[name]
+    if bounds is None:
+        defined = intervals["defined_replicates"][name]
+        return f"unreliable ({defined} draws defined)"
+    low, high = bounds
+    return f"[{100 * low:.1f}%, {100 * high:.1f}%]"
+
+
+def _per_sentence_payload(
+    records: list[dict], profile: str | None, corpus_fingerprint: str
+) -> dict[str, object]:
+    sample_identity = {
+        "corpus_fingerprint": corpus_fingerprint,
+        "sentences": [{"id": row["id"], "tokens": row["tokens"]} for row in records],
+    }
+    sample_fingerprint = hashlib.sha256(
+        json.dumps(sample_identity, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return {
+        "schema_version": 1,
+        "unit": "sentence",
+        "profile": profile,
+        "sample_fingerprint": sample_fingerprint,
+        "records": records,
+    }
 
 
 def _render_class_strata(classes: dict) -> list[str]:
@@ -762,7 +808,9 @@ def main(argv: list[str] | None = None) -> int:
         pools=tuple(args.pools),
         root=corpus_dir,
     )
-    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
+    corpus_receipt = write_verification_receipt(
+        args.receipt, verified, locale=args.locale, pools=tuple(args.pools)
+    )
     inputs = {item.relative_path: item for item in verified}
     records = [] if args.per_sentence_out is not None else None
     report = evaluate(
@@ -784,12 +832,7 @@ def main(argv: list[str] | None = None) -> int:
         args.per_sentence_out.parent.mkdir(parents=True, exist_ok=True)
         args.per_sentence_out.write_text(
             json.dumps(
-                {
-                    "schema_version": 1,
-                    "unit": "sentence",
-                    "profile": args.profile,
-                    "records": records,
-                },
+                _per_sentence_payload(records, args.profile, corpus_receipt["fingerprint"]),
                 indent=2,
                 sort_keys=True,
             )

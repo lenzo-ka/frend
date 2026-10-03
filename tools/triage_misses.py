@@ -30,6 +30,7 @@ import google_tn_rows  # noqa: E402
 from bootstrap_intervals import (  # noqa: E402
     CI_LEVEL,
     DEFAULT_INTERVAL_SEED,
+    MIN_DEFINED_FRACTION,
     percentile_ratio_intervals,
 )
 from corpus_inputs import (  # noqa: E402
@@ -736,6 +737,7 @@ def _attach_triage_intervals(report, bounds, replicates, seed) -> None:
         "confidence": CI_LEVEL,
         "replicates": replicates,
         "seed": seed,
+        "minimum_defined_fraction": MIN_DEFINED_FRACTION,
     }
     _attach_overall_intervals(report, bounds)
     if "strata" in report:
@@ -745,35 +747,60 @@ def _attach_triage_intervals(report, bounds, replicates, seed) -> None:
 def _attach_overall_intervals(report, bounds) -> None:
     accuracy = report["accuracy"]
     for name in ("first_choice", "any_reading", "first_choice_sentence_accuracy"):
-        accuracy[f"{name}_ci95"] = bounds[name]
+        accuracy[f"{name}_ci95"] = bounds[name]["ci95"]
+        accuracy[f"{name}_ci95_defined_replicates"] = bounds[name]["defined_replicates"]
     if "by_class" in report:
         for name in MISS_CLASSES:
-            report["by_class"][name]["share_sampled_tokens_pp_ci95"] = [
-                100.0 * value for value in bounds[f"class:{name}"]
+            interval = bounds[f"class:{name}"]
+            report["by_class"][name]["share_sampled_tokens_pp_ci95"] = _percentage_points(
+                interval["ci95"]
+            )
+            report["by_class"][name]["share_sampled_tokens_pp_ci95_defined_replicates"] = interval[
+                "defined_replicates"
             ]
 
 
 def _attach_strata_intervals(strata, bounds) -> None:
     for stratum in STRATA:
         row = strata["tokens"][stratum]
-        row["accuracy"]["first_choice_ci95"] = bounds[f"token_stratum:{stratum}:first"]
-        row["accuracy"]["any_reading_ci95"] = bounds[f"token_stratum:{stratum}:any"]
+        for result_name, metric_name in (
+            ("first_choice", "first"),
+            ("any_reading", "any"),
+        ):
+            interval = bounds[f"token_stratum:{stratum}:{metric_name}"]
+            row["accuracy"][f"{result_name}_ci95"] = interval["ci95"]
+            row["accuracy"][f"{result_name}_ci95_defined_replicates"] = interval[
+                "defined_replicates"
+            ]
         if "by_class" in row:
             for name in MISS_CLASSES:
-                row["by_class"][name]["share_sampled_tokens_pp_ci95"] = [
-                    100.0 * value for value in bounds[f"token_stratum:{stratum}:class:{name}"]
+                interval = bounds[f"token_stratum:{stratum}:class:{name}"]
+                row["by_class"][name]["share_sampled_tokens_pp_ci95"] = _percentage_points(
+                    interval["ci95"]
+                )
+                row["by_class"][name]["share_sampled_tokens_pp_ci95_defined_replicates"] = interval[
+                    "defined_replicates"
                 ]
     for stratum in SENTENCE_STRATA:
-        strata["sentences"][stratum]["first_choice_sentence_accuracy_ci95"] = bounds[
-            f"sentence_stratum:{stratum}"
-        ]
+        interval = bounds[f"sentence_stratum:{stratum}"]
+        strata["sentences"][stratum]["first_choice_sentence_accuracy_ci95"] = interval["ci95"]
+        strata["sentences"][stratum]["first_choice_sentence_accuracy_ci95_defined_replicates"] = (
+            interval["defined_replicates"]
+        )
 
 
-def _per_sentence_payload(records: list[dict], profile: str | None) -> dict[str, object]:
+def _percentage_points(bounds: list[float] | None) -> list[float] | None:
+    return None if bounds is None else [100.0 * value for value in bounds]
+
+
+def _per_sentence_payload(
+    records: list[dict], profile: str | None, sample_fingerprint: str
+) -> dict[str, object]:
     return {
         "schema_version": 1,
         "unit": "sentence",
         "profile": profile,
+        "sample_fingerprint": sample_fingerprint,
         "records": records,
     }
 
@@ -942,7 +969,10 @@ def main(argv: list[str] | None = None) -> int:
     _write_json(receipt_path, receipt)
     if args.per_sentence_out is not None:
         args.per_sentence_out.parent.mkdir(parents=True, exist_ok=True)
-        _write_json(args.per_sentence_out, _per_sentence_payload(records, profile))
+        _write_json(
+            args.per_sentence_out,
+            _per_sentence_payload(records, profile, sample_fingerprint),
+        )
     print(json.dumps({"counts": report, "receipt": receipt}, indent=2, sort_keys=True))
     return 0
 

@@ -11,7 +11,11 @@ _TOOLS = Path(__file__).resolve().parent
 if str(_TOOLS) not in sys.path:
     sys.path.insert(0, str(_TOOLS))
 
-from bootstrap_intervals import DEFAULT_INTERVAL_SEED, paired_delta_intervals  # noqa: E402
+from bootstrap_intervals import (  # noqa: E402
+    DEFAULT_INTERVAL_SEED,
+    MIN_DEFINED_FRACTION,
+    paired_delta_intervals,
+)
 from seen_strata import SENTENCE_STRATA, STRATA  # noqa: E402
 
 
@@ -104,11 +108,22 @@ def _add_sentence_stratum_metric(metrics: dict, a: list[dict], b: list[dict], st
 
 
 def compare(a_payload: dict, b_payload: dict, replicates: int, seed: int) -> dict:
+    a_fingerprint = _sample_fingerprint(a_payload, "a")
+    b_fingerprint = _sample_fingerprint(b_payload, "b")
+    if a_fingerprint != b_fingerprint:
+        raise ValueError("arms do not have the same sample fingerprint")
     a, b = _align(a_payload["records"], b_payload["records"])
     metrics = _metrics(a, b)
     intervals = paired_delta_intervals(metrics, replicates, seed)
     rows = {name: _comparison_row(vectors, intervals[name]) for name, vectors in metrics.items()}
-    return _comparison_report(rows, len(a), replicates, seed)
+    return _comparison_report(rows, len(a), replicates, seed, a_fingerprint)
+
+
+def _sample_fingerprint(payload: dict, arm: str) -> str:
+    fingerprint = payload.get("sample_fingerprint")
+    if not isinstance(fingerprint, str) or not fingerprint:
+        raise ValueError(f"arm {arm} has no sample fingerprint")
+    return fingerprint
 
 
 def _ratio(numerators, denominators) -> float:
@@ -119,18 +134,27 @@ def _ratio(numerators, denominators) -> float:
 def _comparison_row(vectors, interval) -> dict[str, object]:
     a_value = _ratio(vectors[0], vectors[1])
     b_value = _ratio(vectors[2], vectors[3])
-    low, high = (100.0 * value for value in interval)
+    bounds = interval["ci95"]
+    scaled = None if bounds is None else [100.0 * value for value in bounds]
     return {
         "a_percent": 100.0 * a_value,
         "b_percent": 100.0 * b_value,
         "delta_pp": 100.0 * (b_value - a_value),
-        "delta_ci95_pp": [low, high],
-        "delta_ci_excludes_zero": low > 0.0 or high < 0.0,
+        "delta_ci95_pp": scaled,
+        "delta_ci95_defined_replicates": interval["defined_replicates"],
+        "delta_ci_excludes_zero": (None if scaled is None else scaled[0] > 0.0 or scaled[1] < 0.0),
     }
 
 
-def _comparison_report(rows, sentence_count, replicates, seed) -> dict[str, object]:
-    report = {"schema_version": 1, "comparison": "b_minus_a", "sentences": sentence_count}
+def _comparison_report(
+    rows, sentence_count, replicates, seed, sample_fingerprint
+) -> dict[str, object]:
+    report = {
+        "schema_version": 1,
+        "comparison": "b_minus_a",
+        "sentences": sentence_count,
+        "sample_fingerprint": sample_fingerprint,
+    }
     report["metrics"] = rows
     report["bootstrap"] = _bootstrap_receipt(replicates, seed)
     return report
@@ -142,6 +166,7 @@ def _bootstrap_receipt(replicates, seed) -> dict[str, object]:
         "confidence": 0.95,
         "replicates": replicates,
         "seed": seed,
+        "minimum_defined_fraction": MIN_DEFINED_FRACTION,
     }
 
 
