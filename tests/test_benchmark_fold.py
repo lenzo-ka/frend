@@ -33,9 +33,7 @@ def _fixture(tmp_path: Path):
         "spec": None,
     }
     (data / "texts.jsonl").write_text(json.dumps(text) + "\n", encoding="utf-8")
-    (data / "short.en_US.plain.jsonl").write_text(
-        json.dumps(detection) + "\n", encoding="utf-8"
-    )
+    (data / "short.en_US.plain.jsonl").write_text(json.dumps(detection) + "\n", encoding="utf-8")
     stats = [
         {
             "file": "short.en_US.plain.jsonl",
@@ -99,9 +97,7 @@ def test_zero_detection_id_declared_by_stats_is_allowed(tmp_path):
 def test_unexpected_detection_id_refuses(tmp_path):
     data, _text, detection = _fixture(tmp_path)
     detection["id"] = "short-en_US-999"
-    (data / "short.en_US.plain.jsonl").write_text(
-        json.dumps(detection) + "\n", encoding="utf-8"
-    )
+    (data / "short.en_US.plain.jsonl").write_text(json.dumps(detection) + "\n", encoding="utf-8")
 
     with pytest.raises(SystemExit, match="unexpected ID"):
         _tool().load_cases(data)

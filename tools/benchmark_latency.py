@@ -181,9 +181,7 @@ def _worker(args: argparse.Namespace) -> int:
     return 0
 
 
-_GOOGLE_TN_CORPUS = Path(
-    "/Volumes/k02/corpora/unpacked/google/tn-en_with_types/en_with_types"
-)
+_GOOGLE_TN_CORPUS = Path("/Volumes/k02/corpora/unpacked/google/tn-en_with_types/en_with_types")
 _PROFILE_BUCKETS = (("le5", 1, 5), ("6-10", 6, 10), ("11-20", 11, 20), ("21-40", 21, 40))
 
 
@@ -314,8 +312,7 @@ def _profile_summary(rows: list[dict], *, cold: bool) -> dict:
     for bucket, values in by_bucket.items():
         stage_names = tuple(values[0]["stages_ns"])
         stages = {
-            stage: _summary([row["stages_ns"][stage] for row in values])
-            for stage in stage_names
+            stage: _summary([row["stages_ns"][stage] for row in values]) for stage in stage_names
         }
         if cold:
             stages["in_process_setup"] = _summary([row["in_process_setup_ns"] for row in values])

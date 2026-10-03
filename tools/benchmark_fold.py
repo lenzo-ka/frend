@@ -257,8 +257,7 @@ def fit_scaling(rows: list[dict], mode: str) -> dict | None:
         for i in range(3)
     ]
     vector = [
-        sum(row[i] * point[2] for row, point in zip(design, points, strict=True))
-        for i in range(3)
+        sum(row[i] * point[2] for row, point in zip(design, points, strict=True)) for i in range(3)
     ]
     coefficients = _solve3(matrix, vector)
     if coefficients is None:
@@ -271,8 +270,7 @@ def fit_scaling(rows: list[dict], mode: str) -> dict | None:
     observed = [point[2] for point in points]
     mean = sum(observed) / len(observed)
     residuals = [
-        actual - predicted
-        for actual, predicted in zip(observed, predictions, strict=True)
+        actual - predicted for actual, predicted in zip(observed, predictions, strict=True)
     ]
     denominator = sum((actual - mean) ** 2 for actual in observed)
     r_squared = 1 - sum(value * value for value in residuals) / denominator if denominator else 1.0

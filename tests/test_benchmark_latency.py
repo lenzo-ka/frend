@@ -4,16 +4,13 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
 _REPO = Path(__file__).parents[1]
 _TOOL = _REPO / "tools" / "benchmark_latency.py"
-_BASELINE = "87a5e6af51135b257d71ec494239c8afe3fdc261"
+_GOLDEN = _REPO / "tests" / "data" / "benchmark_latency_no_flag_main-87a5e6a.json"
 
 
 def _tool():
@@ -25,14 +22,14 @@ def _tool():
 
 
 def _deterministic_projection(payload: dict) -> dict:
-    """Keep receipt data unaffected by clocks, GC event timing, or argv paths."""
+    """Keep stable receipt data while normalizing machine and checkout identity."""
     return {
         "top_level_keys": sorted(payload),
         "schema_version": payload["schema_version"],
-        "subject": payload["subject"],
+        "subject_fields": sorted(payload["subject"]),
         "manifest_sha256": payload["manifest_sha256"],
         "parameters": {key: payload[key] for key in ("warmup", "runs", "seed", "max_words")},
-        "environment": payload["environment"],
+        "environment_fields": sorted(payload["environment"]),
         "denominators": payload["denominators"],
         "vector_lengths": {
             locale: {name: len(samples) for name, samples in vectors.items()}
@@ -42,25 +39,28 @@ def _deterministic_projection(payload: dict) -> dict:
             locale: {name: sorted(summary) for name, summary in boundaries.items()}
             for locale, boundaries in payload["summaries"].items()
         },
-        "gc_enabled": payload["gc"]["enabled"],
+        "gc": {
+            "fields": sorted(payload["gc"]),
+            "enabled": payload["gc"]["enabled"],
+            "generation_fields": sorted(payload["gc"]["by_generation"]),
+        },
         "errors": payload["errors"],
-        "imports": payload["imports"],
+        "imports": {
+            name: Path(path).resolve().relative_to(_REPO.resolve()).as_posix()
+            for name, path in payload["imports"].items()
+        },
     }
 
 
-def _run(script: Path, output: Path) -> dict:
-    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=_REPO, text=True).strip()
-    environment = dict(os.environ)
-    environment["PYTHONDONTWRITEBYTECODE"] = "1"
-    environment["PYTHONPATH"] = os.pathsep.join((str(_REPO), str(_REPO / "tools")))
-    subprocess.run(
+def _run(tool, output: Path, monkeypatch: pytest.MonkeyPatch) -> dict:
+    repository_state = iter(("golden-subject", ""))
+    monkeypatch.setattr(tool, "_git", lambda *_args: next(repository_state))
+    tool.main(
         [
-            sys.executable,
-            str(script),
             "--subject-root",
             str(_REPO),
             "--expected-head",
-            head,
+            "golden-subject",
             "--manifest",
             str(_REPO / "tools" / "latency_inputs-v1.json"),
             "--warmup",
@@ -71,25 +71,16 @@ def _run(script: Path, output: Path) -> dict:
             "1",
             "--output",
             str(output),
-        ],
-        cwd=_REPO,
-        env=environment,
-        check=True,
+        ]
     )
     return json.loads(output.read_text(encoding="utf-8"))
 
 
-def test_no_flag_full_measurement_matches_main(tmp_path):
-    baseline_script = tmp_path / "benchmark_latency-main.py"
-    baseline_script.write_bytes(
-        subprocess.check_output(
-            ["git", "show", f"{_BASELINE}:tools/benchmark_latency.py"], cwd=_REPO
-        )
-    )
-    baseline = _run(baseline_script, tmp_path / "baseline.json")
-    candidate = _run(_TOOL, tmp_path / "candidate.json")
+def test_no_flag_full_measurement_matches_main(tmp_path, monkeypatch):
+    baseline = json.loads(_GOLDEN.read_text(encoding="utf-8"))
+    candidate = _run(_tool(), tmp_path / "candidate.json", monkeypatch)
 
-    assert _deterministic_projection(candidate) == _deterministic_projection(baseline)
+    assert _deterministic_projection(candidate) == baseline
 
 
 def test_output_inside_repository_refuses():
