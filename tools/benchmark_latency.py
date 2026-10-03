@@ -20,6 +20,14 @@ _REPO = Path(__file__).resolve().parents[1]
 _DEFAULT_MANIFEST = Path(__file__).with_name("latency_inputs-v1.json")
 
 
+def _external_output(path: Path) -> Path:
+    """Resolve an output path and refuse benchmark writes inside the repository."""
+    resolved = path.resolve()
+    if resolved.is_relative_to(_REPO.resolve()):
+        raise SystemExit(f"--output and its temporary siblings must be outside {_REPO}")
+    return resolved
+
+
 def _canonical(document: object) -> bytes:
     return json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
 
@@ -204,7 +212,7 @@ def _profile_measure(text: str, detectors: list[object], profile: str | None) ->
 
 
 def _profile_worker(args: argparse.Namespace) -> int:
-    setup_started = time.perf_counter_ns()
+    in_process_setup_started = time.perf_counter_ns()
     import reading_profile
     from reading_profile import reading_detectors
 
@@ -219,7 +227,7 @@ def _profile_worker(args: argparse.Namespace) -> int:
         if not Path(imported).is_relative_to(subject):
             raise SystemExit(f"{name} imported from {imported}, outside subject root {subject}")
     detectors = reading_detectors("en_US")
-    setup_ns = time.perf_counter_ns() - setup_started
+    in_process_setup_ns = time.perf_counter_ns() - in_process_setup_started
     profile = None if args.profile_condition == "off" else args.profile
     request = json.loads(args.profile_input.read_text(encoding="utf-8"))
     if args.profile_cold:
@@ -228,8 +236,7 @@ def _profile_worker(args: argparse.Namespace) -> int:
             {
                 "bucket": request["bucket"],
                 "text": request["text"],
-                "setup_ns": setup_ns,
-                "process_total_ns": setup_ns + measured["stages_ns"]["pipeline"],
+                "in_process_setup_ns": in_process_setup_ns,
             }
         )
         args.output.write_text(json.dumps(measured, sort_keys=True), encoding="utf-8")
@@ -246,7 +253,10 @@ def _profile_worker(args: argparse.Namespace) -> int:
         measured.update({"bucket": bucket, "text": text})
         rows.append(measured)
     args.output.write_text(
-        json.dumps({"rows": rows, "setup_ns": setup_ns, "imports": imports}, sort_keys=True),
+        json.dumps(
+            {"rows": rows, "in_process_setup_ns": in_process_setup_ns, "imports": imports},
+            sort_keys=True,
+        ),
         encoding="utf-8",
     )
     return 0
@@ -308,8 +318,8 @@ def _profile_summary(rows: list[dict], *, cold: bool) -> dict:
             for stage in stage_names
         }
         if cold:
-            stages["setup"] = _summary([row["setup_ns"] for row in values])
-            stages["process_total"] = _summary([row["process_total_ns"] for row in values])
+            stages["in_process_setup"] = _summary([row["in_process_setup_ns"] for row in values])
+            stages["process_wall"] = _summary([row["process_wall_ns"] for row in values])
         summaries[bucket] = {
             "utterances": len(values),
             "stages_ns": stages,
@@ -347,14 +357,13 @@ def _run_profile_worker(args: argparse.Namespace, temporary: Path) -> dict:
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     subject = args.subject_root.resolve()
     environment["PYTHONPATH"] = os.pathsep.join((str(subject), str(subject / "tools")))
-    subprocess.run(
-        _profile_command(args, temporary),
-        cwd=subject,
-        env=environment,
-        check=True,
-    )
+    process_started = time.perf_counter_ns()
+    subprocess.run(_profile_command(args, temporary), cwd=subject, env=environment, check=True)
+    process_wall_ns = time.perf_counter_ns() - process_started
     payload = json.loads(temporary.read_text(encoding="utf-8"))
     temporary.unlink()
+    if args.profile_cold:
+        payload["process_wall_ns"] = process_wall_ns
     return payload
 
 
@@ -363,6 +372,7 @@ def _profile_run(args: argparse.Namespace) -> int:
         raise SystemExit("profile sample and cold-run counts must be positive")
     if args.profile_warmup < 0:
         raise SystemExit("profile warmup count must be nonnegative")
+    args.output = _external_output(args.output)
     subject = args.subject_root.resolve()
     head = _git(subject, "rev-parse", "HEAD")
     if head != args.expected_head:
@@ -392,14 +402,14 @@ def _profile_run(args: argparse.Namespace) -> int:
                 "cold": _profile_summary(cold_rows, cold=True),
                 "warm_rows": warm["rows"],
                 "cold_rows": cold_rows,
-                "warm_setup_ns": warm["setup_ns"],
+                "warm_in_process_setup_ns": warm["in_process_setup_ns"],
                 "imports": warm["imports"],
             }
     finally:
         input_path.unlink(missing_ok=True)
         worker_path.unlink(missing_ok=True)
     receipt = {
-        "schema_version": 1,
+        "schema_version": 2,
         "benchmark": "google-tn-profile-ab",
         "profile": args.profile,
         "subject": {
@@ -430,6 +440,7 @@ def _git(root: Path, *argv: str) -> str:
 
 
 def _run(args: argparse.Namespace) -> int:
+    args.output = _external_output(args.output)
     subject = args.subject_root.resolve()
     head = _git(subject, "rev-parse", "HEAD")
     if head != args.expected_head:
@@ -590,6 +601,7 @@ def main(argv: list[str] | None = None) -> int:
         return _compare(args)
     if args.output is None:
         parser.error("--output is required")
+    args.output = _external_output(args.output)
     if args._profile_worker:
         return _profile_worker(args)
     if args._worker:

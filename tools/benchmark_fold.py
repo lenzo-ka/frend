@@ -10,11 +10,11 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import signal
 import subprocess
 import sys
 import time
-from collections import defaultdict
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -27,6 +27,14 @@ _MODES = (
     "keep_all",
     "ranked_path_k64",
 )
+
+
+def _external_output(path: Path) -> Path:
+    """Resolve an output path and refuse benchmark writes inside the repository."""
+    resolved = path.resolve()
+    if resolved.is_relative_to(_REPO.resolve()):
+        raise SystemExit(f"--output and its temporary siblings must be outside {_REPO}")
+    return resolved
 
 
 class _ModeTimeout(Exception):
@@ -133,7 +141,14 @@ def _read_jsonl(path: Path):
 
 
 def load_cases(data_dir: Path) -> list[dict]:
-    texts = {row["id"]: row for row in _read_jsonl(data_dir / "texts.jsonl")}
+    text_rows = list(_read_jsonl(data_dir / "texts.jsonl"))
+    texts = {row["id"]: row for row in text_rows}
+    if len(texts) != len(text_rows):
+        raise SystemExit("texts.jsonl contains duplicate IDs")
+    stats_rows = json.loads((data_dir / "stats.json").read_text(encoding="utf-8"))
+    stats = {row["file"]: row for row in stats_rows}
+    if len(stats) != len(stats_rows):
+        raise SystemExit("stats.json contains duplicate file entries")
     cases = []
     for path in sorted(data_dir.glob("*.jsonl")):
         if path.name == "texts.jsonl":
@@ -142,13 +157,60 @@ def load_cases(data_dir: Path) -> list[dict]:
         if len(parts) != 3:
             continue
         bucket, locale, mode = parts
-        by_id: dict[str, list[dict]] = defaultdict(list)
+        expected = {
+            identifier: row
+            for identifier, row in texts.items()
+            if row["bucket"] == bucket and row["locale"] == locale
+        }
+        file_stats = stats.get(path.name)
+        if file_stats is None:
+            raise SystemExit(f"stats.json has no entry for {path.name}")
+        if (
+            file_stats.get("bucket"),
+            file_stats.get("locale"),
+            file_stats.get("mode"),
+        ) != (bucket, locale, mode):
+            raise SystemExit(f"stats.json metadata does not match {path.name}")
+        per_text_rows = file_stats.get("per_text", [])
+        per_text = {row["id"]: row for row in per_text_rows}
+        if len(per_text) != len(per_text_rows):
+            raise SystemExit(f"stats.json contains duplicate IDs for {path.name}")
+        missing_stats = sorted(set(expected) - set(per_text))
+        unexpected_stats = sorted(set(per_text) - set(expected))
+        if missing_stats:
+            raise SystemExit(f"stats.json is missing expected IDs for {path.name}: {missing_stats}")
+        if unexpected_stats:
+            raise SystemExit(f"stats.json has unexpected IDs for {path.name}: {unexpected_stats}")
+        if file_stats.get("texts") != len(expected):
+            raise SystemExit(
+                f"stats.json text count for {path.name} is {file_stats.get('texts')}, "
+                f"expected {len(expected)}"
+            )
+        by_id: dict[str, list[dict]] = {}
         for row in _read_jsonl(path):
-            identifier = row.pop("id")
-            by_id[identifier].append(row)
-        for identifier, text_row in texts.items():
-            if text_row["bucket"] == bucket and text_row["locale"] == locale:
-                cases.append({**text_row, "mode": mode, "detections": by_id[identifier]})
+            identifier = row["id"]
+            if identifier not in expected:
+                raise SystemExit(f"unexpected ID in {path.name}: {identifier}")
+            detection = {key: value for key, value in row.items() if key != "id"}
+            by_id.setdefault(identifier, []).append(detection)
+        missing = sorted(
+            identifier
+            for identifier in expected
+            if identifier not in by_id and per_text[identifier].get("candidates") != 0
+        )
+        if missing:
+            raise SystemExit(f"missing detection rows in {path.name}: {missing}")
+        for identifier, text_row in expected.items():
+            detections = by_id.get(identifier, [])
+            expected_count = per_text[identifier].get("candidates")
+            if len(detections) != expected_count:
+                raise SystemExit(
+                    f"{path.name} has {len(detections)} rows for {identifier}; "
+                    f"stats.json declares {expected_count}"
+                )
+            cases.append({**text_row, "mode": mode, "detections": detections})
+        if file_stats.get("rows") != sum(len(rows) for rows in by_id.values()):
+            raise SystemExit(f"stats.json row count does not match {path.name}")
     return cases
 
 
@@ -258,7 +320,7 @@ def _timeout_row(case: dict, seconds: float) -> dict:
 def _run(args: argparse.Namespace) -> int:
     data_dir = args.data_dir.resolve()
     expected_results = data_dir / "results"
-    output = args.output.resolve()
+    output = _external_output(args.output)
     if output.parent != expected_results:
         raise SystemExit(f"--output must be directly under {expected_results}")
     expected_results.mkdir(parents=True, exist_ok=True)
@@ -274,6 +336,8 @@ def _run(args: argparse.Namespace) -> int:
         "--mode-timeout",
         str(args.mode_timeout),
     ]
+    environment = dict(os.environ)
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
     for index, case in enumerate(cases, 1):
         worker_output.unlink(missing_ok=True)
         try:
@@ -283,6 +347,7 @@ def _run(args: argparse.Namespace) -> int:
                 text=True,
                 capture_output=True,
                 cwd=_REPO,
+                env=environment,
                 timeout=args.timeout,
                 check=True,
             )
@@ -322,9 +387,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--worker-output", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if args._worker:
+        if args.worker_output is not None:
+            args.worker_output = _external_output(args.worker_output)
         return _worker(args)
     if args.output is None:
         parser.error("--output is required")
+    args.output = _external_output(args.output)
     return _run(args)
 
 
