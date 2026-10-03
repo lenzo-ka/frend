@@ -85,6 +85,22 @@ Before recognition, the builder removes trailing spaces and commas from corpus w
 
 The shared attribution above applies to this table. The corpus is not shipped here.
 
+## `en/telephone_priors.json`
+
+Grouped readings for conservative North American telephone shapes, counted from all
+Google-TN training shards (00--89) by `tools/build_telephone_priors.py`. The detector
+requires an observed exact punctuation shape, a strict TELEPHONE majority over every
+corpus class with that shape, and at least three TELEPHONE rows. Reading counts are
+stratified by whether each digit group contains zero or repeats one digit; each group is
+classified against ICU's cardinal and digit spellout, with the locale lexical table
+supplying the corpus's `o` realization of zero. No written phone number is stored.
+
+The Google-TN target contains the literal marker `sil` between telephone groups, and the
+headline scorer retains embedded markers. Telephone alternatives therefore retain that
+marker too. Shapes associated with ISBNs, ZIP codes, identifiers, short scores, and
+year/range pairs are outside the detector even when Google-TN labels them TELEPHONE.
+The shared attribution above applies to this table.
+
 `tools/build_spoken_priors.py --check` repeats the declared sample and compares the canonical JSON byte-for-byte. A corpus path argument selects a fixture or another Google-TN-format shard directory.
 
 ## `root/tlds-alpha-by-domain.txt`

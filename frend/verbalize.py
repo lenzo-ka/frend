@@ -85,6 +85,7 @@ from frend.ranges import (
 )
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import ScriptRunValue, SymbolValue
+from frend.telephone import TelephoneValue
 from frend.written_forms import DigitsValue
 
 __all__ = [
@@ -778,6 +779,7 @@ _SPOKEN_CAPTURES = {
     "runs": frozenset({"digits", "letters", "separator"}),
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
+    "telephone": frozenset({"telephone"}),
     "symbol": frozenset({"symbol"}),
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
@@ -2102,6 +2104,37 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
     return _ranked(forms)
 
 
+def _telephone_group(digits: str, mode: str, locale: str) -> tuple[SpokenAlternative, ...]:
+    if mode == "cardinal":
+        return _number_leaf(Decimal(digits), "cardinal", locale)
+    forms = _spoken_digits(DigitsValue(digits), locale)
+    if "0" not in digits or mode == "digits":
+        return forms[:1]
+    lexical = tuple(form for form in forms if "lexical:" in form.provenance)
+    plain = tuple(form for form in forms if "lexical:" not in form.provenance)
+    return lexical if mode == "digits-o" else plain
+
+
+def _spoken_telephone(value: TelephoneValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Render measured group modes; Google-TN's embedded ``sil`` is load-bearing."""
+    total = sum(count for _modes, count in value.readings)
+    alternatives = []
+    for modes, count in value.readings:
+        groups = [
+            _telephone_group(digits, mode, locale)
+            for digits, mode in zip(value.groups, modes, strict=True)
+        ]
+        for combination in product(*groups):
+            alternatives.append(
+                SpokenAlternative(
+                    " sil ".join(item.text for item in combination),
+                    "+".join(item.provenance for item in combination) + "+measured:telephone",
+                    Decimal(count) / Decimal(total),
+                )
+            )
+    return _ranked(alternatives)
+
+
 _RELATIVE_DIRECTIONS = {-2: "LAST_2", -1: "LAST", 0: "THIS", 1: "NEXT", 2: "NEXT_2"}
 
 
@@ -3030,6 +3063,10 @@ def _verbalize_edge(
                     )
             key_value = value.surface
             path = "letters"
+        elif isinstance(value, TelephoneValue):
+            alternatives = _spoken_telephone(value, locale)
+            key_value = value.groups
+            path = "telephone"
         elif isinstance(value, DigitsValue):
             alternatives = _spoken_digits(value, locale)
             key_value = value.digits
