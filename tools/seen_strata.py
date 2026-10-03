@@ -25,11 +25,20 @@ if str(_REPO) not in sys.path:
 from corpus_inputs import VerifiedInput, _entry  # noqa: E402
 from google_tn_rows import TRAINING_SHARDS  # noqa: E402
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+EXTRACTOR_ID = "google-tn-tab-column-2-non-eos-v1"
 SOURCE_ID = "google/tn-en_with_types"
 LOCALE = "en_US"
 STRATA = ("SEEN", "UNSEEN")
-SENTENCE_STRATA = ("ALL_SEEN", "HAS_UNSEEN")
+SENTENCE_STRATA = (
+    "ALL_SEEN_NONTRIVIAL",
+    "HAS_UNSEEN_NONTRIVIAL",
+    "ALL_SEEN",
+    "HAS_UNSEEN",
+)
+SENTENCE_RULE = (
+    "ALL_SEEN_NONTRIVIAL ignores corpus <self> and sil rows; ALL_SEEN counts every token"
+)
 
 
 @dataclass(frozen=True)
@@ -42,6 +51,19 @@ class VocabularyMatch:
 
 def metadata_path(path: Path) -> Path:
     return Path(f"{path}.meta.json")
+
+
+def sentence_strata(rows, token_strata) -> tuple[str, str]:
+    """Return the non-trivial-token and strict all-token sentence strata."""
+    pairs = list(zip(rows, token_strata, strict=True))
+    nontrivial_seen = all(
+        stratum == "SEEN" for row, stratum in pairs if row[2] not in {"<self>", "sil"}
+    )
+    all_seen = all(stratum == "SEEN" for _row, stratum in pairs)
+    return (
+        "ALL_SEEN_NONTRIVIAL" if nontrivial_seen else "HAS_UNSEEN_NONTRIVIAL",
+        "ALL_SEEN" if all_seen else "HAS_UNSEEN",
+    )
 
 
 def external_path(path: Path) -> Path:
@@ -162,6 +184,7 @@ def build_vocabulary(path: Path, inputs) -> dict[str, object]:
         artifact_sha256, vocabulary_size = _sha256_and_lines(temporary)
         receipt: dict[str, object] = {
             "schema_version": SCHEMA_VERSION,
+            "extractor_id": EXTRACTOR_ID,
             "kind": "google-tn-written-form-vocabulary",
             "source_id": SOURCE_ID,
             "locale": LOCALE,
@@ -201,6 +224,8 @@ def _validate_receipt(receipt: object, path: Path) -> dict[str, object]:
     }
     if any(receipt.get(key) != value for key, value in expected_scalars.items()):
         raise ValueError(f"invalid strata vocabulary receipt at {path}: wrong corpus identity")
+    if receipt.get("extractor_id") != EXTRACTOR_ID:
+        raise ValueError(f"invalid strata vocabulary receipt at {path}: wrong extraction rule")
     shards = receipt.get("source_shards")
     if not isinstance(shards, list) or len(shards) != len(TRAINING_SHARDS):
         raise ValueError(f"invalid strata vocabulary receipt at {path}: not 90 source shards")
@@ -261,6 +286,7 @@ def vocabulary_receipt(match: VocabularyMatch) -> dict[str, object]:
     """Small reproducibility record safe to include with aggregate evaluator output."""
     return {
         "artifact_sha256": match.receipt["artifact_sha256"],
+        "extractor_id": match.receipt["extractor_id"],
         "vocabulary_size": match.receipt["vocabulary_size"],
         "source_shards": match.receipt["source_shards"],
     }

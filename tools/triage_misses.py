@@ -40,7 +40,14 @@ from evaluate_google_tn import (  # noqa: E402
     _joined,
     _validate_evaluation_profile,
 )
-from seen_strata import SENTENCE_STRATA, STRATA, load_vocabulary, vocabulary_receipt  # noqa: E402
+from seen_strata import (  # noqa: E402
+    SENTENCE_RULE,
+    SENTENCE_STRATA,
+    STRATA,
+    load_vocabulary,
+    sentence_strata,
+    vocabulary_receipt,
+)
 
 SOURCE_ID = "google/tn-en_with_types"
 LOCALE = "en_US"
@@ -422,14 +429,7 @@ def _score_sentence(item) -> dict[str, object]:
                 "fix_sentences": sorted(counts["fix_counts"]),
                 "cross_sentences": sorted(counts["cross_counts"]),
             }
-        non_trivial = [
-            token_strata[index]
-            for index, row in enumerate(sentence)
-            if row[2] not in {"<self>", "sil"}
-        ]
-        result["sentence_stratum"] = (
-            "ALL_SEEN" if all(name == "SEEN" for name in non_trivial) else "HAS_UNSEEN"
-        )
+        result["sentence_strata"] = sentence_strata(sentence, token_strata)
     return result
 
 
@@ -482,7 +482,7 @@ def _add_stratum_result(total: dict[str, object], source: dict[str, object]) -> 
         total[target_name].update(source[source_name])
 
 
-def _stratum_report(total: dict[str, object]) -> dict[str, object]:
+def _stratum_report(total: dict[str, object], sampled_tokens: int) -> dict[str, object]:
     tokens = total["tokens"]
     misses = tokens - total["first"]
     if sum(total["miss_tokens"].values()) != misses:
@@ -495,18 +495,20 @@ def _stratum_report(total: dict[str, object]) -> dict[str, object]:
             "any_reading_tokens": total["any"],
             "any_reading": total["any"] / tokens if tokens else 0.0,
         },
-        "misses": _entry(misses, total["miss_sentences_total"], tokens),
-        "capped": _entry(total["capped"], total["capped_sentences"], tokens),
+        "misses": _entry(misses, total["miss_sentences_total"], sampled_tokens),
+        "capped": _entry(total["capped"], total["capped_sentences"], sampled_tokens),
         "by_class": {
-            name: _entry(total["miss_tokens"][name], total["miss_sentences"][name], tokens)
+            name: _entry(total["miss_tokens"][name], total["miss_sentences"][name], sampled_tokens)
             for name in MISS_CLASSES
         },
         "v_by_family": {
-            name: _entry(total["family_tokens"][name], total["family_sentences"][name], tokens)
+            name: _entry(
+                total["family_tokens"][name], total["family_sentences"][name], sampled_tokens
+            )
             for name in FAMILIES
         },
         "v_by_fix_kind": {
-            name: _entry(total["fix_tokens"][name], total["fix_sentences"][name], tokens)
+            name: _entry(total["fix_tokens"][name], total["fix_sentences"][name], sampled_tokens)
             for name in FIX_KINDS
         },
         "v_family_by_fix_kind": {
@@ -514,7 +516,7 @@ def _stratum_report(total: dict[str, object]) -> dict[str, object]:
                 fix: _entry(
                     total["cross_tokens"][f"{family}\t{fix}"],
                     total["cross_sentences"][f"{family}\t{fix}"],
-                    tokens,
+                    sampled_tokens,
                 )
                 for fix in FIX_KINDS
             }
@@ -554,9 +556,9 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
         cross_sentences.update(result["cross_sentences"])
         if "strata" in result:
             has_strata = True
-            sentence_name = result["sentence_stratum"]
-            sentence_strata[sentence_name]["sentences"] += 1
-            sentence_strata[sentence_name]["first"] += bool(result["sentence_first"])
+            for sentence_name in result["sentence_strata"]:
+                sentence_strata[sentence_name]["sentences"] += 1
+                sentence_strata[sentence_name]["first"] += bool(result["sentence_first"])
             for name in STRATA:
                 _add_stratum_result(strata_totals[name], result["strata"][name])
 
@@ -605,8 +607,8 @@ def _aggregate(results, sampled_sentences: int) -> dict[str, object]:
     }
     if has_strata:
         report["strata"] = {
-            "sentence_rule": "ALL_SEEN ignores corpus <self> and sil rows",
-            "tokens": {name: _stratum_report(strata_totals[name]) for name in STRATA},
+            "sentence_rule": SENTENCE_RULE,
+            "tokens": {name: _stratum_report(strata_totals[name], tokens) for name in STRATA},
             "sentences": {
                 name: {
                     "sentences": sentence_strata[name]["sentences"],

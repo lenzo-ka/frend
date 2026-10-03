@@ -44,9 +44,11 @@ from corpus_inputs import (  # noqa: E402
     write_verification_receipt,
 )
 from seen_strata import (  # noqa: E402
+    SENTENCE_RULE,
     SENTENCE_STRATA,
     STRATA,
     load_vocabulary,
+    sentence_strata,
     vocabulary_receipt,
 )
 
@@ -282,7 +284,7 @@ def _per_token(
         }
 
     report["strata"] = {
-        "sentence_rule": "ALL_SEEN ignores corpus <self> and sil rows",
+        "sentence_rule": SENTENCE_RULE,
         "tokens": {name: token_entry(by_stratum[name]) for name in STRATA},
         "sentences": {},
     }
@@ -294,10 +296,10 @@ def _per_token(
     for sentence in sentences:
         outcome = results[at : at + len(sentence)]
         at += len(sentence)
-        non_trivial = [row for row in sentence if row[2] not in {"<self>", "sil"}]
-        stratum = "ALL_SEEN" if all(row[1] in strata_seen for row in non_trivial) else "HAS_UNSEEN"
-        sentence_counts[stratum]["sentences"] += 1
-        sentence_counts[stratum]["first"] += all(first for _, first, _ in outcome)
+        token_strata = tuple("SEEN" if row[1] in strata_seen else "UNSEEN" for row in sentence)
+        for stratum in sentence_strata(sentence, token_strata):
+            sentence_counts[stratum]["sentences"] += 1
+            sentence_counts[stratum]["first"] += all(first for _, first, _ in outcome)
     report["strata"]["sentences"] = {
         name: {
             "sentences": sentence_counts[name]["sentences"],
@@ -510,11 +512,11 @@ def _render_strata(strata: dict) -> list[str]:
             f"{row['any_reading_tokens']:>8d} {100 * row['any_reading_accuracy']:>5.1f}%"
         )
     lines.append("Sentence strata:")
-    lines.append(f"{'stratum':12s}{'sentences':>11s}{'all right':>15s}")
+    lines.append(f"{'stratum':25s}{'sentences':>11s}{'all right':>15s}")
     for name in SENTENCE_STRATA:
         row = strata["sentences"][name]
         lines.append(
-            f"{name:12s}{row['sentences']:>11d}"
+            f"{name:25s}{row['sentences']:>11d}"
             f"{row['first_choice_sentences']:>8d} {100 * row['sentence_accuracy']:>5.1f}%"
         )
     lines.append(strata["sentence_rule"])
