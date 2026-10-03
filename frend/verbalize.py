@@ -53,6 +53,12 @@ from frend.electronic import (
     separator_names,
     tld_positions,
 )
+from frend.input_limits import (
+    DEFAULT_MAX_INPUT_CHARS,
+    DEFAULT_MAX_UNIT_CHARS,
+    validate_input,
+    validate_unit_length,
+)
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import (
     LettersValue,
@@ -2733,6 +2739,44 @@ def verbalize_edge(
     rerank_by_context: bool = True,
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+) -> VerbalizedUnit:
+    """Validate the source text, then verbalize one edge."""
+    validate_input(source_text, max_input_chars=max_input_chars)
+    validate_input(context.text if context is not None else None, max_input_chars=max_input_chars)
+    unit_length = len(source_text) if source_text is not None else edge.end
+    validate_unit_length(
+        unit_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
+    if context is not None:
+        validate_unit_length(len(context.text), max_unit_chars=max_unit_chars)
+    return _verbalize_edge(
+        edge,
+        source_text=source_text,
+        locale=locale,
+        supplements=supplements,
+        apply_source_priors=apply_source_priors,
+        context=context,
+        rerank_by_context=rerank_by_context,
+        context_threshold=context_threshold,
+        profile=profile,
+    )
+
+
+def _verbalize_edge(
+    edge: ReadingEdge,
+    *,
+    source_text: str | None = None,
+    locale: str = "en_US",
+    supplements: CuratedSupplements | None = None,
+    apply_source_priors: bool = True,
+    context: TextContext | None = None,
+    rerank_by_context: bool = True,
+    context_threshold: float = CONTEXT_THRESHOLD,
+    profile: str | None = None,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
@@ -3118,12 +3162,23 @@ def verbalize_lattice(
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
     profile: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedLattice:
     """Verbalize every projected path without expanding alternatives across units.
 
     ``context`` is the running text the lattice's source text sits in (by default the
     source text itself): it is what the context trees read (``verbalize_edge``).
     """
+    validate_input(lattice.source_text, max_input_chars=max_input_chars)
+    validate_input(context.text if context is not None else None, max_input_chars=max_input_chars)
+    validate_unit_length(
+        lattice.text_length,
+        max_unit_chars=max_unit_chars,
+        max_input_chars=max_input_chars,
+    )
+    if context is not None:
+        validate_unit_length(len(context.text), max_unit_chars=max_unit_chars)
     effective = lattice.locale
     profile = validate_profile(profile)
     britishisms = None
@@ -3138,7 +3193,7 @@ def verbalize_lattice(
                 path.rank,
                 path.edge_ids,
                 units := tuple(
-                    verbalize_edge(
+                    _verbalize_edge(
                         edges[edge_id],
                         source_text=lattice.source_text,
                         locale=effective,
@@ -3159,7 +3214,7 @@ def verbalize_lattice(
     paths = []
     for path in lattice.paths:
         units = tuple(
-            verbalize_edge(
+            _verbalize_edge(
                 edges[edge_id],
                 source_text=lattice.source_text,
                 locale=effective,

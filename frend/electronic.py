@@ -25,10 +25,13 @@ from importlib.resources import files
 import icu
 from icukit.detectors import Capture
 
+from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
 from frend.letters import letter_vowels
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
 __all__ = [
+    "DEFAULT_MAX_EMAIL_CHARS",
+    "DEFAULT_MAX_URL_CHARS",
     "ElectronicDetector",
     "ElectronicValue",
     "decode_letter_notation",
@@ -42,6 +45,12 @@ _ROOT_DATA = files("frend").joinpath("data", "root")
 
 # Blending strength for a sparse key toward its parent, as for spoken-prior sub-keys.
 PRIOR_STRENGTH = 5
+
+# These are recognition work bounds, not claims about protocol validity. Oversized
+# contiguous candidates are not emitted; returning a prefix would invent a different
+# address while pretending to preserve source offsets.
+DEFAULT_MAX_URL_CHARS = 8 * 1024
+DEFAULT_MAX_EMAIL_CHARS = 254
 
 _SCHEME = re.compile(r"(?i)(?<![\w.+-])[a-z][a-z0-9+.-]*://[^\s<>\"]+")
 _WWW = re.compile(r"(?i)(?<![\w./@-])www\.[^\s<>\"]+")
@@ -142,19 +151,53 @@ def _host(kind: str, span: str) -> str:
     return host.split(":", 1)[0]
 
 
+def _positive_cap(name: str, value: int) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+        raise ValueError(f"{name} must be a positive integer, got {value!r}")
+    return value
+
+
+def _bounded_segments(text: str, max_chars: int):
+    """Yield electronic-token segments without copying any segment over ``max_chars``."""
+    start = 0
+    for end, char in enumerate(text):
+        if char.isspace() or char in '<>"':
+            if start < end and end - start <= max_chars:
+                yield start, text[start:end]
+            start = end + 1
+    if start < len(text) and len(text) - start <= max_chars:
+        yield start, text[start:]
+
+
 class ElectronicDetector:
     """Detect URLs, email addresses and bare domains as frend readings."""
 
-    def __init__(self, locale: str = "en_US") -> None:
+    def __init__(
+        self,
+        locale: str = "en_US",
+        *,
+        max_url_chars: int = DEFAULT_MAX_URL_CHARS,
+        max_email_chars: int = DEFAULT_MAX_EMAIL_CHARS,
+        max_input_chars: int = DEFAULT_MAX_INPUT_CHARS,
+    ) -> None:
         self.locale = locale
+        self.max_url_chars = _positive_cap("max_url_chars", max_url_chars)
+        self.max_email_chars = _positive_cap("max_email_chars", max_email_chars)
+        self.max_input_chars = _positive_cap("max_input_chars", max_input_chars)
 
     def detect(self, text: str) -> list[dict]:
+        validate_input(text, max_input_chars=self.max_input_chars)
         found: list[tuple[int, int, str]] = []
-        for kind, pattern in (("url", _SCHEME), ("url", _WWW), ("email", _EMAIL)):
-            for match in pattern.finditer(text):
-                found.append((match.start(), _trim(text, match.start(), match.end()), kind))
-        for match in _DOMAIN.finditer(text):
-            found.append((match.start(), _trim(text, match.start(), match.end()), "domain"))
+        for base, segment in _bounded_segments(text, max(self.max_url_chars, self.max_email_chars)):
+            if len(segment) <= self.max_url_chars:
+                for kind, pattern in (("url", _SCHEME), ("url", _WWW), ("domain", _DOMAIN)):
+                    for match in pattern.finditer(segment):
+                        end = _trim(segment, match.start(), match.end())
+                        found.append((base + match.start(), base + end, kind))
+            if len(segment) <= self.max_email_chars:
+                for match in _EMAIL.finditer(segment):
+                    end = _trim(segment, match.start(), match.end())
+                    found.append((base + match.start(), base + end, "email"))
         detections = []
         for start, end, kind in found:
             if any(

@@ -63,6 +63,7 @@ from tiergraph import (
 )
 from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
+from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.shape import shape
 from frend.type_priors import (
@@ -1226,6 +1227,7 @@ def resolve_cover(
     source_text: str | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
 ) -> Cover:
     """Resolve ``detections`` to a maximum-weight non-overlapping cover via a
     tiergraph ``PATH`` fold over negated weights, then per-span type selection within the canonical
@@ -1233,6 +1235,7 @@ def resolve_cover(
     deposited universe); the returned ``best`` is pairwise non-overlapping and in
     span order. Use :func:`resolve` to see the per-span alternatives and the
     ambiguity flags."""
+    validate_input(source_text, max_input_chars=max_input_chars)
     sources = _resolve_sources(locale, feature_sources, class_prior, class_prior_source)
     if not detections:
         return Cover(best=(), score=CoverScore(0, 0, 0))
@@ -1256,6 +1259,7 @@ def resolve(
     source_text: str | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
 ) -> Resolution:
     """Resolve detections into a per-span reading of the candidate universe.
 
@@ -1278,6 +1282,7 @@ def resolve(
     ``covers`` list sitting beside a populated ``best``.
     """
     del epsilon
+    validate_input(source_text, max_input_chars=max_input_chars)
     if not isinstance(n, int) or isinstance(n, bool) or n < 1:
         raise ValueError(f"n must be a positive integer, got {n!r}")
     sources = _resolve_sources(locale, feature_sources, class_prior, class_prior_source)
