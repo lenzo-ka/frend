@@ -90,18 +90,25 @@ The shared attribution above applies to this table. The corpus is not shipped he
 Grouped readings for conservative North American telephone shapes, counted from all
 Google-TN training shards (00--89) by `tools/build_telephone_priors.py`. The detector
 requires an observed exact punctuation shape, a strict TELEPHONE majority over every
-corpus class with that shape, and at least three TELEPHONE rows. Reading counts are
-stratified by whether each digit group contains zero or repeats one digit; each group is
-classified against ICU's cardinal and digit spellout, with the locale lexical table
-supplying the corpus's `o` realization of zero. No written phone number is stored.
+corpus class with that shape, and at least three TELEPHONE rows. It accepts only the
+trained ASCII digit/separator alphabet, requires the NANP `NXX-NXX-XXXX` structure (with
+N11 excluded), and rejects a candidate directly after an alphanumeric or symbol. The
+table also counts the immediately preceding corpus token by its own gold class and ships
+typed strict-majority non-TELEPHONE contexts with at least three observations as
+vetoes; ordinary PLAIN words and punctuation do not veto. Reading counts are
+stratified by whether each digit group contains zero or repeats one digit; each group
+is classified against ICU's cardinal and digit spellout, with the locale lexical
+table supplying the corpus's `o` realization of zero. No written phone number is stored.
 
 The Google-TN target contains the literal marker `sil` between telephone groups, and the
 headline scorer retains embedded markers. Telephone alternatives therefore retain that
-marker too. Shapes associated with ISBNs, ZIP codes, identifiers, short scores, and
-year/range pairs are outside the detector even when Google-TN labels them TELEPHONE.
-The shared attribution above applies to this table.
+marker too. Unsupported ISBN, ZIP-code, identifier, score, and year/range shapes stay
+outside the detector even when Google-TN labels them TELEPHONE; a learned typed label
+can veto a supported shape. The shared attribution above applies to this table.
 
-`tools/build_spoken_priors.py --check` repeats the declared sample and compares the canonical JSON byte-for-byte. A corpus path argument selects a fixture or another Google-TN-format shard directory.
+`tools/build_telephone_priors.py --check` rescans the declared training shards and
+compares the canonical JSON byte-for-byte. A corpus path argument selects a fixture or
+another Google-TN-format shard directory.
 
 ## `root/tlds-alpha-by-domain.txt`
 

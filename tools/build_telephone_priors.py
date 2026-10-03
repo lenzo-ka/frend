@@ -70,20 +70,28 @@ def _piece(path):
         context = Path(path).open(encoding="utf-8")
     classes: dict[str, Counter] = defaultdict(Counter)
     readings: dict[str, Counter] = defaultdict(Counter)
+    left_contexts: dict[tuple[str, str], Counter] = defaultdict(Counter)
     unclassified = Counter()
+    previous = None
     with context as handle:
         for line in handle:
             parts = line.rstrip("\r\n").split("\t")
             if len(parts) < 3:
+                previous = None
                 continue
             corpus_class, written, spoken = parts[:3]
             groups = _phone_groups(written)
             if groups is None:
+                previous = (corpus_class, written)
                 continue
             shape = telephone_shape(written)
             pattern = telephone_reading_key(groups)
             classes[shape][corpus_class] += 1
+            if previous is not None:
+                previous_class, previous_written = previous
+                left_contexts[(shape, previous_written.casefold())][previous_class] += 1
             if corpus_class != "TELEPHONE":
+                previous = (corpus_class, written)
                 continue
             chunks = spoken.split(" sil ")
             modes = tuple(_mode(group, chunk) for group, chunk in zip(groups, chunks, strict=False))
@@ -91,7 +99,8 @@ def _piece(path):
                 unclassified[(shape, pattern)] += 1
             else:
                 readings[(shape, pattern)][modes] += 1
-    return classes, readings, unclassified
+            previous = (corpus_class, written)
+    return classes, readings, left_contexts, unclassified
 
 
 def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
@@ -103,12 +112,15 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
             pieces = list(pool.map(_piece, paths))
     classes: dict[str, Counter] = defaultdict(Counter)
     readings: dict[str, Counter] = defaultdict(Counter)
+    left_contexts: dict[tuple[str, str], Counter] = defaultdict(Counter)
     unclassified = Counter()
-    for part_classes, part_readings, part_unclassified in pieces:
+    for part_classes, part_readings, part_left_contexts, part_unclassified in pieces:
         for shape, counts in part_classes.items():
             classes[shape].update(counts)
         for key, counts in part_readings.items():
             readings[key].update(counts)
+        for key, counts in part_left_contexts.items():
+            left_contexts[key].update(counts)
         unclassified.update(part_unclassified)
     selected = {}
     for shape in sorted(classes):
@@ -133,8 +145,24 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
             "classes": dict(sorted(counts.items())),
             "patterns": dict(sorted(patterns.items())),
         }
+    selected_contexts: dict[str, Counter] = defaultdict(Counter)
+    for (shape, context), counts in left_contexts.items():
+        if shape in selected:
+            selected_contexts[context].update(counts)
+    vetoes = {}
+    for context, counts in sorted(selected_contexts.items()):
+        prediction, prediction_count = counts.most_common(1)[0]
+        if (
+            sum(counts.values()) >= 3
+            and prediction not in {"PLAIN", "PUNCT", "TELEPHONE"}
+            and 2 * prediction_count > sum(counts.values())
+        ):
+            vetoes[context] = {
+                "classes": dict(sorted(counts.items())),
+                "prediction": prediction,
+            }
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "locale": "en",
         "provenance": {
             "builder": "tools/build_telephone_priors.py",
@@ -145,11 +173,18 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a "
                 "strict TELEPHONE majority among all corpus classes for the exact shape"
             ),
+            "left_context": (
+                "case-folded immediately preceding corpus token, counted by that "
+                "token's gold class; with at least 3 observations, veto typed "
+                "(not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for "
+                "selected shapes"
+            ),
             "reading": (
                 "raw counts of whole grouped readings classified against ICU cardinal and "
                 "digit spellout, with zero/o from the locale lexical table"
             ),
         },
+        "left_contexts": vetoes,
         "shapes": selected,
     }
 

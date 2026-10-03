@@ -10,6 +10,7 @@ import pytest
 from icukit.detectors import detect
 
 from frend import resolve_lattice
+from frend import telephone as telephone_module
 from frend.spoken_priors import normalize_spoken
 from frend.telephone import TelephoneDetector
 from frend.verbalize import verbalize_edge
@@ -59,11 +60,66 @@ def test_non_phone_numeric_shapes_are_not_telephone(written):
     assert TelephoneDetector("en_US").detect(written) == []
 
 
+def test_learned_label_context_vetoes_a_shipped_shape(monkeypatch):
+    detector = TelephoneDetector("en_US")
+    assert detector.detect("223-456-7881")
+    assert detector.detect("ISBN 223-456-7881") == []
+    assert detector.detect("ISBN 123-456-7881") == []
+
+    monkeypatch.setattr(telephone_module, "_left_context", lambda _text, _start: None)
+    assert detector.detect("ISBN 223-456-7881")
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        "000-000-0000",
+        "112-868-4444",  # area code must begin 2--9
+        "212-168-4444",  # exchange must begin 2--9
+        "211-868-4444",  # N11 area codes are excluded
+        "212-911-4444",  # N11 exchanges are excluded
+    ],
+)
+def test_invalid_nanp_numbers_do_not_use_a_shipped_shape(written, monkeypatch):
+    detector = TelephoneDetector("en_US")
+    assert detector.detect(written) == []
+
+    monkeypatch.setattr(telephone_module, "_valid_nanp", lambda _groups: True)
+    assert detector.detect(written)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "+1-888-237-2834",
+        "$212-868-4444",
+        "€212-868-4444",
+        "±212-868-4444",
+        "x212-868-4444",
+    ],
+)
+def test_prefixed_number_does_not_use_a_shipped_shape(text, monkeypatch):
+    detector = TelephoneDetector("en_US")
+    assert detector.detect(text) == []
+
+    monkeypatch.setattr(telephone_module, "_valid_left_boundary", lambda _text, _start: True)
+    assert detector.detect(text)
+
+
+def test_number_embedded_directly_after_a_digit_is_not_telephone():
+    assert TelephoneDetector("en_US").detect("9(212) 868-4444") == []
+
+
+@pytest.mark.parametrize("written", ["٢١٢-٨٦٨-٤٤٤٤", "212–868–4444"])
+def test_untrained_unicode_digits_and_separators_are_not_telephone(written):
+    assert TelephoneDetector("en_US").detect(written) == []
+
+
 def test_locale_without_a_measured_table_has_no_telephone_opinion():
     assert TelephoneDetector("ru_RU").detect("212-868-4444") == []
 
 
-def test_builder_counts_shapes_and_readings_from_corpus_rows(tmp_path):
+def test_builder_counts_shapes_readings_and_left_context_from_corpus_rows(tmp_path):
     tools = Path(__file__).resolve().parents[1] / "tools"
     if str(tools) not in sys.path:
         sys.path.insert(0, str(tools))
@@ -74,8 +130,11 @@ def test_builder_counts_shapes_and_readings_from_corpus_rows(tmp_path):
     spec.loader.exec_module(builder)
     shard = tmp_path / "output-00000-of-00001"
     shard.write_text(
+        "LETTERS\tISBN\ti s b n\n"
         "TELEPHONE\t650-696-1060\tsix five o sil six nine six sil one o six o\n"
+        "LETTERS\tISBN\ti s b n\n"
         "TELEPHONE\t570-966-1031\tfive seven o sil nine six six sil one o three one\n"
+        "LETTERS\tISBN\ti s b n\n"
         "TELEPHONE\t205-556-1010\ttwo o five sil five five six sil one o one o\n"
         "CARDINAL\t105-222-3030\tone billion fifty two million two hundred twenty "
         "twenty three thousand three hundred thirty three\n"
@@ -84,6 +143,9 @@ def test_builder_counts_shapes_and_readings_from_corpus_rows(tmp_path):
         encoding="utf-8",
     )
     document = builder.build_document(tmp_path)
+    assert document["left_contexts"] == {
+        "isbn": {"classes": {"LETTERS": 3}, "prediction": "LETTERS"}
+    }
     assert document["shapes"]["N3-N3-N4"] == {
         "classes": {"CARDINAL": 1, "TELEPHONE": 3},
         "patterns": {

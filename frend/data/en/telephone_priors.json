@@ -1,5 +1,5 @@
 {
- "schema_version": 1,
+ "schema_version": 2,
  "locale": "en",
  "provenance": {
   "builder": "tools/build_telephone_priors.py",
@@ -98,7 +98,34 @@
    "output-00089-of-00100"
   ],
   "selection": "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a strict TELEPHONE majority among all corpus classes for the exact shape",
+  "left_context": "case-folded immediately preceding corpus token, counted by that token's gold class; with at least 3 observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for selected shapes",
   "reading": "raw counts of whole grouped readings classified against ICU cardinal and digit spellout, with zero/o from the locale lexical table"
+ },
+ "left_contexts": {
+  "-": {
+   "classes": {
+    "VERBATIM": 23
+   },
+   "prediction": "VERBATIM"
+  },
+  "17857": {
+   "classes": {
+    "VERBATIM": 4
+   },
+   "prediction": "VERBATIM"
+  },
+  "::": {
+   "classes": {
+    "ELECTRONIC": 3
+   },
+   "prediction": "ELECTRONIC"
+  },
+  "isbn": {
+   "classes": {
+    "LETTERS": 3
+   },
+   "prediction": "LETTERS"
+  }
  },
  "shapes": {
   "(N3) N3-N4": {
