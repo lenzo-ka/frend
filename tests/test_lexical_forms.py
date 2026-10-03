@@ -17,6 +17,7 @@ import pytest
 from icukit.detectors import all_detectors, detect
 from icukit.recognize import (
     FlexibleCurrencyDetector,
+    FlexibleDateDetector,
     FlexibleFractionDetector,
     FlexibleMeasureDetector,
     FlexibleNumberDetector,
@@ -412,7 +413,6 @@ def _lexical_constant_sites(source: str, name: str) -> list[str]:
 _OPEN = {
     "verbalize.py ['{} and {}']": "a whole and a fraction ('three and a half')",
     "verbalize.py ['{} {} and {} {}']": "money's major and minor units",
-    "verbalize.py ['the {} of ']": "the day-first date frame",
 }
 
 
@@ -563,6 +563,12 @@ def _units(text, detectors):
 # One reading per lexical form: the written text, its readers, and a spoken form that
 # only the form gives.
 _CONSUMERS = [
+    (
+        "date.day_first",
+        "9/30/1908",
+        [FlexibleDateDetector("en_US")],
+        "the thirtieth of September nineteen o eight",
+    ),
     ("zero.digit", "3.05", [FlexibleNumberDetector("en_US")], "three point o five"),
     ("zero.minute", "10:05", [FlexibleTimeDetector("en_US")], "ten oh five"),
     ("zero.year", "1908", all_detectors("en_US", ("y",)).detectors, "nineteen o eight"),
@@ -612,6 +618,42 @@ _CONSUMERS = [
 # only reweights: without it "three point zero five", "nineteen oh-eight" and "ten oh
 # five" lead.
 _GOLDEN = {
+    ("date.day_first", "9/30/1908"): [
+        [
+            (
+                "September thirtieth, nineteen o eight",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US",
+            ),
+            (
+                "the thirtieth of September nineteen o eight",
+                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US",
+            ),
+            (
+                "September thirtieth, nineteen oh-eight",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year",
+            ),
+            (
+                "the thirtieth of September nineteen oh-eight",
+                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year",
+            ),
+            (
+                "September thirtieth, one thousand nine hundred eight",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering",
+            ),
+            (
+                "September thirtieth, one thousand nine hundred and eight",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose",
+            ),
+            (
+                "the thirtieth of September one thousand nine hundred eight",
+                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering",
+            ),
+            (
+                "the thirtieth of September one thousand nine hundred and eight",
+                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose",
+            ),
+        ],
+    ],
     ("zero.digit", "3.05"): [
         [
             (

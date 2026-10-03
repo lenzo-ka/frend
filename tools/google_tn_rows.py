@@ -78,7 +78,9 @@ def training_shards(paths: Iterable[Path]) -> list[Path]:
     return [path for path in paths if Path(path).name not in HELD_OUT_SHARDS]
 
 
-def expected(corpus_class: str, written: str, spoken: str) -> str:
+def expected(
+    corpus_class: str, written: str, spoken: str, *, strip_embedded_sil: bool = False
+) -> str:
     """The corpus's spoken form of one row, normalized as the spoken priors normalize:
     ``<self>`` expects the written token, ``sil`` expects nothing, and ELECTRONIC's
     per-letter notation is joined first."""
@@ -89,6 +91,8 @@ def expected(corpus_class: str, written: str, spoken: str) -> str:
         return normalize_spoken(written)
     if spoken == "sil":
         return ""
+    if strip_embedded_sil:
+        spoken = " ".join(word for word in spoken.split() if word != "sil")
     if corpus_class == "ELECTRONIC":
         spoken = decode_letter_notation(spoken)
     return normalize_spoken(spoken)

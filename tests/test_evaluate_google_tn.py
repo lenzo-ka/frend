@@ -49,6 +49,16 @@ def test_silence_and_non_numbers_and_overlaps():
     assert [item[2] for item in evaluate._running_text([chain])] == ["1-2"]
 
 
+def test_embedded_sil_target_correction_is_opt_in():
+    google_tn_rows = _tool("google_tn_rows")
+    row = ("TELEPHONE", "555-1212", "five five five sil one two one two")
+
+    assert google_tn_rows.expected(*row) == "five five five sil one two one two"
+    assert google_tn_rows.expected(*row, strip_embedded_sil=True) == (
+        "five five five one two one two"
+    )
+
+
 def test_scoring_rejects_an_unknown_profile_before_recovery():
     evaluate = _evaluator()
     with pytest.raises(ValueError, match="known profiles: 'google-tn'"):
