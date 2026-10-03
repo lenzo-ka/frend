@@ -50,6 +50,21 @@ _PROFILE_NAMES = ("default", "google-tn")
 _RIGHT_WORD = re.compile(r"^f_tpg\+(\d+)$")
 _RIGHT_CHAR = re.compile(r"^w_(?:wb|gc|sc)\+(\d+)$")
 
+# ProcessPoolExecutor may start fresh interpreters on macOS.  Keep worker imports from
+# writing bytecode even when a caller forgets to export the variable as well as using
+# ``python -B``.
+os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
+
+
+@dataclass(frozen=True)
+class ContextUse:
+    """One selected edge's context span and the features its tree path consulted."""
+
+    start: int
+    end: int
+    problem: str
+    names: tuple[str, ...]
+
 
 @dataclass(frozen=True)
 class TokenReading:
@@ -57,8 +72,8 @@ class TokenReading:
 
     signature: tuple[tuple[int, int, str, str], ...]
     readers: tuple[str, ...] = ()
-    problems: tuple[str, ...] = ()
     edge_ends: tuple[int, ...] = ()
+    context_uses: tuple[ContextUse, ...] = ()
     multi_token: bool = False
 
 
@@ -134,7 +149,13 @@ def _profile_value(name: str) -> str | None:
     return None if name == "default" else name
 
 
-def _prefix_readings(text: str, spans, profiles: tuple[str, ...]) -> dict[str, list[TokenReading]]:
+def _prefix_readings(
+    text: str,
+    spans,
+    profiles: tuple[str, ...],
+    *,
+    trace_context: bool = False,
+) -> dict[str, list[TokenReading]]:
     from icukit.detectors import detect
     from reading_profile import reading_detectors
 
@@ -149,11 +170,12 @@ def _prefix_readings(text: str, spans, profiles: tuple[str, ...]) -> dict[str, l
         verbalized = verbalize_lattice(lattice, profile=_profile_value(profile_name))
         per_token: list[list[tuple[int, int, str, str]]] = [[] for _ in spans]
         readers: list[set[str]] = [set() for _ in spans]
-        problems: list[set[str]] = [set() for _ in spans]
         edge_ends: list[set[int]] = [set() for _ in spans]
+        context_uses: list[list[ContextUse]] = [[] for _ in spans]
         multi_token = [False for _ in spans]
         for unit in verbalized.best_path.units:
             edge = by_edge[unit.edge_id]
+            context_use = _context_use(text, edge, unit) if trace_context else None
             provenance = unit.best.provenance
             signature = (edge.start, edge.end, unit.best.text, provenance)
             reader = (
@@ -169,14 +191,14 @@ def _prefix_readings(text: str, spans, profiles: tuple[str, ...]) -> dict[str, l
                 readers[token_index].add(reader)
                 edge_ends[token_index].add(edge.end)
                 multi_token[token_index] |= len(overlapped) > 1
-                if unit.context is not None:
-                    problems[token_index].add(unit.context.problem)
+                if context_use is not None:
+                    context_uses[token_index].append(context_use)
         results[profile_name] = [
             TokenReading(
                 tuple(signature),
                 tuple(sorted(readers[index])),
-                tuple(sorted(problems[index])),
                 tuple(sorted(edge_ends[index])),
+                tuple(context_uses[index]),
                 multi_token[index],
             )
             for index, signature in enumerate(per_token)
@@ -185,18 +207,101 @@ def _prefix_readings(text: str, spans, profiles: tuple[str, ...]) -> dict[str, l
 
 
 @cache
-def _tree_names(problem: str) -> tuple[str, ...]:
+def _tree(problem: str):
     from frend.context import context_model
 
     model = context_model(LOCALE)
     if model is None:
-        return ()
+        return None
     tree = model.tree(problem)
+    return tree
+
+
+def _tree_names(problem: str, values: dict[str, object]) -> tuple[str, ...]:
+    """Feature names consulted on this example's path through ``problem``'s tree."""
+    tree = _tree(problem)
     if tree is None:
         return ()
-    # Predictor.feature_names is the whole training schema.  The first field of each
-    # compact decision node is the feature index; only those names are read by the
-    # trained tree.
+    vector = [values.get(name) for name in tree.names]
+    prediction = tree._predictor.predict_path(vector, missing="right")
+    steps = prediction["trees"][0]["path"]
+    return tuple(dict.fromkeys(str(step["name"]) for step in steps))
+
+
+def _original_first(unit):
+    """The first alternative supplied to context ranking, before any applied move."""
+    return unit.alternatives[1] if unit.context.applied else unit.alternatives[0]
+
+
+def _connector_span(edge) -> tuple[int, int]:
+    if edge.kind == "passthrough" or edge.detection is None:
+        return edge.start, edge.end
+    for capture in edge.detection.get("captures", ()):
+        if capture.name == "sign":
+            return capture.start, capture.end
+    return edge.start, edge.end
+
+
+def _context_use(text: str, edge, unit) -> ContextUse | None:
+    """Recreate the selected unit's values and retain only its evaluated tree path."""
+    from frend.context import context_model, features, range_example_features
+
+    choice = unit.context
+    if choice is None:
+        return None
+    model = context_model(LOCALE)
+    if model is None:
+        return None
+    first = _original_first(unit)
+    start, end = edge.start, edge.end
+    problem = choice.problem
+    if problem.startswith("connector:"):
+        start, end = _connector_span(edge)
+        connector = model.connector(text[start:end])
+        if connector is None:
+            return None
+        problem = connector["problem"]
+        values = features(
+            text,
+            start,
+            end,
+            first=connector["first"],
+            first_weight=connector["first_weight"],
+            locale=LOCALE,
+            frequent=model.frequent,
+            curated=model.curated,
+        )
+    elif problem.startswith("range:"):
+        values = range_example_features(
+            text,
+            start,
+            end,
+            edge.detection["value"],
+            first=first.provenance,
+            first_weight=first.weight,
+            locale=LOCALE,
+            model=model,
+        )
+    else:
+        values = features(
+            text,
+            start,
+            end,
+            first=first.provenance,
+            first_weight=first.weight,
+            locale=LOCALE,
+            frequent=model.frequent,
+            curated=model.curated,
+        )
+    return ContextUse(start, end, choice.problem, _tree_names(problem, values))
+
+
+@cache
+def _all_tree_names(problem: str) -> tuple[str, ...]:
+    """All decision features, retained only to compare the superseded audit."""
+    tree = _tree(problem)
+    if tree is None:
+        return ()
     used = sorted({int(decision[0]) for decision in tree._predictor.model["decisions"]})
     return tuple(tree.names[index] for index in used)
 
@@ -209,10 +314,14 @@ def _token_at(char_at: int, spans: list[tuple[int, int]]) -> int:
 
 
 def _context_requirement(
-    text: str, edge_end: int, names: tuple[str, ...], spans: list[tuple[int, int]]
+    text: str,
+    edge_start: int,
+    edge_end: int,
+    names: tuple[str, ...],
+    spans: list[tuple[int, int]],
 ) -> tuple[int, bool, int, int]:
-    """Token endpoint needed by the right-side features actually stored in one tree."""
-    from frend.context import _segments
+    """Token endpoint needed by the right-side features on one evaluated tree path."""
+    from frend.context import EOS, class_windows, neighbor_words
 
     words = max(
         [int(match.group(1)) for name in names if (match := _RIGHT_WORD.match(name))]
@@ -223,21 +332,35 @@ def _context_requirement(
     )
     required = max(0, _token_at(max(0, edge_end - 1), spans))
     eos = False
-    after = text[edge_end:]
     if words:
-        segments = _segments(after, LOCALE)
-        if len(segments) < words:
+        target = neighbor_words(text, edge_start, edge_end, locale=LOCALE, right=words)[1]
+        if EOS in target:
             required = len(spans) - 1
             eos = True
         else:
-            required = max(required, _token_at(edge_end + segments[words - 1][1] - 1, spans))
+            for index, (_start, token_end) in enumerate(spans):
+                if token_end < edge_end:
+                    continue
+                actual = neighbor_words(
+                    text[:token_end], edge_start, edge_end, locale=LOCALE, right=words
+                )[1]
+                if actual == target:
+                    required = max(required, index)
+                    break
     if chars:
-        nonspace = [index for index, char in enumerate(after) if not char.isspace()]
-        if len(nonspace) < chars:
+        char_names = tuple(name for name in names if _RIGHT_CHAR.match(name))
+        target = class_windows(text, edge_start, edge_end)
+        if any(target[name] == EOS for name in char_names):
             required = len(spans) - 1
             eos = True
         else:
-            required = max(required, _token_at(edge_end + nonspace[chars - 1], spans))
+            for index, (_start, token_end) in enumerate(spans):
+                if token_end < edge_end:
+                    continue
+                actual = class_windows(text[:token_end], edge_start, edge_end)
+                if all(actual[name] == target[name] for name in char_names):
+                    required = max(required, index)
+                    break
     return required, eos, words, chars
 
 
@@ -253,15 +376,63 @@ def _static_bound(
     right_chars = 0
     for edge_end in reading.edge_ends:
         required = max(required, _token_at(max(0, edge_end - 1), spans))
-        for problem in reading.problems:
-            end, uses_eos, words, chars = _context_requirement(
-                text, edge_end, _tree_names(problem), spans
-            )
-            required = max(required, end)
-            eos |= uses_eos
-            right_words = max(right_words, words)
-            right_chars = max(right_chars, chars)
+    for use in reading.context_uses:
+        end, uses_eos, words, chars = _context_requirement(
+            text, use.start, use.end, use.names, spans
+        )
+        required = max(required, end)
+        eos |= uses_eos
+        right_words = max(right_words, words)
+        right_chars = max(right_chars, chars)
     return required - token_index, eos, right_words, right_chars
+
+
+def _old_context_requirement(
+    text: str, edge_end: int, names: tuple[str, ...], spans: list[tuple[int, int]]
+) -> int:
+    """The superseded all-nodes/all-whitespace bound, for a delta-only recheck."""
+    from frend.context import _segments
+
+    words = max(
+        [int(match.group(1)) for name in names if (match := _RIGHT_WORD.match(name))]
+        + ([1] if "c_rextitle" in names else [0])
+    )
+    chars = max(
+        [int(match.group(1)) for name in names if (match := _RIGHT_CHAR.match(name))] or [0]
+    )
+    required = max(0, _token_at(max(0, edge_end - 1), spans))
+    after = text[edge_end:]
+    if words:
+        segments = _segments(after, LOCALE)
+        if len(segments) < words:
+            required = len(spans) - 1
+        else:
+            required = max(required, _token_at(edge_end + segments[words - 1][1] - 1, spans))
+    if chars:
+        nonspace = [index for index, char in enumerate(after) if not char.isspace()]
+        if len(nonspace) < chars:
+            required = len(spans) - 1
+        else:
+            required = max(required, _token_at(edge_end + nonspace[chars - 1], spans))
+    return required
+
+
+def _old_static_bound(
+    token_index: int,
+    reading: TokenReading,
+    text: str,
+    spans: list[tuple[int, int]],
+) -> int:
+    required = token_index
+    problems = {use.problem for use in reading.context_uses}
+    for edge_end in reading.edge_ends:
+        required = max(required, _token_at(max(0, edge_end - 1), spans))
+        for problem in problems:
+            required = max(
+                required,
+                _old_context_requirement(text, edge_end, _all_tree_names(problem), spans),
+            )
+    return required - token_index
 
 
 def _reader_group(readers: tuple[str, ...]) -> str:
@@ -343,7 +514,12 @@ def _measure_sentence(sentence, profiles: tuple[str, ...]) -> dict[str, dict]:
     full_readings = None
     for prefix_index, prefix_end in enumerate(token_ends):
         prefix_spans = spans[: prefix_index + 1]
-        readings = _prefix_readings(text[:prefix_end], prefix_spans, profiles)
+        readings = _prefix_readings(
+            text[:prefix_end],
+            prefix_spans,
+            profiles,
+            trace_context=prefix_index == len(sentence) - 1,
+        )
         for profile in profiles:
             for token_index, reading in enumerate(readings[profile]):
                 histories[profile][token_index].append(reading.signature)
@@ -392,11 +568,75 @@ def _measure_sentence(sentence, profiles: tuple[str, ...]) -> dict[str, dict]:
     return measured
 
 
+def _audit_sentence(sentence, profiles: tuple[str, ...]) -> dict[str, dict]:
+    """Audit selected full-sentence paths without rerunning prefix lookahead."""
+    text, spans, _token_ends = _text_and_spans(sentence)
+    readings = _prefix_readings(text, spans, profiles, trace_context=True)
+    measured = {profile: _empty_profile() for profile in profiles}
+    for profile in profiles:
+        for token_index, full in enumerate(readings[profile]):
+            _static, eos, right_words, right_chars = _static_bound(token_index, full, text, spans)
+            result = measured[profile]
+            result["tokens"] += 1
+            result["tree_right_words"][right_words] += 1
+            result["tree_right_code_points"][right_chars] += 1
+            result["static"]["eos_dependent"] += eos
+    return measured
+
+
+def _audit_delta_sentence(sentence, profiles: tuple[str, ...]) -> dict[str, dict]:
+    """Recheck L only where the corrected static bound differs from the old one."""
+    text, spans, token_ends = _text_and_spans(sentence)
+    full_readings = _prefix_readings(text, spans, profiles, trace_context=True)
+    candidates = {}
+    earliest = len(sentence)
+    measured = {profile: _empty_profile() for profile in profiles}
+    for profile in profiles:
+        for token_index, full in enumerate(full_readings[profile]):
+            new = _static_bound(token_index, full, text, spans)[0]
+            old = _old_static_bound(token_index, full, text, spans)
+            measured[profile]["static"]["tighter_bound_tokens"] += new < old
+            measured[profile]["static"]["looser_bound_tokens"] += new > old
+            if new != old:
+                candidates[profile, token_index] = [new, old, -1, full]
+                earliest = min(earliest, token_index + min(new, old))
+
+    for prefix_index in range(earliest, len(sentence) - 1):
+        readings = _prefix_readings(
+            text[: token_ends[prefix_index]], spans[: prefix_index + 1], profiles
+        )
+        for (profile, token_index), candidate in candidates.items():
+            new, old, _last_mismatch, full = candidate
+            if prefix_index >= token_index + min(new, old):
+                if readings[profile][token_index].signature != full.signature:
+                    candidate[2] = prefix_index - token_index
+
+    for (profile, token_index), (new, old, last_mismatch, full) in candidates.items():
+        lookahead = last_mismatch + 1
+        if new < lookahead <= old:
+            row = sentence[token_index]
+            result = measured[profile]
+            result["static"]["new_shortfalls_from_tighter_bound"] += 1
+            result["static_shortfall"][lookahead - new] += 1
+            result["static_shortfall_by_class"][row[0]] += 1
+            result["static_shortfall_by_reader"][_reader_name(full.readers)] += 1
+        if old < lookahead <= new:
+            measured[profile]["static"]["resolved_shortfalls_from_looser_bound"] += 1
+        if lookahead > old:
+            measured[profile]["static"]["already_short_under_old_bound"] += 1
+    return measured
+
+
 def _measure_chunk(job) -> dict[str, dict]:
-    sentences, profiles = job
+    sentences, profiles, mode = job
     total = {profile: _empty_profile() for profile in profiles}
     for sentence in sentences:
-        measured = _measure_sentence(sentence, profiles)
+        if mode == "static":
+            measured = _audit_sentence(sentence, profiles)
+        elif mode == "delta":
+            measured = _audit_delta_sentence(sentence, profiles)
+        else:
+            measured = _measure_sentence(sentence, profiles)
         for profile in profiles:
             _merge_profile(total[profile], measured[profile])
     return total
@@ -499,6 +739,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--sentences-per-shard", type=int, default=MAX_SENTENCES_PER_SHARD)
     parser.add_argument("--sentence-token-cap", type=int, default=DEFAULT_SENTENCE_TOKEN_CAP)
+    parser.add_argument(
+        "--only-over-sentence-token-cap",
+        action="store_true",
+        help="measure only sampled sentences longer than the cap",
+    )
+    parser.add_argument(
+        "--static-only",
+        action="store_true",
+        help="run one full-sentence pass for tree-path static statistics, without L",
+    )
+    parser.add_argument(
+        "--static-delta",
+        action="store_true",
+        help="recheck prefixes only for tokens whose corrected static bound changed",
+    )
     parser.add_argument("--workers", type=int, default=min(4, max(1, (os.cpu_count() or 2) // 2)))
     parser.add_argument("--chunk-size", type=int, default=DEFAULT_CHUNK_SIZE)
     parser.add_argument(
@@ -517,7 +772,10 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"--sentences-per-shard must be in 1..{MAX_SENTENCES_PER_SHARD}")
     if args.sentence_token_cap < 1 or args.workers < 1 or args.chunk_size < 1:
         parser.error("sentence cap, workers, and chunk size must be positive")
+    if args.static_only and args.static_delta:
+        parser.error("--static-only and --static-delta are mutually exclusive")
     profiles = tuple(dict.fromkeys(args.profiles or _PROFILE_NAMES))
+    mode = "static" if args.static_only else "delta" if args.static_delta else "lookahead"
 
     # Validate the optional table before the expensive sample scan.
     from evaluate_google_tn import _validate_evaluation_profile
@@ -548,7 +806,15 @@ def main(argv: list[str] | None = None) -> int:
             "sampled_sentences": len(sample),
         }
         for _index, sentence in sample:
-            if len(sentence) > args.sentence_token_cap:
+            over_cap = len(sentence) > args.sentence_token_cap
+            if args.only_over_sentence_token_cap:
+                if over_cap:
+                    selected.append(sentence)
+                else:
+                    skipped["at_or_below_cap_sentences"] += 1
+                    skipped["at_or_below_cap_tokens"] += len(sentence)
+                continue
+            if over_cap:
                 skipped["sentences"] += 1
                 skipped["tokens"] += len(sentence)
                 continue
@@ -565,7 +831,7 @@ def main(argv: list[str] | None = None) -> int:
     ).hexdigest()
 
     totals = {profile: _empty_profile() for profile in profiles}
-    jobs = [(chunk, profiles) for chunk in _chunks(selected, args.chunk_size)]
+    jobs = [(chunk, profiles, mode) for chunk in _chunks(selected, args.chunk_size)]
     if args.workers == 1:
         results = map(_measure_chunk, jobs)
         for result in results:
@@ -595,10 +861,28 @@ def main(argv: list[str] | None = None) -> int:
             "fingerprint": sample_fingerprint,
             "measured_sentences": len(selected),
             "skipped_over_sentence_token_cap": dict(skipped),
+            "selection": (
+                "over sentence token cap only"
+                if args.only_over_sentence_token_cap
+                else "at or below sentence token cap"
+            ),
         },
         "method": {
             "sentence_token_cap": args.sentence_token_cap,
-            "prefixes": "every token boundary through the full sentence",
+            "mode": {
+                "static": "static full-sentence paths only",
+                "delta": "prefix recheck only where the corrected static bound changed",
+                "lookahead": "exact prefixes",
+            }[mode],
+            "prefixes": (
+                "not rerun"
+                if args.static_only
+                else (
+                    "only corrected-bound-to-sentence-end whole-token prefixes"
+                    if args.static_delta
+                    else "every whole-token boundary through the sampled sentence end"
+                )
+            ),
             "token_reading": (
                 "best-path units overlapping the corpus token, including selected span, "
                 "spoken text, and provenance"

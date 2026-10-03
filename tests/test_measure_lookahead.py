@@ -8,6 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from measure_lookahead import (  # noqa: E402
+    _context_requirement,
     _prefix_readings,
     _text_and_spans,
     _tree_names,
@@ -52,11 +53,43 @@ def test_output_must_be_external_and_below_streaming_root(tmp_path: Path):
 
 
 def test_static_tree_extent_uses_decision_features_not_complete_schema():
-    from frend.context import context_model
+    from frend.context import context_model, features
 
     model = context_model("en_US")
     assert model is not None
     leaf_problem = next(
         problem for problem, info in model.index["trees"].items() if info["nodes"] == 1
     )
-    assert _tree_names(leaf_problem) == ()
+    assert _tree_names(leaf_problem, {}) == ()
+
+    problem = (
+        "cldr-symbol:dash\tcldr-symbol:hyphen\tcldr-symbol:hyphen-minus\t"
+        "cldr-symbol:minus\tlexical:en_US\tsurface:silence"
+    )
+    values = features(
+        "x a b",
+        0,
+        1,
+        first="cldr-symbol:dash",
+        first_weight=None,
+        locale="en_US",
+        frequent=model.frequent,
+        curated=model.curated,
+    )
+    names = _tree_names(problem, values)
+    tree = model.tree(problem)
+    assert tree is not None
+    all_decision_names = {
+        tree.names[int(decision[0])] for decision in tree._predictor.model["decisions"]
+    }
+    assert "w_wb+3" in names
+    assert set(names) < all_decision_names
+
+
+def test_right_character_offset_skips_only_boundary_whitespace():
+    from frend.context import class_windows
+
+    text = "x a b"
+    spans = [(0, 1), (2, 3), (4, 5)]
+    assert class_windows(text, 0, 1)["w_gc+3"] == "Ll"
+    assert _context_requirement(text, 0, 1, ("w_gc+3",), spans) == (2, False, 0, 3)
