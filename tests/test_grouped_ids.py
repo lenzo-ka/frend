@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import re
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -64,6 +65,12 @@ def test_isbn_label_enables_the_checksum_case_telephone_rejects():
         "4-6-2",  # score; its N1-N1-N1 shape is shipped
         "2024-01-01",  # date
         "$1-85445-157",  # money prefix on a shipped positive shape
+        "$-1-85445-157",
+        "$ 1-85445-157",
+        "- 1-85445-157",
+        "+ 1-85445-157",
+        "1-85445-157 $",
+        "1-85445-157 %",
         "12:34",  # time
         "12345-6789",  # ZIP+4; its N5-N4 shape is shipped
         "1.2.3",  # version
@@ -71,6 +78,14 @@ def test_isbn_label_enables_the_checksum_case_telephone_rejects():
         "5-3",  # arithmetic
         "0-306-40615-3",  # invalid ISBN-10, on a dominant ISBN shape
         "978-0-7524-4250-2",  # invalid ISBN-13, on a dominant ISBN shape
+        "0-306-40615-2.1",
+        "0-306-40615-2-1",
+        "0-306-40615-2 1",
+        "0-306-40615-2a",
+        "0-306-40615-21",
+        "0–306-40615-2",
+        "0-306-٤0615-2",
+        "1-85445-157٢",
     ],
 )
 def test_ambiguous_numeric_forms_are_not_grouped_ids(written):
@@ -98,11 +113,56 @@ def test_checksum_guard_rejects_an_invalid_isbn_on_a_shipped_shape(monkeypatch):
     assert detector.detect(written)
 
 
-def test_symbol_boundary_blocks_a_money_prefixed_shipped_id(monkeypatch):
+@pytest.mark.parametrize(
+    "text",
+    ["$1-85445-157", "$-1-85445-157", "$ 1-85445-157", "- 1-85445-157"],
+)
+def test_left_affix_boundary_blocks_money_and_signs(text, monkeypatch):
     detector = GroupedDigitsDetector("en_US")
-    text = "$1-85445-157"
     assert detector.detect(text) == []
     monkeypatch.setattr(grouped_module, "_valid_left_boundary", lambda _text, _start: True)
+    assert detector.detect(text)
+
+
+@pytest.mark.parametrize("text", ["1-85445-157 $", "1-85445-157 %"])
+def test_right_affix_boundary_blocks_money_and_percent(text, monkeypatch):
+    detector = GroupedDigitsDetector("en_US")
+    assert detector.detect(text) == []
+    monkeypatch.setattr(grouped_module, "_valid_right_boundary", lambda _text, _end: True)
+    assert detector.detect(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "0-306-40615-2.1",
+        "0-306-40615-2-1",
+        "0-306-40615-2 1",
+        "0-306-40615-2a",
+        "0-306-40615-21",
+    ],
+)
+def test_right_token_boundary_blocks_partial_matches(text, monkeypatch):
+    detector = GroupedDigitsDetector("en_US")
+    assert detector.detect(text) == []
+    monkeypatch.setattr(grouped_module, "_valid_right_boundary", lambda _text, _end: True)
+    assert detector.detect(text)
+
+
+def test_unicode_dash_blocks_an_ascii_suffix_match(monkeypatch):
+    detector = GroupedDigitsDetector("en_US")
+    text = "0–306-40615-2"
+    assert grouped_module.grouped_id_shape("306-40615-2") in grouped_module._prior("en_US")
+    assert detector.detect(text) == []
+    monkeypatch.setattr(grouped_module, "_valid_left_boundary", lambda _text, _start: True)
+    assert detector.detect(text)
+
+
+def test_non_ascii_digit_blocks_an_adjacent_ascii_match(monkeypatch):
+    detector = GroupedDigitsDetector("en_US")
+    text = "1-85445-157٢"
+    assert detector.detect(text) == []
+    monkeypatch.setattr(grouped_module, "_valid_right_boundary", lambda _text, _end: True)
     assert detector.detect(text)
 
 
@@ -137,9 +197,29 @@ def test_locale_without_measured_counts_has_no_generic_id_opinion():
     assert GroupedDigitsDetector("ru_RU").detect("1-85445-157") == []
 
 
-def test_shipped_table_contains_only_shapes_classes_and_counts():
-    document = grouped_module.measured_table("grouped_id_priors", "en_US")
-    assert document is not None and document["shapes"]
+def _assert_grouped_prior_is_aggregate(document):
+    assert set(document) == {"schema_version", "locale", "provenance", "shapes"}
+    assert type(document["schema_version"]) is int and document["schema_version"] == 1
+    assert document["locale"] == "en"
+    provenance = document["provenance"]
+    assert set(provenance) == {"builder", "corpus", "locale", "shards", "selection", "reading"}
+    assert provenance["builder"] == "tools/build_grouped_id_priors.py"
+    assert provenance["corpus"] == "google-tn:en_with_types"
+    assert provenance["locale"] == "en"
+    assert provenance["selection"] == (
+        "exact ASCII digit-group shape with at least 3 grouped-reading rows "
+        "and a strict grouped-reading majority over all corpus rows"
+    )
+    assert provenance["reading"] == (
+        "one ICU digit name per written digit, locale lexical o for zero, "
+        "and literal sil between written groups"
+    )
+    assert type(provenance["shards"]) is list and provenance["shards"]
+    shard_pattern = re.compile(r"output-[0-9]{5}-of-[0-9]{5}\Z")
+    assert all(
+        type(shard) is str and shard_pattern.fullmatch(shard) for shard in provenance["shards"]
+    )
+    assert type(document["shapes"]) is dict and document["shapes"]
     shape_pattern = re.compile(r"N[1-9][0-9]*(?:[- ]N[1-9][0-9]*)+(?:[- ]X)?\Z")
     class_pattern = re.compile(r"[A-Z][A-Z_]*\Z")
     for shape, row in document["shapes"].items():
@@ -150,6 +230,24 @@ def test_shipped_table_contains_only_shapes_classes_and_counts():
         assert set(row["readings"]) == {"grouped", "other"}
         for counts in row.values():
             assert all(type(count) is int for count in counts.values())
+
+
+def test_shipped_table_contains_only_allowlisted_aggregate_fields():
+    document = grouped_module.measured_table("grouped_id_priors", "en_US")
+    assert document is not None
+    _assert_grouped_prior_is_aggregate(document)
+
+
+@pytest.mark.parametrize("path", [("excerpt",), ("provenance", "excerpt")])
+def test_privacy_guard_rejects_unallowlisted_string_fields(path):
+    document = deepcopy(grouped_module.measured_table("grouped_id_priors", "en_US"))
+    assert document is not None
+    target = document
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = "raw corpus surface"
+    with pytest.raises(AssertionError):
+        _assert_grouped_prior_is_aggregate(document)
 
 
 def test_builder_counts_classes_and_grouped_readings_by_shape(tmp_path):

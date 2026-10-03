@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -18,7 +19,7 @@ __all__ = [
     "is_valid_isbn",
 ]
 
-_CANDIDATE = re.compile(r"[0-9]+(?:[- ][0-9]+)+(?:[- ][Xx])?(?!\w)")
+_CANDIDATE = re.compile(r"[0-9]+(?:[- ][0-9]+)+(?:[- ][Xx])?")
 _SHAPE = re.compile(r"N[1-9][0-9]*(?:[- ]N[1-9][0-9]*)+(?:[- ]X)?\Z")
 
 
@@ -44,6 +45,27 @@ def _groups(text: str) -> tuple[str, ...] | None:
     if _CANDIDATE.fullmatch(text) is None:
         return None
     return tuple(part.upper() for part in re.findall(r"[0-9]+|[Xx]", text))
+
+
+def _candidate_matches(text: str) -> Iterator[re.Match[str]]:
+    """Yield semantically possible prefixes so token boundaries remain load-bearing."""
+    for token in _CANDIDATE.finditer(text):
+        digits = 0
+        yielded_full = False
+        for end in range(token.start() + 1, token.end() + 1):
+            char = text[end - 1]
+            if char in "0123456789":
+                digits += 1
+            if digits > 13:
+                break
+            if digits not in {9, 10, 13} or (char in "Xx" and digits != 9):
+                continue
+            match = _CANDIDATE.fullmatch(text, token.start(), end)
+            if match is not None:
+                yield match
+                yielded_full = end == token.end()
+        if not yielded_full:
+            yield token
 
 
 def is_valid_isbn(text: str) -> bool:
@@ -73,12 +95,61 @@ def is_valid_isbn(text: str) -> bool:
     return False
 
 
+def _unicode_numeric_continuation(char: str) -> bool:
+    """Treat non-ASCII digits and dash punctuation as parts of numeric tokens."""
+    return (char not in "0123456789" and char.isdigit()) or (
+        char != "-" and unicodedata.category(char) == "Pd"
+    )
+
+
 def _valid_left_boundary(text: str, start: int) -> bool:
-    """Exclude a candidate directly following a letter, number, or symbol."""
+    """Exclude token continuations and signed or currency-prefixed candidates."""
     if start == 0:
         return True
     previous = text[start - 1]
-    return not (previous.isalnum() or unicodedata.category(previous).startswith("S"))
+    if previous.isalnum() or previous == "_" or _unicode_numeric_continuation(previous):
+        return False
+    if previous == "." and start >= 2 and text[start - 2].isdigit():
+        return False
+
+    at = start - 1
+    while at >= 0 and (text[at].isspace() or text[at] in "+-"):
+        if text[at] in "+-":
+            return False
+        at -= 1
+    return at < 0 or unicodedata.category(text[at]) != "Sc"
+
+
+def _is_percent(char: str) -> bool:
+    return "PERCENT SIGN" in unicodedata.name(char, "")
+
+
+def _valid_right_boundary(text: str, end: int) -> bool:
+    """Exclude token continuations and signed, currency, or percent suffixes."""
+    if end == len(text):
+        return True
+    following = text[end]
+    if following.isalnum() or following == "_" or _unicode_numeric_continuation(following):
+        return False
+    if following in ".-" and end + 1 < len(text) and text[end + 1].isdigit():
+        return False
+
+    after_space = end
+    while after_space < len(text) and text[after_space].isspace():
+        after_space += 1
+    if (
+        after_space > end
+        and after_space < len(text)
+        and (text[after_space].isdigit() or text[after_space] in "Xx")
+    ):
+        return False
+
+    at = end
+    while at < len(text) and (text[at].isspace() or text[at] in "+-"):
+        if text[at] in "+-":
+            return False
+        at += 1
+    return at == len(text) or (unicodedata.category(text[at]) != "Sc" and not _is_percent(text[at]))
 
 
 def _generic_id_shape(groups: tuple[str, ...]) -> bool:
@@ -153,8 +224,10 @@ class GroupedDigitsDetector:
     def detect(self, text: str) -> list[dict]:
         shapes = _prior(self.locale)
         found = []
-        for match in _CANDIDATE.finditer(text):
-            if not _valid_left_boundary(text, match.start()):
+        for match in _candidate_matches(text):
+            if not _valid_left_boundary(text, match.start()) or not _valid_right_boundary(
+                text, match.end()
+            ):
                 continue
             surface = match.group()
             groups = _groups(surface)

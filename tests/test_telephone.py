@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -119,14 +121,97 @@ def test_locale_without_a_measured_table_has_no_telephone_opinion():
     assert TelephoneDetector("ru_RU").detect("212-868-4444") == []
 
 
-def test_shipped_left_context_keys_use_only_the_fixed_shape_alphabet():
-    document = telephone_module.measured_table("telephone_priors", "en_US")
-    assert document is not None
+def _assert_telephone_prior_is_aggregate(document):
+    assert set(document) == {"schema_version", "locale", "provenance", "left_contexts", "shapes"}
+    assert type(document["schema_version"]) is int and document["schema_version"] == 3
+    assert document["locale"] == "en"
+    provenance = document["provenance"]
+    assert set(provenance) == {
+        "builder",
+        "corpus",
+        "locale",
+        "shards",
+        "selection",
+        "left_context",
+        "reading",
+    }
+    assert provenance["builder"] == "tools/build_telephone_priors.py"
+    assert provenance["corpus"] == "google-tn:en_with_types"
+    assert provenance["locale"] == "en"
+    assert provenance["selection"] == (
+        "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a "
+        "strict TELEPHONE majority among all corpus classes for the exact shape"
+    )
+    assert provenance["left_context"] == (
+        "surface-free character-class shape of the immediately preceding "
+        "corpus token, counted by that token's gold class; with at least 3 "
+        "observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority "
+        "contexts for selected shapes"
+    )
+    assert provenance["reading"] == (
+        "raw counts of whole grouped readings classified against ICU cardinal and "
+        "digit spellout, with zero/o from the locale lexical table"
+    )
+    assert type(provenance["shards"]) is list and provenance["shards"]
+    shard_pattern = re.compile(r"output-[0-9]{5}-of-[0-9]{5}\Z")
+    assert all(
+        type(shard) is str and shard_pattern.fullmatch(shard) for shard in provenance["shards"]
+    )
     assert document["left_contexts"]
     assert all(
         telephone_module._is_left_context_shape(context) for context in document["left_contexts"]
     )
     assert not telephone_module._is_left_context_shape("isbn")
+    class_pattern = re.compile(r"[A-Z][A-Z_]*\Z")
+    for row in document["left_contexts"].values():
+        assert set(row) == {"classes", "prediction"}
+        assert class_pattern.fullmatch(row["prediction"])
+        assert row["prediction"] in row["classes"]
+        assert all(
+            class_pattern.fullmatch(name) and type(count) is int and count > 0
+            for name, count in row["classes"].items()
+        )
+    shape_pattern = re.compile(r"(?:N[1-9][0-9]*|[() .-])+\Z")
+    reading_pattern = re.compile(r"[nrz](?::[nrz])+\Z")
+    for shape, row in document["shapes"].items():
+        assert shape_pattern.fullmatch(shape)
+        assert set(row) == {"classes", "patterns"}
+        assert all(
+            class_pattern.fullmatch(name) and type(count) is int and count > 0
+            for name, count in row["classes"].items()
+        )
+        for pattern, evidence in row["patterns"].items():
+            assert reading_pattern.fullmatch(pattern)
+            assert set(evidence) == {"readings", "unclassified_telephone"}
+            assert type(evidence["unclassified_telephone"]) is int
+            assert evidence["unclassified_telephone"] >= 0
+            assert type(evidence["readings"]) is list and evidence["readings"]
+            for reading in evidence["readings"]:
+                assert set(reading) == {"modes", "count"}
+                assert type(reading["count"]) is int and reading["count"] > 0
+                assert type(reading["modes"]) is list and reading["modes"]
+                assert all(
+                    type(mode) is str and mode in {"cardinal", "digits", "digits-o"}
+                    for mode in reading["modes"]
+                )
+
+
+def test_shipped_telephone_table_contains_only_allowlisted_aggregate_fields():
+    document = telephone_module.measured_table("telephone_priors", "en_US")
+    assert document is not None
+    _assert_telephone_prior_is_aggregate(document)
+
+
+@pytest.mark.parametrize("path", [("excerpt",), ("provenance", "excerpt")])
+def test_telephone_privacy_guard_rejects_unallowlisted_strings(path):
+    document = deepcopy(telephone_module.measured_table("telephone_priors", "en_US"))
+    assert document is not None
+    target = document
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = "raw corpus surface"
+    with pytest.raises(AssertionError):
+        _assert_telephone_prior_is_aggregate(document)
 
 
 def test_builder_counts_shapes_readings_and_left_context_from_corpus_rows(tmp_path):
