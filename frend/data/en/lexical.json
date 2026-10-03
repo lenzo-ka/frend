@@ -235,6 +235,10 @@
       "why": "the corpus reads a Roman numeral or Roman ordinal with 'the' ('Henry II' 'the second', 'V.' 'the fifth'); no CLDR pattern puts an article before an ordinal",
       "value": "the {0}"
     },
+    "date.day_first": {
+      "why": "the corpus reads a day-first date as 'the eighteenth of September'; no CLDR date pattern supplies this spoken frame",
+      "value": "the {} of "
+    },
     "sign.plus": {
       "why": "a written plus is usually said and sometimes dropped; ICU spells no plus sign",
       "value": "plus {0}"

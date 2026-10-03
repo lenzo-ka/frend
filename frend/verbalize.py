@@ -1722,7 +1722,8 @@ def _spoken_date(
     day_parts = [day_words, (_month_name(fields["M"], value.calendar, locale),)]
     if "y" in fields:
         day_parts.append(_year_leaf(Decimal(fields["y"]), locale))
-    day_first = _compose(day_parts, _day_first_template(len(day_parts)))
+    day_first_template = _day_first_template(len(day_parts), locale)
+    day_first = () if day_first_template is None else _compose(day_parts, day_first_template)
     return _ranked([*month_first, *day_first])
 
 
@@ -2766,12 +2767,13 @@ def verbalize_edge(
     )
 
 
-def _day_first_template(part_count: int) -> str:
+def _day_first_template(part_count: int, locale: str) -> str | None:
     """The lexical frame around a day-first date's rendered field values."""
-    return "the {} of " + " ".join("{}" for _ in range(part_count - 1))
+    frame = _lexical_pattern("date.day_first", locale, "{}")
+    return None if frame is None else frame + " ".join("{}" for _ in range(part_count - 1))
 
 
-def _leading_date_template_word(edge: ReadingEdge) -> str | None:
+def _leading_date_template_word(edge: ReadingEdge, locale: str) -> str | None:
     """Return a leading literal supplied by a date template, never by a field."""
     detection = edge.detection
     if detection is None:
@@ -2782,12 +2784,18 @@ def _leading_date_template_word(edge: ReadingEdge) -> str | None:
     fields = dict(value.fields)
     if not {"M", "d"} <= fields.keys():
         return None
-    prefix = _day_first_template(3 if "y" in fields else 2).partition("{}")[0].strip()
+    template = _day_first_template(3 if "y" in fields else 2, locale)
+    if template is None:
+        return None
+    prefix = template.partition("{}")[0].strip()
     return prefix if prefix and " " not in prefix else None
 
 
 def _dedupe_date_boundary_prefix(
-    alternatives: tuple[SpokenAlternative, ...], edge: ReadingEdge, source_text: str | None
+    alternatives: tuple[SpokenAlternative, ...],
+    edge: ReadingEdge,
+    source_text: str | None,
+    locale: str,
 ) -> tuple[SpokenAlternative, ...]:
     """Avoid repeating a date frame's leading literal across its span boundary.
 
@@ -2797,7 +2805,7 @@ def _dedupe_date_boundary_prefix(
     """
     if source_text is None or edge.start <= 0:
         return alternatives
-    template_word = _leading_date_template_word(edge)
+    template_word = _leading_date_template_word(edge, locale)
     if template_word is None:
         return alternatives
     before = source_text[: edge.start].rstrip()
@@ -3149,7 +3157,7 @@ def _verbalize_edge(
             threshold=context_threshold,
         )
     if path == "date":
-        alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text)
+        alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text, locale)
     return VerbalizedUnit(
         edge.id, alternatives, tier, provenance, True, _unspoken(detection, path), choice
     )
