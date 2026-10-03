@@ -2766,6 +2766,32 @@ def verbalize_edge(
     )
 
 
+def _dedupe_date_boundary_prefix(
+    alternatives: tuple[SpokenAlternative, ...], edge: ReadingEdge, source_text: str | None
+) -> tuple[SpokenAlternative, ...]:
+    """Do not speak a date form's first word twice across its ICU span boundary."""
+    if source_text is None or edge.start <= 0:
+        return alternatives
+    before = source_text[: edge.start].rstrip()
+    word_start = len(before)
+    while word_start and before[word_start - 1].isalpha():
+        word_start -= 1
+    boundary_word = before[word_start:]
+    if not boundary_word:
+        return alternatives
+    changed = []
+    for alternative in alternatives:
+        first, separator, rest = alternative.text.partition(" ")
+        if separator and first.casefold() == boundary_word.casefold():
+            alternative = SpokenAlternative(
+                rest,
+                f"{alternative.provenance}+rule:boundary-prefix-dedup",
+                alternative.weight,
+            )
+        changed.append(alternative)
+    return tuple(changed)
+
+
 def _verbalize_edge(
     edge: ReadingEdge,
     *,
@@ -3090,6 +3116,8 @@ def _verbalize_edge(
             eos=context.eos,
             threshold=context_threshold,
         )
+    if path == "date":
+        alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text)
     return VerbalizedUnit(
         edge.id, alternatives, tier, provenance, True, _unspoken(detection, path), choice
     )

@@ -168,6 +168,21 @@ def test_real_dates_include_corpus_day_first_forms(written, spoken):
     _assert_corpus_date_form(written, spoken)
 
 
+def test_date_does_not_repeat_word_just_outside_its_detection():
+    text = "the 21 December 2006"
+    detections = list(
+        detect(text, [FlexibleTextDateDetector("en_US"), WrittenFormsDetector("en_US")])
+    )
+    lattice = resolve_lattice(detections, source_text=text)
+    result = verbalize_lattice(lattice)
+    date_unit = next(
+        unit
+        for unit in result.best_path.units
+        if "rule:boundary-prefix-dedup" in unit.best.provenance
+    )
+    assert normalize_spoken(date_unit.best.text) == "twenty first of december two thousand six"
+
+
 @pytest.mark.parametrize(
     ("written", "spoken"),
     [
