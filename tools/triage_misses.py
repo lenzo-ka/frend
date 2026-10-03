@@ -298,6 +298,7 @@ def _score_token(
     after: str,
     profile: str | None = None,
     classify_misses: bool = True,
+    strip_embedded_sil: bool = False,
 ) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
@@ -306,7 +307,11 @@ def _score_token(
     from frend.verbalize import verbalize_lattice
 
     corpus_class, written, spoken = row
-    target = normalize_spoken(google_tn_rows.expected(corpus_class, written, spoken))
+    target = normalize_spoken(
+        google_tn_rows.expected(
+            corpus_class, written, spoken, strip_embedded_sil=strip_embedded_sil
+        )
+    )
     surface = normalize_spoken(written)
     detections = []
     readings: tuple[str, ...] = ()
@@ -364,6 +369,7 @@ def _score_token(
 def _score_sentence(item) -> dict[str, object]:
     shard, sentence_index, sentence, token_strata, profile, *options = item
     classify_misses = options[0] if options else True
+    strip_embedded_sil = options[1] if len(options) > 1 else False
     first_count = 0
     any_count = 0
     capped_count = 0
@@ -387,10 +393,15 @@ def _score_sentence(item) -> dict[str, object]:
     for index, row in enumerate(sentence):
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
+        target_options = {"strip_embedded_sil": True} if strip_embedded_sil else {}
         if classify_misses:
-            first, any_, capped, classification = _score_token(row, before, after, profile)
+            first, any_, capped, classification = _score_token(
+                row, before, after, profile, **target_options
+            )
         else:
-            first, any_, capped, classification = _score_token(row, before, after, profile, False)
+            first, any_, capped, classification = _score_token(
+                row, before, after, profile, False, **target_options
+            )
         first_count += first
         any_count += any_
         capped_count += capped
@@ -860,6 +871,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--intervals", type=int, default=0, metavar="N")
     parser.add_argument("--interval-seed", type=int, default=DEFAULT_INTERVAL_SEED)
     parser.add_argument("--per-sentence-out", type=Path, default=None, metavar="PATH")
+    parser.add_argument(
+        "--strip-embedded-sil",
+        action="store_true",
+        help="measurement only: remove embedded corpus sil tokens from scored targets",
+    )
     args = parser.parse_args(argv)
     if not 1 <= args.sentences_per_shard <= MAX_SENTENCES_PER_SHARD:
         parser.error(f"--sentences-per-shard must be in 1..{MAX_SENTENCES_PER_SHARD}")
@@ -912,6 +928,7 @@ def main(argv: list[str] | None = None) -> int:
             ),
             profile,
             not args.accuracy_only,
+            args.strip_embedded_sil,
         )
         for shard, index, sentence in selected
     ]
@@ -963,6 +980,8 @@ def main(argv: list[str] | None = None) -> int:
         receipt["profile"] = profile
     if args.accuracy_only:
         receipt["accuracy_only"] = True
+    if args.strip_embedded_sil:
+        receipt["strip_embedded_sil"] = True
     if vocabulary is not None:
         receipt["strata_vocabulary"] = vocabulary_receipt(vocabulary)
     _write_json(counts_path, report)

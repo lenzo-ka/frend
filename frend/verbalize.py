@@ -1722,7 +1722,7 @@ def _spoken_date(
     day_parts = [day_words, (_month_name(fields["M"], value.calendar, locale),)]
     if "y" in fields:
         day_parts.append(_year_leaf(Decimal(fields["y"]), locale))
-    day_first = _compose(day_parts, "the {} of " + " ".join("{}" for _ in day_parts[1:]))
+    day_first = _compose(day_parts, _day_first_template(len(day_parts)))
     return _ranked([*month_first, *day_first])
 
 
@@ -2766,11 +2766,39 @@ def verbalize_edge(
     )
 
 
+def _day_first_template(part_count: int) -> str:
+    """The lexical frame around a day-first date's rendered field values."""
+    return "the {} of " + " ".join("{}" for _ in range(part_count - 1))
+
+
+def _leading_date_template_word(edge: ReadingEdge) -> str | None:
+    """Return a leading literal supplied by a date template, never by a field."""
+    detection = edge.detection
+    if detection is None:
+        return None
+    value = detection.get("value")
+    if not isinstance(value, DateTimeValue):
+        return None
+    fields = dict(value.fields)
+    if not {"M", "d"} <= fields.keys():
+        return None
+    prefix = _day_first_template(3 if "y" in fields else 2).partition("{}")[0].strip()
+    return prefix if prefix and " " not in prefix else None
+
+
 def _dedupe_date_boundary_prefix(
     alternatives: tuple[SpokenAlternative, ...], edge: ReadingEdge, source_text: str | None
 ) -> tuple[SpokenAlternative, ...]:
-    """Do not speak a date form's first word twice across its ICU span boundary."""
+    """Avoid repeating a date frame's leading literal across its span boundary.
+
+    A rendered month, day, or year is an in-span field even when its spoken word equals
+    the preceding written word. Only a literal before the date template's first field
+    is eligible, so numeric dates beside other numeric shapes cannot lose a field word.
+    """
     if source_text is None or edge.start <= 0:
+        return alternatives
+    template_word = _leading_date_template_word(edge)
+    if template_word is None:
         return alternatives
     before = source_text[: edge.start].rstrip()
     word_start = len(before)
@@ -2782,7 +2810,11 @@ def _dedupe_date_boundary_prefix(
     changed = []
     for alternative in alternatives:
         first, separator, rest = alternative.text.partition(" ")
-        if separator and first.casefold() == boundary_word.casefold():
+        if (
+            separator
+            and first.casefold() == template_word.casefold()
+            and first.casefold() == boundary_word.casefold()
+        ):
             alternative = SpokenAlternative(
                 rest,
                 f"{alternative.provenance}+rule:boundary-prefix-dedup",

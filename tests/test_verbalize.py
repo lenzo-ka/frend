@@ -168,19 +168,49 @@ def test_real_dates_include_corpus_day_first_forms(written, spoken):
     _assert_corpus_date_form(written, spoken)
 
 
-def test_date_does_not_repeat_word_just_outside_its_detection():
+def test_date_does_not_repeat_template_word_just_outside_its_detection():
     text = "the 21 December 2006"
     detections = list(
         detect(text, [FlexibleTextDateDetector("en_US"), WrittenFormsDetector("en_US")])
     )
     lattice = resolve_lattice(detections, source_text=text)
     result = verbalize_lattice(lattice)
-    date_unit = next(
-        unit
-        for unit in result.best_path.units
-        if "rule:boundary-prefix-dedup" in unit.best.provenance
+    assert result.best_path.spoken == "t h e   twenty first of December two thousand six"
+
+
+def test_date_keeps_month_rendered_from_an_in_span_field(monkeypatch):
+    import frend.verbalize as verbalize
+
+    monkeypatch.setattr(
+        verbalize, "_rank_final", lambda alternatives, *_args, **_kwargs: alternatives
     )
-    assert normalize_spoken(date_unit.best.text) == "twenty first of december two thousand six"
+    monkeypatch.setattr(
+        verbalize, "rerank", lambda alternatives, *_args, **_kwargs: (alternatives, None)
+    )
+    text = "March 3/4/2024"
+    result = verbalize_lattice(resolve_lattice(list(DETECTORS.detect(text)), source_text=text))
+
+    assert result.best_path.spoken == "M a r c h   March fourth, twenty twenty-four"
+
+
+@pytest.mark.parametrize(
+    ("text", "spoken"),
+    [
+        ("March v3/4", "M a r c h   v 3 / four"),
+        ("March 3-4", "M a r c h   three to four"),
+        ("March 3–4", "M a r c h   three to four"),
+        (
+            "March 1-903919-31-2",
+            "M a r c h   one - nine hundred three thousand nine hundred nineteen "
+            "minus thirty-one minus two",
+        ),
+    ],
+    ids=("version", "score", "range", "telephone-adjacency"),
+)
+def test_date_boundary_dedup_does_not_change_non_date_shapes(text, spoken):
+    result = verbalize_lattice(resolve_lattice(list(DETECTORS.detect(text)), source_text=text))
+
+    assert result.best_path.spoken == spoken
 
 
 @pytest.mark.parametrize(
