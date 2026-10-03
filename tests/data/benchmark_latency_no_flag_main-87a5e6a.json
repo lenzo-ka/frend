@@ -1,0 +1,89 @@
+{
+  "denominators": {
+    "en_US": 3
+  },
+  "environment_fields": [
+    "cpu",
+    "hostname",
+    "icu",
+    "icukit",
+    "machine",
+    "machine_model",
+    "os",
+    "power_mode",
+    "pyicu",
+    "python",
+    "tiergraph"
+  ],
+  "errors": [],
+  "gc": {
+    "enabled": true,
+    "fields": [
+      "by_generation",
+      "enabled",
+      "events"
+    ],
+    "generation_fields": [
+      "0",
+      "1",
+      "2"
+    ]
+  },
+  "imports": {
+    "frend": "frend/__init__.py",
+    "reading_profile": "tools/reading_profile.py"
+  },
+  "manifest_sha256": "829030692aa08731c59679d8ee808c6e01c9015b4c83f7360359258096f2e8a2",
+  "parameters": {
+    "max_words": 10,
+    "runs": 1,
+    "seed": 1,
+    "warmup": 0
+  },
+  "schema_version": 1,
+  "subject_fields": [
+    "commit",
+    "dirty",
+    "root"
+  ],
+  "summary_fields": {
+    "en_US": {
+      "end_to_end_ns": [
+        "p50",
+        "p90",
+        "p99"
+      ],
+      "resolve_only_ns": [
+        "p50",
+        "p90",
+        "p99"
+      ]
+    }
+  },
+  "top_level_keys": [
+    "argv",
+    "denominators",
+    "ended_ns",
+    "environment",
+    "errors",
+    "gc",
+    "imports",
+    "manifest_sha256",
+    "max_words",
+    "runs",
+    "schema_version",
+    "seed",
+    "setup_ns",
+    "started_ns",
+    "subject",
+    "summaries",
+    "vectors",
+    "warmup"
+  ],
+  "vector_lengths": {
+    "en_US": {
+      "end_to_end_ns": 1,
+      "resolve_only_ns": 1
+    }
+  }
+}

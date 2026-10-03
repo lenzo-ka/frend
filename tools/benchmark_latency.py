@@ -1,4 +1,4 @@
-"""Benchmark fixed short-input resolution boundaries and compare exact receipts."""
+"""Benchmark fixed resolution boundaries and the optional Google-TN profile A/B."""
 
 from __future__ import annotations
 
@@ -18,6 +18,14 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
 _DEFAULT_MANIFEST = Path(__file__).with_name("latency_inputs-v1.json")
+
+
+def _external_output(path: Path) -> Path:
+    """Resolve an output path and refuse benchmark writes inside the repository."""
+    resolved = path.resolve()
+    if resolved.is_relative_to(_REPO.resolve()):
+        raise SystemExit(f"--output and its temporary siblings must be outside {_REPO}")
+    return resolved
 
 
 def _canonical(document: object) -> bytes:
@@ -173,11 +181,263 @@ def _worker(args: argparse.Namespace) -> int:
     return 0
 
 
+_GOOGLE_TN_CORPUS = Path("/Volumes/k02/corpora/unpacked/google/tn-en_with_types/en_with_types")
+_PROFILE_BUCKETS = (("le5", 1, 5), ("6-10", 6, 10), ("11-20", 11, 20), ("21-40", 21, 40))
+
+
+def _profile_measure(text: str, detectors: list[object], profile: str | None) -> dict:
+    from icukit.detectors import detect
+
+    from frend import resolve_lattice
+    from frend.verbalize import verbalize_lattice
+
+    started = time.perf_counter_ns()
+    detections = list(detect(text, detectors))
+    detected = time.perf_counter_ns()
+    lattice = resolve_lattice(detections, source_text=text, locale="en_US")
+    resolved = time.perf_counter_ns()
+    verbalize_lattice(lattice, profile=profile)
+    ended = time.perf_counter_ns()
+    return {
+        "stages_ns": {
+            "detect": detected - started,
+            "resolve_lattice": resolved - detected,
+            "verbalize": ended - resolved,
+            "pipeline": ended - started,
+        },
+        "candidates": len(detections),
+    }
+
+
+def _profile_worker(args: argparse.Namespace) -> int:
+    in_process_setup_started = time.perf_counter_ns()
+    import reading_profile
+    from reading_profile import reading_detectors
+
+    import frend
+
+    subject = args.subject_root.resolve()
+    imports = {
+        "reading_profile": str(Path(reading_profile.__file__).resolve()),
+        "frend": str(Path(frend.__file__).resolve()),
+    }
+    for name, imported in imports.items():
+        if not Path(imported).is_relative_to(subject):
+            raise SystemExit(f"{name} imported from {imported}, outside subject root {subject}")
+    detectors = reading_detectors("en_US")
+    in_process_setup_ns = time.perf_counter_ns() - in_process_setup_started
+    profile = None if args.profile_condition == "off" else args.profile
+    request = json.loads(args.profile_input.read_text(encoding="utf-8"))
+    if args.profile_cold:
+        measured = _profile_measure(request["text"], detectors, profile)
+        measured.update(
+            {
+                "bucket": request["bucket"],
+                "text": request["text"],
+                "in_process_setup_ns": in_process_setup_ns,
+            }
+        )
+        args.output.write_text(json.dumps(measured, sort_keys=True), encoding="utf-8")
+        return 0
+
+    inputs = request["inputs"]
+    flat = [(bucket, text) for bucket, texts in inputs.items() for text in texts]
+    for index in range(args.profile_warmup):
+        _bucket, text = flat[index % len(flat)]
+        _profile_measure(text, detectors, profile)
+    rows = []
+    for bucket, text in flat:
+        measured = _profile_measure(text, detectors, profile)
+        measured.update({"bucket": bucket, "text": text})
+        rows.append(measured)
+    args.output.write_text(
+        json.dumps(
+            {"rows": rows, "in_process_setup_ns": in_process_setup_ns, "imports": imports},
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    return 0
+
+
+def _google_tn_sentences(corpus_dir: Path):
+    sentence = []
+    for shard in range(90, 95):
+        path = corpus_dir / f"output-000{shard}-of-00100"
+        with path.open(encoding="utf-8") as handle:
+            for line in handle:
+                fields = line.rstrip("\n").split("\t")
+                if fields[0] == "<eos>":
+                    if sentence:
+                        yield " ".join(sentence)
+                    sentence = []
+                elif len(fields) >= 3:
+                    sentence.append(fields[1])
+    if sentence:
+        yield " ".join(sentence)
+
+
+def _profile_inputs(args: argparse.Namespace) -> dict[str, list[str]]:
+    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    inputs = {"existing": list(manifest["locales"]["en_US"])}
+    reservoirs = {name: [] for name, _low, _high in _PROFILE_BUCKETS}
+    seen = {name: 0 for name in reservoirs}
+    rng = random.Random(args.seed)
+    for text in _google_tn_sentences(args.corpus_dir):
+        words = len(text.split())
+        for name, low, high in _PROFILE_BUCKETS:
+            if not low <= words <= high:
+                continue
+            seen[name] += 1
+            values = reservoirs[name]
+            if len(values) < args.profile_sample_per_bucket:
+                values.append(text)
+            else:
+                replacement = rng.randrange(seen[name])
+                if replacement < len(values):
+                    values[replacement] = text
+            break
+    missing = [name for name, values in reservoirs.items() if not values]
+    if missing:
+        raise SystemExit(f"empty Google TN length buckets: {', '.join(missing)}")
+    inputs.update(reservoirs)
+    return inputs
+
+
+def _profile_summary(rows: list[dict], *, cold: bool) -> dict:
+    by_bucket: dict[str, list[dict]] = {}
+    for row in rows:
+        by_bucket.setdefault(row["bucket"], []).append(row)
+    summaries = {}
+    for bucket, values in by_bucket.items():
+        stage_names = tuple(values[0]["stages_ns"])
+        stages = {
+            stage: _summary([row["stages_ns"][stage] for row in values]) for stage in stage_names
+        }
+        if cold:
+            stages["in_process_setup"] = _summary([row["in_process_setup_ns"] for row in values])
+            stages["process_wall"] = _summary([row["process_wall_ns"] for row in values])
+        summaries[bucket] = {
+            "utterances": len(values),
+            "stages_ns": stages,
+            "candidates": _summary([row["candidates"] for row in values]),
+        }
+    return summaries
+
+
+def _profile_command(args: argparse.Namespace, temporary: Path) -> list[str]:
+    command = [
+        sys.executable,
+        "-c",
+        f"import runpy; runpy.run_path({str(Path(__file__).resolve())!r}, run_name='__main__')",
+        "--_profile-worker",
+        "--profile",
+        args.profile,
+        "--subject-root",
+        str(args.subject_root.resolve()),
+        "--profile-input",
+        str(args.profile_input_file),
+        "--profile-condition",
+        args.profile_condition,
+        "--profile-warmup",
+        str(args.profile_warmup),
+        "--output",
+        str(temporary),
+    ]
+    if args.profile_cold:
+        command.append("--_profile-cold")
+    return command
+
+
+def _run_profile_worker(args: argparse.Namespace, temporary: Path) -> dict:
+    environment = dict(os.environ)
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    subject = args.subject_root.resolve()
+    environment["PYTHONPATH"] = os.pathsep.join((str(subject), str(subject / "tools")))
+    process_started = time.perf_counter_ns()
+    subprocess.run(_profile_command(args, temporary), cwd=subject, env=environment, check=True)
+    process_wall_ns = time.perf_counter_ns() - process_started
+    payload = json.loads(temporary.read_text(encoding="utf-8"))
+    temporary.unlink()
+    if args.profile_cold:
+        payload["process_wall_ns"] = process_wall_ns
+    return payload
+
+
+def _profile_run(args: argparse.Namespace) -> int:
+    if args.profile_sample_per_bucket < 1 or args.profile_cold_runs < 1:
+        raise SystemExit("profile sample and cold-run counts must be positive")
+    if args.profile_warmup < 0:
+        raise SystemExit("profile warmup count must be nonnegative")
+    args.output = _external_output(args.output)
+    subject = args.subject_root.resolve()
+    head = _git(subject, "rev-parse", "HEAD")
+    if head != args.expected_head:
+        raise SystemExit(f"subject head {head} does not match --expected-head {args.expected_head}")
+    inputs = _profile_inputs(args)
+    input_path = args.output.with_suffix(args.output.suffix + ".profile-inputs")
+    worker_path = args.output.with_suffix(args.output.suffix + ".profile-worker")
+    args.profile_input_file = input_path
+    conditions = {}
+    try:
+        input_path.write_text(json.dumps({"inputs": inputs}), encoding="utf-8")
+        for condition in ("off", "on"):
+            args.profile_condition = condition
+            args.profile_cold = False
+            input_path.write_text(json.dumps({"inputs": inputs}), encoding="utf-8")
+            warm = _run_profile_worker(args, worker_path)
+            cold_rows = []
+            args.profile_cold = True
+            for bucket, texts in inputs.items():
+                for text in texts[: args.profile_cold_runs]:
+                    input_path.write_text(
+                        json.dumps({"bucket": bucket, "text": text}), encoding="utf-8"
+                    )
+                    cold_rows.append(_run_profile_worker(args, worker_path))
+            conditions[condition] = {
+                "warm": _profile_summary(warm["rows"], cold=False),
+                "cold": _profile_summary(cold_rows, cold=True),
+                "warm_rows": warm["rows"],
+                "cold_rows": cold_rows,
+                "warm_in_process_setup_ns": warm["in_process_setup_ns"],
+                "imports": warm["imports"],
+            }
+    finally:
+        input_path.unlink(missing_ok=True)
+        worker_path.unlink(missing_ok=True)
+    receipt = {
+        "schema_version": 2,
+        "benchmark": "google-tn-profile-ab",
+        "profile": args.profile,
+        "subject": {
+            "root": str(subject),
+            "commit": head,
+            "dirty": bool(_git(subject, "status", "--porcelain")),
+        },
+        "environment": _environment(),
+    }
+    receipt.update(
+        {
+            "corpus_dir": str(args.corpus_dir.resolve()),
+            "corpus_shards": [f"output-000{shard}-of-00100" for shard in range(90, 95)],
+            "sample_sha256": hashlib.sha256(_canonical(inputs)).hexdigest(),
+            "sample_sizes": {bucket: len(values) for bucket, values in inputs.items()},
+            "profile_warmup": args.profile_warmup,
+            "profile_cold_runs": args.profile_cold_runs,
+            "seed": args.seed,
+            "conditions": conditions,
+        }
+    )
+    args.output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return 0
+
+
 def _git(root: Path, *argv: str) -> str:
     return subprocess.check_output(["git", "-C", str(root), *argv], text=True).strip()
 
 
 def _run(args: argparse.Namespace) -> int:
+    args.output = _external_output(args.output)
     subject = args.subject_root.resolve()
     head = _git(subject, "rev-parse", "HEAD")
     if head != args.expected_head:
@@ -308,6 +568,11 @@ def _compare(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--compare", nargs=2, type=Path)
+    parser.add_argument("--profile", choices=("google-tn",), default=None)
+    parser.add_argument("--corpus-dir", type=Path, default=_GOOGLE_TN_CORPUS)
+    parser.add_argument("--profile-sample-per-bucket", type=int, default=100)
+    parser.add_argument("--profile-cold-runs", type=int, default=20)
+    parser.add_argument("--profile-warmup", type=int, default=10)
     parser.add_argument("--english-max-regression", type=float, default=0.05)
     parser.add_argument("--subject-root", type=Path)
     parser.add_argument("--expected-head")
@@ -319,6 +584,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seed", type=int, default=20260929)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--_worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--_profile-worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--_profile-cold", dest="profile_cold", action="store_true", help=argparse.SUPPRESS
+    )
+    parser.add_argument("--profile-input", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument("--profile-condition", choices=("off", "on"), help=argparse.SUPPRESS)
     parser.add_argument(
         "--_imports-only", dest="imports_only", action="store_true", help=argparse.SUPPRESS
     )
@@ -327,10 +598,15 @@ def main(argv: list[str] | None = None) -> int:
         return _compare(args)
     if args.output is None:
         parser.error("--output is required")
+    args.output = _external_output(args.output)
+    if args._profile_worker:
+        return _profile_worker(args)
     if args._worker:
         return _worker(args)
     if args.subject_root is None or args.expected_head is None:
         parser.error("--subject-root and --expected-head are required")
+    if args.profile is not None:
+        return _profile_run(args)
     return _run(args)
 
 
