@@ -26,6 +26,7 @@ _MEASURED = (
     "range_priors",
     "spelled_token_priors",
     "spoken_priors",
+    "telephone_priors",
     "type_priors",
     "zero_priors",
 )

@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from icukit.detectors import Capture, DateTimeValue, NumberValue
 
 from frend.locale_data import canonical_locale
+from frend.telephone import TelephoneDetector
 
 __all__ = ["DigitsValue", "WrittenFormsDetector"]
 
@@ -67,9 +68,10 @@ class WrittenFormsDetector:
 
     def __init__(self, locale: str = "en_US") -> None:
         self.locale = canonical_locale(locale)
+        self.telephone = TelephoneDetector(self.locale)
 
     def detect(self, text: str) -> list[dict]:
-        found = []
+        found = self.telephone.detect(text)
         for match in _SPACED_COLON.finditer(text):
             hour, minute = int(match.group(1)), int(match.group(2))
             if hour > 23 or minute > 59:

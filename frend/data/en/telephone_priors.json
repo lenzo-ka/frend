@@ -1,0 +1,770 @@
+{
+ "schema_version": 3,
+ "locale": "en",
+ "provenance": {
+  "builder": "tools/build_telephone_priors.py",
+  "corpus": "google-tn:en_with_types",
+  "locale": "en",
+  "shards": [
+   "output-00000-of-00100",
+   "output-00001-of-00100",
+   "output-00002-of-00100",
+   "output-00003-of-00100",
+   "output-00004-of-00100",
+   "output-00005-of-00100",
+   "output-00006-of-00100",
+   "output-00007-of-00100",
+   "output-00008-of-00100",
+   "output-00009-of-00100",
+   "output-00010-of-00100",
+   "output-00011-of-00100",
+   "output-00012-of-00100",
+   "output-00013-of-00100",
+   "output-00014-of-00100",
+   "output-00015-of-00100",
+   "output-00016-of-00100",
+   "output-00017-of-00100",
+   "output-00018-of-00100",
+   "output-00019-of-00100",
+   "output-00020-of-00100",
+   "output-00021-of-00100",
+   "output-00022-of-00100",
+   "output-00023-of-00100",
+   "output-00024-of-00100",
+   "output-00025-of-00100",
+   "output-00026-of-00100",
+   "output-00027-of-00100",
+   "output-00028-of-00100",
+   "output-00029-of-00100",
+   "output-00030-of-00100",
+   "output-00031-of-00100",
+   "output-00032-of-00100",
+   "output-00033-of-00100",
+   "output-00034-of-00100",
+   "output-00035-of-00100",
+   "output-00036-of-00100",
+   "output-00037-of-00100",
+   "output-00038-of-00100",
+   "output-00039-of-00100",
+   "output-00040-of-00100",
+   "output-00041-of-00100",
+   "output-00042-of-00100",
+   "output-00043-of-00100",
+   "output-00044-of-00100",
+   "output-00045-of-00100",
+   "output-00046-of-00100",
+   "output-00047-of-00100",
+   "output-00048-of-00100",
+   "output-00049-of-00100",
+   "output-00050-of-00100",
+   "output-00051-of-00100",
+   "output-00052-of-00100",
+   "output-00053-of-00100",
+   "output-00054-of-00100",
+   "output-00055-of-00100",
+   "output-00056-of-00100",
+   "output-00057-of-00100",
+   "output-00058-of-00100",
+   "output-00059-of-00100",
+   "output-00060-of-00100",
+   "output-00061-of-00100",
+   "output-00062-of-00100",
+   "output-00063-of-00100",
+   "output-00064-of-00100",
+   "output-00065-of-00100",
+   "output-00066-of-00100",
+   "output-00067-of-00100",
+   "output-00068-of-00100",
+   "output-00069-of-00100",
+   "output-00070-of-00100",
+   "output-00071-of-00100",
+   "output-00072-of-00100",
+   "output-00073-of-00100",
+   "output-00074-of-00100",
+   "output-00075-of-00100",
+   "output-00076-of-00100",
+   "output-00077-of-00100",
+   "output-00078-of-00100",
+   "output-00079-of-00100",
+   "output-00080-of-00100",
+   "output-00081-of-00100",
+   "output-00082-of-00100",
+   "output-00083-of-00100",
+   "output-00084-of-00100",
+   "output-00085-of-00100",
+   "output-00086-of-00100",
+   "output-00087-of-00100",
+   "output-00088-of-00100",
+   "output-00089-of-00100"
+  ],
+  "selection": "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a strict TELEPHONE majority among all corpus classes for the exact shape",
+  "left_context": "surface-free character-class shape of the immediately preceding corpus token, counted by that token's gold class; with at least 3 observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for selected shapes",
+  "reading": "raw counts of whole grouped readings classified against ICU cardinal and digit spellout, with zero/o from the locale lexical table"
+ },
+ "left_contexts": {
+  "digit:5-8": {
+   "classes": {
+    "VERBATIM": 11
+   },
+   "prediction": "VERBATIM"
+  },
+  "punct-pd:1": {
+   "classes": {
+    "VERBATIM": 23
+   },
+   "prediction": "VERBATIM"
+  },
+  "punct-po:2": {
+   "classes": {
+    "ELECTRONIC": 3
+   },
+   "prediction": "ELECTRONIC"
+  },
+  "upper:4": {
+   "classes": {
+    "LETTERS": 4
+   },
+   "prediction": "LETTERS"
+  },
+  "upper:5-8": {
+   "classes": {
+    "LETTERS": 2,
+    "PLAIN": 1
+   },
+   "prediction": "LETTERS"
+  }
+ },
+ "shapes": {
+  "(N3) N3-N4": {
+   "classes": {
+    "TELEPHONE": 148
+   },
+   "patterns": {
+    "n:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 24
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o"
+       ],
+       "count": 22
+      },
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "cardinal"
+       ],
+       "count": 2
+      }
+     ],
+     "unclassified_telephone": 3
+    },
+    "n:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits-o",
+        "digits"
+       ],
+       "count": 6
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits"
+       ],
+       "count": 39
+      },
+      {
+       "modes": [
+        "cardinal",
+        "digits",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits-o"
+       ],
+       "count": 29
+      },
+      {
+       "modes": [
+        "cardinal",
+        "digits",
+        "digits-o"
+       ],
+       "count": 1
+      }
+     ],
+     "unclassified_telephone": 1
+    },
+    "z:r:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits-o",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:z:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 4
+      }
+     ],
+     "unclassified_telephone": 0
+    }
+   }
+  },
+  "(N3)N3-N4": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "patterns": {
+    "n:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    }
+   }
+  },
+  "N1-N3-N3-N4": {
+   "classes": {
+    "TELEPHONE": 87
+   },
+   "patterns": {
+    "n:n:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 9
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:n:r": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 4
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits",
+        "digits-o"
+       ],
+       "count": 4
+      },
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits",
+        "cardinal"
+       ],
+       "count": 1
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:z:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:r:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 6
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "cardinal",
+        "digits",
+        "digits"
+       ],
+       "count": 28
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "cardinal",
+        "digits",
+        "digits-o"
+       ],
+       "count": 11
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:r:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "cardinal",
+        "digits",
+        "digits"
+       ],
+       "count": 5
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "cardinal",
+        "digits-o",
+        "digits"
+       ],
+       "count": 2
+      },
+      {
+       "modes": [
+        "digits",
+        "cardinal",
+        "cardinal",
+        "digits"
+       ],
+       "count": 1
+      }
+     ],
+     "unclassified_telephone": 0
+    }
+   }
+  },
+  "N3 N3 N4": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "patterns": {
+    "n:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o"
+       ],
+       "count": 4
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits-o",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    }
+   }
+  },
+  "N3-N3 N4": {
+   "classes": {
+    "TELEPHONE": 55
+   },
+   "patterns": {
+    "n:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 22
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o"
+       ],
+       "count": 8
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits-o",
+        "digits"
+       ],
+       "count": 4
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 2
+      },
+      {
+       "modes": [
+        "digits",
+        "digits-o",
+        "cardinal"
+       ],
+       "count": 1
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits"
+       ],
+       "count": 10
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:z:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "cardinal",
+        "digits-o"
+       ],
+       "count": 3
+      },
+      {
+       "modes": [
+        "digits-o",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    }
+   }
+  },
+  "N3-N3-N4": {
+   "classes": {
+    "TELEPHONE": 302
+   },
+   "patterns": {
+    "n:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 61
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits-o"
+       ],
+       "count": 53
+      },
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "cardinal"
+       ],
+       "count": 5
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits-o",
+        "digits"
+       ],
+       "count": 4
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "n:z:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 8
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "r:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits",
+        "digits",
+        "digits"
+       ],
+       "count": 3
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:n:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits"
+       ],
+       "count": 65
+      },
+      {
+       "modes": [
+        "cardinal",
+        "digits",
+        "digits"
+       ],
+       "count": 24
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:n:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits-o"
+       ],
+       "count": 47
+      },
+      {
+       "modes": [
+        "cardinal",
+        "digits",
+        "digits-o"
+       ],
+       "count": 9
+      }
+     ],
+     "unclassified_telephone": 1
+    },
+    "z:r:n": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits",
+        "digits"
+       ],
+       "count": 3
+      },
+      {
+       "modes": [
+        "cardinal",
+        "digits",
+        "digits"
+       ],
+       "count": 1
+      }
+     ],
+     "unclassified_telephone": 0
+    },
+    "z:z:z": {
+     "readings": [
+      {
+       "modes": [
+        "digits-o",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 5
+      },
+      {
+       "modes": [
+        "cardinal",
+        "digits-o",
+        "digits-o"
+       ],
+       "count": 1
+      }
+     ],
+     "unclassified_telephone": 0
+    }
+   }
+  }
+ }
+}
