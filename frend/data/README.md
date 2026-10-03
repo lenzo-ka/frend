@@ -111,6 +111,33 @@ can veto a supported shape. The shared attribution above applies to this table.
 compares the canonical JSON byte-for-byte. A corpus path argument selects a fixture or
 another Google-TN-format shard directory.
 
+## `en/grouped_id_priors.json`
+
+Exact grouped-digit shapes counted from all Google-TN training shards (00--89) by
+`tools/build_grouped_id_priors.py`. A shape is retained only with at least three
+targets that say one digit per written digit and a strict grouped-reading majority over
+every corpus row with that shape. Each row contains only the shape, gold-class counts,
+and grouped/other reading counts; no written or spoken corpus surface is stored.
+
+At runtime, non-ISBN identifiers additionally require the conservative
+development-selected structure of exactly three groups and nine ASCII digits. ISBNs
+instead pass the ISBN-10 modulus-11 or ISBN-13 modulus-10 checksum algorithm, never an
+identifier list. The International ISBN Agency describes ISBN elements and separators,
+the ISBN-13 alternating 1/3 weights, and the check digit in its
+[ISBN overview](https://www.isbn-international.org/content/what-isbn/10); its
+[Users' Manual](https://www.isbn-international.org/index.php/content/isbn-users-manual/29)
+is the definitive system guide. ISBN-10 remains supported for pre-2007 identifiers,
+including X as the value-ten check digit.
+
+ICU supplies digit and letter names; only the locale lexical table supplies the ``o``
+form of zero. Embedded ``sil`` retains written group boundaries, as the headline
+Google-TN scorer does. A same-span #68 telephone detection wins before this detector is
+added, so the measured telephone behavior is unchanged. The shared Google-TN
+attribution above applies.
+
+`tools/build_grouped_id_priors.py --check` verifies the canonical aggregate by
+rescanning the declared training inputs.
+
 ## `root/tlds-alpha-by-domain.txt`
 
 IANA's list of top-level domains, vendored unchanged from

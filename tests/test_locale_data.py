@@ -22,6 +22,7 @@ _MEASURED = (
     "abbreviation_priors",
     "acronym_priors",
     "electronic_priors",
+    "grouped_id_priors",
     "number_priors",
     "range_priors",
     "spelled_token_priors",
