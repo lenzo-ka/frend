@@ -105,6 +105,12 @@ python tools/fetch_corpora.py            # both sources, into ../tn-corpus
 python tools/fetch_corpora.py --verify   # check a copy you already have
 python tools/build_type_priors.py --check
 python tools/build_spoken_priors.py --check
+.venv/bin/python -B tools/build_grouped_id_priors.py \
+  --locale en_US --source-id google/tn-en_with_types --pool training \
+  --receipt /tmp/frend-grouped-id-priors-rebuild.json
+.venv/bin/python -B tools/build_grouped_id_priors.py --check \
+  --locale en_US --source-id google/tn-en_with_types --pool training \
+  --receipt /tmp/frend-grouped-id-priors-check.json
 ```
 
 `tools/corpora.json` pins every source by sha256: the Google/Sproat English

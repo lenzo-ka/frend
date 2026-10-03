@@ -1,0 +1,7767 @@
+{
+ "schema_version": 1,
+ "locale": "en",
+ "provenance": {
+  "builder": "tools/build_grouped_id_priors.py",
+  "corpus": "google-tn:en_with_types",
+  "locale": "en",
+  "shards": [
+   "output-00000-of-00100",
+   "output-00001-of-00100",
+   "output-00002-of-00100",
+   "output-00003-of-00100",
+   "output-00004-of-00100",
+   "output-00005-of-00100",
+   "output-00006-of-00100",
+   "output-00007-of-00100",
+   "output-00008-of-00100",
+   "output-00009-of-00100",
+   "output-00010-of-00100",
+   "output-00011-of-00100",
+   "output-00012-of-00100",
+   "output-00013-of-00100",
+   "output-00014-of-00100",
+   "output-00015-of-00100",
+   "output-00016-of-00100",
+   "output-00017-of-00100",
+   "output-00018-of-00100",
+   "output-00019-of-00100",
+   "output-00020-of-00100",
+   "output-00021-of-00100",
+   "output-00022-of-00100",
+   "output-00023-of-00100",
+   "output-00024-of-00100",
+   "output-00025-of-00100",
+   "output-00026-of-00100",
+   "output-00027-of-00100",
+   "output-00028-of-00100",
+   "output-00029-of-00100",
+   "output-00030-of-00100",
+   "output-00031-of-00100",
+   "output-00032-of-00100",
+   "output-00033-of-00100",
+   "output-00034-of-00100",
+   "output-00035-of-00100",
+   "output-00036-of-00100",
+   "output-00037-of-00100",
+   "output-00038-of-00100",
+   "output-00039-of-00100",
+   "output-00040-of-00100",
+   "output-00041-of-00100",
+   "output-00042-of-00100",
+   "output-00043-of-00100",
+   "output-00044-of-00100",
+   "output-00045-of-00100",
+   "output-00046-of-00100",
+   "output-00047-of-00100",
+   "output-00048-of-00100",
+   "output-00049-of-00100",
+   "output-00050-of-00100",
+   "output-00051-of-00100",
+   "output-00052-of-00100",
+   "output-00053-of-00100",
+   "output-00054-of-00100",
+   "output-00055-of-00100",
+   "output-00056-of-00100",
+   "output-00057-of-00100",
+   "output-00058-of-00100",
+   "output-00059-of-00100",
+   "output-00060-of-00100",
+   "output-00061-of-00100",
+   "output-00062-of-00100",
+   "output-00063-of-00100",
+   "output-00064-of-00100",
+   "output-00065-of-00100",
+   "output-00066-of-00100",
+   "output-00067-of-00100",
+   "output-00068-of-00100",
+   "output-00069-of-00100",
+   "output-00070-of-00100",
+   "output-00071-of-00100",
+   "output-00072-of-00100",
+   "output-00073-of-00100",
+   "output-00074-of-00100",
+   "output-00075-of-00100",
+   "output-00076-of-00100",
+   "output-00077-of-00100",
+   "output-00078-of-00100",
+   "output-00079-of-00100",
+   "output-00080-of-00100",
+   "output-00081-of-00100",
+   "output-00082-of-00100",
+   "output-00083-of-00100",
+   "output-00084-of-00100",
+   "output-00085-of-00100",
+   "output-00086-of-00100",
+   "output-00087-of-00100",
+   "output-00088-of-00100",
+   "output-00089-of-00100"
+  ],
+  "selection": "exact ASCII digit-group shape with at least 3 grouped-reading rows and a strict grouped-reading majority over all corpus rows",
+  "reading": "one ICU digit name per written digit, locale lexical o for zero, and literal sil between written groups"
+ },
+ "shapes": {
+  "N1 N1 N1 N1 N1 N1 N1 N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N1 N1 N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N1 N1 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N1 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N1-N1 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N1-N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2 N1 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2-N2 N1 N1 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2-N2 N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N1 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N1 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N1 N2": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 26,
+    "other": 0
+   }
+  },
+  "N1 N1 N3": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1 N1 N4": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N1 N1-N1": {
+   "classes": {
+    "TELEPHONE": 62
+   },
+   "readings": {
+    "grouped": 62,
+    "other": 0
+   }
+  },
+  "N1 N1-N1 N1": {
+   "classes": {
+    "TELEPHONE": 38
+   },
+   "readings": {
+    "grouped": 38,
+    "other": 0
+   }
+  },
+  "N1 N1-N1 N2": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 27,
+    "other": 0
+   }
+  },
+  "N1 N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 53
+   },
+   "readings": {
+    "grouped": 53,
+    "other": 0
+   }
+  },
+  "N1 N1-N1-N1 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N1-N2": {
+   "classes": {
+    "TELEPHONE": 36
+   },
+   "readings": {
+    "grouped": 36,
+    "other": 0
+   }
+  },
+  "N1 N1-N3": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1 N2 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N1 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N1 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N1 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 61
+   },
+   "readings": {
+    "grouped": 61,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N1 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N2 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N2 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N2 N1 N1 N2 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N1 N2 N2": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N1 N2 N2 N1 N1 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 0
+   }
+  },
+  "N1 N2 N2 N1 N1 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N2 N2 N1 N1 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 18
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 0
+   }
+  },
+  "N1 N2 N2 N1 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N1 N2 N2 N4 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N2 N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N2 N3 N3 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N2 N4": {
+   "classes": {
+    "TELEPHONE": 29
+   },
+   "readings": {
+    "grouped": 29,
+    "other": 0
+   }
+  },
+  "N1 N2 N4 N2 N1": {
+   "classes": {
+    "TELEPHONE": 54
+   },
+   "readings": {
+    "grouped": 54,
+    "other": 0
+   }
+  },
+  "N1 N2 N4-N2 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N2 N6": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N1 N2 N6 N1": {
+   "classes": {
+    "TELEPHONE": 272
+   },
+   "readings": {
+    "grouped": 272,
+    "other": 0
+   }
+  },
+  "N1 N2 N6-N1": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N1 N2 N7": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1 N2-N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1 N2-N2": {
+   "classes": {
+    "TELEPHONE": 60
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 0
+   }
+  },
+  "N1 N2-N2-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N2-N3": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 1
+   }
+  },
+  "N1 N3 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N3 N2 N3 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N3 N3 N2": {
+   "classes": {
+    "TELEPHONE": 47
+   },
+   "readings": {
+    "grouped": 47,
+    "other": 0
+   }
+  },
+  "N1 N3 N3 N2 N1": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 1
+   }
+  },
+  "N1 N3 N3 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N3 N4 N1 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N3 N5": {
+   "classes": {
+    "TELEPHONE": 37
+   },
+   "readings": {
+    "grouped": 36,
+    "other": 1
+   }
+  },
+  "N1 N3 N5 N1": {
+   "classes": {
+    "TELEPHONE": 738
+   },
+   "readings": {
+    "grouped": 704,
+    "other": 34
+   }
+  },
+  "N1 N3 N5-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N3 N6": {
+   "classes": {
+    "TELEPHONE": 24
+   },
+   "readings": {
+    "grouped": 22,
+    "other": 2
+   }
+  },
+  "N1 N3-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N3-N2": {
+   "classes": {
+    "TELEPHONE": 30
+   },
+   "readings": {
+    "grouped": 30,
+    "other": 0
+   }
+  },
+  "N1 N3-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N4 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N4 N3 N1 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1 N4 N4": {
+   "classes": {
+    "TELEPHONE": 60
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 0
+   }
+  },
+  "N1 N4 N4 N1": {
+   "classes": {
+    "TELEPHONE": 997
+   },
+   "readings": {
+    "grouped": 994,
+    "other": 3
+   }
+  },
+  "N1 N4 N5": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N1 N4-N2": {
+   "classes": {
+    "TELEPHONE": 94
+   },
+   "readings": {
+    "grouped": 89,
+    "other": 5
+   }
+  },
+  "N1 N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N1 N4-N4": {
+   "classes": {
+    "TELEPHONE": 452
+   },
+   "readings": {
+    "grouped": 421,
+    "other": 31
+   }
+  },
+  "N1 N4-N4-N1": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N1 N5 N1": {
+   "classes": {
+    "TELEPHONE": 55
+   },
+   "readings": {
+    "grouped": 55,
+    "other": 0
+   }
+  },
+  "N1 N5 N1 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N1 N5 N3": {
+   "classes": {
+    "TELEPHONE": 92
+   },
+   "readings": {
+    "grouped": 92,
+    "other": 0
+   }
+  },
+  "N1 N5 N3 N1": {
+   "classes": {
+    "TELEPHONE": 1468
+   },
+   "readings": {
+    "grouped": 1453,
+    "other": 15
+   }
+  },
+  "N1 N5 N3-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1 N5 N4": {
+   "classes": {
+    "TELEPHONE": 29
+   },
+   "readings": {
+    "grouped": 29,
+    "other": 0
+   }
+  },
+  "N1 N5 N5 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1 N5-N1": {
+   "classes": {
+    "TELEPHONE": 30
+   },
+   "readings": {
+    "grouped": 30,
+    "other": 0
+   }
+  },
+  "N1 N6 N1 N2": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N1 N6 N2": {
+   "classes": {
+    "TELEPHONE": 62
+   },
+   "readings": {
+    "grouped": 62,
+    "other": 0
+   }
+  },
+  "N1 N6 N2 N1": {
+   "classes": {
+    "TELEPHONE": 1459
+   },
+   "readings": {
+    "grouped": 1459,
+    "other": 0
+   }
+  },
+  "N1 N6 N3": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N1 N6 N6": {
+   "classes": {
+    "TELEPHONE": 120
+   },
+   "readings": {
+    "grouped": 120,
+    "other": 0
+   }
+  },
+  "N1 N6-N2-N1": {
+   "classes": {
+    "TELEPHONE": 46
+   },
+   "readings": {
+    "grouped": 46,
+    "other": 0
+   }
+  },
+  "N1 N6-N6": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1 N7 N1": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N1 N7 N1 N1": {
+   "classes": {
+    "TELEPHONE": 305
+   },
+   "readings": {
+    "grouped": 305,
+    "other": 0
+   }
+  },
+  "N1 N7 N2": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N1 N8 N1": {
+   "classes": {
+    "TELEPHONE": 235
+   },
+   "readings": {
+    "grouped": 235,
+    "other": 0
+   }
+  },
+  "N1-N1 N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 1
+   }
+  },
+  "N1-N1 N1-N1": {
+   "classes": {
+    "TELEPHONE": 73
+   },
+   "readings": {
+    "grouped": 73,
+    "other": 0
+   }
+  },
+  "N1-N1 N1-N1 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1-N1 N1-N1 N1-N1": {
+   "classes": {
+    "TELEPHONE": 42
+   },
+   "readings": {
+    "grouped": 42,
+    "other": 0
+   }
+  },
+  "N1-N1 N1-N1 N1-N1 N1-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N1 N1-N1 N1-N1 N1-N1 N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N1 N1-N1 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N1 N1-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N1 N2": {
+   "classes": {
+    "TELEPHONE": 52
+   },
+   "readings": {
+    "grouped": 52,
+    "other": 0
+   }
+  },
+  "N1-N1 N3": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 3
+   }
+  },
+  "N1-N1 N4": {
+   "classes": {
+    "TELEPHONE": 77
+   },
+   "readings": {
+    "grouped": 77,
+    "other": 0
+   }
+  },
+  "N1-N1 N4-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N1 N4-N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 7532
+   },
+   "readings": {
+    "grouped": 7131,
+    "other": 401
+   }
+  },
+  "N1-N1-N1 N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N1-N1-N1 N4": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 1
+   }
+  },
+  "N1-N1-N1 N4-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N1-N1 N5": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 457
+   },
+   "readings": {
+    "grouped": 457,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 150
+   },
+   "readings": {
+    "grouped": 150,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 126
+   },
+   "readings": {
+    "grouped": 126,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N1-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N1-N1-N2": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N1-N1-N2-N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N1-N1-N2-N2": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1-N1-N5": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1-N11-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N2 N1-N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N1-N2 N1-N2": {
+   "classes": {
+    "TELEPHONE": 83
+   },
+   "readings": {
+    "grouped": 83,
+    "other": 0
+   }
+  },
+  "N1-N2 N2": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N1-N2 N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N2 N3-N3-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N2 N4": {
+   "classes": {
+    "TELEPHONE": 118
+   },
+   "readings": {
+    "grouped": 117,
+    "other": 1
+   }
+  },
+  "N1-N2 N4-N2-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N2 N5": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N1-N2-N1": {
+   "classes": {
+    "TELEPHONE": 446
+   },
+   "readings": {
+    "grouped": 446,
+    "other": 0
+   }
+  },
+  "N1-N2-N1-N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N1-N2-N1-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N2-N2-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N1-N2-N2-N4-N1": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N1-N2-N3-N3-N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N1-N2-N6": {
+   "classes": {
+    "TELEPHONE": 1835
+   },
+   "readings": {
+    "grouped": 1835,
+    "other": 0
+   }
+  },
+  "N1-N2-N6-N1": {
+   "classes": {
+    "TELEPHONE": 11438
+   },
+   "readings": {
+    "grouped": 11438,
+    "other": 0
+   }
+  },
+  "N1-N2-N6-N5": {
+   "classes": {
+    "TELEPHONE": 69
+   },
+   "readings": {
+    "grouped": 68,
+    "other": 1
+   }
+  },
+  "N1-N2-N7": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N3 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 1
+   }
+  },
+  "N1-N3 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N3 N3-N2-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N1-N3 N5-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N3 N6": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N3-N1": {
+   "classes": {
+    "TELEPHONE": 24
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 11
+   }
+  },
+  "N1-N3-N2": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 1
+   }
+  },
+  "N1-N3-N3": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 26,
+    "other": 1
+   }
+  },
+  "N1-N3-N3-N2-N1": {
+   "classes": {
+    "TELEPHONE": 18
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 0
+   }
+  },
+  "N1-N3-N3-N3": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N1-N3-N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N3-N4-N1-N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N1-N3-N4-N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N1-N3-N4-N4-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N3-N5": {
+   "classes": {
+    "TELEPHONE": 1596
+   },
+   "readings": {
+    "grouped": 1558,
+    "other": 38
+   }
+  },
+  "N1-N3-N5 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 2
+   }
+  },
+  "N1-N3-N5-N1": {
+   "classes": {
+    "TELEPHONE": 38632
+   },
+   "readings": {
+    "grouped": 37082,
+    "other": 1550
+   }
+  },
+  "N1-N3-N5-N2": {
+   "classes": {
+    "TELEPHONE": 23
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 0
+   }
+  },
+  "N1-N3-N5-N3": {
+   "classes": {
+    "TELEPHONE": 57
+   },
+   "readings": {
+    "grouped": 57,
+    "other": 0
+   }
+  },
+  "N1-N3-N5-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N3-N5-N5": {
+   "classes": {
+    "TELEPHONE": 247
+   },
+   "readings": {
+    "grouped": 234,
+    "other": 13
+   }
+  },
+  "N1-N3-N6": {
+   "classes": {
+    "TELEPHONE": 30
+   },
+   "readings": {
+    "grouped": 29,
+    "other": 1
+   }
+  },
+  "N1-N4-N1": {
+   "classes": {
+    "TELEPHONE": 56
+   },
+   "readings": {
+    "grouped": 55,
+    "other": 1
+   }
+  },
+  "N1-N4-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N4-N3-N2": {
+   "classes": {
+    "TELEPHONE": 89
+   },
+   "readings": {
+    "grouped": 89,
+    "other": 0
+   }
+  },
+  "N1-N4-N3-N2-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N4-N4": {
+   "classes": {
+    "TELEPHONE": 9972
+   },
+   "readings": {
+    "grouped": 9865,
+    "other": 107
+   }
+  },
+  "N1-N4-N4-N1": {
+   "classes": {
+    "TELEPHONE": 28425
+   },
+   "readings": {
+    "grouped": 28075,
+    "other": 350
+   }
+  },
+  "N1-N4-N4-N2": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N1-N4-N4-N3": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N1-N4-N4-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N4-N4-N5": {
+   "classes": {
+    "TELEPHONE": 174
+   },
+   "readings": {
+    "grouped": 170,
+    "other": 4
+   }
+  },
+  "N1-N4-N5": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 2
+   }
+  },
+  "N1-N4-N5-N1-N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N1-N5 N3 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N1-N5-N1": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N1-N5-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N1-N5-N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N5-N3": {
+   "classes": {
+    "TELEPHONE": 9868
+   },
+   "readings": {
+    "grouped": 9789,
+    "other": 79
+   }
+  },
+  "N1-N5-N3-N1": {
+   "classes": {
+    "TELEPHONE": 26414
+   },
+   "readings": {
+    "grouped": 26184,
+    "other": 230
+   }
+  },
+  "N1-N5-N3-N2": {
+   "classes": {
+    "TELEPHONE": 23
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 0
+   }
+  },
+  "N1-N5-N3-N3": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N1-N5-N3-N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N1-N5-N3-N5": {
+   "classes": {
+    "TELEPHONE": 117
+   },
+   "readings": {
+    "grouped": 114,
+    "other": 3
+   }
+  },
+  "N1-N5-N4": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N1-N5-N5-N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N1-N6 N2 N1": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N1-N6-N2": {
+   "classes": {
+    "TELEPHONE": 4369
+   },
+   "readings": {
+    "grouped": 4369,
+    "other": 0
+   }
+  },
+  "N1-N6-N2-N1": {
+   "classes": {
+    "TELEPHONE": 14783
+   },
+   "readings": {
+    "grouped": 14783,
+    "other": 0
+   }
+  },
+  "N1-N6-N2-N1 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N6-N2-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N1-N6-N2-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 1
+   }
+  },
+  "N1-N6-N2-N5": {
+   "classes": {
+    "TELEPHONE": 93
+   },
+   "readings": {
+    "grouped": 93,
+    "other": 0
+   }
+  },
+  "N1-N6-N3": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N1-N6-N6": {
+   "classes": {
+    "TELEPHONE": 24
+   },
+   "readings": {
+    "grouped": 24,
+    "other": 0
+   }
+  },
+  "N1-N7-N1": {
+   "classes": {
+    "TELEPHONE": 1598
+   },
+   "readings": {
+    "grouped": 1598,
+    "other": 0
+   }
+  },
+  "N1-N7-N1-N1": {
+   "classes": {
+    "TELEPHONE": 4689
+   },
+   "readings": {
+    "grouped": 4689,
+    "other": 0
+   }
+  },
+  "N1-N7-N1-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N1-N7-N1-N5": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N1-N7-N2": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N1-N8-N1": {
+   "classes": {
+    "TELEPHONE": 65
+   },
+   "readings": {
+    "grouped": 65,
+    "other": 0
+   }
+  },
+  "N10 N4": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N10-N2-N6": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N13 N3": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N13-N5": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N1": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2 N1 N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2 N2 N1 N1 N2 N2 N2 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 43
+   },
+   "readings": {
+    "grouped": 43,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 243
+   },
+   "readings": {
+    "grouped": 243,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N2 N1 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 355
+   },
+   "readings": {
+    "grouped": 355,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 1202
+   },
+   "readings": {
+    "grouped": 1202,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 1082
+   },
+   "readings": {
+    "grouped": 1082,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N1 N2-N2 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 93
+   },
+   "readings": {
+    "grouped": 93,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N1 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 99
+   },
+   "readings": {
+    "grouped": 99,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 213
+   },
+   "readings": {
+    "grouped": 213,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 425
+   },
+   "readings": {
+    "grouped": 425,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2 N2-N2 N4": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2 N1 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2 N1 N2": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N2 N1 N2 N1 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N1 N2 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 34
+   },
+   "readings": {
+    "grouped": 34,
+    "other": 0
+   }
+  },
+  "N2 N1 N2 N2 N2 N2 N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N1 N4": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 26,
+    "other": 0
+   }
+  },
+  "N2 N1 N4 N2": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 1
+   }
+  },
+  "N2 N1 N6 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N2 N1-N1": {
+   "classes": {
+    "TELEPHONE": 57
+   },
+   "readings": {
+    "grouped": 57,
+    "other": 0
+   }
+  },
+  "N2 N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 54
+   },
+   "readings": {
+    "grouped": 54,
+    "other": 0
+   }
+  },
+  "N2 N1-N2": {
+   "classes": {
+    "TELEPHONE": 44
+   },
+   "readings": {
+    "grouped": 44,
+    "other": 0
+   }
+  },
+  "N2 N1-N2-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2 N1-N3": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 2
+   }
+  },
+  "N2 N1-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N2": {
+   "classes": {
+    "TELEPHONE": 164
+   },
+   "readings": {
+    "grouped": 164,
+    "other": 0
+   }
+  },
+  "N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N1 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2 N1 N1 N1 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2 N1 N1 N2 N2 N2 N4": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 100
+   },
+   "readings": {
+    "grouped": 100,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2 N2 N1 N1 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 197
+   },
+   "readings": {
+    "grouped": 197,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2 N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2-N1 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 1006
+   },
+   "readings": {
+    "grouped": 1006,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 541
+   },
+   "readings": {
+    "grouped": 541,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 1227
+   },
+   "readings": {
+    "grouped": 1227,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N3 N2 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N1 N3-N2 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2 N2 N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2-N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 38
+   },
+   "readings": {
+    "grouped": 38,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 144
+   },
+   "readings": {
+    "grouped": 144,
+    "other": 0
+   }
+  },
+  "N2 N2 N1 N2 N2-N2 N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 85
+   },
+   "readings": {
+    "grouped": 85,
+    "other": 0
+   }
+  },
+  "N2 N2 N2 N1 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N2 N1 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2 N2 N2 N2 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N2 N2 N2 N2 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N2 N2 N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N3": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 1
+   }
+  },
+  "N2 N2 N4": {
+   "classes": {
+    "TELEPHONE": 155
+   },
+   "readings": {
+    "grouped": 154,
+    "other": 1
+   }
+  },
+  "N2 N2 N4 N2": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 2
+   }
+  },
+  "N2 N2 N4 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N2 N5 N1": {
+   "classes": {
+    "TELEPHONE": 67
+   },
+   "readings": {
+    "grouped": 67,
+    "other": 0
+   }
+  },
+  "N2 N2-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2 N2-N2": {
+   "classes": {
+    "TELEPHONE": 104
+   },
+   "readings": {
+    "grouped": 104,
+    "other": 0
+   }
+  },
+  "N2 N2-N3": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 1
+   }
+  },
+  "N2 N2-N4": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2 N3 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N3 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N2 N3 N3 N1": {
+   "classes": {
+    "TELEPHONE": 23
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 0
+   }
+  },
+  "N2 N3 N4": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N2 N3 N4 N1": {
+   "classes": {
+    "TELEPHONE": 103
+   },
+   "readings": {
+    "grouped": 100,
+    "other": 3
+   }
+  },
+  "N2 N3-N1": {
+   "classes": {
+    "TELEPHONE": 31
+   },
+   "readings": {
+    "grouped": 31,
+    "other": 0
+   }
+  },
+  "N2 N3-N2": {
+   "classes": {
+    "TELEPHONE": 89
+   },
+   "readings": {
+    "grouped": 88,
+    "other": 1
+   }
+  },
+  "N2 N3-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N4": {
+   "classes": {
+    "TELEPHONE": 250
+   },
+   "readings": {
+    "grouped": 245,
+    "other": 5
+   }
+  },
+  "N2 N4 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2 N4 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N4 N3 N1": {
+   "classes": {
+    "TELEPHONE": 89
+   },
+   "readings": {
+    "grouped": 88,
+    "other": 1
+   }
+  },
+  "N2 N4 N4": {
+   "classes": {
+    "TELEPHONE": 18
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 0
+   }
+  },
+  "N2 N4-N1": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N2 N4-N1 N3": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2 N4-N2": {
+   "classes": {
+    "TELEPHONE": 40
+   },
+   "readings": {
+    "grouped": 39,
+    "other": 1
+   }
+  },
+  "N2 N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 23
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 0
+   }
+  },
+  "N2 N4-N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N4-N3": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 1
+   }
+  },
+  "N2 N4-N4": {
+   "classes": {
+    "TELEPHONE": 105
+   },
+   "readings": {
+    "grouped": 101,
+    "other": 4
+   }
+  },
+  "N2 N5": {
+   "classes": {
+    "TELEPHONE": 77
+   },
+   "readings": {
+    "grouped": 77,
+    "other": 0
+   }
+  },
+  "N2 N5 N2 N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N2 N5 N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N6": {
+   "classes": {
+    "TELEPHONE": 36
+   },
+   "readings": {
+    "grouped": 36,
+    "other": 0
+   }
+  },
+  "N2 N6 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N2 N6 N1 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2 N7": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2 N8": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N1": {
+   "classes": {
+    "TELEPHONE": 136
+   },
+   "readings": {
+    "grouped": 136,
+    "other": 0
+   }
+  },
+  "N2-N1 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N1 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N1 N4": {
+   "classes": {
+    "TELEPHONE": 48
+   },
+   "readings": {
+    "grouped": 48,
+    "other": 0
+   }
+  },
+  "N2-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 32
+   },
+   "readings": {
+    "grouped": 32,
+    "other": 0
+   }
+  },
+  "N2-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2-N1-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N1-N1-N2": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N2-N1-N1-N3": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 0
+   }
+  },
+  "N2-N1-N2-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N1-N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N1-N3-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N1-N4-N4": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 1
+   }
+  },
+  "N2-N1-N5": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2-N1-N5-N1": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N2-N1-N6": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N2-N1-N6-N1": {
+   "classes": {
+    "TELEPHONE": 139
+   },
+   "readings": {
+    "grouped": 139,
+    "other": 0
+   }
+  },
+  "N2-N2": {
+   "classes": {
+    "TELEPHONE": 929
+   },
+   "readings": {
+    "grouped": 929,
+    "other": 0
+   }
+  },
+  "N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N2-N2 N1-N1 N2": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2-N2 N1-N2 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 18
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 0
+   }
+  },
+  "N2-N2 N2-N2": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2-N2 N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2-N2 N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 27,
+    "other": 0
+   }
+  },
+  "N2-N2 N2-N2 N2-N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N2 N3": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N2 N3-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N2 N4": {
+   "classes": {
+    "TELEPHONE": 272
+   },
+   "readings": {
+    "grouped": 269,
+    "other": 3
+   }
+  },
+  "N2-N2 N4-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N2-N1": {
+   "classes": {
+    "DATE": 161,
+    "TELEPHONE": 810
+   },
+   "readings": {
+    "grouped": 810,
+    "other": 161
+   }
+  },
+  "N2-N2-N1-N1": {
+   "classes": {
+    "TELEPHONE": 55
+   },
+   "readings": {
+    "grouped": 55,
+    "other": 0
+   }
+  },
+  "N2-N2-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N2-N1-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2-N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 111
+   },
+   "readings": {
+    "grouped": 111,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N1": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 68
+   },
+   "readings": {
+    "grouped": 68,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 53
+   },
+   "readings": {
+    "grouped": 53,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2": {
+   "classes": {
+    "ELECTRONIC": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N1-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N2-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N1-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N2-N1-N1-N1-N1-N1-N1-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N2-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N3": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2-N2-N2-N3-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N2-N3": {
+   "classes": {
+    "DATE": 33,
+    "TELEPHONE": 59
+   },
+   "readings": {
+    "grouped": 57,
+    "other": 35
+   }
+  },
+  "N2-N2-N4 N2": {
+   "classes": {
+    "TELEPHONE": 79
+   },
+   "readings": {
+    "grouped": 79,
+    "other": 0
+   }
+  },
+  "N2-N2-N5": {
+   "classes": {
+    "TELEPHONE": 195
+   },
+   "readings": {
+    "grouped": 195,
+    "other": 0
+   }
+  },
+  "N2-N2-N5-N1": {
+   "classes": {
+    "TELEPHONE": 1179
+   },
+   "readings": {
+    "grouped": 1178,
+    "other": 1
+   }
+  },
+  "N2-N2-N5-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N2-N5-N5": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N2-N6": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N2-N2-N8": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2-N3": {
+   "classes": {
+    "TELEPHONE": 692
+   },
+   "readings": {
+    "grouped": 687,
+    "other": 5
+   }
+  },
+  "N2-N3 N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 1
+   }
+  },
+  "N2-N3 N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N2-N3-N1": {
+   "classes": {
+    "TELEPHONE": 33
+   },
+   "readings": {
+    "grouped": 31,
+    "other": 2
+   }
+  },
+  "N2-N3-N2": {
+   "classes": {
+    "TELEPHONE": 25
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 0
+   }
+  },
+  "N2-N3-N3": {
+   "classes": {
+    "TELEPHONE": 76
+   },
+   "readings": {
+    "grouped": 68,
+    "other": 8
+   }
+  },
+  "N2-N3-N4": {
+   "classes": {
+    "TELEPHONE": 104
+   },
+   "readings": {
+    "grouped": 102,
+    "other": 2
+   }
+  },
+  "N2-N3-N4-N1": {
+   "classes": {
+    "TELEPHONE": 2163
+   },
+   "readings": {
+    "grouped": 2082,
+    "other": 81
+   }
+  },
+  "N2-N3-N4-N5": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 1
+   }
+  },
+  "N2-N3-N4-N6": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N3-N5": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2-N4": {
+   "classes": {
+    "TELEPHONE": 536
+   },
+   "readings": {
+    "grouped": 530,
+    "other": 6
+   }
+  },
+  "N2-N4 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N4 N3": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N4 N4": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N2-N4-N1": {
+   "classes": {
+    "TELEPHONE": 60
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 0
+   }
+  },
+  "N2-N4-N2": {
+   "classes": {
+    "TELEPHONE": 29
+   },
+   "readings": {
+    "grouped": 29,
+    "other": 0
+   }
+  },
+  "N2-N4-N3": {
+   "classes": {
+    "TELEPHONE": 695
+   },
+   "readings": {
+    "grouped": 692,
+    "other": 3
+   }
+  },
+  "N2-N4-N3-N1": {
+   "classes": {
+    "TELEPHONE": 2409
+   },
+   "readings": {
+    "grouped": 2388,
+    "other": 21
+   }
+  },
+  "N2-N4-N3-N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N4-N3-N5": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N2-N4-N4": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 1
+   }
+  },
+  "N2-N5": {
+   "classes": {
+    "TELEPHONE": 2027
+   },
+   "readings": {
+    "grouped": 2024,
+    "other": 3
+   }
+  },
+  "N2-N5 N2-N2": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N2-N5-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N5-N2": {
+   "classes": {
+    "TELEPHONE": 54
+   },
+   "readings": {
+    "grouped": 54,
+    "other": 0
+   }
+  },
+  "N2-N5-N2-N1": {
+   "classes": {
+    "TELEPHONE": 2282
+   },
+   "readings": {
+    "grouped": 2282,
+    "other": 0
+   }
+  },
+  "N2-N5-N2-N5": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N2-N5-N3": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N2-N6": {
+   "classes": {
+    "TELEPHONE": 433
+   },
+   "readings": {
+    "grouped": 433,
+    "other": 0
+   }
+  },
+  "N2-N6-N1": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2-N6-N1-N1": {
+   "classes": {
+    "TELEPHONE": 423
+   },
+   "readings": {
+    "grouped": 423,
+    "other": 0
+   }
+  },
+  "N2-N6-N1-N5": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N6-N2": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N2-N7": {
+   "classes": {
+    "TELEPHONE": 41
+   },
+   "readings": {
+    "grouped": 41,
+    "other": 0
+   }
+  },
+  "N2-N7-N1": {
+   "classes": {
+    "TELEPHONE": 57
+   },
+   "readings": {
+    "grouped": 57,
+    "other": 0
+   }
+  },
+  "N2-N7-N3-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N2-N7-N4": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N2-N8": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N2-N9": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N3 N1 N2 N6 N1": {
+   "classes": {
+    "TELEPHONE": 25
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 0
+   }
+  },
+  "N3 N1 N3 N4 N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3 N1 N3 N5 N1": {
+   "classes": {
+    "TELEPHONE": 105
+   },
+   "readings": {
+    "grouped": 90,
+    "other": 15
+   }
+  },
+  "N3 N1 N3 N6": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3 N1 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N1 N4 N2 N2 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N1 N4 N4 N1": {
+   "classes": {
+    "TELEPHONE": 208
+   },
+   "readings": {
+    "grouped": 208,
+    "other": 0
+   }
+  },
+  "N3 N1 N4 N5": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N3 N1 N5 N3 N1": {
+   "classes": {
+    "TELEPHONE": 503
+   },
+   "readings": {
+    "grouped": 481,
+    "other": 22
+   }
+  },
+  "N3 N1 N5 N3-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N1 N6 N2 N1": {
+   "classes": {
+    "TELEPHONE": 438
+   },
+   "readings": {
+    "grouped": 438,
+    "other": 0
+   }
+  },
+  "N3 N1 N6 N3": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3 N1 N7 N1 N1": {
+   "classes": {
+    "TELEPHONE": 122
+   },
+   "readings": {
+    "grouped": 122,
+    "other": 0
+   }
+  },
+  "N3 N1 N7 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N1 N8 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3 N1 N9": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3 N1-N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N3 N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 1
+   }
+  },
+  "N3 N1-N2": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 4
+   }
+  },
+  "N3 N1-N5-N3-N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N3 N10": {
+   "classes": {
+    "TELEPHONE": 93
+   },
+   "readings": {
+    "grouped": 93,
+    "other": 0
+   }
+  },
+  "N3 N14": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N2": {
+   "classes": {
+    "TELEPHONE": 24
+   },
+   "readings": {
+    "grouped": 24,
+    "other": 0
+   }
+  },
+  "N3 N2 N1 N6 N1": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 0
+   }
+  },
+  "N3 N2 N1 N7": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N2 N2": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N3 N2 N2 N5 N1": {
+   "classes": {
+    "TELEPHONE": 37
+   },
+   "readings": {
+    "grouped": 37,
+    "other": 0
+   }
+  },
+  "N3 N2 N3": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3 N2 N3 N4 N1": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 1
+   }
+  },
+  "N3 N2 N4": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 1
+   }
+  },
+  "N3 N2 N4 N1": {
+   "classes": {
+    "TELEPHONE": 31
+   },
+   "readings": {
+    "grouped": 31,
+    "other": 0
+   }
+  },
+  "N3 N2 N4 N3 N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 2
+   }
+  },
+  "N3 N2 N4 N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3 N2 N5 N2 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N3 N2 N6 N1 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N2-N2": {
+   "classes": {
+    "TELEPHONE": 211
+   },
+   "readings": {
+    "grouped": 208,
+    "other": 3
+   }
+  },
+  "N3 N3 N1": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N3 N3 N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 2
+   }
+  },
+  "N3 N3 N2 N4 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3 N3 N3 N1": {
+   "classes": {
+    "TELEPHONE": 122
+   },
+   "readings": {
+    "grouped": 106,
+    "other": 16
+   }
+  },
+  "N3 N3 N3 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N3 N3-N1": {
+   "classes": {
+    "TELEPHONE": 68
+   },
+   "readings": {
+    "grouped": 68,
+    "other": 0
+   }
+  },
+  "N3 N3 N4": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 2
+   }
+  },
+  "N3 N3 N4 N2 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N3 N3 N5 N1 N1": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3 N3 N6 N1": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N3 N3-N1": {
+   "classes": {
+    "TELEPHONE": 357
+   },
+   "readings": {
+    "grouped": 345,
+    "other": 12
+   }
+  },
+  "N3 N3-N2": {
+   "classes": {
+    "TELEPHONE": 31
+   },
+   "readings": {
+    "grouped": 28,
+    "other": 3
+   }
+  },
+  "N3 N3-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3 N3-N4 N3": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N3 N3-N5": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N3 N4 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3 N4 N2": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 1
+   }
+  },
+  "N3 N4 N2 N1": {
+   "classes": {
+    "TELEPHONE": 94
+   },
+   "readings": {
+    "grouped": 94,
+    "other": 0
+   }
+  },
+  "N3 N4 N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N4 N3 N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N3 N4 N4": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 1
+   }
+  },
+  "N3 N4 N5 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N4 N6": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 1
+   }
+  },
+  "N3 N4-N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N3 N4-N2": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 1
+   }
+  },
+  "N3 N4-N4": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 22,
+    "other": 5
+   }
+  },
+  "N3 N5": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 26,
+    "other": 0
+   }
+  },
+  "N3 N5 N1": {
+   "classes": {
+    "TELEPHONE": 32
+   },
+   "readings": {
+    "grouped": 32,
+    "other": 0
+   }
+  },
+  "N3 N5 N4 N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N3 N5 N5": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N3 N6": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N3 N6 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3 N6 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3 N6 N3 N1": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 27,
+    "other": 0
+   }
+  },
+  "N3 N6 N4": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3 N6-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3 N7": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N3 N7 N2 N1": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N3 N7 N3": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3 N8 N1 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N1": {
+   "classes": {
+    "TELEPHONE": 63
+   },
+   "readings": {
+    "grouped": 63,
+    "other": 0
+   }
+  },
+  "N3-N1 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N3-N1 N2-N6-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N1 N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N1-N2-N6": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N1-N2-N6-N1": {
+   "classes": {
+    "TELEPHONE": 4052
+   },
+   "readings": {
+    "grouped": 4052,
+    "other": 0
+   }
+  },
+  "N3-N1-N2-N6-N5": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 0
+   }
+  },
+  "N3-N1-N3": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 1
+   }
+  },
+  "N3-N1-N3-N1-N4-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N1-N3-N3-N3": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N3-N1-N3-N4-N1-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N1-N3-N5": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N3-N1-N3-N5-N1": {
+   "classes": {
+    "TELEPHONE": 15861
+   },
+   "readings": {
+    "grouped": 15178,
+    "other": 683
+   }
+  },
+  "N3-N1-N3-N5-N2": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N3-N1-N3-N5-N3": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 1
+   }
+  },
+  "N3-N1-N3-N5-N5": {
+   "classes": {
+    "TELEPHONE": 76
+   },
+   "readings": {
+    "grouped": 73,
+    "other": 3
+   }
+  },
+  "N3-N1-N3-N6": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 1
+   }
+  },
+  "N3-N1-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N1-N4-N1-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N1-N4-N4": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N3-N1-N4-N4-N1": {
+   "classes": {
+    "TELEPHONE": 12612
+   },
+   "readings": {
+    "grouped": 12372,
+    "other": 240
+   }
+  },
+  "N3-N1-N4-N4-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N1-N4-N4-N5": {
+   "classes": {
+    "TELEPHONE": 63
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 3
+   }
+  },
+  "N3-N1-N4-N5": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N3-N1-N5": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N1-N5-N1": {
+   "classes": {
+    "TELEPHONE": 56
+   },
+   "readings": {
+    "grouped": 56,
+    "other": 0
+   }
+  },
+  "N3-N1-N5-N3": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N3-N1-N5-N3-N1": {
+   "classes": {
+    "TELEPHONE": 12056
+   },
+   "readings": {
+    "grouped": 11960,
+    "other": 96
+   }
+  },
+  "N3-N1-N5-N3-N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 1
+   }
+  },
+  "N3-N1-N5-N3-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N1-N5-N3-N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 1
+   }
+  },
+  "N3-N1-N5-N3-N5": {
+   "classes": {
+    "TELEPHONE": 62
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 2
+   }
+  },
+  "N3-N1-N5-N4": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N3-N1-N6-N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N1-N6-N2-N1": {
+   "classes": {
+    "TELEPHONE": 5592
+   },
+   "readings": {
+    "grouped": 5592,
+    "other": 0
+   }
+  },
+  "N3-N1-N6-N2-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N1-N6-N2-N5": {
+   "classes": {
+    "TELEPHONE": 50
+   },
+   "readings": {
+    "grouped": 50,
+    "other": 0
+   }
+  },
+  "N3-N1-N6-N3": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N3-N1-N7": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N1-N7-N1-N1": {
+   "classes": {
+    "TELEPHONE": 2480
+   },
+   "readings": {
+    "grouped": 2480,
+    "other": 0
+   }
+  },
+  "N3-N1-N7-N1-N2": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3-N1-N7-N1-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N1-N7-N1-N5": {
+   "classes": {
+    "TELEPHONE": 28
+   },
+   "readings": {
+    "grouped": 28,
+    "other": 0
+   }
+  },
+  "N3-N1-N7-N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N3-N1-N8-N1": {
+   "classes": {
+    "TELEPHONE": 171
+   },
+   "readings": {
+    "grouped": 171,
+    "other": 0
+   }
+  },
+  "N3-N1-N9": {
+   "classes": {
+    "TELEPHONE": 31
+   },
+   "readings": {
+    "grouped": 31,
+    "other": 0
+   }
+  },
+  "N3-N10": {
+   "classes": {
+    "TELEPHONE": 8626
+   },
+   "readings": {
+    "grouped": 8626,
+    "other": 0
+   }
+  },
+  "N3-N10 N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N12": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N13": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 1
+   }
+  },
+  "N3-N14": {
+   "classes": {
+    "TELEPHONE": 88
+   },
+   "readings": {
+    "grouped": 88,
+    "other": 0
+   }
+  },
+  "N3-N2": {
+   "classes": {
+    "TELEPHONE": 78
+   },
+   "readings": {
+    "grouped": 78,
+    "other": 0
+   }
+  },
+  "N3-N2 N1-N2-N4-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N2 N3": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N3-N2 N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N2 N4 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N2-N1": {
+   "classes": {
+    "DATE": 14,
+    "TELEPHONE": 178
+   },
+   "readings": {
+    "grouped": 169,
+    "other": 23
+   }
+  },
+  "N3-N2-N1-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N2-N1-N6-N1": {
+   "classes": {
+    "TELEPHONE": 37
+   },
+   "readings": {
+    "grouped": 37,
+    "other": 0
+   }
+  },
+  "N3-N2-N2-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N2-N2-N5 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N2-N2-N5-N1": {
+   "classes": {
+    "TELEPHONE": 432
+   },
+   "readings": {
+    "grouped": 432,
+    "other": 0
+   }
+  },
+  "N3-N2-N2-N5-N5": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N2-N3": {
+   "classes": {
+    "TELEPHONE": 34
+   },
+   "readings": {
+    "grouped": 33,
+    "other": 1
+   }
+  },
+  "N3-N2-N3-N4-N1": {
+   "classes": {
+    "TELEPHONE": 1400
+   },
+   "readings": {
+    "grouped": 1377,
+    "other": 23
+   }
+  },
+  "N3-N2-N3-N4-N5": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3-N2-N4": {
+   "classes": {
+    "TELEPHONE": 296
+   },
+   "readings": {
+    "grouped": 292,
+    "other": 4
+   }
+  },
+  "N3-N2-N4-N1": {
+   "classes": {
+    "TELEPHONE": 866
+   },
+   "readings": {
+    "grouped": 860,
+    "other": 6
+   }
+  },
+  "N3-N2-N4-N3-N1": {
+   "classes": {
+    "TELEPHONE": 1494
+   },
+   "readings": {
+    "grouped": 1471,
+    "other": 23
+   }
+  },
+  "N3-N2-N4-N3-N5": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 0
+   }
+  },
+  "N3-N2-N4-N4": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N2-N5-N2-N1": {
+   "classes": {
+    "TELEPHONE": 917
+   },
+   "readings": {
+    "grouped": 917,
+    "other": 0
+   }
+  },
+  "N3-N2-N5-N2-N5": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N3-N2-N5-N3": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N2-N6-N1-N1": {
+   "classes": {
+    "TELEPHONE": 358
+   },
+   "readings": {
+    "grouped": 358,
+    "other": 0
+   }
+  },
+  "N3-N2-N7-N1": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 0
+   }
+  },
+  "N3-N2-N8": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N3": {
+   "classes": {
+    "TELEPHONE": 231
+   },
+   "readings": {
+    "grouped": 223,
+    "other": 8
+   }
+  },
+  "N3-N3 N1": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 4
+   }
+  },
+  "N3-N3 N2": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3-N3 N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N3 N3 N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N3 N3-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N3 N4": {
+   "classes": {
+    "TELEPHONE": 55
+   },
+   "readings": {
+    "grouped": 49,
+    "other": 6
+   }
+  },
+  "N3-N3-N1": {
+   "classes": {
+    "TELEPHONE": 140
+   },
+   "readings": {
+    "grouped": 132,
+    "other": 8
+   }
+  },
+  "N3-N3-N1-N5-N1": {
+   "classes": {
+    "TELEPHONE": 42
+   },
+   "readings": {
+    "grouped": 42,
+    "other": 0
+   }
+  },
+  "N3-N3-N2": {
+   "classes": {
+    "TELEPHONE": 113
+   },
+   "readings": {
+    "grouped": 110,
+    "other": 3
+   }
+  },
+  "N3-N3-N2-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N3-N2-N4-N1": {
+   "classes": {
+    "TELEPHONE": 486
+   },
+   "readings": {
+    "grouped": 480,
+    "other": 6
+   }
+  },
+  "N3-N3-N2-N4-N5": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 1
+   }
+  },
+  "N3-N3-N3": {
+   "classes": {
+    "TELEPHONE": 178
+   },
+   "readings": {
+    "grouped": 155,
+    "other": 23
+   }
+  },
+  "N3-N3-N3-N1": {
+   "classes": {
+    "TELEPHONE": 1011
+   },
+   "readings": {
+    "grouped": 1002,
+    "other": 9
+   }
+  },
+  "N3-N3-N3-N3": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 1
+   }
+  },
+  "N3-N3-N3-N3-N1": {
+   "classes": {
+    "TELEPHONE": 698
+   },
+   "readings": {
+    "grouped": 689,
+    "other": 9
+   }
+  },
+  "N3-N3-N3-N3-N5": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N3-N4": {
+   "classes": {
+    "TELEPHONE": 302
+   },
+   "readings": {
+    "grouped": 260,
+    "other": 42
+   }
+  },
+  "N3-N3-N4-N2-N1": {
+   "classes": {
+    "TELEPHONE": 672
+   },
+   "readings": {
+    "grouped": 669,
+    "other": 3
+   }
+  },
+  "N3-N3-N4-N2-N5": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 1
+   }
+  },
+  "N3-N3-N4-N3": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N3-N5-N1": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N3-N3-N5-N1-N1": {
+   "classes": {
+    "TELEPHONE": 445
+   },
+   "readings": {
+    "grouped": 445,
+    "other": 0
+   }
+  },
+  "N3-N3-N5-N1-N5": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N3-N6-N1": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 2
+   }
+  },
+  "N3-N4": {
+   "classes": {
+    "TELEPHONE": 4004
+   },
+   "readings": {
+    "grouped": 2752,
+    "other": 1252
+   }
+  },
+  "N3-N4 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 1
+   }
+  },
+  "N3-N4-N1-N4-N1": {
+   "classes": {
+    "TELEPHONE": 37
+   },
+   "readings": {
+    "grouped": 37,
+    "other": 0
+   }
+  },
+  "N3-N4-N2": {
+   "classes": {
+    "TELEPHONE": 78
+   },
+   "readings": {
+    "grouped": 78,
+    "other": 0
+   }
+  },
+  "N3-N4-N2-N1": {
+   "classes": {
+    "TELEPHONE": 827
+   },
+   "readings": {
+    "grouped": 826,
+    "other": 1
+   }
+  },
+  "N3-N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N4-N2-N3-N1": {
+   "classes": {
+    "TELEPHONE": 74
+   },
+   "readings": {
+    "grouped": 74,
+    "other": 0
+   }
+  },
+  "N3-N4-N3": {
+   "classes": {
+    "TELEPHONE": 18
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 2
+   }
+  },
+  "N3-N4-N3-N1": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3-N4-N3-N2-N1": {
+   "classes": {
+    "TELEPHONE": 61
+   },
+   "readings": {
+    "grouped": 58,
+    "other": 3
+   }
+  },
+  "N3-N4-N4": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 1
+   }
+  },
+  "N3-N4-N4-N1-N1": {
+   "classes": {
+    "TELEPHONE": 38
+   },
+   "readings": {
+    "grouped": 38,
+    "other": 0
+   }
+  },
+  "N3-N4-N4-N3": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N4-N5": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N3-N4-N5-N1": {
+   "classes": {
+    "TELEPHONE": 43
+   },
+   "readings": {
+    "grouped": 41,
+    "other": 2
+   }
+  },
+  "N3-N4-N6": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N3-N5": {
+   "classes": {
+    "TELEPHONE": 215
+   },
+   "readings": {
+    "grouped": 207,
+    "other": 8
+   }
+  },
+  "N3-N5-N1": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 27,
+    "other": 0
+   }
+  },
+  "N3-N5-N1-N1": {
+   "classes": {
+    "TELEPHONE": 352
+   },
+   "readings": {
+    "grouped": 352,
+    "other": 0
+   }
+  },
+  "N3-N5-N1-N3-N1": {
+   "classes": {
+    "TELEPHONE": 22
+   },
+   "readings": {
+    "grouped": 22,
+    "other": 0
+   }
+  },
+  "N3-N5-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N5-N2-N2-N1": {
+   "classes": {
+    "TELEPHONE": 31
+   },
+   "readings": {
+    "grouped": 31,
+    "other": 0
+   }
+  },
+  "N3-N5-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N5-N3-N1-N1": {
+   "classes": {
+    "TELEPHONE": 42
+   },
+   "readings": {
+    "grouped": 42,
+    "other": 0
+   }
+  },
+  "N3-N5-N3-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N3-N5-N4-N1": {
+   "classes": {
+    "TELEPHONE": 32
+   },
+   "readings": {
+    "grouped": 32,
+    "other": 0
+   }
+  },
+  "N3-N5-N5": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N3-N6": {
+   "classes": {
+    "TELEPHONE": 78
+   },
+   "readings": {
+    "grouped": 71,
+    "other": 7
+   }
+  },
+  "N3-N6-N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N3-N6-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N6-N3-N1": {
+   "classes": {
+    "TELEPHONE": 144
+   },
+   "readings": {
+    "grouped": 144,
+    "other": 0
+   }
+  },
+  "N3-N6-N4": {
+   "classes": {
+    "TELEPHONE": 25
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 0
+   }
+  },
+  "N3-N7": {
+   "classes": {
+    "TELEPHONE": 85
+   },
+   "readings": {
+    "grouped": 85,
+    "other": 0
+   }
+  },
+  "N3-N7-N2-N1": {
+   "classes": {
+    "TELEPHONE": 38
+   },
+   "readings": {
+    "grouped": 38,
+    "other": 0
+   }
+  },
+  "N3-N8": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N3-N8-N1-N1": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N3-N9 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N3-N9-N1": {
+   "classes": {
+    "TELEPHONE": 55
+   },
+   "readings": {
+    "grouped": 55,
+    "other": 0
+   }
+  },
+  "N4 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 3
+   }
+  },
+  "N4 N1 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N4 N1 N2": {
+   "classes": {
+    "TELEPHONE": 23
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 0
+   }
+  },
+  "N4 N1 N3": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 1
+   }
+  },
+  "N4 N1 N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4 N1 N4 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4 N1 N5 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N4 N1 N5 N1 N1": {
+   "classes": {
+    "TELEPHONE": 155
+   },
+   "readings": {
+    "grouped": 155,
+    "other": 0
+   }
+  },
+  "N4 N1 N5 N1 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N4 N1 N5 N2": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N4 N1-N1": {
+   "classes": {
+    "TELEPHONE": 42
+   },
+   "readings": {
+    "grouped": 40,
+    "other": 2
+   }
+  },
+  "N4 N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 24
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 1
+   }
+  },
+  "N4 N1-N2": {
+   "classes": {
+    "TELEPHONE": 30
+   },
+   "readings": {
+    "grouped": 30,
+    "other": 0
+   }
+  },
+  "N4 N10": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 2
+   }
+  },
+  "N4 N13": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N4 N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 1
+   }
+  },
+  "N4 N2 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N4 N2 N1-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4 N2 N2": {
+   "classes": {
+    "TELEPHONE": 98
+   },
+   "readings": {
+    "grouped": 96,
+    "other": 2
+   }
+  },
+  "N4 N2 N2-N2": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N4 N2 N3": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N4 N2 N3 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4 N2 N4": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 2
+   }
+  },
+  "N4 N2 N4-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4 N2-N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N4 N2-N2": {
+   "classes": {
+    "TELEPHONE": 86
+   },
+   "readings": {
+    "grouped": 83,
+    "other": 3
+   }
+  },
+  "N4 N2-N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N4 N3": {
+   "classes": {
+    "TELEPHONE": 1132
+   },
+   "readings": {
+    "grouped": 973,
+    "other": 159
+   }
+  },
+  "N4 N3 N3-N1 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4 N3 N4": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 7
+   }
+  },
+  "N4 N3-N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 1
+   }
+  },
+  "N4 N3-N2": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N4 N3-N3": {
+   "classes": {
+    "TELEPHONE": 67
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 7
+   }
+  },
+  "N4 N4": {
+   "classes": {
+    "TELEPHONE": 1065
+   },
+   "readings": {
+    "grouped": 916,
+    "other": 149
+   }
+  },
+  "N4 N4 N1": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 1
+   }
+  },
+  "N4 N4 N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N4 N4 N4": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 1
+   }
+  },
+  "N4 N4 N4 N4": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 3
+   }
+  },
+  "N4 N4 N4 N4 N4": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 1
+   }
+  },
+  "N4 N4-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N4 N4-N2": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N4 N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 1
+   }
+  },
+  "N4 N4-N4": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 24,
+    "other": 2
+   }
+  },
+  "N4 N5": {
+   "classes": {
+    "TELEPHONE": 30
+   },
+   "readings": {
+    "grouped": 28,
+    "other": 2
+   }
+  },
+  "N4 N5 N1": {
+   "classes": {
+    "TELEPHONE": 165
+   },
+   "readings": {
+    "grouped": 165,
+    "other": 0
+   }
+  },
+  "N4 N5 N3 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N4 N5-N1": {
+   "classes": {
+    "TELEPHONE": 25
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 0
+   }
+  },
+  "N4 N6": {
+   "classes": {
+    "TELEPHONE": 27
+   },
+   "readings": {
+    "grouped": 27,
+    "other": 0
+   }
+  },
+  "N4 N6 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N4 N6 N1 N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N4 N7": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 2
+   }
+  },
+  "N4 N7 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N4 N8": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 0
+   }
+  },
+  "N4-N1": {
+   "classes": {
+    "TELEPHONE": 30
+   },
+   "readings": {
+    "grouped": 30,
+    "other": 0
+   }
+  },
+  "N4-N1 N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 1
+   }
+  },
+  "N4-N1 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N1 N3": {
+   "classes": {
+    "TELEPHONE": 23
+   },
+   "readings": {
+    "grouped": 23,
+    "other": 0
+   }
+  },
+  "N4-N1 N4": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 1
+   }
+  },
+  "N4-N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N1-N3": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N4-N1-N4": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 0
+   }
+  },
+  "N4-N1-N4-N1": {
+   "classes": {
+    "TELEPHONE": 57
+   },
+   "readings": {
+    "grouped": 57,
+    "other": 0
+   }
+  },
+  "N4-N1-N5-N1-N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N4-N10": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4-N2": {
+   "classes": {
+    "TELEPHONE": 68
+   },
+   "readings": {
+    "grouped": 67,
+    "other": 1
+   }
+  },
+  "N4-N2 N1": {
+   "classes": {
+    "TELEPHONE": 89
+   },
+   "readings": {
+    "grouped": 88,
+    "other": 1
+   }
+  },
+  "N4-N2 N1-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N2 N2": {
+   "classes": {
+    "TELEPHONE": 41
+   },
+   "readings": {
+    "grouped": 41,
+    "other": 0
+   }
+  },
+  "N4-N2 N4": {
+   "classes": {
+    "TELEPHONE": 25
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 0
+   }
+  },
+  "N4-N2 N4-N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N4-N2-N1 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4-N2-N2 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 2
+   }
+  },
+  "N4-N2-N2 N2": {
+   "classes": {
+    "TELEPHONE": 180
+   },
+   "readings": {
+    "grouped": 180,
+    "other": 0
+   }
+  },
+  "N4-N2-N2 N4": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N4-N2-N2 N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 2
+   }
+  },
+  "N4-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 35
+   },
+   "readings": {
+    "grouped": 35,
+    "other": 0
+   }
+  },
+  "N4-N2-N2-N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N2-N2-N4": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N4-N2-N2-N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N2-N3": {
+   "classes": {
+    "TELEPHONE": 147
+   },
+   "readings": {
+    "grouped": 140,
+    "other": 7
+   }
+  },
+  "N4-N2-N3-N1": {
+   "classes": {
+    "TELEPHONE": 124
+   },
+   "readings": {
+    "grouped": 122,
+    "other": 2
+   }
+  },
+  "N4-N2-N3-N4": {
+   "classes": {
+    "TELEPHONE": 51
+   },
+   "readings": {
+    "grouped": 51,
+    "other": 0
+   }
+  },
+  "N4-N2-N4": {
+   "classes": {
+    "TELEPHONE": 93
+   },
+   "readings": {
+    "grouped": 91,
+    "other": 2
+   }
+  },
+  "N4-N2-N5": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N4-N2-N6": {
+   "classes": {
+    "TELEPHONE": 104
+   },
+   "readings": {
+    "grouped": 104,
+    "other": 0
+   }
+  },
+  "N4-N2-N6-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N2-N6-N2-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4-N3": {
+   "classes": {
+    "TELEPHONE": 873
+   },
+   "readings": {
+    "grouped": 784,
+    "other": 89
+   }
+  },
+  "N4-N3-N1": {
+   "classes": {
+    "TELEPHONE": 47
+   },
+   "readings": {
+    "grouped": 47,
+    "other": 0
+   }
+  },
+  "N4-N3-N2": {
+   "classes": {
+    "TELEPHONE": 207
+   },
+   "readings": {
+    "grouped": 190,
+    "other": 17
+   }
+  },
+  "N4-N3-N2-N1": {
+   "classes": {
+    "TELEPHONE": 136
+   },
+   "readings": {
+    "grouped": 131,
+    "other": 5
+   }
+  },
+  "N4-N3-N3": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 2
+   }
+  },
+  "N4-N3-N4": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 5
+   }
+  },
+  "N4-N4": {
+   "classes": {
+    "TELEPHONE": 8772
+   },
+   "readings": {
+    "grouped": 8517,
+    "other": 255
+   }
+  },
+  "N4-N4 N1": {
+   "classes": {
+    "TELEPHONE": 674
+   },
+   "readings": {
+    "grouped": 621,
+    "other": 53
+   }
+  },
+  "N4-N4 N2": {
+   "classes": {
+    "TELEPHONE": 80
+   },
+   "readings": {
+    "grouped": 66,
+    "other": 14
+   }
+  },
+  "N4-N4 N3": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 4
+   }
+  },
+  "N4-N4 N4": {
+   "classes": {
+    "TELEPHONE": 78
+   },
+   "readings": {
+    "grouped": 58,
+    "other": 20
+   }
+  },
+  "N4-N4 N4-N4": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 12,
+    "other": 8
+   }
+  },
+  "N4-N4 N5": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N4-N1": {
+   "classes": {
+    "TELEPHONE": 52
+   },
+   "readings": {
+    "grouped": 52,
+    "other": 0
+   }
+  },
+  "N4-N4-N1-N1": {
+   "classes": {
+    "TELEPHONE": 67
+   },
+   "readings": {
+    "grouped": 66,
+    "other": 1
+   }
+  },
+  "N4-N4-N1-N2": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 1
+   }
+  },
+  "N4-N4-N1-N3": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N4-N4-N2": {
+   "classes": {
+    "TELEPHONE": 28
+   },
+   "readings": {
+    "grouped": 25,
+    "other": 3
+   }
+  },
+  "N4-N4-N2-N2": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N4-N4-N2-N3": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N4-N4-N3": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 2
+   }
+  },
+  "N4-N4-N4": {
+   "classes": {
+    "TELEPHONE": 127
+   },
+   "readings": {
+    "grouped": 119,
+    "other": 8
+   }
+  },
+  "N4-N4-N4-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N4-N4-N4-N4": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 2
+   }
+  },
+  "N4-N4-N4-N4-N4": {
+   "classes": {
+    "TELEPHONE": 100
+   },
+   "readings": {
+    "grouped": 98,
+    "other": 2
+   }
+  },
+  "N4-N4-N4-N5-N1": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N4-N4-N5": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 1
+   }
+  },
+  "N4-N5": {
+   "classes": {
+    "TELEPHONE": 84
+   },
+   "readings": {
+    "grouped": 76,
+    "other": 8
+   }
+  },
+  "N4-N5-N1": {
+   "classes": {
+    "TELEPHONE": 109
+   },
+   "readings": {
+    "grouped": 109,
+    "other": 0
+   }
+  },
+  "N4-N5-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4-N6": {
+   "classes": {
+    "TELEPHONE": 37
+   },
+   "readings": {
+    "grouped": 36,
+    "other": 1
+   }
+  },
+  "N4-N6-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N4-N6-N4": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N4-N7": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N4-N7-N3": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 2
+   }
+  },
+  "N4-N8": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 1
+   }
+  },
+  "N4-N8-N4": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N5 N1 N5 N1 N1": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N5 N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N5 N1-N1-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N5 N3": {
+   "classes": {
+    "TELEPHONE": 24
+   },
+   "readings": {
+    "grouped": 24,
+    "other": 0
+   }
+  },
+  "N5 N3 N3": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 2
+   }
+  },
+  "N5 N3-N3-N4": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N5 N4": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 26,
+    "other": 0
+   }
+  },
+  "N5 N4 N1": {
+   "classes": {
+    "TELEPHONE": 83
+   },
+   "readings": {
+    "grouped": 83,
+    "other": 0
+   }
+  },
+  "N5 N4-N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N5 N5": {
+   "classes": {
+    "TELEPHONE": 78
+   },
+   "readings": {
+    "grouped": 78,
+    "other": 0
+   }
+  },
+  "N5 N5 N1": {
+   "classes": {
+    "TELEPHONE": 182
+   },
+   "readings": {
+    "grouped": 182,
+    "other": 0
+   }
+  },
+  "N5 N5 N1 N1": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N5 N5 N5": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N5 N5-N1": {
+   "classes": {
+    "TELEPHONE": 12
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 1
+   }
+  },
+  "N5 N6": {
+   "classes": {
+    "TELEPHONE": 26
+   },
+   "readings": {
+    "grouped": 26,
+    "other": 0
+   }
+  },
+  "N5 N6 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N5 N6 N1 N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N5 N7 N1": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N5-N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N5-N1-N1": {
+   "classes": {
+    "TELEPHONE": 51
+   },
+   "readings": {
+    "grouped": 51,
+    "other": 0
+   }
+  },
+  "N5-N1-N2": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N5-N1-N3": {
+   "classes": {
+    "TELEPHONE": 19
+   },
+   "readings": {
+    "grouped": 19,
+    "other": 0
+   }
+  },
+  "N5-N1-N3-N1": {
+   "classes": {
+    "TELEPHONE": 86
+   },
+   "readings": {
+    "grouped": 86,
+    "other": 0
+   }
+  },
+  "N5-N1-N4": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N5-N2": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 8,
+    "other": 1
+   }
+  },
+  "N5-N2-N1": {
+   "classes": {
+    "TELEPHONE": 78
+   },
+   "readings": {
+    "grouped": 78,
+    "other": 0
+   }
+  },
+  "N5-N2-N2": {
+   "classes": {
+    "TELEPHONE": 77
+   },
+   "readings": {
+    "grouped": 77,
+    "other": 0
+   }
+  },
+  "N5-N2-N2-N1": {
+   "classes": {
+    "TELEPHONE": 72
+   },
+   "readings": {
+    "grouped": 72,
+    "other": 0
+   }
+  },
+  "N5-N3": {
+   "classes": {
+    "TELEPHONE": 409
+   },
+   "readings": {
+    "grouped": 396,
+    "other": 13
+   }
+  },
+  "N5-N3-N1": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N5-N3-N1-N1": {
+   "classes": {
+    "TELEPHONE": 31
+   },
+   "readings": {
+    "grouped": 30,
+    "other": 1
+   }
+  },
+  "N5-N3-N2": {
+   "classes": {
+    "TELEPHONE": 7
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 0
+   }
+  },
+  "N5-N3-N4": {
+   "classes": {
+    "TELEPHONE": 60
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 0
+   }
+  },
+  "N5-N3-N4-N1": {
+   "classes": {
+    "TELEPHONE": 191
+   },
+   "readings": {
+    "grouped": 190,
+    "other": 1
+   }
+  },
+  "N5-N4": {
+   "classes": {
+    "TELEPHONE": 570
+   },
+   "readings": {
+    "grouped": 541,
+    "other": 29
+   }
+  },
+  "N5-N4-N1": {
+   "classes": {
+    "TELEPHONE": 14
+   },
+   "readings": {
+    "grouped": 14,
+    "other": 0
+   }
+  },
+  "N5-N4-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N5-N5": {
+   "classes": {
+    "TELEPHONE": 842
+   },
+   "readings": {
+    "grouped": 831,
+    "other": 11
+   }
+  },
+  "N5-N5 N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N5-N5-N1": {
+   "classes": {
+    "TELEPHONE": 22
+   },
+   "readings": {
+    "grouped": 22,
+    "other": 0
+   }
+  },
+  "N5-N5-N1-N1": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 0
+   }
+  },
+  "N5-N5-N2": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N5-N6": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N6 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N6 N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N6 N2 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N6 N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N6 N3": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N6 N3 N1": {
+   "classes": {
+    "TELEPHONE": 60
+   },
+   "readings": {
+    "grouped": 60,
+    "other": 0
+   }
+  },
+  "N6 N4": {
+   "classes": {
+    "TELEPHONE": 21
+   },
+   "readings": {
+    "grouped": 21,
+    "other": 0
+   }
+  },
+  "N6 N5 N1 N1": {
+   "classes": {
+    "TELEPHONE": 10
+   },
+   "readings": {
+    "grouped": 10,
+    "other": 0
+   }
+  },
+  "N6 N6": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N6 N7": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N6-N1": {
+   "classes": {
+    "TELEPHONE": 17
+   },
+   "readings": {
+    "grouped": 17,
+    "other": 0
+   }
+  },
+  "N6-N1-N1": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N6-N1-N5-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N6-N2": {
+   "classes": {
+    "TELEPHONE": 39
+   },
+   "readings": {
+    "grouped": 39,
+    "other": 0
+   }
+  },
+  "N6-N2-N1": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N6-N2-N2": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N6-N3": {
+   "classes": {
+    "TELEPHONE": 95
+   },
+   "readings": {
+    "grouped": 92,
+    "other": 3
+   }
+  },
+  "N6-N3-N1": {
+   "classes": {
+    "TELEPHONE": 11
+   },
+   "readings": {
+    "grouped": 11,
+    "other": 0
+   }
+  },
+  "N6-N4": {
+   "classes": {
+    "TELEPHONE": 46
+   },
+   "readings": {
+    "grouped": 45,
+    "other": 1
+   }
+  },
+  "N6-N5": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N6-N6": {
+   "classes": {
+    "TELEPHONE": 61
+   },
+   "readings": {
+    "grouped": 61,
+    "other": 0
+   }
+  },
+  "N6-N6-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N7 N2 N1": {
+   "classes": {
+    "TELEPHONE": 18
+   },
+   "readings": {
+    "grouped": 18,
+    "other": 0
+   }
+  },
+  "N7 N3": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N7 N4": {
+   "classes": {
+    "TELEPHONE": 8
+   },
+   "readings": {
+    "grouped": 7,
+    "other": 1
+   }
+  },
+  "N7 N4 N1 N1": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N7 N6": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N7 N8": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N7-N1-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N7-N2": {
+   "classes": {
+    "TELEPHONE": 22
+   },
+   "readings": {
+    "grouped": 22,
+    "other": 0
+   }
+  },
+  "N7-N2-N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N7-N2-N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N7-N3": {
+   "classes": {
+    "TELEPHONE": 20
+   },
+   "readings": {
+    "grouped": 20,
+    "other": 0
+   }
+  },
+  "N7-N4": {
+   "classes": {
+    "TELEPHONE": 13
+   },
+   "readings": {
+    "grouped": 13,
+    "other": 0
+   }
+  },
+  "N7-N7": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  },
+  "N8 N2": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N8 N8": {
+   "classes": {
+    "TELEPHONE": 15
+   },
+   "readings": {
+    "grouped": 15,
+    "other": 0
+   }
+  },
+  "N8 N8 N8": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N8 N8 N8 N8": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N8-N2-N1-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N8-N2-N2": {
+   "classes": {
+    "TELEPHONE": 4
+   },
+   "readings": {
+    "grouped": 4,
+    "other": 0
+   }
+  },
+  "N8-N3": {
+   "classes": {
+    "TELEPHONE": 16
+   },
+   "readings": {
+    "grouped": 16,
+    "other": 0
+   }
+  },
+  "N8-N4": {
+   "classes": {
+    "TELEPHONE": 33
+   },
+   "readings": {
+    "grouped": 33,
+    "other": 0
+   }
+  },
+  "N8-N4-N3": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N8-N8": {
+   "classes": {
+    "TELEPHONE": 6
+   },
+   "readings": {
+    "grouped": 6,
+    "other": 0
+   }
+  },
+  "N9 N1": {
+   "classes": {
+    "TELEPHONE": 3
+   },
+   "readings": {
+    "grouped": 3,
+    "other": 0
+   }
+  },
+  "N9-N1": {
+   "classes": {
+    "TELEPHONE": 9
+   },
+   "readings": {
+    "grouped": 9,
+    "other": 0
+   }
+  },
+  "N9-N4": {
+   "classes": {
+    "TELEPHONE": 5
+   },
+   "readings": {
+    "grouped": 5,
+    "other": 0
+   }
+  }
+ }
+}

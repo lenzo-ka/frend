@@ -53,6 +53,7 @@ from frend.electronic import (
     separator_names,
     tld_positions,
 )
+from frend.grouped_ids import GroupedDigitsValue
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -780,6 +781,7 @@ _SPOKEN_CAPTURES = {
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
     "telephone": frozenset({"telephone"}),
+    "grouped-id": frozenset({"grouped-id"}),
     "symbol": frozenset({"symbol"}),
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
@@ -2104,6 +2106,37 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
     return _ranked(forms)
 
 
+def _grouped_id_group(group: str, locale: str) -> tuple[SpokenAlternative, ...]:
+    if group == "X":
+        names = letter_names(group, locale)
+        if names is None:
+            return ()
+        return (SpokenAlternative(" ".join(names.spoken), names.provenance),)
+    forms = _spoken_digits(DigitsValue(group), locale)
+    if "0" not in group:
+        return forms
+    lexical = tuple(item for item in forms if "lexical:" in item.provenance)
+    icu = tuple(item for item in forms if "lexical:" not in item.provenance)
+    return lexical + icu
+
+
+def _spoken_grouped_id(value: GroupedDigitsValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Say each character in each group, retaining Google-TN's embedded ``sil``."""
+    groups = [_grouped_id_group(group, locale) for group in value.groups]
+    if any(not group for group in groups):
+        return ()
+    source = "rule:isbn-checksum" if value.isbn else "measured:grouped-id"
+    return _ranked(
+        [
+            SpokenAlternative(
+                " sil ".join(item.text for item in combination),
+                "+".join(item.provenance for item in combination) + f"+{source}",
+            )
+            for combination in product(*groups)
+        ]
+    )
+
+
 def _telephone_group(digits: str, mode: str, locale: str) -> tuple[SpokenAlternative, ...]:
     if mode == "cardinal":
         return _number_leaf(Decimal(digits), "cardinal", locale)
@@ -3063,6 +3096,10 @@ def _verbalize_edge(
                     )
             key_value = value.surface
             path = "letters"
+        elif isinstance(value, GroupedDigitsValue):
+            alternatives = _spoken_grouped_id(value, locale)
+            key_value = value.groups
+            path = "grouped-id"
         elif isinstance(value, TelephoneValue):
             alternatives = _spoken_telephone(value, locale)
             key_value = value.groups
