@@ -50,6 +50,61 @@ def test_offsets_tile_output_and_slice_the_original_source():
     assert "\n" not in result.text
 
 
+def _assert_alignment_tiles(source: str, result: NormalizedText):
+    output_at = 0
+    source_at = 0
+    for unit in result.units:
+        assert unit.output_span[0] == output_at
+        assert unit.source_span[0] == source_at
+        output_at = unit.output_span[1]
+        source_at = unit.source_span[1]
+    assert output_at == len(result.text)
+    assert source_at == len(source)
+
+
+@pytest.mark.parametrize(
+    ("source", "without_boundary_whitespace"),
+    [
+        ("\nPlain text.", "Plain text."),
+        ("  a.  b.  ", "a.  b."),
+        ("a.\n\nb", "a. b"),
+        (" \n ", ""),
+    ],
+)
+def test_boundary_whitespace_is_trimmed_or_collapsed_without_losing_source_coverage(
+    source, without_boundary_whitespace
+):
+    assert frend.normalize(source) == frend.normalize(without_boundary_whitespace)
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+    for unit in result.units:
+        source_text = source[slice(*unit.source_span)]
+        if unit.provenance.endswith("whitespace"):
+            assert source_text.isspace()
+            output_text = result.text[slice(*unit.output_span)]
+            assert output_text == (" " if "inter-sentence" in unit.provenance else "")
+
+
+def test_trailing_text_without_terminal_punctuation_is_preserved():
+    source = "a. trailing text without terminal punctuation"
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+    assert result.units[-1].source_span[1] == len(source)
+    assert result.text.endswith("punctuation")
+
+
+def test_non_ascii_offsets_are_code_point_exact_and_tile_both_texts():
+    source = "\U0001f600 \U00010400 e\u0301 \u6f22\u5b57."
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+    source_slices = [source[slice(*unit.source_span)] for unit in result.units]
+    assert source_slices == list(source)
+    assert "".join(source_slices) == source
+
+
 def test_first_choice_agrees_with_the_evaluator_join_on_a_fixture():
     evaluator = _evaluator()
     source = "I paid $12 on Jan 2."
@@ -82,7 +137,10 @@ def test_sentence_over_unit_bound_names_the_missing_icukit_forced_break():
 def test_document_input_is_validated_once(monkeypatch):
     import importlib
 
+    electronic_module = importlib.import_module("frend.electronic")
+    lattice_module = importlib.import_module("frend.lattice")
     normalize_module = importlib.import_module("frend.normalize")
+    verbalize_module = importlib.import_module("frend.verbalize")
     original = normalize_module.validate_input
     calls = []
 
@@ -90,8 +148,10 @@ def test_document_input_is_validated_once(monkeypatch):
         calls.append((args, kwargs))
         return original(*args, **kwargs)
 
-    monkeypatch.setattr(normalize_module, "validate_input", recording_validate)
-    frend.normalize("It cost $12.\n\nNow it costs $13.")
+    for module in (normalize_module, electronic_module, lattice_module, verbalize_module):
+        monkeypatch.setattr(module, "validate_input", recording_validate)
+    text = "a" * 100 + ". " + "b" * 10 + "\x01" + "b" * 10 + "."
+    assert frend.normalize(text)
     assert len(calls) == 1
 
 

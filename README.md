@@ -43,7 +43,8 @@ for unit in aligned.units:
 
 `normalize` sentence-breaks documents with icukit and returns the first-choice spoken
 text. Pass `offsets=True` when a screen reader or aligner also needs the source mapping;
-inter-sentence whitespace is one space in the returned text.
+inter-sentence whitespace is one space in the returned text, and leading and trailing
+whitespace is trimmed. Offset units still cover those trimmed boundary spans explicitly.
 
 ### Input limits
 

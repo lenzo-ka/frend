@@ -3164,19 +3164,39 @@ def verbalize_lattice(
     profile: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
-    _input_validated: bool = False,
 ) -> VerbalizedLattice:
     """Verbalize every projected path without expanding alternatives across units.
 
     ``context`` is the running text the lattice's source text sits in (by default the
     source text itself): it is what the context trees read (``verbalize_edge``).
     """
-    if not _input_validated:
-        validate_input(lattice.source_text, max_input_chars=max_input_chars)
-        validate_input(
-            context.text if context is not None else None,
-            max_input_chars=max_input_chars,
-        )
+    validate_input(lattice.source_text, max_input_chars=max_input_chars)
+    validate_input(
+        context.text if context is not None else None,
+        max_input_chars=max_input_chars,
+    )
+    return _verbalize_lattice_validated(
+        lattice,
+        locale=locale,
+        supplements=supplements,
+        context=context,
+        profile=profile,
+        max_input_chars=max_input_chars,
+        max_unit_chars=max_unit_chars,
+    )
+
+
+def _verbalize_lattice_validated(
+    lattice: ReadingLattice,
+    *,
+    locale: str | None = None,
+    supplements: CuratedSupplements | None = None,
+    context: TextContext | None = None,
+    profile: str | None = None,
+    max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+) -> VerbalizedLattice:
+    """Verbalize text whose enclosing document API has already validated it."""
     validate_unit_length(
         lattice.text_length,
         max_unit_chars=max_unit_chars,

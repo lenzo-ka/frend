@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+import inspect
 
 import pytest
 
@@ -49,6 +50,11 @@ def test_nul_is_refused_at_every_public_text_bearing_entry_point():
     for call in calls:
         with pytest.raises(InputValidationError, match="NUL"):
             call()
+
+
+def test_public_lattice_apis_expose_no_validation_bypass():
+    assert "_input_validated" not in inspect.signature(resolve_lattice).parameters
+    assert "_input_validated" not in inspect.signature(verbalize_lattice).parameters
 
 
 def test_default_document_budget_refuses_without_building_a_huge_lattice():

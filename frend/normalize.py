@@ -29,7 +29,7 @@ from icukit.recognize import (
 )
 
 from frend.abbreviation_variants import AbbreviationVariantDetector
-from frend.electronic import ElectronicDetector
+from frend.electronic import _ValidatedElectronicDetector
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -37,13 +37,13 @@ from frend.input_limits import (
     validate_input,
     validate_unit_length,
 )
-from frend.lattice import ReadingEdge, resolve_lattice
+from frend.lattice import ReadingEdge, _resolve_lattice_validated
 from frend.letters import LettersDetector
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
 from frend.symbols import SymbolDetector
-from frend.verbalize import VerbalizedUnit, verbalize_lattice
+from frend.verbalize import VerbalizedUnit, _verbalize_lattice_validated
 from frend.written_forms import WrittenFormsDetector
 
 __all__ = ["NormalizedText", "NormalizedUnit", "normalize"]
@@ -162,7 +162,7 @@ def _reading_detectors(locale: str) -> tuple[object, ...]:
         (FlexibleFractionDetector(locale),),
         (FlexibleOrdinalDetector(locale), FlexibleNumberDetector(locale), runs),
         (FlexibleTimeDetector(locale), FlexibleNumericDurationDetector(locale), runs, written),
-        (ElectronicDetector(locale),),
+        (_ValidatedElectronicDetector(locale),),
         (*measures, *icu_range_readers(locale, measures)),
         (*money, *icu_range_readers(locale, money)),
     )
@@ -185,16 +185,16 @@ def _reading_detectors(locale: str) -> tuple[object, ...]:
 
 
 def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
-    """Return nonempty sentence ranges, leaving boundary whitespace between them."""
+    """Return nonempty sentence ranges with boundary whitespace excluded."""
     spans = break_sentence_spans(text, locale)
     nonempty = [span for span in spans if span["text"].strip()]
     ranges: list[tuple[int, int]] = []
-    for index, span in enumerate(nonempty):
+    for span in nonempty:
         surface = span["text"]
         left = len(surface) - len(surface.lstrip())
         right = len(surface.rstrip())
-        start = int(span["start"]) + (0 if index == 0 else left)
-        end = int(span["start"]) + (len(surface) if index == len(nonempty) - 1 else right)
+        start = int(span["start"]) + left
+        end = int(span["start"]) + right
         ranges.append((start, end))
     return ranges
 
@@ -215,21 +215,19 @@ def _sentence(
     max_unit_chars: int | None,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
     detections = detect(text, _reading_detectors(locale))
-    lattice = resolve_lattice(
+    lattice = _resolve_lattice_validated(
         detections,
         source_text=text,
         locale=locale,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
-        _input_validated=True,
     )
     edges = {edge.id: edge for edge in lattice.edges} if offsets else None
-    verbalized = verbalize_lattice(
+    verbalized = _verbalize_lattice_validated(
         lattice,
         profile=profile,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
-        _input_validated=True,
     )
     rendered: list[tuple[str, ReadingEdge, VerbalizedUnit]] | None = [] if offsets else None
     parts = []
@@ -305,13 +303,20 @@ def normalize(
     ranges = _sentence_ranges(text, locale)
     if not ranges:
         if not offsets:
-            return text
+            return ""
         units = (
             []
             if not text
-            else [NormalizedUnit((0, len(text)), (0, len(text)), None, "surface:passthrough")]
+            else [
+                NormalizedUnit(
+                    (0, 0),
+                    (0, len(text)),
+                    None,
+                    "surface:boundary-whitespace",
+                )
+            ]
         )
-        return NormalizedText(text, units)
+        return NormalizedText("", units)
 
     # TODO(icukit): use icukit's reflow(text, mode) -> str once it is released.
     for start, end in ranges:
@@ -326,21 +331,25 @@ def normalize(
     parts: list[str] = []
     aligned: list[NormalizedUnit] | None = [] if offsets else None
     output_at = 0
-    previous_end: int | None = None
-    for start, end in ranges:
-        if previous_end is not None and start > previous_end:
-            separator = " "
+    previous_end = 0
+    for index, (start, end) in enumerate(ranges):
+        if start > previous_end:
+            separator = "" if index == 0 else " "
             parts.append(separator)
             if aligned is not None:
                 aligned.append(
                     NormalizedUnit(
-                        (output_at, output_at + 1),
+                        (output_at, output_at + len(separator)),
                         (previous_end, start),
                         None,
-                        "surface:inter-sentence-whitespace",
+                        (
+                            "surface:boundary-whitespace"
+                            if index == 0
+                            else "surface:inter-sentence-whitespace"
+                        ),
                     )
                 )
-            output_at += 1
+            output_at += len(separator)
         sentence = text[start:end]
         rendered, spoken = _sentence(
             sentence,
@@ -368,5 +377,14 @@ def normalize(
         else:
             output_at += len(spoken)
         previous_end = end
+    if previous_end < len(text) and aligned is not None:
+        aligned.append(
+            NormalizedUnit(
+                (output_at, output_at),
+                (previous_end, len(text)),
+                None,
+                "surface:boundary-whitespace",
+            )
+        )
     normalized = "".join(parts)
     return NormalizedText(normalized, aligned) if aligned is not None else normalized
