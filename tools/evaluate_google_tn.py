@@ -276,6 +276,7 @@ def _per_token(
         sentence_records.append(
             {
                 "id": f"{record_prefix}:{sentence_index}",
+                "fold": fold,
                 "tokens": len(sentence),
                 "first": first_count,
                 "any": any_count,
@@ -564,7 +565,7 @@ def evaluate(
         )
     if skip_report_shard and _TEST_FILE in inputs:
         raise ValueError("skip_report_shard=True forbids report shard 99 in inputs")
-    report = {}
+    report = {"fold": fold}
     if not skip_report_shard:
         sentences = _rows(inputs[_TEST_FILE])
         match = None
@@ -585,6 +586,7 @@ def evaluate(
             record_sink=record_sink,
         )
         report = {
+            "fold": fold,
             "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
             **{key: per_token[key] for key in ("tokens", "sentences")},
             **{
@@ -738,7 +740,7 @@ def _render_stratum_interval(row: dict, name: str) -> str:
 
 
 def _per_sentence_payload(
-    records: list[dict], profile: str | None, corpus_fingerprint: str
+    records: list[dict], profile: str | None, fold: str | None, corpus_fingerprint: str
 ) -> dict[str, object]:
     sample_identity = {
         "corpus_fingerprint": corpus_fingerprint,
@@ -751,6 +753,7 @@ def _per_sentence_payload(
         "schema_version": 1,
         "unit": "sentence",
         "profile": profile,
+        "fold": fold,
         "sample_fingerprint": sample_fingerprint,
         "records": records,
     }
@@ -866,7 +869,12 @@ def main(argv: list[str] | None = None) -> int:
         args.per_sentence_out.parent.mkdir(parents=True, exist_ok=True)
         args.per_sentence_out.write_text(
             json.dumps(
-                _per_sentence_payload(records, args.profile, corpus_receipt["fingerprint"]),
+                _per_sentence_payload(
+                    records,
+                    args.profile,
+                    None if args.fold == "none" else args.fold,
+                    corpus_receipt["fingerprint"],
+                ),
                 indent=2,
                 sort_keys=True,
             )

@@ -1,34 +1,41 @@
 {
-  "schema_version": 1,
-  "synthetic": true,
-  "relation": "synthetic_typographic_variant_of_folded_original",
-  "source": "google/tn-en_with_types runtime-eval shard 90",
-  "license": "CC BY-SA 4.0",
+  "schema_version": 2,
+  "authorship": "project-authored",
   "items": [
     {
-      "id": "shard90-lines132-141",
-      "folded_original": "\"Chevron's Bulgaria pull out a blow for energy\"",
-      "synthetic_written": "“Chevron’s Bulgaria pull out a blow for energy”"
+      "name": "curly-quotation",
+      "written": "Mira wrote “yes”.",
+      "expected_spoken": " mira   wrote  \" yes \"  ",
+      "expected_without_fold": " mira   wrote  “ yes ”  ",
+      "requires_fold": true
     },
     {
-      "id": "shard90-line1633",
-      "folded_original": "9.6 cm",
-      "synthetic_written": "9.6 cm"
+      "name": "nonbreaking-space-measure",
+      "written": "A 5 kg parcel.",
+      "expected_spoken": " A   five kilograms   parcel .",
+      "expected_without_fold": " A   five kilograms   parcel .",
+      "requires_fold": false
     },
     {
-      "id": "shard90-line2244",
-      "folded_original": "60 mph",
-      "synthetic_written": "60 mph"
+      "name": "minus-range",
+      "written": "A 26−27 finish.",
+      "expected_spoken": " A   twenty-six to twenty-seven   finish .",
+      "expected_without_fold": " A   twenty-six − twenty-seven   finish .",
+      "requires_fold": true
     },
     {
-      "id": "shard90-lines7844-7846",
-      "folded_original": "1946-1947",
-      "synthetic_written": "1946–1947"
+      "name": "nonbreaking-hyphen-range",
+      "written": "The years 1946‑1947 passed.",
+      "expected_spoken": " the   years   nineteen forty-six to nineteen forty-seven   passed .",
+      "expected_without_fold": " the   years   nineteen forty-six ‑ nineteen forty-seven   passed .",
+      "requires_fold": true
     },
     {
-      "id": "shard90-lines11410-11412",
-      "folded_original": "July 28, 1836-September 17, 1862",
-      "synthetic_written": "July 28, 1836–September 17, 1862"
+      "name": "curly-apostrophe-year",
+      "written": "It began in ’94.",
+      "expected_spoken": " it   began   in   ninety-four .",
+      "expected_without_fold": " it   began   in   ninety-four .",
+      "requires_fold": false
     }
   ]
 }

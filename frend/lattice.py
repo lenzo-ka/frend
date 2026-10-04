@@ -612,9 +612,9 @@ def resolve_lattice(
     """Resolve detections into an immutable, distilled reading lattice.
 
     With ``detections=None``, recognize ``source_text`` with frend's public detector
-    profile after applying the declared input ``fold``. Callers supplying their own
-    detections remain responsible for running those detectors over
-    :func:`frend.apply_input_fold` with the same fold.
+    profile after applying the declared input ``fold``. A lattice reports that fold
+    only on this path. Caller-supplied detections cannot prove what text they saw, so
+    their lattice reports ``fold=None`` even if the default argument was not overridden.
 
     ``output_cap=1`` is the winner-take-all public projection; a larger cap
     exposes more ranked paths over the same candidate and passthrough edges.
@@ -632,12 +632,13 @@ def resolve_lattice(
     too. This API does not silently claim a bound it does not have.
     """
     validate_input(source_text, max_input_chars=max_input_chars)
-    apply_input_fold("", fold)  # validate the declaration even with caller-made detections
     raw_source_text = source_text
+    applied_fold: InputFold | None = None
     if detections is None:
         if raw_source_text is None:
             raise ValueError("source_text is required when detections is None")
         source_text = apply_input_fold(raw_source_text, fold)
+        applied_fold = fold
         from icukit.detectors import detect
 
         from frend.normalize import _reading_detectors
@@ -650,7 +651,7 @@ def resolve_lattice(
         feature_sources=feature_sources,
         source_text=source_text,
         raw_source_text=raw_source_text,
-        fold=fold,
+        fold=applied_fold,
         class_prior=class_prior,
         class_prior_source=class_prior_source,
         max_input_chars=max_input_chars,

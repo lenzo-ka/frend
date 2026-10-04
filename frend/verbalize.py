@@ -3133,11 +3133,7 @@ def _verbalize_edge(
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
         return VerbalizedUnit(edge.id, (fallback,), tier, provenance, False)
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
-    if (
-        apply_source_priors
-        and path != "range"
-        and not (isinstance(value, SymbolValue) and value.silent_first)
-    ):
+    if apply_source_priors and path != "range":
         # A range's readings are ranked within it (``_spoken_range``): each end by its
         # own kind's measured shares.
         kind = _measured_kind(type_, value)
@@ -3221,7 +3217,6 @@ def _verbalize_edge(
     elif (
         context is not None
         and rerank_by_context
-        and not (isinstance(value, SymbolValue) and value.silent_first)
         and not (path == "date" and type_ == "date:y" and _bare_four_digit(detection, locale))
     ):
         alternatives, choice = rerank(

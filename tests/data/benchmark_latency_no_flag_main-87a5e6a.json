@@ -16,6 +16,7 @@
     "tiergraph"
   ],
   "errors": [],
+  "fold": "typographic",
   "gc": {
     "enabled": true,
     "fields": [
@@ -66,6 +67,7 @@
     "ended_ns",
     "environment",
     "errors",
+    "fold",
     "gc",
     "imports",
     "manifest_sha256",

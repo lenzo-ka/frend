@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import pytest
 
+import frend
 from frend import resolve_lattice
+from frend.context import TextContext
 from frend.spoken_priors import normalize_spoken
 from frend.symbols import SymbolDetector
 from frend.verbalize import verbalize_edge
@@ -49,11 +51,43 @@ def test_measured_property_classes_are_silent_first_with_name_fallback(text):
     assert unit.alternatives[1].provenance == "icu-name:property"
 
 
-def test_property_rule_uses_icu_class_even_inside_a_token():
-    detections = SymbolDetector().detect("aᵋb")
-    assert [(item["type"], item["start"], item["end"]) for item in detections] == [
-        ("symbol:property", 1, 2)
-    ]
+def test_property_rule_applies_only_to_whole_standalone_tokens():
+    assert SymbolDetector().detect("aᵋb") == []
+    assert SymbolDetector().detect("時々") == []
+    assert [item["type"] for item in SymbolDetector().detect("ᵋᵋ")] == ["symbol:property"]
+
+
+def test_property_silence_uses_the_normal_context_reranker(monkeypatch):
+    import importlib
+
+    verbalize_module = importlib.import_module("frend.verbalize")
+
+    (detection,) = SymbolDetector().detect("ᵋ")
+    lattice = resolve_lattice([detection], source_text="ᵋ")
+    edge = next(edge for edge in lattice.edges if edge.kind == "reading")
+    calls = []
+
+    def reverse(alternatives, *_args, **_kwargs):
+        calls.append(tuple(item.text for item in alternatives))
+        return tuple(reversed(alternatives)), None
+
+    monkeypatch.setattr(verbalize_module, "_rank_final", lambda alternatives, *_args: alternatives)
+    monkeypatch.setattr(verbalize_module, "rerank", reverse)
+    unit = verbalize_edge(
+        edge,
+        source_text="ᵋ",
+        context=TextContext("ᵋ"),
+    )
+
+    assert calls == [("", "modifier letter small open e")]
+    assert unit.alternatives[0].text == "modifier letter small open e"
+
+
+def test_property_rule_preserves_words_like_main_and_silences_a_standalone_token():
+    assert frend.normalize("時々", fold=None) == "時々"
+    assert frend.normalize("aᵋb", fold=None) == " aᵋb "
+    assert frend.normalize("ᵋ", fold=None).strip() == ""
+    assert frend.normalize("ᵋᵋ", fold=None).strip() == ""
 
 
 def test_mixed_modifier_class_is_report_only():

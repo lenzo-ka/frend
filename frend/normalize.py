@@ -302,7 +302,9 @@ def normalize(
     """Return the first-choice spoken form of a plain-text document.
 
     Sentence resolution stays bounded by ``max_unit_chars``. With ``offsets=True``,
-    each output unit also records its code-point span and originating source span.
+    each output unit also records its code-point span and originating source span, and
+    :class:`NormalizedText` records the applied ``fold``. The plain-string form carries
+    no metadata; callers that need fold provenance must request offsets.
     """
     if not isinstance(offsets, bool):
         raise TypeError(f"offsets must be a bool, got {type(offsets).__name__}")

@@ -76,9 +76,11 @@ hyphen-minus. Every replacement is one code point, so aligned source spans still
 the raw input directly. U+2013 EN DASH is not folded: the installed icukit accepts ICU's
 en dash in generated date intervals but not an ASCII hyphen in the same patterns.
 `NormalizedText.fold` and `ReadingLattice.fold` declare the applied fold; their lattice
-also retains `raw_source_text`. Pass `fold=None` to disable it. The convenience call
-`resolve_lattice(source_text=text)` performs recognition after folding. A caller that
-supplies detections must instead run them over `apply_input_fold(text, fold)` itself.
+also retains `raw_source_text`. Pass `fold=None` to disable it. Plain-string `normalize`
+output has no metadata, so request `offsets=True` when fold provenance is required. The
+convenience call `resolve_lattice(source_text=text)` performs recognition after folding.
+A lattice built from caller-supplied detections reports `fold=None`, because the resolver
+cannot prove which text those detections saw.
 
 `ElectronicDetector` validates its input before recognition. It does not emit a prefix
 of an oversized address: a contiguous URL/domain candidate over 8,192 code points or an

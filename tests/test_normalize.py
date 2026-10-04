@@ -160,20 +160,25 @@ def test_typographic_examples_read_as_their_folded_twins(typographic, ascii_twin
     assert frend.normalize(typographic) == frend.normalize(ascii_twin, fold=None)
 
 
-def test_synthetic_defolded_google_sample_matches_only_through_declared_relation():
+def test_project_authored_typographic_sentences_have_exact_outputs():
     path = Path(__file__).parent / "data" / "typographic_fold_synthetic.json"
     document = json.loads(path.read_text(encoding="utf-8"))
-    assert document["synthetic"] is True
-    assert document["relation"] == "synthetic_typographic_variant_of_folded_original"
+    assert document["authorship"] == "project-authored"
 
-    with_fold = []
-    without_fold = []
+    failed_without_fold = []
     for item in document["items"]:
-        expected = frend.normalize(item["folded_original"], fold=None)
-        with_fold.append(frend.normalize(item["synthetic_written"]) == expected)
-        without_fold.append(frend.normalize(item["synthetic_written"], fold=None) == expected)
-    assert sum(with_fold) == len(with_fold)
-    assert sum(without_fold) < len(without_fold)
+        with_fold = frend.normalize(item["written"])
+        without_fold = frend.normalize(item["written"], fold=None)
+        assert with_fold == item["expected_spoken"]
+        assert without_fold == item["expected_without_fold"]
+        assert (without_fold != item["expected_spoken"]) is item["requires_fold"]
+        if without_fold != item["expected_spoken"]:
+            failed_without_fold.append(item["name"])
+    assert failed_without_fold == [
+        "curly-quotation",
+        "minus-range",
+        "nonbreaking-hyphen-range",
+    ]
 
 
 def test_first_choice_agrees_with_the_evaluator_join_on_a_fixture():

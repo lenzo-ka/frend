@@ -1,4 +1,4 @@
-"""The latency benchmark preserves main's no-flag measurement receipt."""
+"""The latency benchmark measures the default fold before detection."""
 
 from __future__ import annotations
 
@@ -26,6 +26,7 @@ def _deterministic_projection(payload: dict) -> dict:
     return {
         "top_level_keys": sorted(payload),
         "schema_version": payload["schema_version"],
+        "fold": payload["fold"],
         "subject_fields": sorted(payload["subject"]),
         "manifest_sha256": payload["manifest_sha256"],
         "parameters": {key: payload[key] for key in ("warmup", "runs", "seed", "max_words")},
@@ -76,7 +77,7 @@ def _run(tool, output: Path, monkeypatch: pytest.MonkeyPatch) -> dict:
     return json.loads(output.read_text(encoding="utf-8"))
 
 
-def test_no_flag_full_measurement_matches_main(tmp_path, monkeypatch):
+def test_no_flag_full_measurement_matches_declared_fold_receipt(tmp_path, monkeypatch):
     baseline = json.loads(_GOLDEN.read_text(encoding="utf-8"))
     candidate = _run(_tool(), tmp_path / "candidate.json", monkeypatch)
 
