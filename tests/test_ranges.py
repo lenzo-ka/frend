@@ -28,7 +28,7 @@ needs_icu_ranges = pytest.mark.skipif(
 )
 
 
-def _readings(text: str, count: int = 2) -> list[tuple[str, str]]:
+def _readings(text: str, count: int | None = 2) -> list[tuple[str, str]]:
     """The first ``count`` readings of ``text`` as the evaluator reads a token (alone, its
     own context), each with its source: a span read as one unit gives that unit's
     readings; a span read as several gives its one first reading, sourced "(units)"."""
@@ -40,9 +40,10 @@ def _readings(text: str, count: int = 2) -> list[tuple[str, str]]:
     )
     units = verbalized.best_path.units
     if len(units) == 1:
-        return [
-            (normalize_spoken(item.text), item.provenance) for item in units[0].alternatives[:count]
-        ]
+        alternatives = units[0].alternatives
+        if count is not None:
+            alternatives = alternatives[:count]
+        return [(normalize_spoken(item.text), item.provenance) for item in alternatives]
     said = "".join(
         u.best.text if u.best.provenance == "surface:passthrough" else f" {u.best.text} "
         for u in units
@@ -316,6 +317,29 @@ def test_joined_year_span_uses_the_range_tree_in_running_text():
     assert unit.context.applied
 
 
+def test_range_tree_shape_is_still_emitted_by_the_detector():
+    """The duration exception leaves the retained ``range:range`` detector case alone."""
+    from reading_profile import reading_detectors
+
+    found = reading_detectors("en_US")[-1].detect("1878-22")
+    assert [(item["type"], item["sub_key"]) for item in found] == [("range:dash", "dash:4+2")]
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["1.2:3.4", "3-2", "3:2", "10:30", "10:30.5 am", "1/2", "1:2.3", "1878-22"],
+)
+def test_duration_exception_does_not_change_out_of_scope_range_detections(text, monkeypatch):
+    """Decimal ratios, scores, clocks, fractions, versions, and range-tree cases keep
+    the detector result they have when the duration exception is disabled."""
+    from reading_profile import reading_detectors
+
+    detector = reading_detectors("en_US")[-1]
+    found = detector.detect(text)
+    monkeypatch.setattr(detector, "_fractional_duration", lambda _text: False)
+    assert detector.detect(text) == found
+
+
 def test_silence_is_offered_inside_a_written_range():
     """The silent connector is offered inside a written range (main offered "to" and the
     minus sign only)."""
@@ -407,6 +431,13 @@ def test_minus_reading_survives_in_the_choice_lattice():
 def test_valid_clock_is_still_a_time():
     readings = _readings("10:30", 16)
     assert readings[0][0] == "ten thirty"
+    assert not any(source.startswith("range:") for _, source in readings)
+
+
+def test_fractional_elapsed_time_beats_the_ratio_range():
+    """Training's M:SS.hh race times use ICU's minutes/seconds parse, not a ratio."""
+    readings = _readings("2:08.34", None)
+    assert readings[0][0] == "two minutes eight seconds and thirty four milliseconds"
     assert not any(source.startswith("range:") for _, source in readings)
 
 

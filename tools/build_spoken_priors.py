@@ -30,6 +30,7 @@ _DATE_SKELETONS = ("yMd", "Md", "y")
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from frend.durations import NumericDurationDetector  # noqa: E402
 from frend.electronic import ElectronicDetector, decode_letter_notation  # noqa: E402
 from frend.ranges import date_interval_readers, icu_range_readers  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
@@ -154,7 +155,6 @@ def _detectors(locale: str = "en_US"):
         FlexibleMeasureDetector,
         FlexibleMixedMeasureDetector,
         FlexibleNumberDetector,
-        FlexibleNumericDurationDetector,
         FlexibleOrdinalDetector,
         FlexiblePercentDetector,
         FlexibleTextDateDetector,
@@ -209,7 +209,7 @@ def _detectors(locale: str = "en_US"):
         "ordinal": (FlexibleOrdinalDetector(locale), FlexibleNumberDetector(locale), runs),
         "time": (
             FlexibleTimeDetector(locale),
-            FlexibleNumericDurationDetector(locale),
+            NumericDurationDetector(locale),
             runs,
             written,
         ),

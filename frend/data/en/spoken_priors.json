@@ -4435,7 +4435,7 @@
         ],
         "time": [
           "FlexibleTimeDetector",
-          "FlexibleNumericDurationDetector",
+          "NumericDurationDetector",
           "AlphanumericRunsDetector",
           "WrittenFormsDetector"
         ]

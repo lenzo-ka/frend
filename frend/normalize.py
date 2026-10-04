@@ -18,7 +18,6 @@ from icukit.recognize import (
     FlexibleMeasureDetector,
     FlexibleMixedMeasureDetector,
     FlexibleNumberDetector,
-    FlexibleNumericDurationDetector,
     FlexibleOrdinalDetector,
     FlexiblePercentDetector,
     FlexibleTextDateDetector,
@@ -29,6 +28,7 @@ from icukit.recognize import (
 )
 
 from frend.abbreviation_variants import AbbreviationVariantDetector
+from frend.durations import NumericDurationDetector
 from frend.electronic import _ValidatedElectronicDetector
 from frend.input_folds import InputFold, apply_input_fold
 from frend.input_limits import (
@@ -163,7 +163,7 @@ def _reading_detectors(locale: str) -> tuple[object, ...]:
         (*dates.detectors, *date_interval_readers(locale), written),
         (FlexibleFractionDetector(locale),),
         (FlexibleOrdinalDetector(locale), FlexibleNumberDetector(locale), runs),
-        (FlexibleTimeDetector(locale), FlexibleNumericDurationDetector(locale), runs, written),
+        (FlexibleTimeDetector(locale), NumericDurationDetector(locale), runs, written),
         (_ValidatedElectronicDetector(locale),),
         (*measures, *icu_range_readers(locale, measures)),
         (*money, *icu_range_readers(locale, money)),

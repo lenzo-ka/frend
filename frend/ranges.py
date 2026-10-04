@@ -56,6 +56,7 @@ from typing import Any, Literal
 import icu
 from icukit.detectors import Capture, DateTimeValue, NumberValue
 
+from frend.durations import fractional_duration_shape
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
 
 __all__ = [
@@ -1163,6 +1164,19 @@ class RangeDetector:
         """R4a/R4b for a span's written ends."""
         return written_sub_key(cls, left, separator, right, self.locale)
 
+    def _fractional_duration(self, text: str) -> bool:
+        """Whether the measured duration reader resolves the whole token to seconds."""
+        if not fractional_duration_shape(text, self.locale):
+            return False
+        units = {
+            str(getattr(reading.get("value"), "unit", ""))
+            for reading in self._read(text)
+            if reading["start"] == 0
+            and reading["end"] == len(text)
+            and reading["type"] == "measure:duration:numeric"
+        }
+        return units == {"second"}
+
     # -- spans
 
     def candidates(self, text: str) -> list[dict]:
@@ -1202,6 +1216,16 @@ class RangeDetector:
             if left is None or right is None:
                 continue
             (start, left_end), (stop, right_end) = left, right
+            # A fractional colon form that ICU recognizes as elapsed minutes and
+            # seconds is not a ratio.  Unfractioned and invalid clocks retain the
+            # range table's existing ratio behavior.
+            if (
+                cls == "ratio"
+                and start == 0
+                and stop == len(text)
+                and self._fractional_duration(text)
+            ):
+                continue
             left_end, right_end = self.carried(left_end, right_end)
             sub_key = self.sub_key(cls, left_end["text"], char, right_end["text"])
             found.append(
