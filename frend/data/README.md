@@ -13,13 +13,13 @@ shards it counted.
 
 ## The corpus and its split
 
-Every measured table under `en/` is counted from the Google TN English corpus,
+Most measured tables under `en/` are counted from the Google TN English corpus,
 `en_with_types` (store id `google/tn-en_with_types`: the Kaggle dataset's
 `en_with_types.tgz`, 100 shards `output-000NN-of-00100`). Its README splits the shards
 training 00-89, runtime eval 90-94 and test 95-99, and frend keeps that split
 (`tools/google_tn_rows.py`: `TRAINING_SHARDS`, `RUNTIME_EVAL_SHARDS`, `TEST_SHARDS`).
 A table counts training shards only: `type_priors.json` and
-`spelled_token_priors.json` and `number_priors.json` all 90
+`spellout_dictionary.json`, `spelled_token_priors.json` and `number_priors.json` all 90
 (00-89), the sampled tables every tenth
 (00, 10, ..., 80), and `range_priors.json` both (its emit counts all 90, its reading
 counts every tenth). The runtime-eval and test shards are held out
@@ -162,6 +162,30 @@ stored. The shared attribution above applies.
 In `spoken_priors.json`, ELECTRONIC is measured like the other kinds, with the corpus's
 per-letter spoken notation ("b_letter o_letter") joined into words first. It records no
 `top_unmatched` examples, which would copy URLs from the corpus.
+
+## `en/spellout_dictionary.json`
+
+The first decision for a spell-or-say token. `tools/build_spellout_dictionary.py`
+counts case-preserved Google TN `LETTERS` and `PLAIN` surfaces on training shards
+00--89. The shipped operating point is support 5 and 99% purity, selected on S0
+(shards 90--94). It stores only exact surfaces whose selected decision differs from
+the AEIOU vowel fallback. Case variants do not inherit training decisions: validation
+showed that folded lookup regressed UNSEEN tokens.
+
+The compact JSON rows have the header-declared shape `[surface, decision, say_count,
+spell_count]`, are sorted by surface, and share one Google TN source/license record in
+the provenance header. It contains no sentence, expansion, gloss, IPA, neighbor, or
+other context. Wikipedia and Wiktionary label measurements remain in the experiment
+results but are absent from the runtime table because their operational ablation was
+non-positive. `--check` reopens the verified 00--89 inputs and compares the complete
+compact JSON bytes. A missing bounded-token row uses the AEIOU rule. An unattested
+capital run retains the established acronym shape/CV fallback: replacing it with the
+vowel rule caused the measured UNSEEN regression. The same prior continues to handle
+Roman numerals and the explicit external `google-tn` profile.
+
+This dictionary does not overlap `en/exceptions.json`: that #54-named file is solely
+the curated ICU word/sentence-break suppression layer. Each behavior therefore keeps
+one source of truth.
 
 ## `en/acronym_priors.json`
 

@@ -26,6 +26,7 @@ _MEASURED = (
     "grouped_id_priors",
     "number_priors",
     "range_priors",
+    "spellout_dictionary",
     "spelled_token_priors",
     "spoken_priors",
     "telephone_priors",
@@ -252,7 +253,9 @@ def test_every_table_names_locale_and_corpus():
     in) and the corpus it was counted from; type_priors counts the corpus README's 90
     training shards (00-89)."""
     tables = {
-        path.stem: path for path in sorted(_DATA.rglob("*_priors.json")) if "root" not in path.parts
+        path.stem: path
+        for path in sorted(_DATA.rglob("*.json"))
+        if "root" not in path.parts and path.stem in _MEASURED
     }
     assert set(tables) == set(_MEASURED)
     for name, path in tables.items():
@@ -307,6 +310,45 @@ def test_shipped_spelled_token_priors_have_attested_exceptions():
     assert document["tokens"]["by"]["counts"] == {"say": 4_335_164, "spell": 0}
     assert document["tokens"]["fMRI"]["counts"] == {"say": 0, "spell": 678}
     assert document["provenance"]["acronym_cases"]["NASA"]["say"] == 19_509
+
+
+def test_shipped_spellout_dictionary_is_compact_private_and_source_labeled():
+    path = _DATA / "en" / "spellout_dictionary.json"
+    raw = path.read_text(encoding="utf-8")
+    document = json.loads(raw)
+    assert set(document) == {"provenance", "tokens"}
+    assert path.stat().st_size < 2_000_000
+    rows = {row[0]: row[1:] for row in document["tokens"]}
+    assert "NASA" not in rows
+    assert rows["FBI"][0] == "spell"
+    assert all(
+        isinstance(surface, str)
+        and decision in {"say", "spell"}
+        and isinstance(say_count, int)
+        and isinstance(spell_count, int)
+        for surface, decision, say_count, spell_count in document["tokens"]
+    )
+    from frend.letters import spelled_token_rule
+
+    assert all(
+        decision != spelled_token_rule(surface)
+        for surface, decision, *_counts in document["tokens"]
+    )
+    assert set(document["provenance"]) == {
+        "columns",
+        "corpus",
+        "license",
+        "locale",
+        "privacy",
+        "selection",
+        "source",
+        "training_shards",
+    }
+    assert "wikipedia" not in raw.casefold()
+    assert "wiktionary" not in raw.casefold()
+    source = document["provenance"]["source"]
+    assert data_sources.source_class(source) in data_sources.SHIPPABLE_CLASSES
+    assert document["provenance"]["license"] == data_sources.SHIPPABLE_SOURCES[source]["license"]
 
 
 def _evaluator():
