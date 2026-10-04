@@ -69,6 +69,17 @@ the check. Passing `max_input_chars=None` turns off only the document check, and
 `max_unit_chars=None` turns off only the separate work bound; the plain-text checks
 remain active.
 
+By default, public recognition applies the declared `fold="typographic"` input fold:
+curly single and double quotes become their ASCII forms; NBSP, figure space, thin space
+and narrow NBSP become a space; and Unicode hyphen, non-breaking hyphen and minus become
+hyphen-minus. Every replacement is one code point, so aligned source spans still slice
+the raw input directly. U+2013 EN DASH is not folded: the installed icukit accepts ICU's
+en dash in generated date intervals but not an ASCII hyphen in the same patterns.
+`NormalizedText.fold` and `ReadingLattice.fold` declare the applied fold; their lattice
+also retains `raw_source_text`. Pass `fold=None` to disable it. The convenience call
+`resolve_lattice(source_text=text)` performs recognition after folding. A caller that
+supplies detections must instead run them over `apply_input_fold(text, fold)` itself.
+
 `ElectronicDetector` validates its input before recognition. It does not emit a prefix
 of an oversized address: a contiguous URL/domain candidate over 8,192 code points or an
 email candidate over 254 code points is omitted. Both recognition caps are configurable.

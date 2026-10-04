@@ -35,6 +35,34 @@ def test_every_cldr_name_and_silence_are_offered():
     assert {"ampersand", "and", ""} <= set(forms)
 
 
+@pytest.mark.parametrize("text", ["ᵋ", "々"])
+def test_measured_property_classes_are_silent_first_with_name_fallback(text):
+    (detection,) = SymbolDetector().detect(text)
+    assert detection["type"] == "symbol:property"
+    lattice = resolve_lattice([detection], source_text=text)
+    edge = next(edge for edge in lattice.edges if edge.kind == "reading")
+    unit = verbalize_edge(edge, source_text=text)
+
+    assert unit.alternatives[0].text == ""
+    assert unit.alternatives[0].provenance == "surface:silence"
+    assert unit.alternatives[1].text
+    assert unit.alternatives[1].provenance == "icu-name:property"
+
+
+def test_property_rule_uses_icu_class_even_inside_a_token():
+    detections = SymbolDetector().detect("aᵋb")
+    assert [(item["type"], item["start"], item["end"]) for item in detections] == [
+        ("symbol:property", 1, 2)
+    ]
+
+
+def test_mixed_modifier_class_is_report_only():
+    from frend.symbols import silent_property_class
+
+    assert silent_property_class("ʻ") is None
+    assert silent_property_class("ー") is None
+
+
 @pytest.mark.parametrize("text", ["R&D", "AT&T", "a-b", "x.y", "3.14", "αβ"])
 def test_a_character_inside_a_word_is_left_alone(text):
     assert SymbolDetector().detect(text) == []

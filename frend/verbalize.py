@@ -3053,10 +3053,9 @@ def _verbalize_edge(
         elif isinstance(value, SymbolValue):
             # A standalone character reads by its names or as nothing; the corpus says
             # most punctuation, a lone dash and "風" as nothing, "&" as "and".
-            alternatives = (
-                *(SpokenAlternative(name, source) for name, source in value.names),
-                SpokenAlternative("", "surface:silence"),
-            )
+            named = tuple(SpokenAlternative(name, source) for name, source in value.names)
+            silence = SpokenAlternative("", "surface:silence")
+            alternatives = (silence, *named) if value.silent_first else (*named, silence)
             connector = _range_to(context, edge.start, edge.end, locale)
             if connector is not None:
                 # A lone separator between two numbers ("5 - 10") may be said "to".
@@ -3134,7 +3133,11 @@ def _verbalize_edge(
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
         return VerbalizedUnit(edge.id, (fallback,), tier, provenance, False)
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
-    if apply_source_priors and path != "range":
+    if (
+        apply_source_priors
+        and path != "range"
+        and not (isinstance(value, SymbolValue) and value.silent_first)
+    ):
         # A range's readings are ranked within it (``_spoken_range``): each end by its
         # own kind's measured shares.
         kind = _measured_kind(type_, value)
@@ -3218,6 +3221,7 @@ def _verbalize_edge(
     elif (
         context is not None
         and rerank_by_context
+        and not (isinstance(value, SymbolValue) and value.silent_first)
         and not (path == "date" and type_ == "date:y" and _bare_four_digit(detection, locale))
     ):
         alternatives, choice = rerank(

@@ -35,6 +35,7 @@ __all__ = [
     "SymbolValue",
     "locale_scripts",
     "run_readings",
+    "silent_property_class",
     "symbol_names",
     "transform_id",
 ]
@@ -48,6 +49,17 @@ _MARKS.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
 TRANSLITERATION_SOURCE = "icu-transliteration"
 LETTER_NAME_SOURCE = "icu-name:letter"
+PROPERTY_NAME_SOURCE = "icu-name:property"
+
+# Training shards 00--89: these ICU (General_Category, Script) classes each have at
+# least 100 occurrences and at least 99% of their occurrences are in wholly silent
+# tokens. Lower-support classes and mixed classes are report-only.
+_SILENT_PROPERTY_CLASSES = frozenset(
+    {
+        (icu.UCharCategory.MODIFIER_LETTER, "Latn"),
+        (icu.UCharCategory.MODIFIER_LETTER, "Hani"),
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -57,6 +69,7 @@ class SymbolValue:
     char: str
     script: str
     names: tuple[tuple[str, str], ...]
+    silent_first: bool = False
 
 
 @dataclass(frozen=True)
@@ -76,6 +89,12 @@ class ScriptRunValue:
 
 def _script(char: str) -> str:
     return icu.Script.getScript(ord(char)).getShortName()
+
+
+def silent_property_class(char: str) -> tuple[int, str] | None:
+    """The measured ICU property class whose rule makes ``char`` silent-first."""
+    key = (icu.Char.charType(char), _script(char))
+    return key if key in _SILENT_PROPERTY_CLASSES else None
 
 
 def _short(name: str) -> str | None:
@@ -226,6 +245,13 @@ def symbol_names(char: str, locale: str = "en_US") -> tuple[tuple[str, str], ...
     return ((letter, LETTER_NAME_SOURCE),) if letter else ()
 
 
+def _property_name(char: str) -> tuple[tuple[str, str], ...]:
+    from icukit import get_char_name
+
+    name = get_char_name(char)
+    return ((name.lower(), PROPERTY_NAME_SOURCE),) if name else ()
+
+
 def _speakable(char: str, locale: str) -> bool:
     if char.isspace() or char.isdigit():
         return False
@@ -345,17 +371,31 @@ class SymbolDetector:
         for index, char in enumerate(text):
             if index in in_runs:
                 continue
-            if not _speakable(char, self.locale) or not _standalone(text, index, index + 1):
+            property_class = silent_property_class(char)
+            if property_class is None and (
+                not _speakable(char, self.locale) or not _standalone(text, index, index + 1)
+            ):
                 continue
             script = _script(char)
-            kind = "symbol:cldr" if char in _cldr_names(self.locale) else "symbol:letter"
+            kind = (
+                "symbol:property"
+                if property_class is not None
+                else "symbol:cldr"
+                if char in _cldr_names(self.locale)
+                else "symbol:letter"
+            )
+            names = (
+                _property_name(char)
+                if property_class is not None
+                else symbol_names(char, self.locale)
+            )
             detections.append(
                 {
                     "text": char,
                     "start": index,
                     "end": index + 1,
                     "type": kind,
-                    "value": SymbolValue(char, script, symbol_names(char, self.locale)),
+                    "value": SymbolValue(char, script, names, property_class is not None),
                     "captures": (Capture("symbol", index, index + 1, char, char, None),),
                 }
             )

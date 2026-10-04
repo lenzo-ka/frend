@@ -26,6 +26,7 @@ from frend.fold_resolve import (
     _select,
     _span_priors,
 )
+from frend.input_folds import InputFold, apply_input_fold
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -138,6 +139,8 @@ class ReadingLattice:
     semantic_ambiguous: bool
     ambiguous: bool
     source_text: str | None = None
+    raw_source_text: str | None = field(default=None, repr=False)
+    fold: InputFold | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -594,18 +597,24 @@ def compose_choices(
 
 
 def resolve_lattice(
-    detections: Sequence[Detection],
+    detections: Sequence[Detection] | None = None,
     *,
     locale: str = "en_US",
     output_cap: int = 1,
     feature_sources: Sequence[FeatureSource] | None = None,
     source_text: str | None = None,
+    fold: InputFold | None = "typographic",
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> ReadingLattice:
     """Resolve detections into an immutable, distilled reading lattice.
+
+    With ``detections=None``, recognize ``source_text`` with frend's public detector
+    profile after applying the declared input ``fold``. Callers supplying their own
+    detections remain responsible for running those detectors over
+    :func:`frend.apply_input_fold` with the same fold.
 
     ``output_cap=1`` is the winner-take-all public projection; a larger cap
     exposes more ranked paths over the same candidate and passthrough edges.
@@ -623,12 +632,25 @@ def resolve_lattice(
     too. This API does not silently claim a bound it does not have.
     """
     validate_input(source_text, max_input_chars=max_input_chars)
+    apply_input_fold("", fold)  # validate the declaration even with caller-made detections
+    raw_source_text = source_text
+    if detections is None:
+        if raw_source_text is None:
+            raise ValueError("source_text is required when detections is None")
+        source_text = apply_input_fold(raw_source_text, fold)
+        from icukit.detectors import detect
+
+        from frend.normalize import _reading_detectors
+
+        detections = list(detect(source_text, _reading_detectors(canonical_locale(locale))))
     return _resolve_lattice_validated(
         detections,
         locale=locale,
         output_cap=output_cap,
         feature_sources=feature_sources,
         source_text=source_text,
+        raw_source_text=raw_source_text,
+        fold=fold,
         class_prior=class_prior,
         class_prior_source=class_prior_source,
         max_input_chars=max_input_chars,
@@ -643,6 +665,8 @@ def _resolve_lattice_validated(
     output_cap: int = 1,
     feature_sources: Sequence[FeatureSource] | None = None,
     source_text: str | None = None,
+    raw_source_text: str | None = None,
+    fold: InputFold | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
@@ -651,6 +675,14 @@ def _resolve_lattice_validated(
     """Resolve text whose enclosing document API has already validated it."""
     if source_text is not None:
         validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
+    if raw_source_text is None:
+        raw_source_text = source_text
+    if (
+        source_text is not None
+        and raw_source_text is not None
+        and len(source_text) != len(raw_source_text)
+    ):
+        raise ValueError("folded and raw source text must have equal code-point lengths")
     if not isinstance(output_cap, int) or isinstance(output_cap, bool) or output_cap < 1:
         raise ValueError(f"output_cap must be a positive integer, got {output_cap!r}")
 
@@ -823,5 +855,7 @@ def _resolve_lattice_validated(
         selection.semantic_ambiguous if selection is not None else False,
         selection.ambiguous if selection is not None else False,
         source_text,
+        raw_source_text,
+        fold,
         locale=canonical,
     )

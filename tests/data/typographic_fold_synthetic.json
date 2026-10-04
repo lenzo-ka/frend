@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "relation": "synthetic_typographic_variant_of_folded_original",
+  "source": "google/tn-en_with_types runtime-eval shard 90",
+  "license": "CC BY-SA 4.0",
+  "items": [
+    {
+      "id": "shard90-lines132-141",
+      "folded_original": "\"Chevron's Bulgaria pull out a blow for energy\"",
+      "synthetic_written": "“Chevron’s Bulgaria pull out a blow for energy”"
+    },
+    {
+      "id": "shard90-line1633",
+      "folded_original": "9.6 cm",
+      "synthetic_written": "9.6 cm"
+    },
+    {
+      "id": "shard90-line2244",
+      "folded_original": "60 mph",
+      "synthetic_written": "60 mph"
+    },
+    {
+      "id": "shard90-lines7844-7846",
+      "folded_original": "1946-1947",
+      "synthetic_written": "1946–1947"
+    },
+    {
+      "id": "shard90-lines11410-11412",
+      "folded_original": "July 28, 1836-September 17, 1862",
+      "synthetic_written": "July 28, 1836–September 17, 1862"
+    }
+  ]
+}
