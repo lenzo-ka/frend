@@ -278,12 +278,9 @@ def _leaf_texts(detections, written: str) -> tuple[str, ...]:
     from frend import compose_choices, resolve_choices
     from frend.spoken_priors import normalize_spoken
 
-    try:
-        graph = compose_choices(
-            resolve_choices(detections, source_text=written, locale=LOCALE), locale=LOCALE
-        )
-    except Exception:  # noqa: BLE001 - unknown is safer than hiding a miss
-        return ()
+    graph = compose_choices(
+        resolve_choices(detections, source_text=written, locale=LOCALE), locale=LOCALE
+    )
     return tuple(
         normalize_spoken(alternative.text)
         for unit in graph.units
@@ -333,11 +330,10 @@ def _score_token(
             normalized.extend(normalize_spoken(candidate) for candidate in path_readings)
             capped |= path_capped
         readings = tuple(normalized)
+    except FileNotFoundError:
+        raise
     except Exception:  # noqa: BLE001 - evaluator semantics count a crash as a miss
         verbalizer_exception = True
-        first = surface
-        if first == target:
-            return True, True, False, None
 
     if not classify_misses:
         return False, target in readings, capped, None
@@ -361,7 +357,12 @@ def _score_token(
         verbalizer_exception=verbalizer_exception,
     )
     if classify_miss(evidence).miss_class == "V":
-        evidence = replace(evidence, leaf_texts=_leaf_texts(detections, written))
+        try:
+            evidence = replace(evidence, leaf_texts=_leaf_texts(detections, written))
+        except FileNotFoundError:
+            raise
+        except Exception:  # noqa: BLE001 - diagnostic resolution failures are E misses
+            evidence = replace(evidence, verbalizer_exception=True)
     classification = classify_miss(evidence)
     return False, target in readings, capped, classification
 

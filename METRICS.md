@@ -48,9 +48,9 @@ means empty output. ELECTRONIC letter notation is decoded before comparison. Emb
 `sil` words are retained by the headline scorer. `triage_misses.py
 --strip-embedded-sil` is an opt-in diagnostic and is never a headline result.
 The evaluator counts recognition, resolution, and verbalization exceptions as misses
-rather than dropping them. `triage_misses.py` currently has a known bug: after such an
-exception it substitutes the normalized written surface and can count the failed token
-as correct when that surface matches the target; a fix is queued. Sources:
+rather than dropping them. `triage_misses.py` likewise counts an exception as an E miss
+for both first-choice and any-reading accuracy, including when the written surface
+matches the target. Sources:
 `tools/evaluate_google_tn.py`, `tools/google_tn_rows.py`, `tools/triage_misses.py`, and
 `span-errors/results.md`.
 
@@ -94,7 +94,7 @@ overlapping diagnostic.
 | V | A complete span exists, but the correct form is absent from bounded readings. |
 | P | A PLAIN miss whose normalized surface and target have different spellings but the same nonzero number of alphabetic words; most observed cases are respellings, diacritic changes, or case changes. |
 | O | Another PLAIN or surface mismatch, such as expansion, spelling, or silence. |
-| E | The verbalizer raised an exception. |
+| E | Detection, resolution, or verbalization raised an exception. |
 
 Sources: `s0-triage/results.md`, `ukus/results.md`, and `tools/triage_misses.py`.
 
