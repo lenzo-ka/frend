@@ -30,6 +30,30 @@ from pathlib import Path
 
 from frend.locale_data import canonical_locale
 
+# The complete semiotic-class vocabulary named by the Google TN corpus.  Builders
+# may count only a subset in a particular table, but no corpus-derived class key may
+# fall outside this closed set.
+GOOGLE_TN_CLASSES = frozenset(
+    {
+        "ADDRESS",
+        "CARDINAL",
+        "DATE",
+        "DECIMAL",
+        "DIGIT",
+        "ELECTRONIC",
+        "FRACTION",
+        "LETTERS",
+        "MEASURE",
+        "MONEY",
+        "ORDINAL",
+        "PLAIN",
+        "PUNCT",
+        "TELEPHONE",
+        "TIME",
+        "VERBATIM",
+    }
+)
+
 
 def _pool(first: int, last: int) -> frozenset[str]:
     return frozenset(f"output-{index:05d}-of-00100" for index in range(first, last + 1))
