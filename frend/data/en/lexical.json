@@ -91,9 +91,10 @@
       "value": "'s"
     },
     "separator.words": {
-      "why": "no CLDR spoken name for '@' in an address (ICU's character name is COMMERCIAL AT), and the corpus holds no email address to measure one",
+      "why": "no CLDR spoken form for '@' in an address; every one of 1,791 training ELECTRONIC scheme URLs ending ')' says 'closing parenthesis'",
       "value": {
-        "@": "at"
+        "@": "at",
+        ")": "closing parenthesis"
       }
     },
     "symbol_run.line": {

@@ -62,6 +62,9 @@ from seen_strata import (  # noqa: E402
 _TEST_FILE = "output-00099-of-00100"
 _TEST_LINES = 100_000
 _ANY_CAP = 64
+# Public here as the evaluator's fixed class list; corpus-derived schemas share the
+# canonical definition in google_tn_rows rather than accepting class-shaped strings.
+GOOGLE_TN_CLASSES = google_tn_rows.GOOGLE_TN_CLASSES
 
 
 def _validate_evaluation_profile(profile: str | None, locale: str) -> str | None:

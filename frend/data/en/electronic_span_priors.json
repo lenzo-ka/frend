@@ -1,0 +1,140 @@
+{
+ "schema_version": 1,
+ "locale": "en",
+ "provenance": {
+  "builder": "tools/build_electronic_span_priors.py",
+  "corpus": "google-tn:en_with_types",
+  "locale": "en",
+  "shards": [
+   "output-00000-of-00100",
+   "output-00001-of-00100",
+   "output-00002-of-00100",
+   "output-00003-of-00100",
+   "output-00004-of-00100",
+   "output-00005-of-00100",
+   "output-00006-of-00100",
+   "output-00007-of-00100",
+   "output-00008-of-00100",
+   "output-00009-of-00100",
+   "output-00010-of-00100",
+   "output-00011-of-00100",
+   "output-00012-of-00100",
+   "output-00013-of-00100",
+   "output-00014-of-00100",
+   "output-00015-of-00100",
+   "output-00016-of-00100",
+   "output-00017-of-00100",
+   "output-00018-of-00100",
+   "output-00019-of-00100",
+   "output-00020-of-00100",
+   "output-00021-of-00100",
+   "output-00022-of-00100",
+   "output-00023-of-00100",
+   "output-00024-of-00100",
+   "output-00025-of-00100",
+   "output-00026-of-00100",
+   "output-00027-of-00100",
+   "output-00028-of-00100",
+   "output-00029-of-00100",
+   "output-00030-of-00100",
+   "output-00031-of-00100",
+   "output-00032-of-00100",
+   "output-00033-of-00100",
+   "output-00034-of-00100",
+   "output-00035-of-00100",
+   "output-00036-of-00100",
+   "output-00037-of-00100",
+   "output-00038-of-00100",
+   "output-00039-of-00100",
+   "output-00040-of-00100",
+   "output-00041-of-00100",
+   "output-00042-of-00100",
+   "output-00043-of-00100",
+   "output-00044-of-00100",
+   "output-00045-of-00100",
+   "output-00046-of-00100",
+   "output-00047-of-00100",
+   "output-00048-of-00100",
+   "output-00049-of-00100",
+   "output-00050-of-00100",
+   "output-00051-of-00100",
+   "output-00052-of-00100",
+   "output-00053-of-00100",
+   "output-00054-of-00100",
+   "output-00055-of-00100",
+   "output-00056-of-00100",
+   "output-00057-of-00100",
+   "output-00058-of-00100",
+   "output-00059-of-00100",
+   "output-00060-of-00100",
+   "output-00061-of-00100",
+   "output-00062-of-00100",
+   "output-00063-of-00100",
+   "output-00064-of-00100",
+   "output-00065-of-00100",
+   "output-00066-of-00100",
+   "output-00067-of-00100",
+   "output-00068-of-00100",
+   "output-00069-of-00100",
+   "output-00070-of-00100",
+   "output-00071-of-00100",
+   "output-00072-of-00100",
+   "output-00073-of-00100",
+   "output-00074-of-00100",
+   "output-00075-of-00100",
+   "output-00076-of-00100",
+   "output-00077-of-00100",
+   "output-00078-of-00100",
+   "output-00079-of-00100",
+   "output-00080-of-00100",
+   "output-00081-of-00100",
+   "output-00082-of-00100",
+   "output-00083-of-00100",
+   "output-00084-of-00100",
+   "output-00085-of-00100",
+   "output-00086-of-00100",
+   "output-00087-of-00100",
+   "output-00088-of-00100",
+   "output-00089-of-00100"
+  ],
+  "selection": "feature enabled with at least 3 ELECTRONIC rows and a strict ELECTRONIC majority over all corpus rows",
+  "privacy": "aggregate feature and corpus-class counts only; no corpus text"
+ },
+ "features": {
+  "hashtag": {
+   "classes": {
+    "ELECTRONIC": 8382
+   }
+  },
+  "leading-slash-scheme": {
+   "classes": {
+    "ELECTRONIC": 63
+   }
+  },
+  "path-document": {
+   "classes": {
+    "ELECTRONIC": 1785
+   }
+  },
+  "scheme-relative-url": {
+   "classes": {
+    "ELECTRONIC": 3091
+   }
+  },
+  "tld-uppercase-suffix": {
+   "classes": {
+    "ELECTRONIC": 25026
+   }
+  },
+  "trailing-parenthesis-scheme": {
+   "classes": {
+    "ELECTRONIC": 1787
+   }
+  },
+  "trailing-semicolon-scheme": {
+   "classes": {
+    "ELECTRONIC": 662
+   }
+  }
+ }
+}
