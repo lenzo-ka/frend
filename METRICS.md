@@ -48,9 +48,9 @@ means empty output. ELECTRONIC letter notation is decoded before comparison. Emb
 `sil` words are retained by the headline scorer. `triage_misses.py
 --strip-embedded-sil` is an opt-in diagnostic and is never a headline result.
 The evaluator counts recognition, resolution, and verbalization exceptions as misses
-rather than dropping them. `triage_misses.py` currently has a known bug: after such an
-exception it substitutes the normalized written surface and can count the failed token
-as correct when that surface matches the target; a fix is queued. Sources:
+rather than dropping them. `triage_misses.py` likewise counts an exception as an E miss
+for both first-choice and any-reading accuracy, including when the written surface
+matches the target. Sources:
 `tools/evaluate_google_tn.py`, `tools/google_tn_rows.py`, `tools/triage_misses.py`, and
 `span-errors/results.md`.
 

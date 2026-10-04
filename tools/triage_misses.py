@@ -335,9 +335,6 @@ def _score_token(
         readings = tuple(normalized)
     except Exception:  # noqa: BLE001 - evaluator semantics count a crash as a miss
         verbalizer_exception = True
-        first = surface
-        if first == target:
-            return True, True, False, None
 
     if not classify_misses:
         return False, target in readings, capped, None

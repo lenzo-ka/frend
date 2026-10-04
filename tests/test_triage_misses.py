@@ -78,6 +78,22 @@ def test_classifier_partitions_d_s_r_v_p_o_and_e():
     assert classes == triage.MISS_CLASSES == ("D", "S", "R", "V", "P", "O", "E")
 
 
+def test_verbalizer_exception_surface_match_counts_as_e_miss(monkeypatch):
+    triage = _triage()
+
+    def fail_verbalization(*_args, **_kwargs):
+        raise RuntimeError("fixture verbalizer failure")
+
+    monkeypatch.setattr("frend.verbalize.verbalize_lattice", fail_verbalization)
+    sentence = (("PLAIN", "Surface", "<self>"),)
+    result = triage._score_sentence(("shard", 0, sentence, None, None))
+
+    assert result["first"] == 0
+    assert result["any"] == 0
+    assert result["sentence_first"] is False
+    assert result["miss_counts"] == {"E": 1}
+
+
 def test_r_is_derived_from_bounded_readings_and_cap_is_reported():
     triage = _triage()
     alternatives = tuple(
