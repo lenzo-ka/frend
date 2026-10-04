@@ -143,16 +143,21 @@ def test_sentence_payloads_carry_sample_identity():
     triage = _tool("triage_misses")
     records = _two_sentence_payload()["records"]
 
-    first = evaluate._per_sentence_payload(records, None, "corpus-a")
-    second = evaluate._per_sentence_payload(records, "google-tn", "corpus-a")
+    first = evaluate._per_sentence_payload(records, None, "typographic", "corpus-a")
+    second = evaluate._per_sentence_payload(records, "google-tn", "typographic", "corpus-a")
+    assert first["fold"] == "typographic"
     assert first["sample_fingerprint"] == second["sample_fingerprint"]
     assert (
         first["sample_fingerprint"]
-        != evaluate._per_sentence_payload(records, None, "corpus-b")["sample_fingerprint"]
+        != evaluate._per_sentence_payload(records, None, "typographic", "corpus-b")[
+            "sample_fingerprint"
+        ]
     )
     assert (
         first["sample_fingerprint"]
-        != evaluate._per_sentence_payload(records[:1], None, "corpus-a")["sample_fingerprint"]
+        != evaluate._per_sentence_payload(records[:1], None, "typographic", "corpus-a")[
+            "sample_fingerprint"
+        ]
     )
     assert (
         triage._per_sentence_payload(records, None, "existing-fingerprint")["sample_fingerprint"]
@@ -174,10 +179,28 @@ def test_evaluator_adds_intervals_and_text_free_sentence_records(monkeypatch):
     assert report["intervals"]["first_choice_accuracy"] == [0.0, 1.0]
     assert report["intervals"]["defined_replicates"]["first_choice_accuracy"] == 100
     assert records == [
-        {"id": "sample:0", "tokens": 1, "first": 1, "any": 1, "sentence_first": True},
-        {"id": "sample:1", "tokens": 1, "first": 0, "any": 1, "sentence_first": False},
+        {
+            "id": "sample:0",
+            "fold": "typographic",
+            "tokens": 1,
+            "first": 1,
+            "any": 1,
+            "sentence_first": True,
+        },
+        {
+            "id": "sample:1",
+            "fold": "typographic",
+            "tokens": 1,
+            "first": 0,
+            "any": 1,
+            "sentence_first": False,
+        },
     ]
     assert "secret" not in repr(records)
+
+    without_fold = []
+    evaluate._per_token(sentences, 1, fold=None, record_sink=without_fold)
+    assert {record["fold"] for record in without_fold} == {None}
 
 
 def test_triage_reports_each_class_interval_in_percentage_points(monkeypatch):

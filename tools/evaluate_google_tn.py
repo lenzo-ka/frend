@@ -103,10 +103,18 @@ def _joined(texts_and_passthrough) -> str:
     return out
 
 
-def _score(item: tuple[tuple[str, str, str], str, str, str, str | None]) -> tuple[str, bool, bool]:
-    (corpus_class, written, spoken), before, after, locale, profile = item
+def _score(
+    item: tuple[tuple[str, str, str], str, str, str, str | None, str | None],
+) -> tuple[str, bool, bool]:
+    (corpus_class, written, spoken), before, after, locale, profile, fold = item
     first, any_ = _score_text(
-        written, _expected(corpus_class, written, spoken), before, after, locale, profile
+        written,
+        _expected(corpus_class, written, spoken),
+        before,
+        after,
+        locale,
+        profile,
+        fold,
     )
     return corpus_class, first, any_
 
@@ -128,25 +136,33 @@ def _score_text(
     after: str = "",
     locale: str = "en_US",
     profile: str | None = None,
+    fold: str | None = "typographic",
 ) -> tuple[bool, bool]:
     """Whether frend's first reading of ``written``, and whether any reading, says ``target``.
 
     ``written`` is read alone, as a token of its sentence, and ``before`` and ``after``
     (the sentence's written text either side) are its context.
     """
-    from icukit.detectors import detect
-
-    from frend import resolve_lattice
+    from frend import apply_input_fold, resolve_lattice
     from frend.spoken_priors import normalize_spoken
     from frend.verbalize import verbalize_lattice
 
     profile = _validate_evaluation_profile(profile, locale)
     target = normalize_spoken(target)
     try:
-        detections = list(detect(written, _detectors(locale))) if written.strip() else []
+        recognition_text = apply_input_fold(written, fold)
         verbalized = verbalize_lattice(
-            resolve_lattice(detections, source_text=written, locale=locale),
-            context=_in_context(written, before, after),
+            resolve_lattice(
+                None if recognition_text.strip() else [],
+                source_text=written,
+                locale=locale,
+                fold=fold,
+            ),
+            context=_in_context(
+                recognition_text,
+                apply_input_fold(before, fold),
+                apply_input_fold(after, fold),
+            ),
             profile=profile,
         )
     except FileNotFoundError:
@@ -178,10 +194,10 @@ _range_denominators = google_tn_rows.range_candidate_denominators
 
 
 def _score_joined(
-    item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None],
+    item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None, str | None],
 ) -> tuple[str, str, bool, bool]:
-    (separator, middle, written, target), (before, after), locale, profile = item
-    return (separator, middle, *_score_text(written, target, before, after, locale, profile))
+    (separator, middle, written, target), (before, after), locale, profile, fold = item
+    return (separator, middle, *_score_text(written, target, before, after, locale, profile, fold))
 
 
 def _rows(corpus_input: VerifiedInput, limit: int | None = _TEST_LINES):
@@ -217,6 +233,7 @@ def _per_token(
     workers: int,
     locale: str = "en_US",
     profile: str | None = None,
+    fold: str | None = "typographic",
     strata_seen: frozenset[str] | None = None,
     *,
     intervals: int = 0,
@@ -233,6 +250,7 @@ def _per_token(
             " ".join(r[1] for r in sentence[index + 1 :]),
             locale,
             profile,
+            fold,
         )
         for sentence in sentences
         for index, row in enumerate(sentence)
@@ -258,6 +276,7 @@ def _per_token(
         sentence_records.append(
             {
                 "id": f"{record_prefix}:{sentence_index}",
+                "fold": fold,
                 "tokens": len(sentence),
                 "first": first_count,
                 "any": any_count,
@@ -439,13 +458,17 @@ def _add_evaluation_intervals(
 
 
 def _running_text_rows(
-    sentences, workers: int, locale: str = "en_US", profile: str | None = None
+    sentences,
+    workers: int,
+    locale: str = "en_US",
+    profile: str | None = None,
+    fold: str | None = "typographic",
 ) -> list[dict]:
     """Each number, separator, number triple of ``sentences`` rejoined as written and
     scored, grouped by separator and the corpus's reading of it."""
     items = list(
         (
-            (row, context, locale, profile)
+            (row, context, locale, profile, fold)
             for row, context in zip(
                 _running_text(sentences, locale),
                 google_tn_rows.running_text_contexts(sentences, locale),
@@ -477,6 +500,7 @@ def _held_out(
     workers: int,
     locale: str = "en_US",
     profile: str | None = None,
+    fold: str | None = "typographic",
     strata_path: Path | None = None,
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
@@ -501,6 +525,7 @@ def _held_out(
                 workers,
                 locale,
                 profile,
+                fold,
                 None if match is None else match.seen,
                 intervals=intervals,
                 interval_seed=interval_seed,
@@ -511,7 +536,7 @@ def _held_out(
         "running_text": {
             "lines": f"all lines of {name}",
             "triples": len(_running_text(whole, locale)),
-            "rows": _running_text_rows(whole, workers, locale, profile),
+            "rows": _running_text_rows(whole, workers, locale, profile, fold),
         },
     }
     if match is not None:
@@ -527,6 +552,7 @@ def evaluate(
     locale: str = "en_US",
     skip_report_shard: bool = False,
     profile: str | None = None,
+    fold: str | None = "typographic",
     strata_path: Path | None = None,
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
@@ -539,7 +565,7 @@ def evaluate(
         )
     if skip_report_shard and _TEST_FILE in inputs:
         raise ValueError("skip_report_shard=True forbids report shard 99 in inputs")
-    report = {}
+    report = {"fold": fold}
     if not skip_report_shard:
         sentences = _rows(inputs[_TEST_FILE])
         match = None
@@ -552,6 +578,7 @@ def evaluate(
             workers,
             locale,
             profile,
+            fold,
             None if match is None else match.seen,
             intervals=intervals,
             interval_seed=interval_seed,
@@ -559,6 +586,7 @@ def evaluate(
             record_sink=record_sink,
         )
         report = {
+            "fold": fold,
             "test_set": f"first {_TEST_LINES} lines of {_TEST_FILE}",
             **{key: per_token[key] for key in ("tokens", "sentences")},
             **{
@@ -570,7 +598,7 @@ def evaluate(
                 )
             },
             "classes": per_token["classes"],
-            "running_text": _running_text_rows(sentences, workers, locale, profile),
+            "running_text": _running_text_rows(sentences, workers, locale, profile, fold),
             "note": (
                 "frend reads each token alone, its sentence as context; "
                 "the published models read the sentence whole"
@@ -588,6 +616,7 @@ def evaluate(
             workers,
             locale,
             profile,
+            fold,
             strata_path,
             intervals,
             interval_seed,
@@ -711,7 +740,7 @@ def _render_stratum_interval(row: dict, name: str) -> str:
 
 
 def _per_sentence_payload(
-    records: list[dict], profile: str | None, corpus_fingerprint: str
+    records: list[dict], profile: str | None, fold: str | None, corpus_fingerprint: str
 ) -> dict[str, object]:
     sample_identity = {
         "corpus_fingerprint": corpus_fingerprint,
@@ -724,6 +753,7 @@ def _per_sentence_payload(
         "schema_version": 1,
         "unit": "sentence",
         "profile": profile,
+        "fold": fold,
         "sample_fingerprint": sample_fingerprint,
         "records": records,
     }
@@ -751,6 +781,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--profile", choices=("google-tn",), default=None)
+    parser.add_argument(
+        "--fold",
+        choices=("typographic", "none"),
+        default="typographic",
+        help="declared input fold applied before recognition (default: typographic)",
+    )
     parser.add_argument(
         "--strata",
         type=Path,
@@ -820,6 +856,7 @@ def main(argv: list[str] | None = None) -> int:
         locale=args.locale,
         skip_report_shard=args.skip_report_shard,
         profile=args.profile,
+        fold=None if args.fold == "none" else args.fold,
         strata_path=args.strata,
         intervals=args.intervals,
         interval_seed=args.interval_seed,
@@ -832,7 +869,12 @@ def main(argv: list[str] | None = None) -> int:
         args.per_sentence_out.parent.mkdir(parents=True, exist_ok=True)
         args.per_sentence_out.write_text(
             json.dumps(
-                _per_sentence_payload(records, args.profile, corpus_receipt["fingerprint"]),
+                _per_sentence_payload(
+                    records,
+                    args.profile,
+                    None if args.fold == "none" else args.fold,
+                    corpus_receipt["fingerprint"],
+                ),
                 indent=2,
                 sort_keys=True,
             )

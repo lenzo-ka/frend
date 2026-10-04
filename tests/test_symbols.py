@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import pytest
 
+import frend
 from frend import resolve_lattice
+from frend.context import TextContext
 from frend.spoken_priors import normalize_spoken
 from frend.symbols import SymbolDetector
 from frend.verbalize import verbalize_edge
@@ -33,6 +35,66 @@ def test_symbol_reads_as_the_corpus_measures_it(text, first):
 def test_every_cldr_name_and_silence_are_offered():
     forms = _forms("&")
     assert {"ampersand", "and", ""} <= set(forms)
+
+
+@pytest.mark.parametrize("text", ["ᵋ", "々"])
+def test_measured_property_classes_are_silent_first_with_name_fallback(text):
+    (detection,) = SymbolDetector().detect(text)
+    assert detection["type"] == "symbol:property"
+    lattice = resolve_lattice([detection], source_text=text)
+    edge = next(edge for edge in lattice.edges if edge.kind == "reading")
+    unit = verbalize_edge(edge, source_text=text)
+
+    assert unit.alternatives[0].text == ""
+    assert unit.alternatives[0].provenance == "surface:silence"
+    assert unit.alternatives[1].text
+    assert unit.alternatives[1].provenance == "icu-name:property"
+
+
+def test_property_rule_applies_only_to_whole_standalone_tokens():
+    assert SymbolDetector().detect("aᵋb") == []
+    assert SymbolDetector().detect("時々") == []
+    assert [item["type"] for item in SymbolDetector().detect("ᵋᵋ")] == ["symbol:property"]
+
+
+def test_property_silence_uses_the_normal_context_reranker(monkeypatch):
+    import importlib
+
+    verbalize_module = importlib.import_module("frend.verbalize")
+
+    (detection,) = SymbolDetector().detect("ᵋ")
+    lattice = resolve_lattice([detection], source_text="ᵋ")
+    edge = next(edge for edge in lattice.edges if edge.kind == "reading")
+    calls = []
+
+    def reverse(alternatives, *_args, **_kwargs):
+        calls.append(tuple(item.text for item in alternatives))
+        return tuple(reversed(alternatives)), None
+
+    monkeypatch.setattr(verbalize_module, "_rank_final", lambda alternatives, *_args: alternatives)
+    monkeypatch.setattr(verbalize_module, "rerank", reverse)
+    unit = verbalize_edge(
+        edge,
+        source_text="ᵋ",
+        context=TextContext("ᵋ"),
+    )
+
+    assert calls == [("", "modifier letter small open e")]
+    assert unit.alternatives[0].text == "modifier letter small open e"
+
+
+def test_property_rule_preserves_words_like_main_and_silences_a_standalone_token():
+    assert frend.normalize("時々", fold=None) == "時々"
+    assert frend.normalize("aᵋb", fold=None) == " aᵋb "
+    assert frend.normalize("ᵋ", fold=None).strip() == ""
+    assert frend.normalize("ᵋᵋ", fold=None).strip() == ""
+
+
+def test_mixed_modifier_class_is_report_only():
+    from frend.symbols import silent_property_class
+
+    assert silent_property_class("ʻ") is None
+    assert silent_property_class("ー") is None
 
 
 @pytest.mark.parametrize("text", ["R&D", "AT&T", "a-b", "x.y", "3.14", "αβ"])

@@ -30,6 +30,7 @@ from icukit.recognize import (
 
 from frend.abbreviation_variants import AbbreviationVariantDetector
 from frend.electronic import _ValidatedElectronicDetector
+from frend.input_folds import InputFold, apply_input_fold
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -119,6 +120,7 @@ class NormalizedText:
 
     text: str
     units: list[NormalizedUnit]
+    fold: InputFold | None = None
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
@@ -208,6 +210,8 @@ def _unit_text(unit: VerbalizedUnit) -> str:
 def _sentence(
     text: str,
     *,
+    raw_text: str,
+    fold: InputFold | None,
     locale: str,
     profile: str | None,
     offsets: bool,
@@ -218,6 +222,8 @@ def _sentence(
     lattice = _resolve_lattice_validated(
         detections,
         source_text=text,
+        raw_source_text=raw_text,
+        fold=fold,
         locale=locale,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
@@ -250,6 +256,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    fold: InputFold | None = "typographic",
     offsets: Literal[False] = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
@@ -262,6 +269,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    fold: InputFold | None = "typographic",
     offsets: Literal[True],
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
@@ -274,6 +282,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    fold: InputFold | None = "typographic",
     offsets: bool,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
@@ -285,6 +294,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    fold: InputFold | None = "typographic",
     offsets: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
@@ -292,12 +302,16 @@ def normalize(
     """Return the first-choice spoken form of a plain-text document.
 
     Sentence resolution stays bounded by ``max_unit_chars``. With ``offsets=True``,
-    each output unit also records its code-point span and originating source span.
+    each output unit also records its code-point span and originating source span, and
+    :class:`NormalizedText` records the applied ``fold``. The plain-string form carries
+    no metadata; callers that need fold provenance must request offsets.
     """
     if not isinstance(offsets, bool):
         raise TypeError(f"offsets must be a bool, got {type(offsets).__name__}")
     validate_input(text, max_input_chars=max_input_chars)
     validate_unit_length(0, max_unit_chars=max_unit_chars)
+    raw_text = text
+    text = apply_input_fold(raw_text, fold)
     locale = canonical_locale(locale)
     profile = validate_profile(profile)
     ranges = _sentence_ranges(text, locale)
@@ -316,7 +330,7 @@ def normalize(
                 )
             ]
         )
-        return NormalizedText("", units)
+        return NormalizedText("", units, fold)
 
     # TODO(icukit): use icukit's reflow(text, mode) -> str once it is released.
     for start, end in ranges:
@@ -353,6 +367,8 @@ def normalize(
         sentence = text[start:end]
         rendered, spoken = _sentence(
             sentence,
+            raw_text=raw_text[start:end],
+            fold=fold,
             locale=locale,
             profile=profile,
             offsets=offsets,
@@ -387,4 +403,4 @@ def normalize(
             )
         )
     normalized = "".join(parts)
-    return NormalizedText(normalized, aligned) if aligned is not None else normalized
+    return NormalizedText(normalized, aligned, fold) if aligned is not None else normalized

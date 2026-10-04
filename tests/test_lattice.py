@@ -153,6 +153,35 @@ def test_passthrough_edges_and_path_reconstruct_uncovered_text():
     assert all(edge.geometry == CoverScore(0, 0, 0) for edge in skips)
 
 
+def test_lattice_public_recognition_applies_fold_before_detection(monkeypatch):
+    import importlib
+
+    normalize_module = importlib.import_module("frend.normalize")
+
+    seen = []
+
+    class Recorder:
+        def detect(self, text):
+            seen.append(text)
+            return []
+
+    monkeypatch.setattr(normalize_module, "_reading_detectors", lambda _locale: (Recorder(),))
+    lattice = resolve_lattice(source_text="5\u00a0km")
+
+    assert seen == ["5 km"]
+    assert lattice.fold == "typographic"
+    assert lattice.source_text == "5 km"
+    assert lattice.raw_source_text == "5\u00a0km"
+
+
+def test_lattice_with_caller_supplied_detections_does_not_claim_a_fold():
+    lattice = resolve_lattice([], source_text="5\u00a0km")
+
+    assert lattice.fold is None
+    assert lattice.source_text == "5\u00a0km"
+    assert lattice.raw_source_text == "5\u00a0km"
+
+
 def test_ranked_projection_is_capped_and_reports_truncation():
     text = "xxxx"
     detections = [_det(text, 0, 4, "date:Md"), _det(text, 0, 4, "number:fraction")]

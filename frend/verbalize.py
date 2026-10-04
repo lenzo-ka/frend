@@ -3053,10 +3053,9 @@ def _verbalize_edge(
         elif isinstance(value, SymbolValue):
             # A standalone character reads by its names or as nothing; the corpus says
             # most punctuation, a lone dash and "風" as nothing, "&" as "and".
-            alternatives = (
-                *(SpokenAlternative(name, source) for name, source in value.names),
-                SpokenAlternative("", "surface:silence"),
-            )
+            named = tuple(SpokenAlternative(name, source) for name, source in value.names)
+            silence = SpokenAlternative("", "surface:silence")
+            alternatives = (silence, *named) if value.silent_first else (*named, silence)
             connector = _range_to(context, edge.start, edge.end, locale)
             if connector is not None:
                 # A lone separator between two numbers ("5 - 10") may be said "to".

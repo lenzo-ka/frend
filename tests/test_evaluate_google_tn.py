@@ -342,7 +342,8 @@ def test_skip_report_shard_never_verifies_shard_99(tmp_path, monkeypatch):
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert not any(str(path).endswith("output-00099-of-00100") for path in verified_paths)
     assert "test_set" not in report
-    assert set(report) == {"held_out"}
+    assert set(report) == {"fold", "held_out"}
+    assert report["fold"] == "typographic"
     rendered = evaluate._render(report)
     assert rendered.startswith("Held out:")
     assert "Test set:" not in rendered
@@ -423,6 +424,7 @@ def test_skip_report_shard_rejects_report_shard_before_verification(
 
 def test_evaluate_refuses_report_shard_in_skip_mode():
     evaluate = _evaluator()
+    assert evaluate.evaluate({}, 1, skip_report_shard=True, fold=None) == {"fold": None}
     message = "skip_report_shard=True requires held_out_shard other than report shard 99"
     with pytest.raises(ValueError, match=f"^{message}$"):
         evaluate.evaluate({}, 1, evaluate._TEST_FILE, skip_report_shard=True)

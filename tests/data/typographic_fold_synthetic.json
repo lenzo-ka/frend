@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "authorship": "project-authored",
+  "items": [
+    {
+      "name": "curly-quotation",
+      "written": "Mira wrote “yes”.",
+      "expected_spoken": " mira   wrote  \" yes \"  ",
+      "expected_without_fold": " mira   wrote  “ yes ”  ",
+      "requires_fold": true
+    },
+    {
+      "name": "nonbreaking-space-measure",
+      "written": "A 5 kg parcel.",
+      "expected_spoken": " A   five kilograms   parcel .",
+      "expected_without_fold": " A   five kilograms   parcel .",
+      "requires_fold": false
+    },
+    {
+      "name": "minus-range",
+      "written": "A 26−27 finish.",
+      "expected_spoken": " A   twenty-six to twenty-seven   finish .",
+      "expected_without_fold": " A   twenty-six − twenty-seven   finish .",
+      "requires_fold": true
+    },
+    {
+      "name": "nonbreaking-hyphen-range",
+      "written": "The years 1946‑1947 passed.",
+      "expected_spoken": " the   years   nineteen forty-six to nineteen forty-seven   passed .",
+      "expected_without_fold": " the   years   nineteen forty-six ‑ nineteen forty-seven   passed .",
+      "requires_fold": true
+    },
+    {
+      "name": "curly-apostrophe-year",
+      "written": "It began in ’94.",
+      "expected_spoken": " it   began   in   ninety-four .",
+      "expected_without_fold": " it   began   in   ninety-four .",
+      "requires_fold": false
+    }
+  ]
+}

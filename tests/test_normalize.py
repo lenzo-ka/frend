@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -103,6 +104,81 @@ def test_non_ascii_offsets_are_code_point_exact_and_tile_both_texts():
     source_slices = [source[slice(*unit.source_span)] for unit in result.units]
     assert source_slices == list(source)
     assert "".join(source_slices) == source
+
+
+def test_typographic_fold_is_length_preserving_declared_and_slices_raw_text():
+    source = "’94\u2010’95, “quoted”, 5\u00a0km, and 26\u221227."
+    folded = frend.apply_input_fold(source)
+    assert folded == "'94-'95, \"quoted\", 5 km, and 26-27."
+    assert len(folded) == len(source)
+
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    assert result.fold == "typographic"
+    assert result.text == frend.normalize(folded, fold=None)
+    _assert_alignment_tiles(source, result)
+    for unit in result.units:
+        assert source[slice(*unit.source_span)]
+
+
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        ("\u2018", "'"),
+        ("\u2019", "'"),
+        ("\u201b", "'"),
+        ("\u201c", '"'),
+        ("\u201d", '"'),
+        ("\u201f", '"'),
+        ("\u00a0", " "),
+        ("\u2007", " "),
+        ("\u2009", " "),
+        ("\u202f", " "),
+        ("\u2010", "-"),
+        ("\u2011", "-"),
+        ("\u2212", "-"),
+        ("\u2013", "\u2013"),
+    ],
+)
+def test_typographic_fold_has_the_declared_one_code_point_mapping(source, expected):
+    assert frend.apply_input_fold(source) == expected
+    assert len(source) == len(expected)
+
+
+@pytest.mark.parametrize(
+    ("typographic", "ascii_twin"),
+    [
+        ("’94", "'94"),
+        ("’94–’95", "'94-'95"),
+        ("“quoted”", '"quoted"'),
+        ("5\u00a0km", "5 km"),
+        ("26–27", "26-27"),
+        ("June 26–27", "June 26-27"),
+    ],
+)
+def test_typographic_examples_read_as_their_folded_twins(typographic, ascii_twin):
+    assert frend.normalize(typographic) == frend.normalize(ascii_twin, fold=None)
+
+
+def test_project_authored_typographic_sentences_have_exact_outputs():
+    path = Path(__file__).parent / "data" / "typographic_fold_synthetic.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    assert document["authorship"] == "project-authored"
+
+    failed_without_fold = []
+    for item in document["items"]:
+        with_fold = frend.normalize(item["written"])
+        without_fold = frend.normalize(item["written"], fold=None)
+        assert with_fold == item["expected_spoken"]
+        assert without_fold == item["expected_without_fold"]
+        assert (without_fold != item["expected_spoken"]) is item["requires_fold"]
+        if without_fold != item["expected_spoken"]:
+            failed_without_fold.append(item["name"])
+    assert failed_without_fold == [
+        "curly-quotation",
+        "minus-range",
+        "nonbreaking-hyphen-range",
+    ]
 
 
 def test_first_choice_agrees_with_the_evaluator_join_on_a_fixture():

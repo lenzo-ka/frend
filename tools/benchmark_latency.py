@@ -75,12 +75,21 @@ def _worker(args: argparse.Namespace) -> int:
     from frend.lattice import resolve_lattice
     from frend.verbalize import verbalize_lattice
 
-    resolve_accepts_locale = "locale" in inspect.signature(resolve_lattice).parameters
+    resolve_parameters = inspect.signature(resolve_lattice).parameters
+    apply_input_fold = getattr(frend, "apply_input_fold", None)
+    input_fold = "typographic" if apply_input_fold is not None else None
+
+    def recognition_text(text: str) -> str:
+        return text if apply_input_fold is None else apply_input_fold(text, input_fold)
 
     def resolve(detections, text):
         kwargs = {"source_text": text}
-        if resolve_accepts_locale:
+        if "locale" in resolve_parameters:
             kwargs["locale"] = locale
+        if "fold" in resolve_parameters:
+            # Detection already ran over recognition_text; supplied detections cannot
+            # truthfully ask the resolver to claim that it applied a fold.
+            kwargs["fold"] = None
         return resolve_lattice(detections, **kwargs)
 
     subject = args.subject_root.resolve()
@@ -106,11 +115,11 @@ def _worker(args: argparse.Namespace) -> int:
     if any(not values for values in inputs.values()):
         raise SystemExit("every requested locale bucket must be nonempty after --max-words")
     gangs = {locale: reading_detectors(locale) for locale in locales}
-    prepared = {
-        (locale, text): list(detect(text, gangs[locale]))
-        for locale, values in inputs.items()
-        for text in values
-    }
+    prepared = {}
+    for locale, values in inputs.items():
+        for text in values:
+            recognized = recognition_text(text)
+            prepared[(locale, text)] = (recognized, list(detect(recognized, gangs[locale])))
     order = [(locale, text) for locale, values in inputs.items() for text in values]
     rng = random.Random(args.seed)
     rng.shuffle(order)
@@ -135,8 +144,9 @@ def _worker(args: argparse.Namespace) -> int:
     try:
         for _ in range(args.warmup):
             locale, text = order[_ % len(order)]
-            detections = list(detect(text, gangs[locale]))
-            verbalize_lattice(resolve(detections, text))
+            recognized = recognition_text(text)
+            detections = list(detect(recognized, gangs[locale]))
+            verbalize_lattice(resolve(detections, recognized))
         vectors = {locale: {"end_to_end_ns": [], "resolve_only_ns": []} for locale in locales}
         counts = {locale: 0 for locale in locales}
         index = 0
@@ -147,16 +157,19 @@ def _worker(args: argparse.Namespace) -> int:
                 continue
             counts[locale] += 1
             before = time.perf_counter_ns()
-            detections = list(detect(text, gangs[locale]))
-            verbalize_lattice(resolve(detections, text))
+            recognized = recognition_text(text)
+            detections = list(detect(recognized, gangs[locale]))
+            verbalize_lattice(resolve(detections, recognized))
             vectors[locale]["end_to_end_ns"].append(time.perf_counter_ns() - before)
             before = time.perf_counter_ns()
-            resolve(prepared[(locale, text)], text)
+            recognized, detections = prepared[(locale, text)]
+            resolve(detections, recognized)
             vectors[locale]["resolve_only_ns"].append(time.perf_counter_ns() - before)
     finally:
         gc.callbacks.remove(callback)
     payload = {
         "environment": _environment(),
+        "fold": input_fold,
         "denominators": {locale: len(values) for locale, values in inputs.items()},
         "vectors": vectors,
         "summaries": {
@@ -519,13 +532,19 @@ def _compare(args: argparse.Namespace) -> int:
     for key in ("warmup", "runs", "seed", "max_words"):
         if baseline[key] != candidate[key]:
             raise SystemExit(f"comparison refuses different {key}")
+    required_locales = ("en_US", "ru_RU", "es_ES")
+    baseline_locales = set(baseline.get("summaries", {}))
+    candidate_locales = set(candidate.get("summaries", {}))
+    if baseline_locales != candidate_locales:
+        raise SystemExit("comparison refuses different locale sets")
+    missing = set(required_locales) - baseline_locales
+    if missing:
+        raise SystemExit("comparison requires the same English, Russian and Spanish results")
+
     required_boundaries = ("end_to_end_ns", "resolve_only_ns")
     required_percentiles = ("p50", "p90")
-    for label, receipt, locales in (
-        ("baseline", baseline, ("en_US",)),
-        ("candidate", candidate, ("en_US", "ru_RU", "es_ES")),
-    ):
-        for locale in locales:
+    for label, receipt in (("baseline", baseline), ("candidate", candidate)):
+        for locale in required_locales:
             if not receipt.get("denominators", {}).get(locale):
                 raise SystemExit(f"comparison refuses {label} without a nonempty {locale} input")
             summary = receipt.get("summaries", {}).get(locale)
@@ -542,15 +561,19 @@ def _compare(args: argparse.Namespace) -> int:
                         raise SystemExit(
                             f"comparison refuses {label} without {locale} {boundary} {percentile}"
                         )
-    if baseline["denominators"].get("en_US") != candidate["denominators"].get("en_US"):
-        raise SystemExit("comparison refuses different English input denominator")
+    for locale in required_locales:
+        if baseline["denominators"].get(locale) != candidate["denominators"].get(locale):
+            raise SystemExit(f"comparison refuses different {locale} input denominator")
     failures = []
-    for boundary in ("end_to_end_ns", "resolve_only_ns"):
-        for percentile in ("p50", "p90"):
-            old = baseline["summaries"]["en_US"][boundary][percentile]
-            new = candidate["summaries"]["en_US"][boundary][percentile]
-            if new > old * (1 + args.english_max_regression):
-                failures.append(f"English {boundary} {percentile} regressed {(new / old - 1):.1%}")
+    for locale in required_locales:
+        for boundary in required_boundaries:
+            for percentile in required_percentiles:
+                old = baseline["summaries"][locale][boundary][percentile]
+                new = candidate["summaries"][locale][boundary][percentile]
+                if new > old * (1 + args.english_max_regression):
+                    failures.append(
+                        f"{locale} {boundary} {percentile} regressed {(new / old - 1):.1%}"
+                    )
     for locale in ("ru_RU", "es_ES"):
         if locale not in candidate["summaries"]:
             continue

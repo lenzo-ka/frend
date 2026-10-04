@@ -35,6 +35,7 @@ __all__ = [
     "SymbolValue",
     "locale_scripts",
     "run_readings",
+    "silent_property_class",
     "symbol_names",
     "transform_id",
 ]
@@ -48,6 +49,17 @@ _MARKS.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
 TRANSLITERATION_SOURCE = "icu-transliteration"
 LETTER_NAME_SOURCE = "icu-name:letter"
+PROPERTY_NAME_SOURCE = "icu-name:property"
+
+# Training shards 00--89: these ICU (General_Category, Script) classes each have at
+# least 100 occurrences and at least 99% of their occurrences are in wholly silent
+# tokens. Lower-support classes and mixed classes are report-only.
+_SILENT_PROPERTY_CLASSES = frozenset(
+    {
+        (icu.UCharCategory.MODIFIER_LETTER, "Latn"),
+        (icu.UCharCategory.MODIFIER_LETTER, "Hani"),
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -57,6 +69,7 @@ class SymbolValue:
     char: str
     script: str
     names: tuple[tuple[str, str], ...]
+    silent_first: bool = False
 
 
 @dataclass(frozen=True)
@@ -76,6 +89,12 @@ class ScriptRunValue:
 
 def _script(char: str) -> str:
     return icu.Script.getScript(ord(char)).getShortName()
+
+
+def silent_property_class(char: str) -> tuple[int, str] | None:
+    """The measured ICU property class that may make a whole token silent-first."""
+    key = (icu.Char.charType(char), _script(char))
+    return key if key in _SILENT_PROPERTY_CLASSES else None
 
 
 def _short(name: str) -> str | None:
@@ -226,6 +245,13 @@ def symbol_names(char: str, locale: str = "en_US") -> tuple[tuple[str, str], ...
     return ((letter, LETTER_NAME_SOURCE),) if letter else ()
 
 
+def _property_name(text: str) -> tuple[tuple[str, str], ...]:
+    from icukit import get_char_name
+
+    names = [get_char_name(char) for char in text]
+    return ((" ".join(names).lower(), PROPERTY_NAME_SOURCE),) if all(names) else ()
+
+
 def _speakable(char: str, locale: str) -> bool:
     if char.isspace() or char.isdigit():
         return False
@@ -238,6 +264,30 @@ def _standalone(text: str, start: int, end: int) -> bool:
     before = text[start - 1] if start > 0 else " "
     after = text[end] if end < len(text) else " "
     return not (before.isalnum() or after.isalnum())
+
+
+def _silent_property_tokens(text: str) -> dict[int, tuple[int, tuple[int, str]]]:
+    """Standalone alphanumeric tokens made wholly from one measured property class.
+
+    The corpus evidence is about complete silent tokens, not qualifying code points
+    embedded in otherwise ordinary words. Punctuation delimits tokens here just as it
+    does for the existing standalone-symbol rule.
+    """
+    tokens: dict[int, tuple[int, tuple[int, str]]] = {}
+    index = 0
+    while index < len(text):
+        if not text[index].isalnum():
+            index += 1
+            continue
+        start = index
+        while index < len(text) and text[index].isalnum():
+            index += 1
+        classes = {silent_property_class(char) for char in text[start:index]}
+        if len(classes) == 1 and None not in classes:
+            property_class = classes.pop()
+            assert property_class is not None
+            tokens[start] = (index, property_class)
+    return tokens
 
 
 def _groups(text: str, locale: str) -> list[tuple[int, int]]:
@@ -324,6 +374,12 @@ class SymbolDetector:
     def detect(self, text: str) -> list[dict]:
         detections = []
         in_runs: set[int] = set()
+        silent_property_tokens = _silent_property_tokens(text)
+        in_silent_property_tokens = {
+            position
+            for start, (end, _property_class) in silent_property_tokens.items()
+            for position in range(start, end)
+        }
         for start, end in _runs(text, self.locale):
             if not _standalone(text, start, end):
                 # A run touching a word is no unit; its letters read one by one, as before.
@@ -344,6 +400,32 @@ class SymbolDetector:
             )
         for index, char in enumerate(text):
             if index in in_runs:
+                continue
+            if index in in_silent_property_tokens:
+                token = silent_property_tokens.get(index)
+                if token is None:
+                    continue
+                end, _property_class = token
+                surface = text[index:end]
+                script = _script(char)
+                detections.append(
+                    {
+                        "text": surface,
+                        "start": index,
+                        "end": end,
+                        "type": "symbol:property",
+                        "value": SymbolValue(
+                            surface[0],
+                            script,
+                            _property_name(surface),
+                            True,
+                        ),
+                        "captures": tuple(
+                            Capture("symbol", at, at + 1, text[at], text[at], None)
+                            for at in range(index, end)
+                        ),
+                    }
+                )
                 continue
             if not _speakable(char, self.locale) or not _standalone(text, index, index + 1):
                 continue

@@ -12,6 +12,7 @@ from __future__ import annotations
 __version__ = "0.1.0"
 
 from frend.fold_resolve import Resolution, resolve
+from frend.input_folds import InputFold, apply_input_fold
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -53,6 +54,7 @@ __all__ = [
     "DEFAULT_MAX_INPUT_CHARS",
     "DEFAULT_MAX_UNIT_CHARS",
     "InputValidationError",
+    "InputFold",
     "LatticeNode",
     "MAX_NON_TEXT_SHARE",
     "NormalizedText",
@@ -70,6 +72,7 @@ __all__ = [
     "VerbalizedUnit",
     "__version__",
     "compose_choices",
+    "apply_input_fold",
     "freeze_after_setup",
     "normalize",
     "resolve",
