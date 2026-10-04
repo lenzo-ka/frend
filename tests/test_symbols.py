@@ -119,12 +119,12 @@ def test_four_repeated_symbols_are_one_described_unit_with_all_alternatives():
     detection, unit = _symbol_run_unit("****")
     assert (detection["start"], detection["end"]) == (0, 4)
     assert [alternative.text for alternative in unit.alternatives] == [
-        "line of asterisk symbols",
+        "line of asterisk",
         "asterisk asterisk asterisk asterisk",
         "",
     ]
     assert {alternative.group for alternative in unit.alternatives} == {"tts-sanity"}
-    assert frend.normalize("****", fold=None).strip() == "line of asterisk symbols"
+    assert frend.normalize("****", fold=None).strip() == "line of asterisk"
 
 
 def test_three_symbols_stay_verbatim_and_the_threshold_is_configurable():
@@ -133,15 +133,13 @@ def test_three_symbols_stay_verbatim_and_the_threshold_is_configurable():
         item["type"] == "symbol:run" for item in SymbolDetector(run_threshold=4).detect("****")
     )
     assert SymbolDetector(run_threshold=2).detect("***")[0]["type"] == "symbol:run"
-    assert frend.normalize("***", fold=None, symbol_run_threshold=2).strip() == (
-        "line of asterisk symbols"
-    )
+    assert frend.normalize("***", fold=None, symbol_run_threshold=2).strip() == ("line of asterisk")
 
 
 def test_a_space_separated_run_is_one_unit():
     detection, unit = _symbol_run_unit("*       *       *       *")
     assert detection["text"] == "*       *       *       *"
-    assert unit.best.text == "line of asterisk symbols"
+    assert unit.best.text == "line of asterisk"
 
 
 @pytest.mark.parametrize(
@@ -157,9 +155,9 @@ def test_mixed_runs_use_their_coarse_name(text, description):
 @pytest.mark.parametrize(
     ("text", "description", "source"),
     [
-        ("😀😀😀😀", "line of grinning face symbols", "icu-name:symbol"),
-        ("❤️❤️❤️❤️", "line of red heart symbols", "cldr-symbol:red heart"),
-        ("𝄞𝄞𝄞𝄞", "line of musical symbol g clef symbols", "icu-name:symbol"),
+        ("😀😀😀😀", "line of grinning face", "icu-name:symbol"),
+        ("❤️❤️❤️❤️", "line of red heart", "cldr-symbol:red heart"),
+        ("𝄞𝄞𝄞𝄞", "line of musical symbol g clef", "icu-name:symbol"),
     ],
 )
 def test_repeated_pictographs_use_cldr_then_icu_names(text, description, source):
@@ -177,16 +175,16 @@ def test_profile_callers_rank_the_run_without_dropping_alternatives(monkeypatch)
     default = verbalize_lattice(lattice)
     google = verbalize_lattice(lattice, profile=GOOGLE_TN)
     assert [item.text for item in default.best_path.units[0].alternatives] == [
-        "line of asterisk symbols",
+        "line of asterisk",
         "asterisk asterisk asterisk asterisk",
         "",
     ]
     assert [item.text for item in google.best_path.units[0].alternatives] == [
         "",
-        "line of asterisk symbols",
+        "line of asterisk",
         "asterisk asterisk asterisk asterisk",
     ]
-    assert frend.normalize("****", fold=None).strip() == "line of asterisk symbols"
+    assert frend.normalize("****", fold=None).strip() == "line of asterisk"
     assert frend.normalize("****", fold=None, profile=GOOGLE_TN).strip() == ""
 
 
@@ -296,7 +294,7 @@ def test_run_is_additional_and_alignment_retains_partial_component_readings():
     assert reading_types.count("symbol:cldr") == 4
 
     paths = _alignment_token_paths(build_align_graph(compose_choices(choices)))
-    assert ("line", "of", "asterisk", "symbols") in paths
+    assert ("line", "of", "asterisk") in paths
     assert () in paths
     assert {sum(token == "asterisk" for token in path) for path in paths} >= {0, 1, 2, 3, 4}
 

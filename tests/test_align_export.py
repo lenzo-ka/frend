@@ -815,7 +815,7 @@ def test_symbol_run_group_reaches_export_manifest():
         if alternative.get("group") is not None
     }
     assert grouped == {
-        ("line of asterisk symbols", "tts-sanity"),
+        ("line of asterisk", "tts-sanity"),
         ("asterisk asterisk asterisk asterisk", "tts-sanity"),
         ("", "tts-sanity"),
     }
