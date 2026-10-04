@@ -410,6 +410,13 @@ def test_valid_clock_is_still_a_time():
     assert not any(source.startswith("range:") for _, source in readings)
 
 
+def test_fractional_elapsed_time_beats_the_ratio_range():
+    """Training's M:SS.hh race times use ICU's minutes/seconds parse, not a ratio."""
+    readings = _readings("1:09.12", 16)
+    assert readings[0][0] == "one minute nine seconds and twelve milliseconds"
+    assert not any(source.startswith("range:") for _, source in readings)
+
+
 def test_iso_date_is_not_a_range():
     for unit in _units("2008-09-30"):
         assert not any(a.provenance.startswith("range:") for a in unit.alternatives)

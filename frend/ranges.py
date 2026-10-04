@@ -1163,6 +1163,20 @@ class RangeDetector:
         """R4a/R4b for a span's written ends."""
         return written_sub_key(cls, left, separator, right, self.locale)
 
+    def _fractional_duration(self, text: str) -> bool:
+        """Whether ICU recognizes ``text`` as a fractional elapsed duration."""
+        return any(
+            reading["start"] == 0
+            and reading["end"] == len(text)
+            and reading["type"] == "measure:duration:numeric"
+            and getattr(reading.get("value"), "unit", None) == "second"
+            and any(
+                getattr(capture, "name", None) == "fraction"
+                for capture in reading.get("captures", ())
+            )
+            for reading in self._read(text)
+        )
+
     # -- spans
 
     def candidates(self, text: str) -> list[dict]:
@@ -1202,6 +1216,11 @@ class RangeDetector:
             if left is None or right is None:
                 continue
             (start, left_end), (stop, right_end) = left, right
+            # A fractional colon form that ICU recognizes as elapsed minutes and
+            # seconds is not a ratio.  Unfractioned and invalid clocks retain the
+            # range table's existing ratio behavior.
+            if cls == "ratio" and self._fractional_duration(text[start:stop]):
+                continue
             left_end, right_end = self.carried(left_end, right_end)
             sub_key = self.sub_key(cls, left_end["text"], char, right_end["text"])
             found.append(
