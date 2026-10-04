@@ -46,6 +46,7 @@ _ROWS = [
     # Single tokens of a range's written shape: a phone's and a clock's.
     [("TELEPHONE", "555-1212", "five five five sil one two one two")],
     [("TIME", "10:30", "ten thirty")],
+    [("TIME", "2:08.34", "two minutes eight seconds and thirty four milliseconds")],
 ]  # fmt: skip
 
 
@@ -86,6 +87,19 @@ def test_relevance_predicates_in_the_builder(tmp_path):
         "range:cardinal+to+cardinal": 1,
         "range:money+silent+money": 1,
         "range:money+to+money": 1,
+    }
+
+
+def test_fractional_duration_preference_is_derived_from_counts(tmp_path):
+    document = _builder().build_document(_corpus(tmp_path / "corpus"))
+    assert document["numeric_duration"] == {
+        "shape": "whole-token M:SS.hh",
+        "classes": {"TIME": 1},
+        "outcomes": {"second": 1},
+        "total": 1,
+        "preferred_unit": "second",
+        "preferred_count": 1,
+        "other_count": 0,
     }
 
 

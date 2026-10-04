@@ -53,6 +53,8 @@ from google_tn_rows import (  # noqa: E402
     training_shards,
 )
 
+from frend.durations import fractional_duration_shape  # noqa: E402
+
 _range_denominators = range_candidate_denominators
 
 LOCALE = "en_US"
@@ -118,6 +120,27 @@ def _single_token_pattern() -> re.Pattern:
     return re.compile("([0-9]+)([" + re.escape("".join(separators)) + "])([0-9]+)")
 
 
+def _duration_outcome(written: str, spoken: str) -> str:
+    """Units whose unmodified ICU duration reading matches one training target."""
+    from icukit import FlexibleNumericDurationDetector
+
+    from frend.lattice import resolve_lattice
+    from frend.spoken_priors import normalize_spoken
+    from frend.verbalize import verbalize_edge
+
+    target = normalize_spoken(spoken)
+    matched = set()
+    for detection in FlexibleNumericDurationDetector(LOCALE).detect(written):
+        if detection["start"] != 0 or detection["end"] != len(written):
+            continue
+        lattice = resolve_lattice([detection], source_text=written)
+        edge = next(item for item in lattice.edges if item.kind == "reading")
+        alternatives = verbalize_edge(edge, source_text=written).alternatives
+        if any(normalize_spoken(item.text) == target for item in alternatives):
+            matched.add(str(detection["value"].unit))
+    return "+".join(sorted(matched)) or "none"
+
+
 def _class_of(separator: str) -> str | None:
     from frend.ranges import range_separator_classes
 
@@ -155,7 +178,9 @@ def emission_counts(path: Path) -> Counter:
             counts[("range", key, "")] += 1
     single = _single_token_pattern()
     for sentence in sentences:
-        for corpus_class, written, _ in sentence:
+        for corpus_class, written, spoken in sentence:
+            if fractional_duration_shape(written, LOCALE):
+                counts[("numeric_duration", _duration_outcome(written, spoken), corpus_class)] += 1
             found = single.fullmatch(written)
             if found is None:
                 continue
@@ -300,6 +325,22 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     for (what, _key, _detail), n in emission.items():
         if what in ("punctuation_dash", "not_emittable"):
             set_apart[what] += n
+    duration_outcomes: Counter[str] = Counter()
+    duration_classes: Counter[str] = Counter()
+    for (what, outcome, corpus_class), n in emission.items():
+        if what == "numeric_duration":
+            duration_outcomes[outcome] += n
+            duration_classes[corpus_class] += n
+    preferred_unit = None
+    preferred_count = 0
+    if duration_outcomes:
+        ranked = duration_outcomes.most_common()
+        if len(ranked) == 1 or ranked[0][1] > ranked[1][1]:
+            preferred_unit, preferred_count = ranked[0]
+            if preferred_unit == "none" or "+" in preferred_unit:
+                preferred_unit = None
+    total_duration = duration_outcomes.total()
+    other_count = total_duration - preferred_count if preferred_unit is not None else total_duration
     return {
         "locale": "en",
         "schema_version": 1,
@@ -364,6 +405,15 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 "joint_outcomes": dict(sorted(outcomes.items())),
             },
             "builder": "tools/build_range_priors.py",
+        },
+        "numeric_duration": {
+            "shape": "whole-token M:SS.hh",
+            "classes": dict(sorted(duration_classes.items())),
+            "outcomes": dict(sorted(duration_outcomes.items())),
+            "total": total_duration,
+            "preferred_unit": preferred_unit,
+            "preferred_count": preferred_count if preferred_unit is not None else 0,
+            "other_count": other_count,
         },
         "readings": readings,
         "kinds": kinds,

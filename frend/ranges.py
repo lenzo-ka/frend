@@ -56,6 +56,7 @@ from typing import Any, Literal
 import icu
 from icukit.detectors import Capture, DateTimeValue, NumberValue
 
+from frend.durations import fractional_duration_shape
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
 
 __all__ = [
@@ -1164,18 +1165,17 @@ class RangeDetector:
         return written_sub_key(cls, left, separator, right, self.locale)
 
     def _fractional_duration(self, text: str) -> bool:
-        """Whether ICU recognizes ``text`` as a fractional elapsed duration."""
-        return any(
-            reading["start"] == 0
+        """Whether the measured duration reader resolves the whole token to seconds."""
+        if not fractional_duration_shape(text, self.locale):
+            return False
+        units = {
+            str(getattr(reading.get("value"), "unit", ""))
+            for reading in self._read(text)
+            if reading["start"] == 0
             and reading["end"] == len(text)
             and reading["type"] == "measure:duration:numeric"
-            and getattr(reading.get("value"), "unit", None) == "second"
-            and any(
-                getattr(capture, "name", None) == "fraction"
-                for capture in reading.get("captures", ())
-            )
-            for reading in self._read(text)
-        )
+        }
+        return units == {"second"}
 
     # -- spans
 
@@ -1219,7 +1219,12 @@ class RangeDetector:
             # A fractional colon form that ICU recognizes as elapsed minutes and
             # seconds is not a ratio.  Unfractioned and invalid clocks retain the
             # range table's existing ratio behavior.
-            if cls == "ratio" and self._fractional_duration(text[start:stop]):
+            if (
+                cls == "ratio"
+                and start == 0
+                and stop == len(text)
+                and self._fractional_duration(text)
+            ):
                 continue
             left_end, right_end = self.carried(left_end, right_end)
             sub_key = self.sub_key(cls, left_end["text"], char, right_end["text"])

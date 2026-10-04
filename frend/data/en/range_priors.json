@@ -145,6 +145,19 @@
   },
   "builder": "tools/build_range_priors.py"
  },
+ "numeric_duration": {
+  "shape": "whole-token M:SS.hh",
+  "classes": {
+   "TIME": 4244
+  },
+  "outcomes": {
+   "second": 4244
+  },
+  "total": 4244,
+  "preferred_unit": "second",
+  "preferred_count": 4244,
+  "other_count": 0
+ },
  "readings": {
   "dash": {
    "range": 1010764,

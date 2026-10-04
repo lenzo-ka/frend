@@ -41,19 +41,15 @@ def reading_detectors(locale: str = "en_US") -> list[object]:
 @lru_cache(maxsize=LOCALE_CACHE)
 def _profile(locale: str) -> list[object]:
     from build_spoken_priors import _detectors
-    from icukit import FlexibleNumericDurationDetector
     from icukit.abbreviation_recognize import AbbreviationDetector
 
     from frend.abbreviation_variants import AbbreviationVariantDetector
-    from frend.durations import NumericDurationDetector
     from frend.letters import LettersDetector
     from frend.ranges import RangeDetector
 
     seen, detectors = set(), []
     for group in _detectors(locale).values():
         for detector in group:
-            if isinstance(detector, FlexibleNumericDurationDetector):
-                detector = NumericDurationDetector(locale)
             if id(detector) not in seen:
                 seen.add(id(detector))
                 detectors.append(detector)
