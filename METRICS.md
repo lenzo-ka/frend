@@ -16,12 +16,16 @@ The Google TN `en_with_types` split is fixed as follows:
   fingerprint is `de8ecfe19becd1dd7a141b3ae8b481016c7f40600e5a875264c7bd16be04c1b6`.
 - Acceptance: shard 95. The standard acceptance run scores its first 100,000 lines,
   which contain 7,576 sentences and 92,425 tokens.
-- Report: shard 99 may be opened once for a report, never for tuning or acceptance.
-  Decision runs pass `--held-out-shard output-00095-of-00100 --skip-report-shard`, so
-  shard 99 is not even verified or opened. Shards 96--98 are unused.
+- Report: shard 99 is report-only and may be scored at milestones, never for tuning or
+  acceptance. The current `5db817b` checkpoint has not been reported on that cut; it
+  was neither verified nor scored. An earlier commit, `276ef32`, has a same-cut report
+  in `sota/report.md`. Decision runs pass `--held-out-shard output-00095-of-00100
+  --skip-report-shard`, so shard 99 is not even verified or opened. Shards 96--98 are
+  unused.
 
 Sources: `checkpoint-5db817b/results.md`, its `shard95-*-receipt.json` files, and
-`tools/google_tn_rows.py`.
+`tools/google_tn_rows.py`; `sota/report.md` and `LOG.md` (2026-10-01) cover the earlier
+report and milestone ruling.
 
 The prepared NeMo comparison cut derives from Google TN shard 99. It was used for
 measurement and keep/drop decisions in #55 and #56 before that provenance was noticed.
@@ -43,9 +47,12 @@ spaces. A target of `<self>` means the normalized written token; a target of `si
 means empty output. ELECTRONIC letter notation is decoded before comparison. Embedded
 `sil` words are retained by the headline scorer. `triage_misses.py
 --strip-embedded-sil` is an opt-in diagnostic and is never a headline result.
-Recognition, resolution, or verbalization errors count as misses rather than being
-dropped. Sources: `tools/evaluate_google_tn.py`, `tools/google_tn_rows.py`,
-`tools/triage_misses.py`, and `span-errors/results.md`.
+The evaluator counts recognition, resolution, and verbalization exceptions as misses
+rather than dropping them. `triage_misses.py` currently has a known bug: after such an
+exception it substitutes the normalized written surface and can count the failed token
+as correct when that surface matches the target; a fix is queued. Sources:
+`tools/evaluate_google_tn.py`, `tools/google_tn_rows.py`, `tools/triage_misses.py`, and
+`span-errors/results.md`.
 
 At the checkpoint, the sentence miss rate is about ten times the token miss rate under
 both profiles. This is expected: one bad token makes the whole sentence wrong. Source:
@@ -85,11 +92,11 @@ overlapping diagnostic.
 | S | Detections exist, but none covers the complete written token. |
 | R | The correct normalized form is offered, but is not ranked first. |
 | V | A complete span exists, but the correct form is absent from bounded readings. |
-| P | A PLAIN target is a one-for-one alphabetic orthographic conversion. |
+| P | A PLAIN miss whose normalized surface and target have different spellings but the same nonzero number of alphabetic words; most observed cases are respellings, diacritic changes, or case changes. |
 | O | Another PLAIN or surface mismatch, such as expansion, spelling, or silence. |
 | E | The verbalizer raised an exception. |
 
-Source: `s0-triage/results.md` and `tools/triage_misses.py`.
+Sources: `s0-triage/results.md`, `ukus/results.md`, and `tools/triage_misses.py`.
 
 ## Intervals and change gates
 
@@ -100,10 +107,13 @@ A ratio draw with a zero denominator is undefined and omitted. An interval is re
 only when at least 95% of draws are defined; otherwise it is unreliable. Sources:
 `intervals/results.md`, `tools/bootstrap_intervals.py`, and `tools/compare_runs.py`.
 
-A candidate ships only when its tuning interval excludes zero in the favorable
-direction and the shard-95 acceptance result does not lose. This rule rejected the R
-lane's connector recalibration after it gained on S0 but lost two shard-95 tokens.
-Source: `ranking-r/results.md`.
+Score-changing candidates ship only when the S0 tuning interval excludes zero in the
+favorable direction and the shard-95 acceptance result does not lose. Score-inert
+robustness changes, such as #70's typographic fold, instead ship when S0 and shard 95 do
+not lose and their change-specific property gates pass; #70's S0 interval included zero
+while its identity, exact-example/equivalence, and latency gates passed. The score-change
+rule rejected the R lane's connector recalibration after it gained on S0 but lost two
+shard-95 tokens. Sources: `ranking-r/results.md` and `typographic-fold/results.md`.
 
 ## Profiles
 
@@ -239,5 +249,8 @@ on the standard English shard-99 cut. Those values are the comparison target, no
 claim about the S0 or shard-95 tables above. The current development split uses 90--94
 for tuning and 95 for acceptance, keeps 99 report-only, scores corpus rows separately
 with sentence context, and offers both default and corpus-conformance profiles.
-Comparison to Zhang--Sproat is therefore indicative until frend is reported once on the
-same shard-99 cut and scorer differences are stated. Source: `sota/report.md`.
+Comparison to Zhang--Sproat remains indicative for the current `5db817b` checkpoint,
+which has not been reported on the same shard-99 cut. An earlier commit, `276ef32`, has
+a same-cut report, and milestone reports are permitted. Scorer differences must be
+stated. Sources: `sota/report.md`,
+`checkpoint-5db817b/results.md`, and `LOG.md` (2026-10-01).
