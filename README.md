@@ -96,6 +96,8 @@ alignment graph built from that output exports as finite-state grammar and accep
 for a decoder, and attributes aligned output back to reading classes. Phonetization
 (ipakit) is not built yet.
 
+Evaluation definitions, frozen results, and reproduction commands are in [METRICS.md](METRICS.md).
+
 ## Development
 
 ```
