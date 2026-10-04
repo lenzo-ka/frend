@@ -183,7 +183,7 @@ def measurement_sub_key(
         from frend.symbols import locale_scripts
 
         if script in locale_scripts(locale) and char:
-            return f"U+{ord(char):04X}"
+            return f"U+{ord(char[0]):04X}"
         return script or None
     if kind == "date":
         # A date with a month and a day ranks by its written order: the corpus says

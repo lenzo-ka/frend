@@ -38,6 +38,7 @@ from frend.lattice import (
 )
 from frend.normalize import NormalizedText, NormalizedUnit, normalize
 from frend.runtime import freeze_after_setup
+from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD
 from frend.verbalize import (
     SpokenAlternative,
     VerbalizedLattice,
@@ -53,6 +54,7 @@ __all__ = [
     "ChoiceLattice",
     "DEFAULT_MAX_INPUT_CHARS",
     "DEFAULT_MAX_UNIT_CHARS",
+    "DEFAULT_SYMBOL_RUN_THRESHOLD",
     "InputValidationError",
     "InputFold",
     "LatticeNode",

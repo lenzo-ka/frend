@@ -16,6 +16,7 @@ from frend.spoken_priors import (
     measurement_sub_key,
     source_prior,
 )
+from frend.symbols import SymbolDetector
 
 _REPO = Path(__file__).resolve().parents[1]
 _SCRIPT = _REPO / "tools" / "build_spoken_priors.py"
@@ -80,6 +81,12 @@ def test_shipped_normalization_provenance_pins_contract():
     assert _load_builder().build_document(_FIXTURE)["provenance"]["normalization"] == (
         _NORMALIZATION_PROVENANCE
     )
+
+
+def test_symbol_sub_key_accepts_a_multi_code_point_grapheme():
+    family = "\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466"
+    (detection,) = SymbolDetector().detect(family)
+    assert measurement_sub_key("symbol", detection) == "U+1F468"
 
 
 def test_lookup_returns_only_measured_count_and_matched_share():

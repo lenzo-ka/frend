@@ -553,10 +553,17 @@ def test_lexical_provenance_string_is_unchanged():
 
 def _units(text, detectors):
     lattice = resolve_choices(list(detect(text, detectors)), source_text=text)
+    run_ids = {
+        edge.id
+        for edge in lattice.edges
+        if edge.kind == "reading" and edge.detection.get("type") == "symbol:run"
+    }
     return [
         unit
         for unit in compose_choices(lattice).units
-        if unit.verbalized and unit.alternatives[0].provenance != "surface:passthrough"
+        if unit.verbalized
+        and unit.alternatives[0].provenance != "surface:passthrough"
+        and (not run_ids or unit.edge_id in run_ids)
     ]
 
 
@@ -582,6 +589,30 @@ _CONSUMERS = [
         "jane@example.org",
         [ElectronicDetector("en_US")],
         "jane at example dot org",
+    ),
+    (
+        "symbol_run.repeated",
+        "****",
+        [SymbolDetector("en_US")],
+        "line of asterisk symbols",
+    ),
+    (
+        "symbol_run.line",
+        "\U0001f600\U0001f603\U0001f604\U0001f601",
+        [SymbolDetector("en_US")],
+        "line of emoji",
+    ),
+    (
+        "symbol_run.mixed_emoji",
+        "😀😃😄😁",
+        [SymbolDetector("en_US")],
+        "line of emoji",
+    ),
+    (
+        "symbol_run.mixed_symbols",
+        "+<=>",
+        [SymbolDetector("en_US")],
+        "line of symbols",
     ),
     (
         "currency.units",
@@ -617,7 +648,57 @@ _CONSUMERS = [
 # no reading, no provenance and no order. The order also pins ``zero.words``, which
 # only reweights: without it "three point zero five", "nineteen oh-eight" and "ten oh
 # five" lead.
+_SYMBOL_EMOJI_GOLDEN = [
+    [
+        ("line of emoji", "lexical:en_US+icu-name:symbol"),
+        (
+            "grinning face smiling face with open mouth "
+            "smiling face with open mouth and smiling eyes grinning face with smiling eyes",
+            "icu-name:symbol",
+        ),
+        ("", "surface:silence"),
+    ],
+]
+
+
 _GOLDEN = {
+    (
+        "symbol_run.line",
+        "\U0001f600\U0001f603\U0001f604\U0001f601",
+    ): _SYMBOL_EMOJI_GOLDEN,
+    ("symbol_run.repeated", "****"): [
+        [
+            ("line of asterisk symbols", "lexical:en_US+cldr-symbol:asterisk"),
+            ("asterisk asterisk asterisk asterisk", "cldr-symbol:asterisk"),
+            ("", "surface:silence"),
+        ],
+    ],
+    ("symbol_run.mixed_emoji", "😀😃😄😁"): [
+        [
+            ("line of emoji", "lexical:en_US+icu-name:symbol"),
+            (
+                "grinning face smiling face with open mouth "
+                "smiling face with open mouth and smiling eyes grinning face with smiling eyes",
+                "icu-name:symbol",
+            ),
+            ("", "surface:silence"),
+        ],
+    ],
+    ("symbol_run.mixed_symbols", "+<=>"): [
+        [
+            (
+                "line of symbols",
+                "lexical:en_US+cldr-symbol:plus sign+cldr-symbol:less-than+"
+                "cldr-symbol:equal+cldr-symbol:greater-than",
+            ),
+            (
+                "plus sign less-than equal greater-than",
+                "cldr-symbol:plus sign+cldr-symbol:less-than+cldr-symbol:equal+"
+                "cldr-symbol:greater-than",
+            ),
+            ("", "surface:silence"),
+        ],
+    ],
     ("date.day_first", "9/30/1908"): [
         [
             (

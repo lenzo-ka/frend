@@ -17,7 +17,15 @@ import frend.align_export as export_module
 from frend.align_export import ExportBudgetError, to_att_text, to_fsg_text, write_att, write_fsg
 from frend.align_graph import build_align_graph
 from frend.fold_resolve import CoverScore
-from frend.lattice import ChoiceGraph, ReadingEdge, ReadingRank, SemanticRank, resolve_choices
+from frend.lattice import (
+    ChoiceGraph,
+    ReadingEdge,
+    ReadingRank,
+    SemanticRank,
+    compose_choices,
+    resolve_choices,
+)
+from frend.symbols import SymbolDetector
 from frend.type_priors import ReadingPrior
 from frend.verbalize import SpokenAlternative, VerbalizedUnit
 
@@ -794,6 +802,23 @@ def test_manifest_contract_and_graph_item_round_trip():
         for reading in transition["readings"]:
             assert ("p" in reading) is reading["scored"]
             assert ("n" in reading) is reading["scored"]
+
+
+def test_symbol_run_group_reaches_export_manifest():
+    text = "****"
+    choices = compose_choices(resolve_choices(SymbolDetector().detect(text), source_text=text))
+    _text, manifest = to_fsg_text(build_align_graph(choices), "symbol-run-group")
+    grouped = {
+        (alternative["text"], alternative.get("group"))
+        for transition in manifest.transitions
+        for alternative in transition.alternatives
+        if alternative.get("group") is not None
+    }
+    assert grouped == {
+        ("line of asterisk symbols", "tts-sanity"),
+        ("asterisk asterisk asterisk asterisk", "tts-sanity"),
+        ("", "tts-sanity"),
+    }
 
 
 def test_att_is_four_column_acceptor_with_explicit_start():
