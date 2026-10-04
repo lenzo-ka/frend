@@ -594,7 +594,7 @@ _CONSUMERS = [
         "symbol_run.repeated",
         "****",
         [SymbolDetector("en_US")],
-        "line of asterisk symbols",
+        "line of asterisk",
     ),
     (
         "symbol_run.line",
@@ -668,7 +668,7 @@ _GOLDEN = {
     ): _SYMBOL_EMOJI_GOLDEN,
     ("symbol_run.repeated", "****"): [
         [
-            ("line of asterisk symbols", "lexical:en_US+cldr-symbol:asterisk"),
+            ("line of asterisk", "lexical:en_US+cldr-symbol:asterisk"),
             ("asterisk asterisk asterisk asterisk", "cldr-symbol:asterisk"),
             ("", "surface:silence"),
         ],
