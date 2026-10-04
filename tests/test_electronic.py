@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import re
 from copy import deepcopy
+from importlib.resources import files
 
 import pytest
 from icukit.detectors import detect
@@ -57,10 +59,8 @@ def test_detector_finds_maximal_spans_without_trailing_punctuation(text, expecte
         ("#LA003", "electronic:hashtag"),
         ("TV.comWallace", "electronic:domain"),
         ("/6.doc", "electronic:document"),
+        ("archive/annual-report.doc", "electronic:document"),
         ("//www.example.com", "electronic:url"),
-        ("200636.schuze", "electronic:document"),
-        ("0-8493-1707-X.van", "electronic:document"),
-        ("E.coli", "electronic:document"),
     ],
 )
 def test_training_supported_electronic_shapes_keep_the_whole_token(text, kind):
@@ -72,9 +72,17 @@ def test_training_supported_electronic_shapes_keep_the_whole_token(text, kind):
     [
         ("see http://example.com.", [("electronic:url", "http://example.com")]),
         ("see (http://example.com)", [("electronic:url", "http://example.com")]),
+        ("TV.comWallace.", [("electronic:domain", "TV.comWallace")]),
+        ("/6.doc.", [("electronic:document", "/6.doc")]),
         ("# Heading", []),
         ("#1", []),
         ("version 1.2.3", []),
+        ("annual-report.doc", []),
+        ("report.doc", []),
+        ("E.coli", []),
+        ("e.g.", []),
+        ("U.S.", []),
+        ("i.e.", []),
     ],
 )
 def test_span_conventions_do_not_absorb_prose_or_versions(text, expected):
@@ -89,11 +97,8 @@ def test_span_conventions_do_not_absorb_prose_or_versions(text, expected):
         ("trailing-parenthesis-scheme", "http://example.com)"),
         ("hashtag", "#LA003"),
         ("tld-uppercase-suffix", "TV.comWallace"),
-        ("leading-slash-document", "/6.doc"),
+        ("path-document", "/6.doc"),
         ("scheme-relative-url", "//www.example.com"),
-        ("numeric-document", "200636.schuze"),
-        ("grouped-document", "0-8493-1707-X.van"),
-        ("initial-document", "E.coli"),
     ],
 )
 def test_each_span_convention_depends_on_its_measured_guard(monkeypatch, feature, text):
@@ -228,7 +233,10 @@ def test_priors_table_records_its_sources_and_counts_only():
 
 def _assert_span_prior_is_aggregate(document):
     assert set(document) == {"schema_version", "locale", "provenance", "features"}
-    assert set(document["provenance"]) == {
+    assert type(document["schema_version"]) is int and document["schema_version"] == 1
+    assert document["locale"] == "en"
+    provenance = document["provenance"]
+    assert set(provenance) == {
         "builder",
         "corpus",
         "locale",
@@ -236,13 +244,35 @@ def _assert_span_prior_is_aggregate(document):
         "selection",
         "privacy",
     }
-    assert document["features"]
+    assert provenance["builder"] == "tools/build_electronic_span_priors.py"
+    assert provenance["corpus"] == "google-tn:en_with_types"
+    assert provenance["locale"] == "en"
+    assert provenance["selection"] == (
+        "feature enabled with at least 3 ELECTRONIC rows and a strict ELECTRONIC "
+        "majority over all corpus rows"
+    )
+    assert provenance["privacy"] == (
+        "aggregate feature and corpus-class counts only; no corpus text"
+    )
+    assert type(provenance["shards"]) is list
+    assert provenance["shards"] == [f"output-{index:05d}-of-00100" for index in range(90)]
+    assert type(document["features"]) is dict
+    assert set(document["features"]) == {
+        "hashtag",
+        "leading-slash-scheme",
+        "path-document",
+        "scheme-relative-url",
+        "tld-uppercase-suffix",
+        "trailing-parenthesis-scheme",
+        "trailing-semicolon-scheme",
+    }
+    class_pattern = re.compile(r"[A-Z][A-Z_]*\Z")
     for feature, row in document["features"].items():
         assert feature.replace("-", "").isalpha()
         assert set(row) == {"classes"}
-        assert row["classes"]
+        assert type(row["classes"]) is dict and row["classes"]
         for name, count in row["classes"].items():
-            assert name.isupper()
+            assert class_pattern.fullmatch(name)
             assert type(count) is int and count > 0
 
 
@@ -252,9 +282,39 @@ def test_span_priors_table_contains_only_aggregate_counts():
     _assert_span_prior_is_aggregate(document)
 
 
-def test_span_prior_privacy_guard_rejects_a_corpus_excerpt():
+@pytest.mark.parametrize("path", [("excerpt",), ("provenance", "privacy")])
+def test_span_prior_privacy_guard_rejects_a_corpus_excerpt(path):
     document = deepcopy(load_electronic_span_priors())
     assert document is not None
-    document["features"]["hashtag"]["excerpt"] = "raw corpus surface"
+    target = document
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = "raw corpus surface"
     with pytest.raises(AssertionError):
         _assert_span_prior_is_aggregate(document)
+
+
+def _assert_electronic_lexical_additions_are_forms(document):
+    assert document["forms"]["separator.words"] == {
+        "why": (
+            "no CLDR spoken form for '@' in an address; every one of 1,791 training "
+            "ELECTRONIC scheme URLs ending ')' says 'closing parenthesis'"
+        ),
+        "value": {"@": "at", ")": "closing parenthesis"},
+    }
+
+
+def test_electronic_lexical_additions_are_lexical_forms_only():
+    lexical = json.loads(
+        files("frend").joinpath("data", "en", "lexical.json").read_text(encoding="utf-8")
+    )
+    _assert_electronic_lexical_additions_are_forms(lexical)
+
+
+def test_electronic_lexical_guard_rejects_a_corpus_surface():
+    lexical = json.loads(
+        files("frend").joinpath("data", "en", "lexical.json").read_text(encoding="utf-8")
+    )
+    lexical["forms"]["separator.words"]["value"]["raw corpus surface"] = "not a form"
+    with pytest.raises(AssertionError):
+        _assert_electronic_lexical_additions_are_forms(lexical)

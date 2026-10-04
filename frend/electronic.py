@@ -16,6 +16,7 @@ nothing here decides it.
 
 from __future__ import annotations
 
+import mimetypes
 import re
 from dataclasses import dataclass
 from decimal import Decimal
@@ -58,10 +59,10 @@ _WWW = re.compile(r"(?i)(?<![\w./@-])www\.[^\s<>\"]+")
 _EMAIL = re.compile(r"(?<![\w.%+-])[\w.%+-]+@(?:[\w-]+\.)+[^\W\d_]{2,}(?![\w-])")
 _DOMAIN = re.compile(r"(?<![\w@./:-])(?:[\w-]+\.)+([^\W\d_]{2,})(?:/[^\s<>\"]*)?(?![\w-])")
 _HASHTAG = re.compile(r"#[A-Za-z][A-Za-z0-9_]*\Z")
-_SLASH_DOCUMENT = re.compile(r"/[A-Za-z0-9_-]+\.[A-Za-z]+\Z")
-_NUMERIC_DOCUMENT = re.compile(r"\d+\.[A-Za-z]+\Z")
-_GROUPED_DOCUMENT = re.compile(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+\.[A-Za-z]+\Z")
-_INITIAL_DOCUMENT = re.compile(r"[A-Z]\.[a-z]{2,}\Z")
+_PATH_DOCUMENT = re.compile(r"[A-Za-z0-9._~/-]*/[A-Za-z0-9_-]+\.(?P<extension>[A-Za-z0-9]+)\Z")
+_KNOWN_FILE_EXTENSIONS = frozenset(
+    suffix.removeprefix(".").lower() for suffix in mimetypes.types_map
+)
 _RUN = re.compile(r"[^\W\d_]+|\d+|.", re.DOTALL)
 _TRAILING = ".,;:!?'\""
 _CLOSERS = {")": "(", "]": "[", "}": "{"}
@@ -114,6 +115,14 @@ def _camel_tld_host(text: str) -> str | None:
         if host is not None:
             return host
     return None
+
+
+def _path_document(text: str) -> bool:
+    """Whether ``text`` is a path ending in a standard-library MIME extension."""
+    match = _PATH_DOCUMENT.fullmatch(text)
+    if match is None:
+        return False
+    return match.group("extension").lower() in _KNOWN_FILE_EXTENSIONS
 
 
 @dataclass(frozen=True)
@@ -192,14 +201,8 @@ def _span_features(text: str) -> tuple[str, ...]:
         features.append("scheme-relative-url")
     if _camel_tld_host(text) is not None:
         features.append("tld-uppercase-suffix")
-    if _SLASH_DOCUMENT.fullmatch(text):
-        features.append("leading-slash-document")
-    if _NUMERIC_DOCUMENT.fullmatch(text):
-        features.append("numeric-document")
-    if _GROUPED_DOCUMENT.fullmatch(text):
-        features.append("grouped-document")
-    if _INITIAL_DOCUMENT.fullmatch(text):
-        features.append("initial-document")
+    if _path_document(text):
+        features.append("path-document")
     return tuple(features)
 
 
@@ -238,13 +241,7 @@ def _special_kind_host(text: str, locale: str, *, whole_input: bool):
         return None
     if "hashtag" in features:
         return "hashtag", ""
-    documents = {
-        "leading-slash-document",
-        "numeric-document",
-        "grouped-document",
-        "initial-document",
-    }
-    if features & documents:
+    if "path-document" in features:
         return "document", ""
     camel_host = _camel_tld_host(text)
     if "tld-uppercase-suffix" in features and camel_host is not None:
@@ -290,14 +287,20 @@ class ElectronicDetector:
                     end = _trim(segment, match.start(), match.end())
                     found.append((base + match.start(), base + end, "email", None))
             if len(segment) <= self.max_url_chars:
-                special = _special_kind_host(
-                    segment,
-                    self.locale,
-                    whole_input=base == 0 and len(segment) == len(text),
-                )
-                if special is not None:
-                    kind, host = special
-                    found.append((base, base + len(segment), kind, host))
+                trimmed_end = _trim(segment, 0, len(segment))
+                candidates = [(segment[:trimmed_end], trimmed_end)]
+                if trimmed_end != len(segment):
+                    candidates.append((segment, len(segment)))
+                for candidate, end in candidates:
+                    special = _special_kind_host(
+                        candidate,
+                        self.locale,
+                        whole_input=base == 0 and len(segment) == len(text),
+                    )
+                    if special is not None:
+                        kind, host = special
+                        found.append((base, base + end, kind, host))
+                        break
         detections = []
         for start, end, kind, explicit_host in found:
             if any(

@@ -101,24 +101,9 @@
   "privacy": "aggregate feature and corpus-class counts only; no corpus text"
  },
  "features": {
-  "grouped-document": {
-   "classes": {
-    "ELECTRONIC": 22578
-   }
-  },
   "hashtag": {
    "classes": {
     "ELECTRONIC": 8382
-   }
-  },
-  "initial-document": {
-   "classes": {
-    "ELECTRONIC": 1417
-   }
-  },
-  "leading-slash-document": {
-   "classes": {
-    "ELECTRONIC": 792
    }
   },
   "leading-slash-scheme": {
@@ -126,9 +111,9 @@
     "ELECTRONIC": 63
    }
   },
-  "numeric-document": {
+  "path-document": {
    "classes": {
-    "ELECTRONIC": 1196
+    "ELECTRONIC": 1785
    }
   },
   "scheme-relative-url": {
