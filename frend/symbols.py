@@ -451,6 +451,8 @@ def _code_ranges(text: str) -> tuple[tuple[int, int], ...]:
         else:
             ranges.extend(_inline_code_ranges(content, offset))
         offset += len(line)
+    if fence is not None:
+        ranges.extend(pending_fence[1:])
     return tuple(ranges)
 
 

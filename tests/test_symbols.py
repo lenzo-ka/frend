@@ -233,6 +233,12 @@ def test_code_context_does_not_become_a_symbol_run(text):
     assert "line of" not in frend.normalize(text, fold=None)
 
 
+def test_unclosed_fenced_code_runs_to_the_end_of_the_document():
+    text = "```\n----"
+    assert not any(item["type"] == "symbol:run" for item in SymbolDetector().detect(text))
+    assert "line of" not in frend.normalize(text, fold=None)
+
+
 def test_disallowed_mixed_punctuation_keeps_only_its_repeated_subrun():
     runs = [item for item in SymbolDetector().detect("****#") if item["type"] == "symbol:run"]
     assert [(item["text"], item["value"].symbols) for item in runs] == [
