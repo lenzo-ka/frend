@@ -70,6 +70,8 @@ def test_evaluator_no_strata_json_and_text_are_byte_pinned(monkeypatch):
 
     report = evaluate.evaluate({evaluate._TEST_FILE: object()}, 1)
     assert "strata" not in report
+    # The declared input fold is the only field added since base; pin it on its own.
+    assert report.pop("fold") == "typographic"
     blob = (
         json.dumps(report, sort_keys=True, separators=(",", ":")) + "\0" + evaluate._render(report)
     ).encode()
