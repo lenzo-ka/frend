@@ -94,7 +94,7 @@ overlapping diagnostic.
 | V | A complete span exists, but the correct form is absent from bounded readings. |
 | P | A PLAIN miss whose normalized surface and target have different spellings but the same nonzero number of alphabetic words; most observed cases are respellings, diacritic changes, or case changes. |
 | O | Another PLAIN or surface mismatch, such as expansion, spelling, or silence. |
-| E | The verbalizer raised an exception. |
+| E | Detection, resolution, or verbalization raised an exception. |
 
 Sources: `s0-triage/results.md`, `ukus/results.md`, and `tools/triage_misses.py`.
 

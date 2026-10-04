@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
@@ -92,6 +94,46 @@ def test_verbalizer_exception_surface_match_counts_as_e_miss(monkeypatch):
     assert result["any"] == 0
     assert result["sentence_first"] is False
     assert result["miss_counts"] == {"E": 1}
+
+
+def test_leaf_text_exception_counts_as_e_miss(monkeypatch):
+    triage = _triage()
+    alternative = SimpleNamespace(text="wrong", provenance="test")
+    unit = SimpleNamespace(best=alternative, alternatives=(alternative,))
+    path = SimpleNamespace(units=(unit,))
+    verbalized = SimpleNamespace(best_path=path, paths=(path,))
+
+    monkeypatch.setattr(triage, "_detectors", lambda locale: ())
+    monkeypatch.setattr(
+        "icukit.detectors.detect",
+        lambda written, detectors: ({"start": 0, "end": 3, "type": "fraction:flexible"},),
+    )
+    monkeypatch.setattr(
+        "frend.verbalize.verbalize_lattice",
+        lambda lattice, context, profile: verbalized,
+    )
+
+    def fail_leaf_texts(detections, written):
+        raise RuntimeError("leaf failure")
+
+    monkeypatch.setattr(triage, "_leaf_texts", fail_leaf_texts)
+    result = triage._score_token(("FRACTION", "3/4", "three quarters"), "", "")
+
+    assert result[3] == triage.Classification("E")
+
+
+def test_file_not_found_is_a_setup_error(monkeypatch):
+    triage = _triage()
+
+    monkeypatch.setattr(triage, "_detectors", lambda locale: ())
+
+    def missing_corpus(written, detectors):
+        raise FileNotFoundError("missing corpus")
+
+    monkeypatch.setattr("icukit.detectors.detect", missing_corpus)
+
+    with pytest.raises(FileNotFoundError, match="missing corpus"):
+        triage._score_token(("PLAIN", "surface", "<self>"), "", "")
 
 
 def test_r_is_derived_from_bounded_readings_and_cap_is_reported():
