@@ -130,8 +130,7 @@ def test_four_repeated_symbols_are_one_described_unit_with_all_alternatives():
 def test_three_symbols_stay_verbatim_and_the_threshold_is_configurable():
     assert not any(item["type"] == "symbol:run" for item in SymbolDetector().detect("***"))
     assert not any(
-        item["type"] == "symbol:run"
-        for item in SymbolDetector(run_threshold=4).detect("****")
+        item["type"] == "symbol:run" for item in SymbolDetector(run_threshold=4).detect("****")
     )
     assert SymbolDetector(run_threshold=2).detect("***")[0]["type"] == "symbol:run"
     assert frend.normalize("***", fold=None, symbol_run_threshold=2).strip() == (
@@ -194,9 +193,7 @@ def test_profile_callers_rank_the_run_without_dropping_alternatives(monkeypatch)
 def test_variation_selectors_are_attached_to_their_base_and_never_pass_through():
     heart = "\u2764\ufe0f"
     detections = SymbolDetector().detect(heart)
-    assert [(item["text"], item["start"], item["end"]) for item in detections] == [
-        (heart, 0, 2)
-    ]
+    assert [(item["text"], item["start"], item["end"]) for item in detections] == [(heart, 0, 2)]
     lattice = resolve_lattice(detections, source_text=heart)
     assert len(lattice.best_path.edge_ids) == 1
     assert "\ufe0f" not in frend.normalize(heart, fold=None)
@@ -294,9 +291,7 @@ def test_run_is_additional_and_alignment_retains_partial_component_readings():
     text = "****"
     detections = list(detect(text, _reading_detectors("en_US")))
     choices = resolve_choices(detections, source_text=text)
-    reading_types = [
-        edge.detection["type"] for edge in choices.edges if edge.kind == "reading"
-    ]
+    reading_types = [edge.detection["type"] for edge in choices.edges if edge.kind == "reading"]
     assert reading_types.count("symbol:run") == 1
     assert reading_types.count("symbol:cldr") == 4
 

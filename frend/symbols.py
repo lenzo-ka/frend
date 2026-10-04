@@ -276,9 +276,7 @@ def _symbol_grapheme(text: str) -> bool:
 
 def _formal_symbol_name(text: str) -> str | None:
     names = [
-        icu.Char.charName(char)
-        for char in _without_variation_selectors(text)
-        if char != "\u200d"
+        icu.Char.charName(char) for char in _without_variation_selectors(text) if char != "\u200d"
     ]
     return " ".join(name.lower() for name in names) if names and all(names) else None
 
@@ -507,8 +505,7 @@ def _append_symbol_chain(text, spans, chain, threshold, code_ranges, runs) -> No
         len(chain) > threshold
         and len(set(keys)) > 1
         and all(
-            not _sentence_terminal(spans[at]["text"])
-            and _mixed_run_symbol(spans[at]["text"])
+            not _sentence_terminal(spans[at]["text"]) and _mixed_run_symbol(spans[at]["text"])
             for at in chain
         )
     )
@@ -518,10 +515,7 @@ def _append_symbol_chain(text, spans, chain, threshold, code_ranges, runs) -> No
         for at in range(1, len(chain) + 1):
             if at == len(chain) or keys[at] != keys[first]:
                 group = chain[first:at]
-                if (
-                    len(group) > threshold
-                    and not _sentence_terminal(spans[group[0]]["text"])
-                ):
+                if len(group) > threshold and not _sentence_terminal(spans[group[0]]["text"]):
                     groups.append(group)
                 first = at
     for group in groups:
@@ -703,9 +697,7 @@ class SymbolDetector:
                             "start": index,
                             "end": end,
                             "type": (
-                                "symbol:cldr"
-                                if base in _cldr_names(self.locale)
-                                else "symbol:icu"
+                                "symbol:cldr" if base in _cldr_names(self.locale) else "symbol:icu"
                             ),
                             "value": SymbolValue(char, script, symbol_names(char, self.locale)),
                             "captures": (Capture("symbol", index, end, char, char, None),),

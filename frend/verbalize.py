@@ -7,7 +7,7 @@ import hashlib
 import json
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from difflib import SequenceMatcher
@@ -158,7 +158,8 @@ class SpokenAlternative:
     text: str
     provenance: str
     weight: Decimal | None = None
-    group: str | None = None
+    # Kept out of repr so ungrouped output stays byte-identical to earlier releases.
+    group: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -2778,9 +2779,7 @@ def _spoken_symbol_run(
             group="tts-sanity",
         ),
     )
-    silence = (
-        SpokenAlternative("", "surface:silence", group="tts-sanity"),
-    )
+    silence = (SpokenAlternative("", "surface:silence", group="tts-sanity"),)
     if profile == GOOGLE_TN:
         return (*silence, *described, *named)
     return (*described, *named, *silence)
@@ -3104,9 +3103,7 @@ def _verbalize_edge(
             key_value = value.text
             path = "symbol-run"
         elif isinstance(value, VariationValue):
-            alternatives = (
-                SpokenAlternative(value.base, "surface:without-variation-selectors"),
-            )
+            alternatives = (SpokenAlternative(value.base, "surface:without-variation-selectors"),)
             key_value = value.text
             path = "symbol"
         elif isinstance(value, SymbolValue):
