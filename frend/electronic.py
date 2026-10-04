@@ -37,6 +37,7 @@ __all__ = [
     "decode_letter_notation",
     "letter_key",
     "load_electronic_priors",
+    "load_electronic_span_priors",
     "runs",
     "top_level_domains",
 ]
@@ -56,6 +57,11 @@ _SCHEME = re.compile(r"(?i)(?<![\w.+-])[a-z][a-z0-9+.-]*://[^\s<>\"]+")
 _WWW = re.compile(r"(?i)(?<![\w./@-])www\.[^\s<>\"]+")
 _EMAIL = re.compile(r"(?<![\w.%+-])[\w.%+-]+@(?:[\w-]+\.)+[^\W\d_]{2,}(?![\w-])")
 _DOMAIN = re.compile(r"(?<![\w@./:-])(?:[\w-]+\.)+([^\W\d_]{2,})(?:/[^\s<>\"]*)?(?![\w-])")
+_HASHTAG = re.compile(r"#[A-Za-z][A-Za-z0-9_]*\Z")
+_SLASH_DOCUMENT = re.compile(r"/[A-Za-z0-9_-]+\.[A-Za-z]+\Z")
+_NUMERIC_DOCUMENT = re.compile(r"\d+\.[A-Za-z]+\Z")
+_GROUPED_DOCUMENT = re.compile(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+\.[A-Za-z]+\Z")
+_INITIAL_DOCUMENT = re.compile(r"[A-Z]\.[a-z]{2,}\Z")
 _RUN = re.compile(r"[^\W\d_]+|\d+|.", re.DOTALL)
 _TRAILING = ".,;:!?'\""
 _CLOSERS = {")": "(", "]": "[", "}": "{"}
@@ -99,9 +105,20 @@ def _valid_host(host: str) -> str | None:
     return ascii_host
 
 
+def _camel_tld_host(text: str) -> str | None:
+    """A valid host prefix whose TLD is immediately followed by an uppercase suffix."""
+    for boundary in re.finditer(r"(?<=[a-z])(?=[A-Z])", text):
+        end = boundary.start()
+        start = max(text.rfind("/", 0, end), text.rfind(":", 0, end)) + 1
+        host = _valid_host(text[start:end])
+        if host is not None:
+            return host
+    return None
+
+
 @dataclass(frozen=True)
 class ElectronicValue:
-    """A URL, email address or bare domain as its written runs.
+    """An electronic span as its written runs.
 
     ``kind`` is ``url``, ``email`` or ``domain``; ``parts`` pairs each run's kind
     (``letters``, ``digits`` or ``separator``) with its text, in written order, and
@@ -157,6 +174,35 @@ def _positive_cap(name: str, value: int) -> int:
     return value
 
 
+def _span_features(text: str) -> tuple[str, ...]:
+    """Corpus-counted whole-token shape features, containing no lexical identities."""
+    if "." not in text and not text.startswith("#"):
+        return ()
+    features = []
+    scheme = _SCHEME.search(text)
+    if scheme is not None and scheme.start() == 1 and text.startswith("/"):
+        features.append("leading-slash-scheme")
+    if scheme is not None and scheme.start() == 0 and text.endswith(";"):
+        features.append("trailing-semicolon-scheme")
+    if scheme is not None and scheme.start() == 0 and text.endswith(")"):
+        features.append("trailing-parenthesis-scheme")
+    if _HASHTAG.fullmatch(text):
+        features.append("hashtag")
+    if text.startswith("//") and _valid_host(_host("domain", text[2:])) is not None:
+        features.append("scheme-relative-url")
+    if _camel_tld_host(text) is not None:
+        features.append("tld-uppercase-suffix")
+    if _SLASH_DOCUMENT.fullmatch(text):
+        features.append("leading-slash-document")
+    if _NUMERIC_DOCUMENT.fullmatch(text):
+        features.append("numeric-document")
+    if _GROUPED_DOCUMENT.fullmatch(text):
+        features.append("grouped-document")
+    if _INITIAL_DOCUMENT.fullmatch(text):
+        features.append("initial-document")
+    return tuple(features)
+
+
 def _bounded_segments(text: str, max_chars: int):
     """Yield electronic-token segments without copying any segment over ``max_chars``."""
     start = 0
@@ -169,8 +215,49 @@ def _bounded_segments(text: str, max_chars: int):
         yield start, text[start:]
 
 
+def _supported_span_features(text: str, locale: str) -> tuple[str, ...]:
+    document = load_electronic_span_priors(locale=locale)
+    if document is None:
+        return ()
+    supported = []
+    for feature in _span_features(text):
+        classes = document["features"].get(feature, {}).get("classes", {})
+        electronic = classes.get("ELECTRONIC", 0)
+        if electronic >= 3 and electronic > sum(classes.values()) - electronic:
+            supported.append(feature)
+    return tuple(supported)
+
+
+def _special_kind_host(text: str, locale: str, *, whole_input: bool):
+    features = set(_supported_span_features(text, locale))
+    boundary = {"leading-slash-scheme", "trailing-semicolon-scheme"}
+    boundary.add("trailing-parenthesis-scheme")
+    if not whole_input:
+        features -= boundary
+    if not features:
+        return None
+    if "hashtag" in features:
+        return "hashtag", ""
+    documents = {
+        "leading-slash-document",
+        "numeric-document",
+        "grouped-document",
+        "initial-document",
+    }
+    if features & documents:
+        return "document", ""
+    camel_host = _camel_tld_host(text)
+    if "tld-uppercase-suffix" in features and camel_host is not None:
+        return "domain", camel_host
+    if "scheme-relative-url" in features:
+        return "url", _valid_host(_host("domain", text[2:]))
+    host_text = text[:-1] if text.endswith((";", ")")) else text
+    host = _valid_host(_host("url", host_text))
+    return ("url", host) if host is not None else None
+
+
 class ElectronicDetector:
-    """Detect URLs, email addresses and bare domains as frend readings."""
+    """Detect corpus-supported electronic spans as frend readings."""
 
     def __init__(
         self,
@@ -191,28 +278,39 @@ class ElectronicDetector:
 
     def _detect_validated(self, text: str) -> list[dict]:
         """Detect in text already checked by an enclosing document API."""
-        found: list[tuple[int, int, str]] = []
+        found: list[tuple[int, int, str, str | None]] = []
         for base, segment in _bounded_segments(text, max(self.max_url_chars, self.max_email_chars)):
             if len(segment) <= self.max_url_chars:
                 for kind, pattern in (("url", _SCHEME), ("url", _WWW), ("domain", _DOMAIN)):
                     for match in pattern.finditer(segment):
                         end = _trim(segment, match.start(), match.end())
-                        found.append((base + match.start(), base + end, kind))
+                        found.append((base + match.start(), base + end, kind, None))
             if len(segment) <= self.max_email_chars:
                 for match in _EMAIL.finditer(segment):
                     end = _trim(segment, match.start(), match.end())
-                    found.append((base + match.start(), base + end, "email"))
+                    found.append((base + match.start(), base + end, "email", None))
+            if len(segment) <= self.max_url_chars:
+                special = _special_kind_host(
+                    segment,
+                    self.locale,
+                    whole_input=base == 0 and len(segment) == len(text),
+                )
+                if special is not None:
+                    kind, host = special
+                    found.append((base, base + len(segment), kind, host))
         detections = []
-        for start, end, kind in found:
+        for start, end, kind, explicit_host in found:
             if any(
                 other_start <= start
                 and end <= other_end
                 and (other_start, other_end) != (start, end)
-                for other_start, other_end, _ in found
+                for other_start, other_end, _, _ in found
             ):
                 continue
             span = text[start:end]
-            host = _valid_host(_host(kind, span))
+            host = explicit_host
+            if host is None:
+                host = _valid_host(_host(kind, span))
             if host is None or any(d["start"] == start and d["end"] == end for d in detections):
                 continue
             parts = runs(span)
@@ -303,9 +401,19 @@ def load_electronic_priors(*, locale: str = "en_US") -> dict | None:
     return _electronic_priors(canonical_locale(locale))
 
 
+def load_electronic_span_priors(*, locale: str = "en_US") -> dict | None:
+    """Aggregate training support for whole-token electronic span features."""
+    return _electronic_span_priors(canonical_locale(locale))
+
+
 @lru_cache(maxsize=LOCALE_CACHE)
 def _electronic_priors(locale: str) -> dict | None:
     return measured_table("electronic_priors", locale)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _electronic_span_priors(locale: str) -> dict | None:
+    return measured_table("electronic_span_priors", locale)
 
 
 def _blend(counts: dict[str, int], parent: dict[str, Decimal]) -> dict[str, Decimal]:

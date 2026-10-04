@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 
 import pytest
 from icukit.detectors import detect
@@ -16,6 +17,7 @@ from frend.electronic import (
     ElectronicDetector,
     decode_letter_notation,
     load_electronic_priors,
+    load_electronic_span_priors,
     tld_version,
     top_level_domains,
 )
@@ -44,6 +46,64 @@ def _spans(text):
 )
 def test_detector_finds_maximal_spans_without_trailing_punctuation(text, expected):
     assert _spans(text) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "kind"),
+    [
+        ("/http://example.com", "electronic:url"),
+        ("http://example.com;", "electronic:url"),
+        ("http://example.com)", "electronic:url"),
+        ("#LA003", "electronic:hashtag"),
+        ("TV.comWallace", "electronic:domain"),
+        ("/6.doc", "electronic:document"),
+        ("//www.example.com", "electronic:url"),
+        ("200636.schuze", "electronic:document"),
+        ("0-8493-1707-X.van", "electronic:document"),
+        ("E.coli", "electronic:document"),
+    ],
+)
+def test_training_supported_electronic_shapes_keep_the_whole_token(text, kind):
+    assert _spans(text) == [(kind, text)]
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("see http://example.com.", [("electronic:url", "http://example.com")]),
+        ("see (http://example.com)", [("electronic:url", "http://example.com")]),
+        ("# Heading", []),
+        ("#1", []),
+        ("version 1.2.3", []),
+    ],
+)
+def test_span_conventions_do_not_absorb_prose_or_versions(text, expected):
+    assert _spans(text) == expected
+
+
+@pytest.mark.parametrize(
+    ("feature", "text"),
+    [
+        ("leading-slash-scheme", "/http://example.com"),
+        ("trailing-semicolon-scheme", "http://example.com;"),
+        ("trailing-parenthesis-scheme", "http://example.com)"),
+        ("hashtag", "#LA003"),
+        ("tld-uppercase-suffix", "TV.comWallace"),
+        ("leading-slash-document", "/6.doc"),
+        ("scheme-relative-url", "//www.example.com"),
+        ("numeric-document", "200636.schuze"),
+        ("grouped-document", "0-8493-1707-X.van"),
+        ("initial-document", "E.coli"),
+    ],
+)
+def test_each_span_convention_depends_on_its_measured_guard(monkeypatch, feature, text):
+    document = load_electronic_span_priors()
+    assert document is not None
+    without = {**document, "features": {**document["features"]}}
+    without["features"].pop(feature)
+    monkeypatch.setattr(electronic, "load_electronic_span_priors", lambda **_kwargs: without)
+    detections = ElectronicDetector().detect(text)
+    assert not any(d["start"] == 0 and d["end"] == len(text) for d in detections)
 
 
 def test_detector_refuses_oversized_candidates_without_emitting_a_prefix():
@@ -116,6 +176,12 @@ def test_url_speech_keeps_the_corpus_form_among_its_readings():
     assert corpus in [normalize_spoken(a.text) for a in unit.alternatives]
 
 
+def test_trained_closing_parenthesis_uses_the_locale_lexical_form():
+    unit = _forms("http://example.com)")
+    assert normalize_spoken(unit.alternatives[0].text).endswith("closing parenthesis")
+    assert "lexical:en_US" in unit.alternatives[0].provenance
+
+
 def test_email_reads_at_as_its_one_lexical_name():
     """The corpus holds no email address, so only "@" is not measured."""
     unit = _forms("jane.doe@example.org")
@@ -158,3 +224,37 @@ def test_priors_table_records_its_sources_and_counts_only():
     assert all(key == "*" or ":" in key for key in table["letters"])
     assert "com" in top_level_domains() and "pdf" not in top_level_domains()
     assert json.dumps(table)
+
+
+def _assert_span_prior_is_aggregate(document):
+    assert set(document) == {"schema_version", "locale", "provenance", "features"}
+    assert set(document["provenance"]) == {
+        "builder",
+        "corpus",
+        "locale",
+        "shards",
+        "selection",
+        "privacy",
+    }
+    assert document["features"]
+    for feature, row in document["features"].items():
+        assert feature.replace("-", "").isalpha()
+        assert set(row) == {"classes"}
+        assert row["classes"]
+        for name, count in row["classes"].items():
+            assert name.isupper()
+            assert type(count) is int and count > 0
+
+
+def test_span_priors_table_contains_only_aggregate_counts():
+    document = load_electronic_span_priors()
+    assert document is not None
+    _assert_span_prior_is_aggregate(document)
+
+
+def test_span_prior_privacy_guard_rejects_a_corpus_excerpt():
+    document = deepcopy(load_electronic_span_priors())
+    assert document is not None
+    document["features"]["hashtag"]["excerpt"] = "raw corpus surface"
+    with pytest.raises(AssertionError):
+        _assert_span_prior_is_aggregate(document)
