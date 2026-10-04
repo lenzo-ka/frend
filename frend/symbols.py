@@ -23,6 +23,7 @@ out-of-script letter reads as before.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from functools import cache
 
@@ -38,7 +39,6 @@ __all__ = [
     "VariationValue",
     "DEFAULT_SYMBOL_RUN_THRESHOLD",
     "locale_scripts",
-    "plural_symbol_name",
     "run_readings",
     "silent_property_class",
     "symbol_names",
@@ -55,8 +55,14 @@ _SYMBOLS = icu.UnicodeSet("[[:P:][:S:]]")
 _SYMBOLS.freeze()
 _VARIATION_SELECTORS = icu.UnicodeSet("[:Variation_Selector:]")
 _VARIATION_SELECTORS.freeze()
-_EMOJI = icu.UnicodeSet("[:Emoji:]")
-_EMOJI.freeze()
+_SENTENCE_TERMINAL = icu.UnicodeSet("[:Sentence_Terminal:]")
+_SENTENCE_TERMINAL.freeze()
+_MIXED_RUN_SYMBOL = icu.UnicodeSet("[[:So:][:Sm:][:Sk:][:Extended_Pictographic:]]")
+_MIXED_RUN_SYMBOL.freeze()
+_EXTENDED_PICTOGRAPHIC = icu.UnicodeSet("[:Extended_Pictographic:]")
+_EXTENDED_PICTOGRAPHIC.freeze()
+_EMOJI_PRESENTATION = icu.UnicodeSet("[:Emoji_Presentation:]")
+_EMOJI_PRESENTATION.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
 TRANSLITERATION_SOURCE = "icu-transliteration"
 LETTER_NAME_SOURCE = "icu-name:letter"
@@ -300,18 +306,6 @@ def symbol_names(char: str, locale: str = "en_US") -> tuple[tuple[str, str], ...
     return ((formal, SYMBOL_NAME_SOURCE),) if formal else ()
 
 
-def plural_symbol_name(name: str) -> str:
-    """English plural of a CLDR/ICU symbol name, inflecting its final word."""
-    head, separator, noun = name.rpartition(" ")
-    if noun.endswith(("s", "x", "z", "ch", "sh")):
-        noun += "es"
-    elif len(noun) > 1 and noun.endswith("y") and noun[-2].lower() not in "aeiou":
-        noun = noun[:-1] + "ies"
-    else:
-        noun += "s"
-    return f"{head}{separator}{noun}"
-
-
 def _property_name(text: str) -> tuple[tuple[str, str], ...]:
     from icukit import get_char_name
 
@@ -401,6 +395,69 @@ def _horizontal_space(text: str) -> bool:
     return bool(text) and all(char.isspace() and char not in "\r\n\v\f" for char in text)
 
 
+_FENCE_START = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})")
+
+
+def _inline_code_ranges(line: str, offset: int) -> list[tuple[int, int]]:
+    """Paired Markdown backtick spans on one non-fenced line, including delimiters."""
+    delimiters = list(re.finditer(r"`+", line))
+    ranges = []
+    index = 0
+    while index < len(delimiters):
+        opening = delimiters[index]
+        closing = next(
+            (
+                at
+                for at in range(index + 1, len(delimiters))
+                if len(delimiters[at].group()) == len(opening.group())
+            ),
+            None,
+        )
+        if closing is None:
+            index += 1
+            continue
+        ranges.append((offset + opening.start(), offset + delimiters[closing].end()))
+        index = closing + 1
+    return ranges
+
+
+def _code_ranges(text: str) -> tuple[tuple[int, int], ...]:
+    """Cheap Markdown code contexts: fences, paired backticks, and indented lines."""
+    ranges: list[tuple[int, int]] = []
+    fence: tuple[str, int] | None = None
+    pending_fence: list[tuple[int, int]] = []
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        content = line.rstrip("\r\n")
+        marker = _FENCE_START.match(content)
+        if fence is not None:
+            pending_fence.append((offset, offset + len(line)))
+            if marker is not None:
+                run = marker.group("marker")
+                if (
+                    run[0] == fence[0]
+                    and len(run) >= fence[1]
+                    and not content[marker.end() :].strip()
+                ):
+                    fence = None
+                    ranges.extend(pending_fence)
+                    pending_fence = []
+        elif marker is not None:
+            run = marker.group("marker")
+            fence = (run[0], len(run))
+            pending_fence = [(offset, offset + len(line))]
+        elif content.startswith("\t") or content.startswith("    "):
+            ranges.append((offset, offset + len(line)))
+        else:
+            ranges.extend(_inline_code_ranges(content, offset))
+        offset += len(line)
+    return tuple(ranges)
+
+
+def _overlaps(ranges: tuple[tuple[int, int], ...], start: int, end: int) -> bool:
+    return any(left < end and start < right for left, right in ranges)
+
+
 def _url_token(text: str, start: int, end: int) -> bool:
     left = start
     while left and not text[left - 1].isspace():
@@ -425,26 +482,61 @@ def _standalone_symbol(text: str, start: int, end: int) -> bool:
     return _standalone(text, left, right) and not _url_token(text, left, right)
 
 
-def _append_symbol_chain(text, spans, chain, threshold, runs) -> None:
+def _sentence_terminal(grapheme: str) -> bool:
+    return any(_SENTENCE_TERMINAL.contains(char) for char in grapheme)
+
+
+def _mixed_run_symbol(grapheme: str) -> bool:
+    base = _without_variation_selectors(grapheme).replace("\u200d", "")
+    significant = tuple(char for char in base if not _MARKS.contains(char))
+    return bool(significant) and all(_MIXED_RUN_SYMBOL.contains(char) for char in significant)
+
+
+def _emoji_grapheme(grapheme: str) -> bool:
+    return any(
+        _EXTENDED_PICTOGRAPHIC.contains(char) or _EMOJI_PRESENTATION.contains(char)
+        for char in grapheme
+    )
+
+
+def _append_symbol_chain(text, spans, chain, threshold, code_ranges, runs) -> None:
     keys = [_without_variation_selectors(spans[at]["text"]) for at in chain]
-    repeated: list[list[int]] = []
+    whole = (
+        len(chain) > threshold
+        and len(set(keys)) > 1
+        and all(
+            not _sentence_terminal(spans[at]["text"])
+            and _mixed_run_symbol(spans[at]["text"])
+            for at in chain
+        )
+    )
+    groups: list[list[int]] = [chain] if whole else []
     first = 0
-    for at in range(1, len(chain) + 1):
-        if at == len(chain) or keys[at] != keys[first]:
-            if at - first > threshold:
-                repeated.append(chain[first:at])
-            first = at
-    groups = repeated or ([chain] if len(chain) > threshold else [])
+    if not whole:
+        for at in range(1, len(chain) + 1):
+            if at == len(chain) or keys[at] != keys[first]:
+                group = chain[first:at]
+                if (
+                    len(group) > threshold
+                    and not _sentence_terminal(spans[group[0]]["text"])
+                ):
+                    groups.append(group)
+                first = at
     for group in groups:
         start = spans[group[0]]["start"]
         end = spans[group[-1]]["end"]
-        if _standalone(text, start, end) and not _url_token(text, start, end):
+        if (
+            _standalone(text, start, end)
+            and not _url_token(text, start, end)
+            and not _overlaps(code_ranges, start, end)
+        ):
             runs.append((start, end, tuple(spans[at]["text"] for at in group)))
 
 
 def _symbol_runs(text: str, threshold: int) -> list[tuple[int, int, tuple[str, ...]]]:
     """Maximal standalone symbol-grapheme runs, allowing horizontal space between them."""
     spans = break_grapheme_spans(text, "root")
+    code_ranges = _code_ranges(text)
     runs: list[tuple[int, int, tuple[str, ...]]] = []
     index = 0
     while index < len(spans):
@@ -468,7 +560,7 @@ def _symbol_runs(text: str, threshold: int) -> list[tuple[int, int, tuple[str, .
                     continue
                 index = space
             break
-        _append_symbol_chain(text, spans, chain, threshold, runs)
+        _append_symbol_chain(text, spans, chain, threshold, code_ranges, runs)
     return runs
 
 
@@ -525,9 +617,7 @@ class SymbolDetector:
 
     def detect(self, text: str) -> list[dict]:
         detections = []
-        in_symbol_runs: set[int] = set()
         for start, end, symbols in _symbol_runs(text, self.run_threshold):
-            in_symbol_runs.update(range(start, end))
             names = tuple(symbol_names(symbol, self.locale)[0] for symbol in symbols)
             bases = tuple(_without_variation_selectors(symbol) for symbol in symbols)
             detections.append(
@@ -541,15 +631,12 @@ class SymbolDetector:
                         symbols,
                         names,
                         len(set(bases)) == 1,
-                        all(
-                            any(_EMOJI.contains(char) for char in symbol)
-                            for symbol in symbols
-                        ),
+                        all(_emoji_grapheme(symbol) for symbol in symbols),
                     ),
                     "captures": (Capture("symbol", start, end, text[start:end], symbols, None),),
                 }
             )
-        in_runs: set[int] = set(in_symbol_runs)
+        in_runs: set[int] = set()
         silent_property_tokens = _silent_property_tokens(text)
         in_silent_property_tokens = {
             position
@@ -557,8 +644,6 @@ class SymbolDetector:
             for position in range(start, end)
         }
         for start, end in _runs(text, self.locale):
-            if any(position in in_symbol_runs for position in range(start, end)):
-                continue
             if not _standalone(text, start, end):
                 # A run touching a word is no unit; its letters read one by one, as before.
                 continue
@@ -636,17 +721,18 @@ class SymbolDetector:
                         }
                     )
                 continue
-            if (
-                len(char) != 1
-                or not _speakable(char, self.locale)
-                or not _standalone_symbol(text, index, end)
-            ):
+            if not _speakable(char, self.locale) or not _standalone_symbol(text, index, end):
                 continue
-            script = _script(char)
+            base = _without_variation_selectors(char).replace("\u200d", "")
+            script = _script(base[0])
             kind = (
                 "symbol:cldr"
                 if char in _cldr_names(self.locale)
-                else "symbol:letter" if _lone_foreign(char, self.locale) else "symbol:icu"
+                else (
+                    "symbol:letter"
+                    if len(base) == 1 and _lone_foreign(base, self.locale)
+                    else "symbol:icu"
+                )
             )
             detections.append(
                 {

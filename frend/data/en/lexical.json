@@ -100,6 +100,10 @@
       "why": "CLDR and ICU name a symbol but provide no locale phrase describing a long separator run as one unit (kal, 2026-10-03)",
       "value": "line of {0}"
     },
+    "symbol_run.repeated": {
+      "why": "A symbol name has no reliable CLDR plural form, so repeated runs use a locale phrase that keeps the supplied name singular (fugu review, 2026-10-04)",
+      "value": "line of {0} symbols"
+    },
     "symbol_run.mixed_emoji": {
       "why": "Locale noun used by the mixed-emoji symbol-run description required by kal (2026-10-03)",
       "value": "emoji"

@@ -43,7 +43,16 @@ from frend.letters import LettersDetector
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
-from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD, SymbolDetector
+from frend.symbols import (
+    DEFAULT_SYMBOL_RUN_THRESHOLD,
+    SymbolDetector,
+)
+from frend.symbols import (
+    _code_ranges as _symbol_code_ranges,
+)
+from frend.symbols import (
+    _overlaps as _symbol_overlaps,
+)
 from frend.verbalize import VerbalizedUnit, _verbalize_lattice_validated
 from frend.written_forms import WrittenFormsDetector
 
@@ -212,6 +221,8 @@ def _unit_text(unit: VerbalizedUnit) -> str:
 def _sentence(
     text: str,
     *,
+    source_offset: int,
+    symbol_code_ranges: tuple[tuple[int, int], ...],
     raw_text: str,
     fold: InputFold | None,
     locale: str,
@@ -222,6 +233,16 @@ def _sentence(
     symbol_run_threshold: int,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
     detections = detect(text, _reading_detectors(locale, symbol_run_threshold))
+    detections = [
+        detection
+        for detection in detections
+        if detection.get("type") != "symbol:run"
+        or not _symbol_overlaps(
+            symbol_code_ranges,
+            source_offset + int(detection["start"]),
+            source_offset + int(detection["end"]),
+        )
+    ]
     lattice = _resolve_lattice_validated(
         detections,
         source_text=text,
@@ -320,6 +341,7 @@ def normalize(
     SymbolDetector("root", run_threshold=symbol_run_threshold)
     raw_text = text
     text = apply_input_fold(raw_text, fold)
+    symbol_code_ranges = _symbol_code_ranges(text)
     locale = canonical_locale(locale)
     profile = validate_profile(profile)
     ranges = _sentence_ranges(text, locale)
@@ -375,6 +397,8 @@ def normalize(
         sentence = text[start:end]
         rendered, spoken = _sentence(
             sentence,
+            source_offset=start,
+            symbol_code_ranges=symbol_code_ranges,
             raw_text=raw_text[start:end],
             fold=fold,
             locale=locale,

@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import pytest
+from icukit.detectors import detect
 
 import frend
 from frend import compose_choices, resolve_choices, resolve_lattice
+from frend.align_graph import build_align_graph
 from frend.context import TextContext
+from frend.normalize import _reading_detectors
 from frend.profiles import GOOGLE_TN
 from frend.spoken_priors import normalize_spoken
 from frend.symbols import SymbolDetector, SymbolRunValue
-from frend.verbalize import verbalize_edge
+from frend.verbalize import verbalize_edge, verbalize_lattice
 
 
 def _forms(text):
@@ -116,12 +119,12 @@ def test_four_repeated_symbols_are_one_described_unit_with_all_alternatives():
     detection, unit = _symbol_run_unit("****")
     assert (detection["start"], detection["end"]) == (0, 4)
     assert [alternative.text for alternative in unit.alternatives] == [
-        "line of asterisks",
+        "line of asterisk symbols",
         "asterisk asterisk asterisk asterisk",
         "",
     ]
     assert {alternative.group for alternative in unit.alternatives} == {"tts-sanity"}
-    assert frend.normalize("****", fold=None).strip() == "line of asterisks"
+    assert frend.normalize("****", fold=None).strip() == "line of asterisk symbols"
 
 
 def test_three_symbols_stay_verbatim_and_the_threshold_is_configurable():
@@ -132,19 +135,19 @@ def test_three_symbols_stay_verbatim_and_the_threshold_is_configurable():
     )
     assert SymbolDetector(run_threshold=2).detect("***")[0]["type"] == "symbol:run"
     assert frend.normalize("***", fold=None, symbol_run_threshold=2).strip() == (
-        "line of asterisks"
+        "line of asterisk symbols"
     )
 
 
 def test_a_space_separated_run_is_one_unit():
     detection, unit = _symbol_run_unit("*       *       *       *")
     assert detection["text"] == "*       *       *       *"
-    assert unit.best.text == "line of asterisks"
+    assert unit.best.text == "line of asterisk symbols"
 
 
 @pytest.mark.parametrize(
     ("text", "description"),
-    [("😀😃😄😁", "line of emoji"), ("*#=~", "line of symbols")],
+    [("😀😃😄😁", "line of emoji"), ("×+÷=", "line of symbols")],
 )
 def test_mixed_runs_use_their_coarse_name(text, description):
     detection, unit = _symbol_run_unit(text)
@@ -155,9 +158,9 @@ def test_mixed_runs_use_their_coarse_name(text, description):
 @pytest.mark.parametrize(
     ("text", "description", "source"),
     [
-        ("😀😀😀😀", "line of grinning faces", "icu-name:symbol"),
-        ("❤️❤️❤️❤️", "line of red hearts", "cldr-symbol:red heart"),
-        ("𝄞𝄞𝄞𝄞", "line of musical symbol g clefs", "icu-name:symbol"),
+        ("😀😀😀😀", "line of grinning face symbols", "icu-name:symbol"),
+        ("❤️❤️❤️❤️", "line of red heart symbols", "cldr-symbol:red heart"),
+        ("𝄞𝄞𝄞𝄞", "line of musical symbol g clef symbols", "icu-name:symbol"),
     ],
 )
 def test_repeated_pictographs_use_cldr_then_icu_names(text, description, source):
@@ -166,17 +169,26 @@ def test_repeated_pictographs_use_cldr_then_icu_names(text, description, source)
     assert source in unit.best.provenance
 
 
-def test_google_tn_orders_the_measured_silence_without_dropping_alternatives():
-    detection = SymbolDetector().detect("****")[0]
-    assert isinstance(detection["value"], SymbolRunValue)
-    from frend.verbalize import _spoken_symbol_run
+def test_profile_callers_rank_the_run_without_dropping_alternatives(monkeypatch):
+    import frend.verbalize as verbalize_module
 
-    alternatives = _spoken_symbol_run(detection["value"], "en_US", GOOGLE_TN)
-    assert [item.text for item in alternatives] == [
+    monkeypatch.setattr(verbalize_module, "_google_tn_britishisms", lambda **_kwargs: None)
+    monkeypatch.setattr(verbalize_module, "_acronym_surface_priors", lambda **_kwargs: None)
+    lattice = resolve_lattice(source_text="****", fold=None)
+    default = verbalize_lattice(lattice)
+    google = verbalize_lattice(lattice, profile=GOOGLE_TN)
+    assert [item.text for item in default.best_path.units[0].alternatives] == [
+        "line of asterisk symbols",
+        "asterisk asterisk asterisk asterisk",
         "",
-        "line of asterisks",
+    ]
+    assert [item.text for item in google.best_path.units[0].alternatives] == [
+        "",
+        "line of asterisk symbols",
         "asterisk asterisk asterisk asterisk",
     ]
+    assert frend.normalize("****", fold=None).strip() == "line of asterisk symbols"
+    assert frend.normalize("****", fold=None, profile=GOOGLE_TN).strip() == ""
 
 
 def test_variation_selectors_are_attached_to_their_base_and_never_pass_through():
@@ -193,10 +205,110 @@ def test_variation_selectors_are_attached_to_their_base_and_never_pass_through()
 
 @pytest.mark.parametrize(
     "text",
-    ["--", "...", "***", "**bold**", "https://example.org/----", "1--2"],
+    [
+        "--",
+        "...",
+        "***",
+        "! ? ! ?",
+        "!!!!",
+        "....",
+        "\u0589\u0589\u0589\u0589",
+        ":-):-):-):-)",
+        "*#=~",
+        "**bold**",
+        "https://example.org/----",
+        "1--2",
+    ],
 )
 def test_non_separator_sequences_do_not_become_symbol_runs(text):
     assert not any(item["type"] == "symbol:run" for item in SymbolDetector().detect(text))
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["`----`", "before `----` after", "```\n----\n```", "~~~\n====\n~~~", "    ----"],
+)
+def test_code_context_does_not_become_a_symbol_run(text):
+    assert not any(item["type"] == "symbol:run" for item in SymbolDetector().detect(text))
+    assert "line of" not in frend.normalize(text, fold=None)
+
+
+def test_disallowed_mixed_punctuation_keeps_only_its_repeated_subrun():
+    runs = [item for item in SymbolDetector().detect("****#") if item["type"] == "symbol:run"]
+    assert [(item["text"], item["value"].symbols) for item in runs] == [
+        ("****", ("*", "*", "*", "*"))
+    ]
+
+
+@pytest.mark.parametrize("text", ["-", "=", "_", "#", "~"])
+def test_same_nonterminal_punctuation_can_form_a_run(text):
+    run = next(item for item in SymbolDetector().detect(text * 4) if item["type"] == "symbol:run")
+    assert run["value"].symbols == (text,) * 4
+
+
+def test_icu_graphemes_are_single_units_and_zwj_runs_retain_components():
+    family = "\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466"
+    (single,) = SymbolDetector().detect(family)
+    assert (single["text"], single["start"], single["end"]) == (family, 0, len(family))
+
+    detections = SymbolDetector().detect(family * 4)
+    run = next(item for item in detections if item["type"] == "symbol:run")
+    assert run["value"].symbols == (family,) * 4
+    assert [item["text"] for item in detections if item["type"] != "symbol:run"] == [family] * 4
+
+    heart = "\u2764\ufe0f"
+    heart_run = next(
+        item for item in SymbolDetector().detect(heart * 4) if item["type"] == "symbol:run"
+    )
+    assert heart_run["value"].symbols == (heart,) * 4
+    keycap = "#\ufe0f\u20e3"
+    (keycap_detection,) = SymbolDetector().detect(keycap)
+    assert (keycap_detection["text"], keycap_detection["start"], keycap_detection["end"]) == (
+        keycap,
+        0,
+        3,
+    )
+
+
+def _alignment_token_paths(alignment):
+    plan = alignment.count_plan()
+
+    def walk(index, tokens):
+        item = alignment.items[plan.labels[index]]
+        tokens = (*tokens, *item.tokens)
+        if not plan.children[index]:
+            yield tokens
+        for child in plan.children[index]:
+            yield from walk(child, tokens)
+
+    return {tokens for root in plan.roots for tokens in walk(root, ())}
+
+
+def test_run_is_additional_and_alignment_retains_partial_component_readings():
+    text = "****"
+    detections = list(detect(text, _reading_detectors("en_US")))
+    choices = resolve_choices(detections, source_text=text)
+    reading_types = [
+        edge.detection["type"] for edge in choices.edges if edge.kind == "reading"
+    ]
+    assert reading_types.count("symbol:run") == 1
+    assert reading_types.count("symbol:cldr") == 4
+
+    paths = _alignment_token_paths(build_align_graph(compose_choices(choices)))
+    assert ("line", "of", "asterisk", "symbols") in paths
+    assert () in paths
+    assert {sum(token == "asterisk" for token in path) for path in paths} >= {0, 1, 2, 3, 4}
+
+
+def test_locale_without_symbol_run_phrase_keeps_names_and_silence():
+    text = "****"
+    detections = SymbolDetector("ru").detect(text)
+    run = next(item for item in detections if item["type"] == "symbol:run")
+    choices = resolve_choices([run], locale="ru", source_text=text)
+    unit = compose_choices(choices).units[0]
+    assert len(unit.alternatives) == 2
+    assert unit.alternatives[0].text == " ".join(name for name, _source in run["value"].names)
+    assert unit.alternatives[1].text == ""
 
 
 def test_a_standalone_symbol_in_running_text_is_read():

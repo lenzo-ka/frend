@@ -90,7 +90,6 @@ from frend.symbols import (
     SymbolRunValue,
     SymbolValue,
     VariationValue,
-    plural_symbol_name,
 )
 from frend.telephone import TelephoneValue
 from frend.written_forms import DigitsValue
@@ -2753,32 +2752,38 @@ def _spoken_symbol_run(
 ) -> tuple[SpokenAlternative, ...]:
     """Description, per-symbol names, and silence for one long symbol run."""
     if value.repeated:
-        noun = plural_symbol_name(value.names[0][0])
+        description = _lexical_pattern("symbol_run.repeated", locale, value.names[0][0])
     else:
         noun = _lexical(
             "symbol_run.mixed_emoji" if value.emoji else "symbol_run.mixed_symbols", locale
         )
-    description = None if noun is None else _lexical_pattern("symbol_run.line", locale, noun)
-    if description is None:
-        raise NotImplementedError(f"no symbol-run phrase for {locale!r}")
+        description = None if noun is None else _lexical_pattern("symbol_run.line", locale, noun)
     sources = tuple(dict.fromkeys(source for _name, source in value.names))
     name_source = "+".join(sources)
-    alternatives = (
-        SpokenAlternative(
-            description,
-            f"{lexical_source(locale)}+{name_source}",
-            group="tts-sanity",
-        ),
+    described = (
+        ()
+        if description is None
+        else (
+            SpokenAlternative(
+                description,
+                f"{lexical_source(locale)}+{name_source}",
+                group="tts-sanity",
+            ),
+        )
+    )
+    named = (
         SpokenAlternative(
             " ".join(name for name, _source in value.names),
             name_source,
             group="tts-sanity",
         ),
+    )
+    silence = (
         SpokenAlternative("", "surface:silence", group="tts-sanity"),
     )
     if profile == GOOGLE_TN:
-        return (alternatives[2], alternatives[0], alternatives[1])
-    return alternatives
+        return (*silence, *described, *named)
+    return (*described, *named, *silence)
 
 
 def _spoken_range(
