@@ -85,7 +85,13 @@ from frend.ranges import (
     written_sub_key,
 )
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
-from frend.symbols import ScriptRunValue, SymbolValue
+from frend.symbols import (
+    ScriptRunValue,
+    SymbolRunValue,
+    SymbolValue,
+    VariationValue,
+    plural_symbol_name,
+)
 from frend.telephone import TelephoneValue
 from frend.written_forms import DigitsValue
 
@@ -148,11 +154,12 @@ def _lexical_pattern(key: str, locale: str, *texts: str) -> str | None:
 
 @dataclass(frozen=True)
 class SpokenAlternative:
-    """One spoken form, where it came from, and an optional genuine weight."""
+    """One spoken form, its source, optional genuine weight, and behavior group."""
 
     text: str
     provenance: str
     weight: Decimal | None = None
+    group: str | None = None
 
 
 @dataclass(frozen=True)
@@ -308,7 +315,10 @@ def _rank_final(
         )
         if measurement is not None:
             weighted = SpokenAlternative(
-                alternative.text, alternative.provenance, measurement.share
+                alternative.text,
+                alternative.provenance,
+                measurement.share,
+                alternative.group,
             )
             ranked.append((1, -measurement.share, index, weighted))
             continue
@@ -783,6 +793,7 @@ _SPOKEN_CAPTURES = {
     "telephone": frozenset({"telephone"}),
     "grouped-id": frozenset({"grouped-id"}),
     "symbol": frozenset({"symbol"}),
+    "symbol-run": frozenset({"symbol"}),
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
@@ -2737,6 +2748,39 @@ def _money_range(value: RangeValue) -> bool:
     )
 
 
+def _spoken_symbol_run(
+    value: SymbolRunValue, locale: str, profile: str | None
+) -> tuple[SpokenAlternative, ...]:
+    """Description, per-symbol names, and silence for one long symbol run."""
+    if value.repeated:
+        noun = plural_symbol_name(value.names[0][0])
+    else:
+        noun = _lexical(
+            "symbol_run.mixed_emoji" if value.emoji else "symbol_run.mixed_symbols", locale
+        )
+    description = None if noun is None else _lexical_pattern("symbol_run.line", locale, noun)
+    if description is None:
+        raise NotImplementedError(f"no symbol-run phrase for {locale!r}")
+    sources = tuple(dict.fromkeys(source for _name, source in value.names))
+    name_source = "+".join(sources)
+    alternatives = (
+        SpokenAlternative(
+            description,
+            f"{lexical_source(locale)}+{name_source}",
+            group="tts-sanity",
+        ),
+        SpokenAlternative(
+            " ".join(name for name, _source in value.names),
+            name_source,
+            group="tts-sanity",
+        ),
+        SpokenAlternative("", "surface:silence", group="tts-sanity"),
+    )
+    if profile == GOOGLE_TN:
+        return (alternatives[2], alternatives[0], alternatives[1])
+    return alternatives
+
+
 def _spoken_range(
     value: RangeValue,
     locale: str,
@@ -3050,6 +3094,16 @@ def _verbalize_edge(
             alternatives = _spoken_mixed_measure(detection, locale)
             key_value = (value.decimal, value.unit)
             path = "mixed-measure"
+        elif isinstance(value, SymbolRunValue):
+            alternatives = _spoken_symbol_run(value, locale, profile)
+            key_value = value.text
+            path = "symbol-run"
+        elif isinstance(value, VariationValue):
+            alternatives = (
+                SpokenAlternative(value.base, "surface:without-variation-selectors"),
+            )
+            key_value = value.text
+            path = "symbol"
         elif isinstance(value, SymbolValue):
             # A standalone character reads by its names or as nothing; the corpus says
             # most punctuation, a lone dash and "風" as nothing, "&" as "and".
@@ -3133,7 +3187,7 @@ def _verbalize_edge(
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
         return VerbalizedUnit(edge.id, (fallback,), tier, provenance, False)
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
-    if apply_source_priors and path != "range":
+    if apply_source_priors and path not in ("range", "symbol-run"):
         # A range's readings are ranked within it (``_spoken_range``): each end by its
         # own kind's measured shares.
         kind = _measured_kind(type_, value)
@@ -3217,6 +3271,7 @@ def _verbalize_edge(
     elif (
         context is not None
         and rerank_by_context
+        and path != "symbol-run"
         and not (path == "date" and type_ == "date:y" and _bare_four_digit(detection, locale))
     ):
         alternatives, choice = rerank(

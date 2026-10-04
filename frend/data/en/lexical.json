@@ -96,6 +96,18 @@
         "@": "at"
       }
     },
+    "symbol_run.line": {
+      "why": "CLDR and ICU name a symbol but provide no locale phrase describing a long separator run as one unit (kal, 2026-10-03)",
+      "value": "line of {0}"
+    },
+    "symbol_run.mixed_emoji": {
+      "why": "Locale noun used by the mixed-emoji symbol-run description required by kal (2026-10-03)",
+      "value": "emoji"
+    },
+    "symbol_run.mixed_symbols": {
+      "why": "Locale noun used by the mixed-symbol-run description required by kal (2026-10-03)",
+      "value": "symbols"
+    },
     "letter.vowels": {
       "why": "a consonant-vowel key for acronym ranking, not a CLDR set",
       "value": "aeiouy"

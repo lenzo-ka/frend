@@ -520,6 +520,7 @@ def _origin_metadata(
                     "alternative_index": alternative_indices[item_id, index],
                     "text": alternative.text,
                     "provenance": alternative.provenance,
+                    **({"group": alternative.group} if alternative.group is not None else {}),
                 }
                 for index, alternative in enumerate(item.alternatives)
             )

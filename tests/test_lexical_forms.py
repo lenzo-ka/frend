@@ -583,6 +583,19 @@ _CONSUMERS = [
         [ElectronicDetector("en_US")],
         "jane at example dot org",
     ),
+    ("symbol_run.line", "****", [SymbolDetector("en_US")], "line of asterisks"),
+    (
+        "symbol_run.mixed_emoji",
+        "😀😃😄😁",
+        [SymbolDetector("en_US")],
+        "line of emoji",
+    ),
+    (
+        "symbol_run.mixed_symbols",
+        "*#=~",
+        [SymbolDetector("en_US")],
+        "line of symbols",
+    ),
     (
         "currency.units",
         "$1.50",
@@ -618,6 +631,39 @@ _CONSUMERS = [
 # only reweights: without it "three point zero five", "nineteen oh-eight" and "ten oh
 # five" lead.
 _GOLDEN = {
+    ("symbol_run.line", "****"): [
+        [
+            ("line of asterisks", "lexical:en_US+cldr-symbol:asterisk"),
+            ("asterisk asterisk asterisk asterisk", "cldr-symbol:asterisk"),
+            ("", "surface:silence"),
+        ],
+    ],
+    ("symbol_run.mixed_emoji", "😀😃😄😁"): [
+        [
+            ("line of emoji", "lexical:en_US+icu-name:symbol"),
+            (
+                "grinning face smiling face with open mouth "
+                "smiling face with open mouth and smiling eyes grinning face with smiling eyes",
+                "icu-name:symbol",
+            ),
+            ("", "surface:silence"),
+        ],
+    ],
+    ("symbol_run.mixed_symbols", "*#=~"): [
+        [
+            (
+                "line of symbols",
+                "lexical:en_US+cldr-symbol:asterisk+cldr-symbol:hash sign+"
+                "cldr-symbol:equal+cldr-symbol:tilde",
+            ),
+            (
+                "asterisk hash sign equal tilde",
+                "cldr-symbol:asterisk+cldr-symbol:hash sign+cldr-symbol:equal+"
+                "cldr-symbol:tilde",
+            ),
+            ("", "surface:silence"),
+        ],
+    ],
     ("date.day_first", "9/30/1908"): [
         [
             (

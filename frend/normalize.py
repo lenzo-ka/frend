@@ -43,7 +43,7 @@ from frend.letters import LettersDetector
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
-from frend.symbols import SymbolDetector
+from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD, SymbolDetector
 from frend.verbalize import VerbalizedUnit, _verbalize_lattice_validated
 from frend.written_forms import WrittenFormsDetector
 
@@ -124,7 +124,9 @@ class NormalizedText:
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
-def _reading_detectors(locale: str) -> tuple[object, ...]:
+def _reading_detectors(
+    locale: str, symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD
+) -> tuple[object, ...]:
     """The evaluator's recognition profile, packaged for the public API."""
     from icukit.abbreviation_recognize import AbbreviationDetector
 
@@ -158,7 +160,7 @@ def _reading_detectors(locale: str) -> tuple[object, ...]:
     by_kind = (
         (*cardinals, written, *icu_range_readers(locale, cardinals)),
         (FlexibleNumberDetector(locale), written),
-        (SymbolDetector(locale),),
+        (SymbolDetector(locale, run_threshold=symbol_run_threshold),),
         numbers,
         (*dates.detectors, *date_interval_readers(locale), written),
         (FlexibleFractionDetector(locale),),
@@ -217,8 +219,9 @@ def _sentence(
     offsets: bool,
     max_input_chars: int | None,
     max_unit_chars: int | None,
+    symbol_run_threshold: int,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
-    detections = detect(text, _reading_detectors(locale))
+    detections = detect(text, _reading_detectors(locale, symbol_run_threshold))
     lattice = _resolve_lattice_validated(
         detections,
         source_text=text,
@@ -260,6 +263,7 @@ def normalize(
     offsets: Literal[False] = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
 ) -> str: ...
 
 
@@ -273,6 +277,7 @@ def normalize(
     offsets: Literal[True],
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
 ) -> NormalizedText: ...
 
 
@@ -286,6 +291,7 @@ def normalize(
     offsets: bool,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
 ) -> str | NormalizedText: ...
 
 
@@ -298,6 +304,7 @@ def normalize(
     offsets: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
 ) -> str | NormalizedText:
     """Return the first-choice spoken form of a plain-text document.
 
@@ -310,6 +317,7 @@ def normalize(
         raise TypeError(f"offsets must be a bool, got {type(offsets).__name__}")
     validate_input(text, max_input_chars=max_input_chars)
     validate_unit_length(0, max_unit_chars=max_unit_chars)
+    SymbolDetector("root", run_threshold=symbol_run_threshold)
     raw_text = text
     text = apply_input_fold(raw_text, fold)
     locale = canonical_locale(locale)
@@ -374,6 +382,7 @@ def normalize(
             offsets=offsets,
             max_input_chars=max_input_chars,
             max_unit_chars=max_unit_chars,
+            symbol_run_threshold=symbol_run_threshold,
         )
         parts.append(spoken)
         if aligned is not None:

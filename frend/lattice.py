@@ -34,6 +34,7 @@ from frend.input_limits import (
     validate_unit_length,
 )
 from frend.locale_data import canonical_locale
+from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD, SymbolDetector
 from frend.type_priors import FeatureSource, ReadingPrior, ResolveContext
 
 __all__ = [
@@ -608,6 +609,7 @@ def resolve_lattice(
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
 ) -> ReadingLattice:
     """Resolve detections into an immutable, distilled reading lattice.
 
@@ -632,6 +634,7 @@ def resolve_lattice(
     too. This API does not silently claim a bound it does not have.
     """
     validate_input(source_text, max_input_chars=max_input_chars)
+    SymbolDetector("root", run_threshold=symbol_run_threshold)
     raw_source_text = source_text
     applied_fold: InputFold | None = None
     if detections is None:
@@ -643,7 +646,13 @@ def resolve_lattice(
 
         from frend.normalize import _reading_detectors
 
-        detections = list(detect(source_text, _reading_detectors(canonical_locale(locale))))
+        canonical = canonical_locale(locale)
+        detectors = (
+            _reading_detectors(canonical)
+            if symbol_run_threshold == DEFAULT_SYMBOL_RUN_THRESHOLD
+            else _reading_detectors(canonical, symbol_run_threshold)
+        )
+        detections = list(detect(source_text, detectors))
     return _resolve_lattice_validated(
         detections,
         locale=locale,

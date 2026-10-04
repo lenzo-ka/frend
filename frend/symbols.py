@@ -27,13 +27,18 @@ from dataclasses import dataclass
 from functools import cache
 
 import icu
+from icukit import break_grapheme_spans
 from icukit.detectors import Capture
 
 __all__ = [
     "ScriptRunValue",
     "SymbolDetector",
+    "SymbolRunValue",
     "SymbolValue",
+    "VariationValue",
+    "DEFAULT_SYMBOL_RUN_THRESHOLD",
     "locale_scripts",
+    "plural_symbol_name",
     "run_readings",
     "silent_property_class",
     "symbol_names",
@@ -46,10 +51,18 @@ _NEUTRAL = frozenset(
 )
 _MARKS = icu.UnicodeSet("[:M:]")
 _MARKS.freeze()
+_SYMBOLS = icu.UnicodeSet("[[:P:][:S:]]")
+_SYMBOLS.freeze()
+_VARIATION_SELECTORS = icu.UnicodeSet("[:Variation_Selector:]")
+_VARIATION_SELECTORS.freeze()
+_EMOJI = icu.UnicodeSet("[:Emoji:]")
+_EMOJI.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
 TRANSLITERATION_SOURCE = "icu-transliteration"
 LETTER_NAME_SOURCE = "icu-name:letter"
 PROPERTY_NAME_SOURCE = "icu-name:property"
+SYMBOL_NAME_SOURCE = "icu-name:symbol"
+DEFAULT_SYMBOL_RUN_THRESHOLD = 3
 
 # Training shards 00--89: these ICU (General_Category, Script) classes each have at
 # least 100 occurrences and at least 99% of their occurrences are in wholly silent
@@ -85,6 +98,25 @@ class ScriptRunValue:
     script: str
     transform: str | None
     names: tuple[tuple[str, str], ...]
+
+
+@dataclass(frozen=True)
+class SymbolRunValue:
+    """More than the configured number of symbol graphemes, read as one unit."""
+
+    text: str
+    symbols: tuple[str, ...]
+    names: tuple[tuple[str, str], ...]
+    repeated: bool
+    emoji: bool
+
+
+@dataclass(frozen=True)
+class VariationValue:
+    """A grapheme whose variation selectors are attached to, and removed with, its base."""
+
+    text: str
+    base: str
 
 
 def _script(char: str) -> str:
@@ -226,6 +258,25 @@ def _cldr_names(locale: str) -> dict[str, tuple[str, ...]]:
     return {surface: tuple(items) for surface, items in names.items()}
 
 
+def _without_variation_selectors(text: str) -> str:
+    return "".join(char for char in text if not _VARIATION_SELECTORS.contains(char))
+
+
+def _symbol_grapheme(text: str) -> bool:
+    """Whether a grapheme is made from a punctuation/symbol base and joiners/marks."""
+    base = _without_variation_selectors(text).replace("\u200d", "")
+    return bool(base) and all(_SYMBOLS.contains(char) or _MARKS.contains(char) for char in base)
+
+
+def _formal_symbol_name(text: str) -> str | None:
+    names = [
+        icu.Char.charName(char)
+        for char in _without_variation_selectors(text)
+        if char != "\u200d"
+    ]
+    return " ".join(name.lower() for name in names) if names and all(names) else None
+
+
 def _letter_name(char: str) -> str | None:
     """The letter's own name from ICU's formal name ("GREEK SMALL LETTER ALPHA" -> "alpha")."""
     from icukit import get_char_name
@@ -238,11 +289,27 @@ def _letter_name(char: str) -> str | None:
 
 def symbol_names(char: str, locale: str = "en_US") -> tuple[tuple[str, str], ...]:
     """(name, source) pairs a character can be read by, CLDR's first."""
-    cldr = _cldr_names(locale).get(char, ())
+    base = _without_variation_selectors(char)
+    cldr = _cldr_names(locale).get(char, ()) or _cldr_names(locale).get(base, ())
     if cldr:
         return tuple((name, f"cldr-symbol:{name}") for name in cldr)
-    letter = _letter_name(char) if _lone_foreign(char, locale) else None
-    return ((letter, LETTER_NAME_SOURCE),) if letter else ()
+    letter = _letter_name(base) if len(base) == 1 and _lone_foreign(base, locale) else None
+    if letter:
+        return ((letter, LETTER_NAME_SOURCE),)
+    formal = _formal_symbol_name(char) if _symbol_grapheme(char) else None
+    return ((formal, SYMBOL_NAME_SOURCE),) if formal else ()
+
+
+def plural_symbol_name(name: str) -> str:
+    """English plural of a CLDR/ICU symbol name, inflecting its final word."""
+    head, separator, noun = name.rpartition(" ")
+    if noun.endswith(("s", "x", "z", "ch", "sh")):
+        noun += "es"
+    elif len(noun) > 1 and noun.endswith("y") and noun[-2].lower() not in "aeiou":
+        noun = noun[:-1] + "ies"
+    else:
+        noun += "s"
+    return f"{head}{separator}{noun}"
 
 
 def _property_name(text: str) -> tuple[tuple[str, str], ...]:
@@ -255,9 +322,10 @@ def _property_name(text: str) -> tuple[tuple[str, str], ...]:
 def _speakable(char: str, locale: str) -> bool:
     if char.isspace() or char.isdigit():
         return False
-    if char in _cldr_names(locale):
+    if char in _cldr_names(locale) or _without_variation_selectors(char) in _cldr_names(locale):
         return True
-    return _lone_foreign(char, locale)
+    base = _without_variation_selectors(char)
+    return (len(base) == 1 and _lone_foreign(base, locale)) or _symbol_grapheme(char)
 
 
 def _standalone(text: str, start: int, end: int) -> bool:
@@ -329,6 +397,81 @@ def _runs(text: str, locale: str) -> list[tuple[int, int]]:
     return runs
 
 
+def _horizontal_space(text: str) -> bool:
+    return bool(text) and all(char.isspace() and char not in "\r\n\v\f" for char in text)
+
+
+def _url_token(text: str, start: int, end: int) -> bool:
+    left = start
+    while left and not text[left - 1].isspace():
+        left -= 1
+    right = end
+    while right < len(text) and not text[right].isspace():
+        right += 1
+    token = text[left:right].casefold()
+    return "://" in token or token.startswith("www.")
+
+
+def _standalone_symbol(text: str, start: int, end: int) -> bool:
+    """Judge a whole contiguous symbol delimiter, not one character inside it."""
+    base = _without_variation_selectors(text[start:end])
+    repeated = base[0] if len(base) == 1 else None
+    left = start
+    while repeated is not None and left and text[left - 1] == repeated:
+        left -= 1
+    right = end
+    while repeated is not None and right < len(text) and text[right] == repeated:
+        right += 1
+    return _standalone(text, left, right) and not _url_token(text, left, right)
+
+
+def _append_symbol_chain(text, spans, chain, threshold, runs) -> None:
+    keys = [_without_variation_selectors(spans[at]["text"]) for at in chain]
+    repeated: list[list[int]] = []
+    first = 0
+    for at in range(1, len(chain) + 1):
+        if at == len(chain) or keys[at] != keys[first]:
+            if at - first > threshold:
+                repeated.append(chain[first:at])
+            first = at
+    groups = repeated or ([chain] if len(chain) > threshold else [])
+    for group in groups:
+        start = spans[group[0]]["start"]
+        end = spans[group[-1]]["end"]
+        if _standalone(text, start, end) and not _url_token(text, start, end):
+            runs.append((start, end, tuple(spans[at]["text"] for at in group)))
+
+
+def _symbol_runs(text: str, threshold: int) -> list[tuple[int, int, tuple[str, ...]]]:
+    """Maximal standalone symbol-grapheme runs, allowing horizontal space between them."""
+    spans = break_grapheme_spans(text, "root")
+    runs: list[tuple[int, int, tuple[str, ...]]] = []
+    index = 0
+    while index < len(spans):
+        if not _symbol_grapheme(spans[index]["text"]):
+            index += 1
+            continue
+        chain = [index]
+        index += 1
+        while index < len(spans):
+            if _symbol_grapheme(spans[index]["text"]):
+                chain.append(index)
+                index += 1
+                continue
+            if _horizontal_space(spans[index]["text"]):
+                space = index
+                while index < len(spans) and _horizontal_space(spans[index]["text"]):
+                    index += 1
+                if index < len(spans) and _symbol_grapheme(spans[index]["text"]):
+                    chain.append(index)
+                    index += 1
+                    continue
+                index = space
+            break
+        _append_symbol_chain(text, spans, chain, threshold, runs)
+    return runs
+
+
 def run_readings(
     text: str, script: str, locale: str
 ) -> tuple[str | None, tuple[tuple[str, str], ...]]:
@@ -368,12 +511,45 @@ def run_readings(
 class SymbolDetector:
     """Detect standalone symbols and letters of scripts frend reads by name."""
 
-    def __init__(self, locale: str = "en_US") -> None:
+    def __init__(
+        self, locale: str = "en_US", run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD
+    ) -> None:
+        if (
+            isinstance(run_threshold, bool)
+            or not isinstance(run_threshold, int)
+            or run_threshold < 0
+        ):
+            raise ValueError(f"run_threshold must be a nonnegative integer, got {run_threshold!r}")
         self.locale = locale
+        self.run_threshold = run_threshold
 
     def detect(self, text: str) -> list[dict]:
         detections = []
-        in_runs: set[int] = set()
+        in_symbol_runs: set[int] = set()
+        for start, end, symbols in _symbol_runs(text, self.run_threshold):
+            in_symbol_runs.update(range(start, end))
+            names = tuple(symbol_names(symbol, self.locale)[0] for symbol in symbols)
+            bases = tuple(_without_variation_selectors(symbol) for symbol in symbols)
+            detections.append(
+                {
+                    "text": text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": "symbol:run",
+                    "value": SymbolRunValue(
+                        text[start:end],
+                        symbols,
+                        names,
+                        len(set(bases)) == 1,
+                        all(
+                            any(_EMOJI.contains(char) for char in symbol)
+                            for symbol in symbols
+                        ),
+                    ),
+                    "captures": (Capture("symbol", start, end, text[start:end], symbols, None),),
+                }
+            )
+        in_runs: set[int] = set(in_symbol_runs)
         silent_property_tokens = _silent_property_tokens(text)
         in_silent_property_tokens = {
             position
@@ -381,6 +557,8 @@ class SymbolDetector:
             for position in range(start, end)
         }
         for start, end in _runs(text, self.locale):
+            if any(position in in_symbol_runs for position in range(start, end)):
+                continue
             if not _standalone(text, start, end):
                 # A run touching a word is no unit; its letters read one by one, as before.
                 continue
@@ -398,21 +576,22 @@ class SymbolDetector:
                     "captures": (Capture("symbol", start, end, surface, surface, None),),
                 }
             )
-        for index, char in enumerate(text):
-            if index in in_runs:
+        for span in break_grapheme_spans(text, "root"):
+            index, end, char = span["start"], span["end"], span["text"]
+            if any(position in in_runs for position in range(index, end)):
                 continue
             if index in in_silent_property_tokens:
                 token = silent_property_tokens.get(index)
                 if token is None:
                     continue
-                end, _property_class = token
-                surface = text[index:end]
-                script = _script(char)
+                token_end, _property_class = token
+                surface = text[index:token_end]
+                script = _script(char[0])
                 detections.append(
                     {
                         "text": surface,
                         "start": index,
-                        "end": end,
+                        "end": token_end,
                         "type": "symbol:property",
                         "value": SymbolValue(
                             surface[0],
@@ -422,23 +601,61 @@ class SymbolDetector:
                         ),
                         "captures": tuple(
                             Capture("symbol", at, at + 1, text[at], text[at], None)
-                            for at in range(index, end)
+                            for at in range(index, token_end)
                         ),
                     }
                 )
                 continue
-            if not _speakable(char, self.locale) or not _standalone(text, index, index + 1):
+            if any(_VARIATION_SELECTORS.contains(unit) for unit in char):
+                base = _without_variation_selectors(char)
+                if base and _speakable(char, self.locale) and _standalone_symbol(text, index, end):
+                    script = _script(base[0])
+                    detections.append(
+                        {
+                            "text": char,
+                            "start": index,
+                            "end": end,
+                            "type": (
+                                "symbol:cldr"
+                                if base in _cldr_names(self.locale)
+                                else "symbol:icu"
+                            ),
+                            "value": SymbolValue(char, script, symbol_names(char, self.locale)),
+                            "captures": (Capture("symbol", index, end, char, char, None),),
+                        }
+                    )
+                else:
+                    detections.append(
+                        {
+                            "text": char,
+                            "start": index,
+                            "end": end,
+                            "type": "symbol:variation",
+                            "value": VariationValue(char, base),
+                            "captures": (Capture("symbol", index, end, char, base, None),),
+                        }
+                    )
+                continue
+            if (
+                len(char) != 1
+                or not _speakable(char, self.locale)
+                or not _standalone_symbol(text, index, end)
+            ):
                 continue
             script = _script(char)
-            kind = "symbol:cldr" if char in _cldr_names(self.locale) else "symbol:letter"
+            kind = (
+                "symbol:cldr"
+                if char in _cldr_names(self.locale)
+                else "symbol:letter" if _lone_foreign(char, self.locale) else "symbol:icu"
+            )
             detections.append(
                 {
                     "text": char,
                     "start": index,
-                    "end": index + 1,
+                    "end": end,
                     "type": kind,
                     "value": SymbolValue(char, script, symbol_names(char, self.locale)),
-                    "captures": (Capture("symbol", index, index + 1, char, char, None),),
+                    "captures": (Capture("symbol", index, end, char, char, None),),
                 }
             )
         detections.sort(key=lambda detection: detection["start"])
