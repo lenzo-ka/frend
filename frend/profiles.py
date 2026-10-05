@@ -71,34 +71,35 @@ def validate_groups(
         if group not in GROUP_ROLES:
             known = ", ".join(repr(name) for name in GROUP_ROLES)
             raise ValueError(f"unknown verbalization group {group!r}; known groups: {known}")
-        if isinstance(raw_setting, GroupSetting):
-            normalized.append((group, raw_setting))
-            continue
         option_registry = GROUP_OPTIONS.get(group, {})
         options = {name: choices[0] for name, choices in option_registry.items()}
-        if isinstance(raw_setting, Mapping):
+        if isinstance(raw_setting, GroupSetting):
+            raw_order = raw_setting.order
+            raw_options = raw_setting.options
+        elif isinstance(raw_setting, Mapping):
             if "order" not in raw_setting:
                 raise ValueError(
                     f"group {group!r} must be an order sequence or an object with 'order'; "
                     f"got {type(raw_setting).__name__} without 'order'"
                 )
             raw_order = raw_setting["order"]
-            for option in raw_setting.keys() - {"order"}:
-                if option not in option_registry:
-                    known = ", ".join(repr(name) for name in option_registry) or "none"
-                    raise ValueError(
-                        f"group {group!r} has unknown option {option!r}; known options: {known}"
-                    )
-                raw_value = raw_setting[option]
-                choices = option_registry[option]
-                if raw_value not in choices:
-                    listed = ", ".join(repr(choice) for choice in choices)
-                    raise ValueError(
-                        f"group {group!r} {option} must be one of {listed}; got {raw_value!r}"
-                    )
-                options[option] = raw_value
+            raw_options = {key: raw_setting[key] for key in raw_setting.keys() - {"order"}}
         else:
             raw_order = raw_setting
+            raw_options = {}
+        for option, raw_value in raw_options.items():
+            if option not in option_registry:
+                known = ", ".join(repr(name) for name in option_registry) or "none"
+                raise ValueError(
+                    f"group {group!r} has unknown option {option!r}; known options: {known}"
+                )
+            choices = option_registry[option]
+            if raw_value not in choices:
+                listed = ", ".join(repr(choice) for choice in choices)
+                raise ValueError(
+                    f"group {group!r} {option} must be one of {listed}; got {raw_value!r}"
+                )
+            options[option] = raw_value
         if isinstance(raw_order, (str, bytes)) or not isinstance(raw_order, Sequence):
             order = ()
         else:
@@ -107,7 +108,14 @@ def validate_groups(
         if len(order) != len(roles) or set(order) != set(roles):
             listed = ", ".join(repr(role) for role in roles)
             raise ValueError(f"group {group!r} order must list each of {listed} exactly once")
-        normalized.append((group, GroupSetting(order, MappingProxyType(options))))
+        if (
+            isinstance(raw_setting, GroupSetting)
+            and raw_setting.order == order
+            and raw_setting.options == options
+        ):
+            normalized.append((group, raw_setting))
+        else:
+            normalized.append((group, GroupSetting(order, MappingProxyType(options))))
     return tuple(normalized)
 
 

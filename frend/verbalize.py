@@ -2797,6 +2797,9 @@ def _money_range(value: RangeValue) -> bool:
     )
 
 
+_CHAR_DETAIL_NUMBER_MAX_DIGITS = 15
+
+
 def _char_detail(
     surface: str,
     locale: str,
@@ -2835,7 +2838,11 @@ def _char_detail(
                         spoken.append(grapheme)
                         sources.append("surface:passthrough")
             elif stretch_kind == "digit":
-                if digits == "number" and not spell_letters:
+                if (
+                    digits == "number"
+                    and not spell_letters
+                    and len(stretch) <= _CHAR_DETAIL_NUMBER_MAX_DIGITS
+                ):
                     value = Decimal(int("".join(grapheme[0] for grapheme in stretch)))
                     leaf = _number_leaf(value, "cardinal", locale)[0]
                     spoken.append(leaf.text)

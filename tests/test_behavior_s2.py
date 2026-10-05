@@ -502,6 +502,20 @@ def test_c17_group_objects_options_and_refusals_are_exact(tmp_path):
     assert sequence.options == object_default.options == {"digits": "each"}
     assert numbered.options == {"digits": "number"}
     assert dict(validate_groups({"char-detail": numbered}))["char-detail"] is numbered
+    full_order = GroupSetting(order, {})
+    assert dict(validate_groups({"char-detail": full_order}))["char-detail"].options == {
+        "digits": "each"
+    }
+    with pytest.raises(ValueError) as caught:
+        validate_groups({"char-detail": GroupSetting(("named",), {})})
+    assert str(caught.value) == (
+        "group 'char-detail' order must list each of 'named', 'reading', 'spelled' exactly once"
+    )
+    with pytest.raises(ValueError) as caught:
+        validate_groups({"char-detail": GroupSetting(order, {"digits": "digit"})})
+    assert str(caught.value) == (
+        "group 'char-detail' digits must be one of 'each', 'number'; got 'digit'"
+    )
     assert (
         dict(validate_groups({"tts-sanity": {"order": ["described", "named", "silent"]}}))[
             "tts-sanity"
@@ -614,6 +628,21 @@ def test_c19_number_option_leaves_letters_and_spelled_digits_unchanged():
         assert number_spelled == [spelled_text]
 
 
+def test_c19_number_option_uses_only_exact_digit_run_lengths():
+    at_limit = _char_detail("$" + "9" * 15, "en_US", ("named",), "number")[0]
+    assert at_limit.text == (
+        "dollar nine hundred ninety-nine trillion nine hundred ninety-nine billion "
+        "nine hundred ninety-nine million nine hundred ninety-nine thousand "
+        "nine hundred ninety-nine"
+    )
+
+    past_limit = _char_detail("$" + "9" * 16, "en_US", ("named",), "number")[0]
+    assert past_limit.text == "dollar " + " ".join(["nine"] * 16)
+
+    very_long = _char_detail("$" + "1" * 5000, "en_US", ("named",), "number")[0]
+    assert very_long.text == "dollar " + " ".join(["one"] * 5000)
+
+
 def test_c20_inert_order_is_identical_under_both_digit_options():
     groups = [
         {"char-detail": {"order": ["reading", "named", "spelled"], "digits": "each"}},
@@ -645,6 +674,7 @@ def test_c21_marks_scripts_and_nfc_named_stretches():
         assert unit.best.provenance == "cldr-symbol:dollar+surface:passthrough"
     arabic = verbalize_edge(replace(edge, end=3), source_text="$١٢", groups=SR)
     assert arabic.best.text == "dollar one two"
+    # Main's code-point passthrough edges (lattice.py) split decomposed é/١٢; fix is out of lane.
     assert frend.normalize("$é", groups=SR) == " dollar é"
     assert frend.normalize("$e\u0301", groups=SR) == " dollar e combining acute accent "
     assert frend.normalize("$١٢", groups=SR) == " dollar ١٢"
@@ -718,24 +748,15 @@ def test_r5_google_tn_no_group_respelling_still_replaces_the_single_form(monkeyp
     import frend.verbalize as verbalize_module
 
     lattice = frend.resolve_lattice([], source_text="colour")
-    edges = {edge.id: edge for edge in lattice.edges}
-    units = tuple(
-        _verbalize_edge(edge, source_text="colour")
-        for edge in (edges[edge_id] for edge_id in lattice.best_path.edge_ids)
-    )
+    monkeypatch.setattr(verbalize_module, "_acronym_surface_priors", lambda **_kwargs: None)
+    monkeypatch.setattr(verbalize_module, "_google_tn_britishisms", lambda **_kwargs: object())
     monkeypatch.setattr(
         verbalize_module,
         "respell_from_table",
         lambda word, _table: "color" if word == "colour" else word,
     )
-    changed = verbalize_module._respell_passthrough_words(
-        units,
-        lattice.best_path.edge_ids,
-        edges,
-        "colour",
-        object(),
-    )
-    assert len(changed) == len(units)
+    result = verbalize_lattice(lattice, profile="google-tn")
+    assert "".join(unit.best.text for unit in result.best_path.units) == "color"
 
 
 def test_r6_s1_kwargs_and_sequence_group_shape_are_unchanged():
