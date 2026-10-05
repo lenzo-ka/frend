@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "screen-reader",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests",
+    "note": "NVDA 'all' as a mix-in: every symbol named, words and numbers read normally; not an emulation"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "groups": {
+        "char-detail": {
+          "order": [
+            "named",
+            "reading",
+            "spelled"
+          ]
+        }
+      }
+    }
+  }
+}

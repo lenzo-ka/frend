@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "screen-reader-number",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests",
+    "note": "screen-reader fixture with mixed-span digit stretches read as numbers"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "groups": {
+        "char-detail": {
+          "order": [
+            "named",
+            "reading",
+            "spelled"
+          ],
+          "digits": "number"
+        }
+      }
+    }
+  }
+}

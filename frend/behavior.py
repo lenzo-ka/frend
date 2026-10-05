@@ -19,7 +19,7 @@ from frend.input_limits import (
     DEFAULT_MAX_UNIT_CHARS,
     _validate_limit,
 )
-from frend.profiles import validate_groups, validate_profile
+from frend.profiles import GROUP_OPTIONS, GROUP_ROLES, validate_groups, validate_profile
 from frend.symbols import SymbolDetector
 
 __all__ = [
@@ -377,18 +377,7 @@ def _frend_section(data: Mapping[str, object], shown: str) -> list[BehaviorRefus
                 )
             )
         else:
-            group_orders = {}
-            for group, spec in groups.items():
-                if not isinstance(spec, Mapping) or set(spec) != {"order"}:
-                    errors.append(
-                        _refuse(
-                            "INVALID_VALUE",
-                            f"{shown}: sections.frend.groups: group {group!r} must be an "
-                            "object containing only 'order'",
-                        )
-                    )
-                else:
-                    group_orders[str(group)] = spec["order"]
+            group_orders = dict(groups)
     validators = {
         "profile": lambda value: validate_profile(cast(str | None, value)),
         "fold": lambda value: apply_input_fold("", value),
@@ -438,7 +427,7 @@ def _frend_section(data: Mapping[str, object], shown: str) -> list[BehaviorRefus
         refusal.detail.startswith(f"{shown}: sections.frend.groups:") for refusal in errors
     ):
         try:
-            validate_groups(cast(Mapping[str, Sequence[str]], group_orders))
+            validate_groups(cast(Mapping, group_orders))
         except (TypeError, ValueError) as error:
             errors.append(_refuse("INVALID_VALUE", f"{shown}: sections.frend.groups: {error}"))
     return errors
@@ -639,9 +628,35 @@ def resolve_behavior(
                     groups = kwargs.setdefault("groups", {})
                     assert isinstance(groups, dict)
                     assert isinstance(value, Mapping)
-                    for group, spec in value.items():
-                        assert isinstance(spec, Mapping)
-                        groups[group] = tuple(cast(list[str], spec["order"]))
+                    settings = dict(validate_groups(cast(Mapping, value)) or ())
+                    for group in GROUP_ROLES:
+                        if group not in settings:
+                            continue
+                        spec = value[group]
+                        setting = settings[group]
+                        previous = (
+                            dict(validate_groups({group: groups[group]}) or ())[group]
+                            if group in groups
+                            else None
+                        )
+                        options = dict(
+                            previous.options if previous is not None else setting.options
+                        )
+                        if isinstance(spec, Mapping):
+                            for option in GROUP_OPTIONS.get(group, {}):
+                                if option in spec:
+                                    options[option] = cast(str, spec[option])
+                                    setters[f"groups.{group}.{option}"] = doc.name
+                        groups.pop(group, None)
+                        defaults = {
+                            name: choices[0]
+                            for name, choices in GROUP_OPTIONS.get(group, {}).items()
+                        }
+                        groups[group] = (
+                            setting.order
+                            if options == defaults
+                            else MappingProxyType({"order": setting.order, **options})
+                        )
                         setters[f"groups.{group}"] = doc.name
                 else:
                     kwargs[key] = value
