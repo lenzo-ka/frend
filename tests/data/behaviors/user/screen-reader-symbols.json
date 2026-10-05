@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "screen-reader-symbols",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests",
+    "note": "symbol runs read character by character; not a screen-reader mode"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "groups": {
+        "tts-sanity": {
+          "order": [
+            "named",
+            "described",
+            "silent"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "with-icukit",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1
+    },
+    "icukit": {
+      "schema_version": 1,
+      "sentence": {
+        "base": "en-tn@1"
+      }
+    }
+  }
+}

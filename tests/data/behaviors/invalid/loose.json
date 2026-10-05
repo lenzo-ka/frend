@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "loose",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "max_unit_chars": 100000
+    }
+  }
+}

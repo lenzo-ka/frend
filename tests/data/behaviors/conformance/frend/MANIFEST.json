@@ -1,0 +1,20 @@
+{
+  "files": {
+    "invalid/groups.json": {
+      "sha256": "sha256:3f349990d5db96d5308b17739104637d5eb2ce758812e355717827e26ea4d42c",
+      "expected": "INVALID_VALUE"
+    },
+    "invalid/loose.json": {
+      "sha256": "sha256:1d6a08768099e005bfe985feba95cf484cbbfa82174c26178c6f007e3f843e14",
+      "expected": "BOUND_LOOSENED"
+    },
+    "invalid/typo.json": {
+      "sha256": "sha256:66b288192b65cda9000c8dce0d1004e8eceb0c3c655192bd8a1d2d6a0c3c6163",
+      "expected": "INVALID_KEY"
+    },
+    "valid/all-options.json": {
+      "sha256": "sha256:192aebf2d1630283f6f604e417b51960374492263e00db92788cc332728889b0",
+      "expected": "valid"
+    }
+  }
+}

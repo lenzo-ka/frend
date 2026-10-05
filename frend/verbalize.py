@@ -74,7 +74,7 @@ from frend.letters import (
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.number_priors import load_number_priors
-from frend.profiles import GOOGLE_TN, google_tn_profile_path, validate_profile
+from frend.profiles import GOOGLE_TN, google_tn_profile_path, validate_groups, validate_profile
 from frend.ranges import (
     RangeValue,
     digit_groups,
@@ -2780,7 +2780,10 @@ def _money_range(value: RangeValue) -> bool:
 
 
 def _spoken_symbol_run(
-    value: SymbolRunValue, locale: str, profile: str | None
+    value: SymbolRunValue,
+    locale: str,
+    profile: str | None,
+    order: tuple[str, ...] | None = None,
 ) -> tuple[SpokenAlternative, ...]:
     """Description, per-symbol names, and silence for one long symbol run."""
     if value.repeated:
@@ -2811,6 +2814,9 @@ def _spoken_symbol_run(
         ),
     )
     silence = (SpokenAlternative("", "surface:silence", group="tts-sanity"),)
+    if order is not None:
+        by_role = {"described": described, "named": named, "silent": silence}
+        return tuple(item for role in order for item in by_role[role])
     if profile == GOOGLE_TN:
         return (*silence, *described, *named)
     return (*described, *named, *silence)
@@ -2888,6 +2894,7 @@ def verbalize_edge(
     case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    groups: Mapping[str, Sequence[str]] | None = None,
 ) -> VerbalizedUnit:
     """Validate the source text, then verbalize one edge."""
     validate_input(source_text, max_input_chars=max_input_chars)
@@ -2911,6 +2918,7 @@ def verbalize_edge(
         context_threshold=context_threshold,
         profile=profile,
         case_variant_lookup=case_variant_lookup,
+        groups=groups,
     )
 
 
@@ -2991,6 +2999,7 @@ def _verbalize_edge(
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
     case_variant_lookup: bool = False,
+    groups: Mapping[str, Sequence[str]] | None = None,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
@@ -3007,6 +3016,7 @@ def _verbalize_edge(
     """
     locale = canonical_locale(locale)
     profile = validate_profile(profile)
+    group_orders = dict(validate_groups(groups) or ())
     if profile == GOOGLE_TN:
         _acronym_surface_priors(locale=locale)
     if context is None and source_text is not None:
@@ -3139,7 +3149,9 @@ def _verbalize_edge(
             key_value = (value.decimal, value.unit)
             path = "mixed-measure"
         elif isinstance(value, SymbolRunValue):
-            alternatives = _spoken_symbol_run(value, locale, profile)
+            alternatives = _spoken_symbol_run(
+                value, locale, profile, group_orders.get("tts-sanity")
+            )
             key_value = value.text
             path = "symbol-run"
         elif isinstance(value, VariationValue):
@@ -3403,6 +3415,7 @@ def verbalize_lattice(
     case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    groups: Mapping[str, Sequence[str]] | None = None,
 ) -> VerbalizedLattice:
     """Verbalize every projected path without expanding alternatives across units.
 
@@ -3423,6 +3436,7 @@ def verbalize_lattice(
         case_variant_lookup=case_variant_lookup,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
+        groups=groups,
     )
 
 
@@ -3436,6 +3450,7 @@ def _verbalize_lattice_validated(
     case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    groups: Mapping[str, Sequence[str]] | None = None,
 ) -> VerbalizedLattice:
     """Verbalize text whose enclosing document API has already validated it."""
     validate_unit_length(
@@ -3447,6 +3462,7 @@ def _verbalize_lattice_validated(
         validate_unit_length(len(context.text), max_unit_chars=max_unit_chars)
     effective = lattice.locale
     profile = validate_profile(profile)
+    groups = None if groups is None else dict(validate_groups(groups) or ())
     britishisms = None
     if profile == GOOGLE_TN:
         britishisms = _google_tn_britishisms(locale=effective)
@@ -3467,6 +3483,7 @@ def _verbalize_lattice_validated(
                         context=context,
                         profile=profile,
                         case_variant_lookup=case_variant_lookup,
+                        groups=groups,
                     )
                     for edge_id in path.edge_ids
                 ),
@@ -3489,6 +3506,7 @@ def _verbalize_lattice_validated(
                 context=context,
                 profile=profile,
                 case_variant_lookup=case_variant_lookup,
+                groups=groups,
             )
             for edge_id in path.edge_ids
         )

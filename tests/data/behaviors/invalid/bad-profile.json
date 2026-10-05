@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "bad-profile",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "profile": "googl-tn"
+    }
+  }
+}

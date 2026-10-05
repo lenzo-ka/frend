@@ -36,6 +36,8 @@ import frend
 
 spoken = frend.normalize("Meet me at 5:30. It costs $12.")
 aligned = frend.normalize("Meet me at 5:30.", offsets=True)
+behavior = frend.resolve_behavior(["google-tn"])
+profiled = frend.normalize("****", **behavior.kwargs)
 print(aligned.text)
 for unit in aligned.units:
     print(unit.output_span, unit.source_span, unit.reader, unit.provenance)
@@ -45,6 +47,11 @@ for unit in aligned.units:
 text. Pass `offsets=True` when a screen reader or aligner also needs the source mapping;
 inter-sentence whitespace is one space in the returned text, and leading and trailing
 whitespace is trimmed. Offset units still cover those trimmed boundary spans explicitly.
+
+Named behavior schemas compose in caller order, with later presets winning key by key.
+Resolve shipped names or JSON files with `resolve_behavior`, then spread its immutable
+`kwargs` into `normalize`; the result also records member digests, setters, and any opaque
+icukit sections. Explicit call keywords remain Python's normal duplicate-key error.
 
 ### Input limits
 
