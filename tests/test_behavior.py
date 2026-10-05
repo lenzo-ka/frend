@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import importlib.util
 import json
 import sys
@@ -62,20 +63,37 @@ def _document(name: str, **updates) -> dict[str, object]:
 
 
 def test_g4_no_schema_normalization_matches_the_baseline_byte_for_byte():
-    generator = _golden_generator()
-    assert len(generator.input_rows()) == 58
-    assert generator.encoded_document() == GOLDEN.read_bytes()
-    assert json.loads(GOLDEN_PROVENANCE.read_text(encoding="utf-8")) == {
+    provenance = json.loads(GOLDEN_PROVENANCE.read_text(encoding="utf-8"))
+    assert provenance == {
         "frend_commit": "45badcdf5ccdc5f677914bc41c3a9a31134412d4",
-        "icukit_commit": "79852b5f69f7fa3a9547a53ec992955d132eb841",
+        "icukit": {
+            "version": "0.8.0",
+            "source": "PyPI release",
+            "direct_url": None,
+        },
         "command": (
             "BASE=$(mktemp -d) && git -C $FREND_CHECKOUT archive "
             "45badcdf5ccdc5f677914bc41c3a9a31134412d4 | tar -x -C $BASE && "
-            "cd $BASE && PYTHONPATH=. $FREND_BEHAVIOR_WORKTREE/.venv/bin/python -B "
+            "cd $BASE && PYTHONPATH=. $FREND_G4_VENV/bin/python -B "
             "$FREND_BEHAVIOR_WORKTREE/tests/generate_normalize_golden.py "
             "$FREND_BEHAVIOR_WORKTREE/tests/data/normalize_golden.json"
         ),
     }
+
+    installed_icukit = importlib.metadata.distribution("icukit")
+    recorded_icukit = provenance["icukit"]
+    direct_url = installed_icukit.read_text("direct_url.json")
+    if installed_icukit.version != recorded_icukit["version"] or direct_url is not None:
+        source = " with direct_url.json (Git or editable)" if direct_url is not None else ""
+        pytest.skip(
+            "G4 golden requires "
+            f"icukit {recorded_icukit['version']} from PyPI with no direct_url.json; "
+            f"installed icukit is {installed_icukit.version}{source}"
+        )
+
+    generator = _golden_generator()
+    assert len(generator.input_rows()) == 58
+    assert generator.encoded_document() == GOLDEN.read_bytes()
 
 
 def test_c1_empty_resolution_is_neutral_for_every_golden_input():
