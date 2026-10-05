@@ -6,6 +6,7 @@ import dataclasses
 import hashlib
 import json
 import re
+import unicodedata
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -17,7 +18,7 @@ from pathlib import Path
 from types import MappingProxyType
 
 import icu
-from icukit import AbbreviationValue, DateTimeFormatter
+from icukit import AbbreviationValue, DateTimeFormatter, break_grapheme_spans
 from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
 from icukit.measure import WIDTH_WIDE, format_measure
 
@@ -74,7 +75,15 @@ from frend.letters import (
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.number_priors import load_number_priors
-from frend.profiles import GOOGLE_TN, google_tn_profile_path, validate_groups, validate_profile
+from frend.profiles import (
+    CHAR_DETAIL,
+    GOOGLE_TN,
+    GroupOrders,
+    GroupSetting,
+    google_tn_profile_path,
+    validate_groups,
+    validate_profile,
+)
 from frend.ranges import (
     RangeValue,
     digit_groups,
@@ -91,6 +100,7 @@ from frend.symbols import (
     SymbolRunValue,
     SymbolValue,
     VariationValue,
+    symbol_names,
 )
 from frend.telephone import TelephoneValue
 from frend.written_forms import DigitsValue
@@ -161,6 +171,7 @@ class SpokenAlternative:
     weight: Decimal | None = None
     # Kept out of repr so ungrouped output stays byte-identical to earlier releases.
     group: str | None = field(default=None, repr=False)
+    role: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -320,6 +331,7 @@ def _rank_final(
                 alternative.provenance,
                 measurement.share,
                 alternative.group,
+                alternative.role,
             )
             ranked.append((1, -measurement.share, index, weighted))
             continue
@@ -388,7 +400,13 @@ def _zero_shares(
         for at, score in zip(members, scores, strict=True):
             _, _, index, alternative = ranked[at]
             weight = pooled * score / sum(scores)
-            shared = SpokenAlternative(alternative.text, alternative.provenance, weight)
+            shared = SpokenAlternative(
+                alternative.text,
+                alternative.provenance,
+                weight,
+                alternative.group,
+                alternative.role,
+            )
             out[at] = (tier, -weight, index, shared)
     return out
 
@@ -2779,6 +2797,117 @@ def _money_range(value: RangeValue) -> bool:
     )
 
 
+def _char_detail(
+    surface: str,
+    locale: str,
+    roles: tuple[str, ...],
+    digits: str,
+) -> tuple[SpokenAlternative, ...]:
+    """Render named and spelled slots from one unit's raw graphemes."""
+    graphemes = [
+        span["text"] for span in break_grapheme_spans(surface, "root") if not span["text"].isspace()
+    ]
+
+    def kind(grapheme: str) -> str:
+        if icu.Char.isdigit(grapheme[0]):
+            return "digit"
+        if icu.Char.isalpha(grapheme[0]):
+            return "letter"
+        return "symbol"
+
+    def render(spell_letters: bool) -> tuple[str, str] | None:
+        spoken: list[str] = []
+        sources: list[str] = []
+        index = 0
+        while index < len(graphemes):
+            stretch_kind = kind(graphemes[index])
+            end = index + 1
+            while end < len(graphemes) and kind(graphemes[end]) == stretch_kind:
+                end += 1
+            stretch = graphemes[index:end]
+            if stretch_kind == "symbol":
+                for grapheme in stretch:
+                    names = symbol_names(grapheme, locale)[:1]
+                    if names:
+                        spoken.append(names[0][0])
+                        sources.append(names[0][1])
+                    else:
+                        spoken.append(grapheme)
+                        sources.append("surface:passthrough")
+            elif stretch_kind == "digit":
+                if digits == "number" and not spell_letters:
+                    value = Decimal(int("".join(grapheme[0] for grapheme in stretch)))
+                    leaf = _number_leaf(value, "cardinal", locale)[0]
+                    spoken.append(leaf.text)
+                    sources.append(leaf.provenance)
+                else:
+                    leaves = (
+                        _number_leaf(Decimal(int(grapheme[0])), "cardinal", locale)[0]
+                        for grapheme in stretch
+                    )
+                    for leaf in leaves:
+                        spoken.append(leaf.text)
+                        sources.append(leaf.provenance)
+            else:
+                word = "".join(stretch)
+                names = letter_names(word, locale) if spell_letters else None
+                if spell_letters and names is None:
+                    return None
+                if names is None:
+                    spoken.append(unicodedata.normalize("NFC", word))
+                    sources.append("surface:passthrough")
+                else:
+                    spoken.extend(names.spoken)
+                    sources.append(names.provenance)
+            index = end
+        return " ".join(spoken), "+".join(dict.fromkeys(sources))
+
+    detail = []
+    named = None
+    if "named" in roles and any(kind(grapheme) == "symbol" for grapheme in graphemes):
+        named, provenance = render(False)
+        detail.append(SpokenAlternative(named, provenance, group=CHAR_DETAIL, role="named"))
+    if "spelled" in roles and any(kind(grapheme) != "symbol" for grapheme in graphemes):
+        spelled_form = render(True)
+        if spelled_form is not None and spelled_form[0] != named:
+            detail.append(
+                SpokenAlternative(
+                    spelled_form[0],
+                    spelled_form[1],
+                    group=CHAR_DETAIL,
+                    role="spelled",
+                )
+            )
+    return tuple(detail)
+
+
+def _composed(
+    base: Sequence[SpokenAlternative],
+    detail: Sequence[SpokenAlternative],
+    settings: Mapping[str, GroupSetting],
+) -> tuple[SpokenAlternative, ...]:
+    """Place character-detail slots without dropping any base alternative."""
+    base = tuple(base)
+    detail = tuple(detail)
+    if not detail:
+        return base
+    rank = {group: index for index, group in enumerate(settings)}
+    owners = {
+        alternative.group
+        for alternative in base
+        if alternative.group in rank and alternative.group != CHAR_DETAIL
+    }
+    if any(rank[group] > rank[CHAR_DETAIL] for group in owners):
+        return (*base, *detail)
+    return tuple(
+        alternative
+        for role in settings[CHAR_DETAIL].order
+        for alternative in (
+            base if role == "reading" else tuple(item for item in detail if item.role == role)
+        )
+    )
+
+
 def _spoken_symbol_run(
     value: SymbolRunValue,
     locale: str,
@@ -2803,6 +2932,7 @@ def _spoken_symbol_run(
                 description,
                 f"{lexical_source(locale)}+{name_source}",
                 group="tts-sanity",
+                role="described",
             ),
         )
     )
@@ -2811,9 +2941,10 @@ def _spoken_symbol_run(
             " ".join(name for name, _source in value.names),
             name_source,
             group="tts-sanity",
+            role="named",
         ),
     )
-    silence = (SpokenAlternative("", "surface:silence", group="tts-sanity"),)
+    silence = (SpokenAlternative("", "surface:silence", group="tts-sanity", role="silent"),)
     if order is not None:
         by_role = {"described": described, "named": named, "silent": silence}
         return tuple(item for role in order for item in by_role[role])
@@ -2894,7 +3025,8 @@ def verbalize_edge(
     case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
+    raw_source_text: str | None = None,
 ) -> VerbalizedUnit:
     """Validate the source text, then verbalize one edge."""
     validate_input(source_text, max_input_chars=max_input_chars)
@@ -2919,6 +3051,7 @@ def verbalize_edge(
         profile=profile,
         case_variant_lookup=case_variant_lookup,
         groups=groups,
+        raw_source_text=raw_source_text,
     )
 
 
@@ -2999,7 +3132,8 @@ def _verbalize_edge(
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
     case_variant_lookup: bool = False,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
+    raw_source_text: str | None = None,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
@@ -3016,7 +3150,22 @@ def _verbalize_edge(
     """
     locale = canonical_locale(locale)
     profile = validate_profile(profile)
-    group_orders = dict(validate_groups(groups) or ())
+    group_settings = dict(validate_groups(groups) or ())
+
+    def _finish(alternatives: Sequence[SpokenAlternative]) -> tuple[SpokenAlternative, ...]:
+        setting = group_settings.get(CHAR_DETAIL)
+        if setting is None:
+            return tuple(alternatives)
+        text = raw_source_text if raw_source_text is not None else source_text
+        surface = text[edge.start : edge.end] if text is not None else _surface(edge, None)
+        detail = _char_detail(
+            surface,
+            locale,
+            setting.order,
+            setting.options["digits"],
+        )
+        return _composed(alternatives, detail, group_settings)
+
     if profile == GOOGLE_TN:
         _acronym_surface_priors(locale=locale)
     if context is None and source_text is not None:
@@ -3046,7 +3195,9 @@ def _verbalize_edge(
                 alternatives, choice = _connector_first(
                     alternatives, context, edge.start, edge.end, locale, context_threshold
                 )
-        return VerbalizedUnit(edge.id, alternatives, tier, provenance, True, context=choice)
+        return VerbalizedUnit(
+            edge.id, _finish(alternatives), tier, provenance, True, context=choice
+        )
     detection = edge.detection
     if detection is None:
         raise ValueError(f"reading edge {edge.id!r} has no detection")
@@ -3150,7 +3301,10 @@ def _verbalize_edge(
             path = "mixed-measure"
         elif isinstance(value, SymbolRunValue):
             alternatives = _spoken_symbol_run(
-                value, locale, profile, group_orders.get("tts-sanity")
+                value,
+                locale,
+                profile,
+                group_settings["tts-sanity"].order if "tts-sanity" in group_settings else None,
             )
             key_value = value.text
             path = "symbol-run"
@@ -3239,7 +3393,7 @@ def _verbalize_edge(
             raise NotImplementedError(f"unsupported value struct {type(value).__name__}")
     except NotImplementedError:
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
-        return VerbalizedUnit(edge.id, (fallback,), tier, provenance, False)
+        return VerbalizedUnit(edge.id, _finish((fallback,)), tier, provenance, False)
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
     if apply_source_priors and path not in ("range", "symbol-run"):
         # A range's readings are ranked within it (``_spoken_range``): each end by its
@@ -3341,7 +3495,13 @@ def _verbalize_edge(
     if path == "date":
         alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text, locale)
     return VerbalizedUnit(
-        edge.id, alternatives, tier, provenance, True, _unspoken(detection, path), choice
+        edge.id,
+        _finish(alternatives),
+        tier,
+        provenance,
+        True,
+        _unspoken(detection, path),
+        choice,
     )
 
 
@@ -3399,7 +3559,12 @@ def _respell_passthrough_words(units, edge_ids, edges, source_text, table):
             ):
                 changed[index] = dataclasses.replace(
                     changed[index],
-                    alternatives=(SpokenAlternative(chunk, "surface:passthrough"),),
+                    alternatives=tuple(
+                        SpokenAlternative(chunk, "surface:passthrough")
+                        if alternative.provenance == "surface:passthrough"
+                        else alternative
+                        for alternative in changed[index].alternatives
+                    ),
                 )
         at = end
     return tuple(changed)
@@ -3415,7 +3580,7 @@ def verbalize_lattice(
     case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
 ) -> VerbalizedLattice:
     """Verbalize every projected path without expanding alternatives across units.
 
@@ -3450,7 +3615,7 @@ def _verbalize_lattice_validated(
     case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
 ) -> VerbalizedLattice:
     """Verbalize text whose enclosing document API has already validated it."""
     validate_unit_length(
@@ -3484,6 +3649,7 @@ def _verbalize_lattice_validated(
                         profile=profile,
                         case_variant_lookup=case_variant_lookup,
                         groups=groups,
+                        raw_source_text=lattice.raw_source_text,
                     )
                     for edge_id in path.edge_ids
                 ),
@@ -3507,6 +3673,7 @@ def _verbalize_lattice_validated(
                 profile=profile,
                 case_variant_lookup=case_variant_lookup,
                 groups=groups,
+                raw_source_text=lattice.raw_source_text,
             )
             for edge_id in path.edge_ids
         )

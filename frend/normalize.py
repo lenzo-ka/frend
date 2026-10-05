@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Literal, overload
@@ -42,7 +41,7 @@ from frend.input_limits import (
 from frend.lattice import ReadingEdge, _resolve_lattice_validated
 from frend.letters import LettersDetector
 from frend.locale_data import LOCALE_CACHE, canonical_locale
-from frend.profiles import validate_groups, validate_profile
+from frend.profiles import GroupOrders, validate_groups, validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
 from frend.symbols import (
     DEFAULT_SYMBOL_RUN_THRESHOLD,
@@ -233,7 +232,7 @@ def _sentence(
     max_input_chars: int | None,
     max_unit_chars: int | None,
     symbol_run_threshold: int,
-    groups: Mapping[str, Sequence[str]] | None,
+    groups: GroupOrders | None,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
     detections = detect(text, _reading_detectors(locale, symbol_run_threshold))
     detections = [
@@ -291,7 +290,7 @@ def normalize(
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
 ) -> str: ...
 
 
@@ -307,7 +306,7 @@ def normalize(
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
 ) -> NormalizedText: ...
 
 
@@ -323,7 +322,7 @@ def normalize(
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
 ) -> str | NormalizedText: ...
 
 
@@ -338,7 +337,7 @@ def normalize(
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
-    groups: Mapping[str, Sequence[str]] | None = None,
+    groups: GroupOrders | None = None,
 ) -> str | NormalizedText:
     """Return the first-choice spoken form of a plain-text document.
 

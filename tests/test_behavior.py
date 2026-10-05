@@ -287,6 +287,23 @@ def test_c7_non_mapping_groups_are_invalid_values(tmp_path, groups):
     assert _error([path]).refusals[0].code == "INVALID_VALUE"
 
 
+def test_c7_group_object_refusal_comes_from_the_shared_validator(tmp_path):
+    path = tmp_path / "bad-group-object.json"
+    groups = {"tts-sanity": {"digits": "each"}}
+    path.write_text(
+        json.dumps(
+            _document(
+                "bad-group-object",
+                sections={"frend": {"schema_version": 1, "groups": groups}},
+            )
+        )
+    )
+    assert str(_error([path])) == (
+        f"INVALID_VALUE: {path}: sections.frend.groups: group 'tts-sanity' must be an "
+        "order sequence or an object with 'order'; got dict without 'order'"
+    )
+
+
 def test_c7_exponent_overflow_is_invalid_json_inside_opaque_sections(tmp_path):
     path = tmp_path / "overflow.json"
     document = json.dumps(
@@ -373,7 +390,7 @@ def test_c10_conformance_manifests(owner):
     [
         (
             {"tts-santy": ["described", "named", "silent"]},
-            "unknown verbalization group 'tts-santy'; known groups: 'tts-sanity'",
+            "unknown verbalization group 'tts-santy'; known groups: 'tts-sanity', 'char-detail'",
         ),
         (
             {"tts-sanity": ["described", "named", "loud"]},
