@@ -398,13 +398,15 @@ def _score_sentence(item) -> dict[str, object]:
         before = " ".join(other[1] for other in sentence[:index])
         after = " ".join(other[1] for other in sentence[index + 1 :])
         target_options = {"strip_embedded_sil": True} if strip_embedded_sil else {}
+        # Pass the opt-in only when set, so the default call matches earlier releases.
+        if case_variant_lookup:
+            target_options["case_variant_lookup"] = True
         if classify_misses:
             first, any_, capped, classification = _score_token(
                 row,
                 before,
                 after,
                 profile,
-                case_variant_lookup=case_variant_lookup,
                 **target_options,
             )
         else:
@@ -414,7 +416,6 @@ def _score_sentence(item) -> dict[str, object]:
                 after,
                 profile,
                 False,
-                case_variant_lookup=case_variant_lookup,
                 **target_options,
             )
         first_count += first
