@@ -1074,7 +1074,10 @@ def _spellout_decision(entry: dict[str, object] | None) -> str | None:
 
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
 def _spoken_letters(
-    value: LettersValue, locale: str, profile: str | None = None
+    value: LettersValue,
+    locale: str,
+    profile: str | None = None,
+    case_variant_lookup: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     """A letter token spelled or read as a word, weighted by its measured population.
 
@@ -1098,7 +1101,11 @@ def _spoken_letters(
             raise NotImplementedError(f"no authoritative letter names for {locale}")
         word = _NFC.normalize(value.surface).lower()
         dictionary = (
-            None if profile == GOOGLE_TN else spellout_dictionary_entry(value.surface, locale)
+            None
+            if profile == GOOGLE_TN
+            else spellout_dictionary_entry(
+                value.surface, locale, case_variant_lookup=case_variant_lookup
+            )
         )
         if (decision := _spellout_decision(dictionary)) is not None:
             spell_share = dictionary.get("spell_share", int(decision == "spell"))
@@ -1143,6 +1150,7 @@ def _spoken_letters(
             profile_surface=parsed_surface[0],
             surface_subkey=parsed_surface[1],
             dictionary_surface=value.surface,
+            case_variant_lookup=case_variant_lookup,
         )
     )
     if not readings:
@@ -1342,6 +1350,7 @@ def _with_acronym_readings(
     profile_surface: str | None = None,
     surface_subkey: str = "bare",
     dictionary_surface: str | None = None,
+    case_variant_lookup: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
 
@@ -1360,7 +1369,11 @@ def _with_acronym_readings(
     dictionary = (
         None
         if profile == GOOGLE_TN
-        else spellout_dictionary_entry(dictionary_surface or surface, locale)
+        else spellout_dictionary_entry(
+            dictionary_surface or surface,
+            locale,
+            case_variant_lookup=case_variant_lookup,
+        )
     )
     if (decision := _spellout_decision(dictionary)) is not None:
         share = Decimal(str(dictionary.get("spell_share", int(decision == "spell"))))
@@ -2872,6 +2885,7 @@ def verbalize_edge(
     rerank_by_context: bool = True,
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedUnit:
@@ -2896,6 +2910,7 @@ def verbalize_edge(
         rerank_by_context=rerank_by_context,
         context_threshold=context_threshold,
         profile=profile,
+        case_variant_lookup=case_variant_lookup,
     )
 
 
@@ -2975,6 +2990,7 @@ def _verbalize_edge(
     rerank_by_context: bool = True,
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
@@ -3083,7 +3099,13 @@ def _verbalize_edge(
                             else letter_form,
                         )
             else:
-                alternatives = _with_acronym_readings(written, expanded, locale, profile=profile)
+                alternatives = _with_acronym_readings(
+                    written,
+                    expanded,
+                    locale,
+                    profile=profile,
+                    case_variant_lookup=case_variant_lookup,
+                )
                 if is_chain(written) and not written.isupper():
                     # A dotted chain of any case is spelled ("e.g." "e g", "j.r.r." "j r
                     # r"): the corpus spells every one it writes.
@@ -3148,7 +3170,7 @@ def _verbalize_edge(
             key_value = value.text
             path = "symbol"
         elif isinstance(value, LettersValue):
-            alternatives = _spoken_letters(value, locale, profile)
+            alternatives = _spoken_letters(value, locale, profile, case_variant_lookup)
             if not value.suffix:
                 # A run that is a lexicon abbreviation in capitals ("MR", "DR") is also
                 # offered its expansions.
@@ -3378,6 +3400,7 @@ def verbalize_lattice(
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedLattice:
@@ -3397,6 +3420,7 @@ def verbalize_lattice(
         supplements=supplements,
         context=context,
         profile=profile,
+        case_variant_lookup=case_variant_lookup,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
     )
@@ -3409,6 +3433,7 @@ def _verbalize_lattice_validated(
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedLattice:
@@ -3441,6 +3466,7 @@ def _verbalize_lattice_validated(
                         supplements=supplements,
                         context=context,
                         profile=profile,
+                        case_variant_lookup=case_variant_lookup,
                     )
                     for edge_id in path.edge_ids
                 ),
@@ -3462,6 +3488,7 @@ def _verbalize_lattice_validated(
                 supplements=supplements,
                 context=context,
                 profile=profile,
+                case_variant_lookup=case_variant_lookup,
             )
             for edge_id in path.edge_ids
         )

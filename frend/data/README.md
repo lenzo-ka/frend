@@ -168,24 +168,25 @@ per-letter spoken notation ("b_letter o_letter") joined into words first. It rec
 The first decision for a spell-or-say token. `tools/build_spellout_dictionary.py`
 counts case-preserved Google TN `LETTERS` and `PLAIN` surfaces on training shards
 00--89. The shipped operating point is support 5 and 99% purity, selected on S0
-(shards 90--94). It stores only exact surfaces whose selected decision differs from
-the AEIOU vowel fallback. Case variants do not inherit training decisions: validation
-showed that folded lookup regressed UNSEEN tokens.
+(shards 90--94). A row counts only when its spoken form literally says the token
+or names its letters. It stores exact surfaces whose selected decision differs from
+the casefolded AEIOU fallback, except spell decisions with unambiguous exact-headword
+Wiktionary lexical evidence. Translation words, abbreviation-like or symbolic senses,
+inflection-only forms, and non-titlecase mixed-case technical forms do not qualify.
 
 The compact JSON rows have the header-declared shape `[surface, decision, say_count,
 spell_count]`, are sorted by surface, and share one Google TN source/license record in
-the provenance header. It contains no sentence, expansion, gloss, IPA, neighbor, or
-other context. Wikipedia and Wiktionary label measurements remain in the experiment
-results but are absent from the runtime table because their operational ablation was
-non-positive. `--check` reopens the verified 00--89 inputs and compares the complete
-compact JSON bytes. A missing bounded-token row uses the AEIOU rule. An unattested
-capital run retains the established acronym shape/CV fallback: replacing it with the
-vowel rule caused the measured UNSEEN regression. The same prior continues to handle
-Roman numerals and the explicit external `google-tn` profile.
+the provenance header. They contain no sentence, expansion, gloss, IPA, neighbor, or
+other context. Exact-case lookup is the default. Callers may opt in with
+`case_variant_lookup=True`; unanimous observed families reuse the same filtered rows,
+so no second token table is required and ordinary-word exclusions apply in both modes.
 
-This dictionary does not overlap `en/exceptions.json`: that #54-named file is solely
-the curated ICU word/sentence-break suppression layer. Each behavior therefore keeps
-one source of truth.
+`--check` reopens verified shards 00--89 and compares the complete compact file. A
+missing bounded-token row uses the AEIOU rule, whose vowel test casefolds. An unattested
+capital run retains the established acronym shape/CV fallback. The old bounded-token
+detector gate also still applies. Thus the dictionary is the single source only for
+stored spell/say exceptions; it is not the sole decision mechanism. `exceptions.json`
+remains unrelated ICU word/sentence-break suppression.
 
 ## `en/acronym_priors.json`
 

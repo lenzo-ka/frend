@@ -102,7 +102,7 @@ def test_spellout_dictionary_precedes_the_vowel_rule(monkeypatch):
     monkeypatch.setattr(
         verbalize,
         "spellout_dictionary_entry",
-        lambda token, locale: {
+        lambda token, locale, **_kwargs: {
             "counts": {"say": 99, "spell": 1},
             "decision": "say",
             "spell_share": 0.01,
@@ -116,7 +116,7 @@ def test_spellout_dictionary_precedes_the_vowel_rule(monkeypatch):
 def test_unattested_acronym_keeps_the_measured_fallback(monkeypatch):
     from frend import verbalize
 
-    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args: None)
+    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args, **_kwargs: None)
     consonants = resolve_lattice(list(detect("BBC", _DETECTORS)), source_text="BBC")
     vowel = resolve_lattice(list(detect("FBI", _DETECTORS)), source_text="FBI")
     assert verbalize_lattice(consonants).best_path.units[0].best.text == "b b c"
@@ -129,7 +129,7 @@ def test_source_label_without_counts_abstains(monkeypatch):
     monkeypatch.setattr(
         verbalize,
         "spellout_dictionary_entry",
-        lambda token, locale: {
+        lambda token, locale, **_kwargs: {
             "decision": "say",
             "label": "wikipedia:say",
             "source": "wikimedia/enwiki-lists-of-acronyms",
@@ -139,7 +139,7 @@ def test_source_label_without_counts_abstains(monkeypatch):
     assert verbalize_lattice(lattice).best_path.units[0].best.text == "b b c"
 
 
-def test_dictionary_lookup_is_exact_case_only(monkeypatch):
+def test_dictionary_case_variant_lookup_is_opt_in(monkeypatch):
     from frend import letters
 
     monkeypatch.setattr(
@@ -147,17 +147,27 @@ def test_dictionary_lookup_is_exact_case_only(monkeypatch):
         "_spellout_dictionary",
         lambda _locale: (
             {"FBI": ("spell", 0, 10), "NASA": ("say", 10, 0)},
+            {"fbi": "FBI"},
             "google/tn-en_with_types",
         ),
     )
     assert letters.spellout_dictionary_entry("NASA")["decision"] == "say"
     assert letters.spellout_dictionary_entry("Fbi") is None
+    assert letters.spellout_dictionary_entry("Fbi", case_variant_lookup=True)["decision"] == "spell"
 
 
 def test_ordinary_word_is_not_changed_to_spelling_by_the_dictionary():
-    found = [d for d in LettersDetector().detect("word") if d["type"] == "letters:token"]
-    lattice = resolve_lattice(found, source_text="word")
-    assert verbalize_lattice(lattice).best_path.units[0].best.text == "word"
+    for word in ("word", "zijn", "échec"):
+        found = [d for d in LettersDetector().detect(word) if d["type"] == "letters:token"]
+        lattice = resolve_lattice(found, source_text=word)
+        assert verbalize_lattice(lattice).best_path.units[0].best.text == word
+
+
+def test_lowercase_context_words_stay_words_with_case_variants_enabled():
+    from frend import normalize
+
+    assert " ".join(normalize("it is", case_variant_lookup=True).split()) == "it is"
+    assert " ".join(normalize("or else", case_variant_lookup=True).split()) == "or else"
 
 
 def test_dictionary_precedes_the_vowel_rule_for_a_lowercase_token(monkeypatch):
@@ -166,7 +176,7 @@ def test_dictionary_precedes_the_vowel_rule_for_a_lowercase_token(monkeypatch):
     monkeypatch.setattr(
         verbalize,
         "spellout_dictionary_entry",
-        lambda token, locale: {
+        lambda token, locale, **_kwargs: {
             "counts": {"say": 1, "spell": 9},
             "decision": "spell",
             "source": "google/tn-en_with_types",
@@ -279,7 +289,7 @@ def test_google_tn_profile_uses_the_external_surface_table(tmp_path, monkeypatch
     monkeypatch.setattr(
         verbalize,
         "spellout_dictionary_entry",
-        lambda *_args: {
+        lambda *_args, **_kwargs: {
             "counts": {"say": 0, "spell": 10},
             "decision": "spell",
             "source": "google/tn-en_with_types",
@@ -341,7 +351,7 @@ def test_surface_prior_abstains_below_its_selected_support(monkeypatch):
     from frend import verbalize
 
     fallback = {"*": {"spelled": 0, "word": 10}}
-    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args: None)
+    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(verbalize, "_acronym_priors", lambda **_kwargs: fallback)
     monkeypatch.setattr(
         verbalize,
@@ -366,7 +376,7 @@ def test_acronym_surface_prior_keeps_suffix_subkeys_separate(monkeypatch):
     from frend.letters import LettersValue
 
     fallback = {"*": {"spelled": 0, "word": 10}}
-    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args: None)
+    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(verbalize, "_acronym_priors", lambda **_kwargs: fallback)
     surfaces = {
         "ABC": {

@@ -296,6 +296,7 @@ def _score_token(
     profile: str | None = None,
     classify_misses: bool = True,
     strip_embedded_sil: bool = False,
+    case_variant_lookup: bool = False,
 ) -> tuple[bool, bool, bool, Classification | None]:
     from icukit.detectors import detect
 
@@ -320,6 +321,7 @@ def _score_token(
             resolve_lattice(detections, source_text=written, locale=LOCALE),
             context=_in_context(written, before, after),
             profile=profile,
+            case_variant_lookup=case_variant_lookup,
         )
         first = normalize_spoken(_joined_reading(verbalized.best_path, alternatives=False)[0])
         if first == target:
@@ -371,6 +373,7 @@ def _score_sentence(item) -> dict[str, object]:
     shard, sentence_index, sentence, token_strata, profile, *options = item
     classify_misses = options[0] if options else True
     strip_embedded_sil = options[1] if len(options) > 1 else False
+    case_variant_lookup = options[2] if len(options) > 2 else False
     first_count = 0
     any_count = 0
     capped_count = 0
@@ -397,11 +400,22 @@ def _score_sentence(item) -> dict[str, object]:
         target_options = {"strip_embedded_sil": True} if strip_embedded_sil else {}
         if classify_misses:
             first, any_, capped, classification = _score_token(
-                row, before, after, profile, **target_options
+                row,
+                before,
+                after,
+                profile,
+                case_variant_lookup=case_variant_lookup,
+                **target_options,
             )
         else:
             first, any_, capped, classification = _score_token(
-                row, before, after, profile, False, **target_options
+                row,
+                before,
+                after,
+                profile,
+                False,
+                case_variant_lookup=case_variant_lookup,
+                **target_options,
             )
         first_count += first
         any_count += any_
@@ -864,6 +878,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--profile", choices=("google-tn",), default=None)
     parser.add_argument(
+        "--case-variant-lookup",
+        action="store_true",
+        help="opt in to unanimous casefold aliases in the spellout dictionary",
+    )
+    parser.add_argument(
         "--accuracy-only",
         action="store_true",
         help="skip post-miss triage classification while retaining accuracy and strata",
@@ -930,6 +949,7 @@ def main(argv: list[str] | None = None) -> int:
             profile,
             not args.accuracy_only,
             args.strip_embedded_sil,
+            args.case_variant_lookup,
         )
         for shard, index, sentence in selected
     ]
@@ -983,6 +1003,8 @@ def main(argv: list[str] | None = None) -> int:
         receipt["accuracy_only"] = True
     if args.strip_embedded_sil:
         receipt["strip_embedded_sil"] = True
+    if args.case_variant_lookup:
+        receipt["case_variant_lookup"] = True
     if vocabulary is not None:
         receipt["strata_vocabulary"] = vocabulary_receipt(vocabulary)
     _write_json(counts_path, report)
