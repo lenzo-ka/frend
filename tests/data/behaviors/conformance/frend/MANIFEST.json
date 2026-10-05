@@ -9,7 +9,7 @@
       "expected": "BOUND_LOOSENED"
     },
     "invalid/typo.json": {
-      "sha256": "sha256:66b288192b65cda9000c8dce0d1004e8eceb0c3c655192bd8a1d2d6a0c3c6163",
+      "sha256": "sha256:acfaf206055e24bb0ecfaf03aa0d238aa73068595c910feea195622b40cba3e1",
       "expected": "INVALID_KEY"
     },
     "valid/all-options.json": {

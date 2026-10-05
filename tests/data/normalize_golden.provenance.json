@@ -1,0 +1,5 @@
+{
+  "frend_commit": "45badcdf5ccdc5f677914bc41c3a9a31134412d4",
+  "icukit_commit": "79852b5f69f7fa3a9547a53ec992955d132eb841",
+  "command": "BASE=$(mktemp -d) && git -C $FREND_CHECKOUT archive 45badcdf5ccdc5f677914bc41c3a9a31134412d4 | tar -x -C $BASE && cd $BASE && PYTHONPATH=. $FREND_BEHAVIOR_WORKTREE/.venv/bin/python -B $FREND_BEHAVIOR_WORKTREE/tests/generate_normalize_golden.py $FREND_BEHAVIOR_WORKTREE/tests/data/normalize_golden.json"
+}

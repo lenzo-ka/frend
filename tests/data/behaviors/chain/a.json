@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "behavior-schema",
-  "name": "typo",
+  "name": "a",
   "version": 1,
   "extends": [],
   "provenance": {
@@ -10,7 +10,7 @@
   "sections": {
     "frend": {
       "schema_version": 1,
-      "grups": {}
+      "profile": null
     }
   }
 }

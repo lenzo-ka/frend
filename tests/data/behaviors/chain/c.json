@@ -1,16 +1,13 @@
 {
   "schema_version": 1,
   "kind": "behavior-schema",
-  "name": "typo",
+  "name": "c",
   "version": 1,
-  "extends": [],
+  "extends": [
+    "b"
+  ],
   "provenance": {
     "source": "frend tests"
   },
-  "sections": {
-    "frend": {
-      "schema_version": 1,
-      "grups": {}
-    }
-  }
+  "sections": {}
 }

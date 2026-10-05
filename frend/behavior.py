@@ -233,16 +233,11 @@ def _envelope(data: Mapping[str, object], shown: str) -> list[BehaviorRefusal]:
         errors.append(
             _refuse(
                 "INVALID_VALUE",
-                f"{shown}: top-level field 'name' must match "
-                "[a-z0-9][a-z0-9-]{0,63}",
+                f"{shown}: top-level field 'name' must match [a-z0-9][a-z0-9-]{{0,63}}",
             )
         )
     doc_version = data.get("version")
-    if (
-        not isinstance(doc_version, int)
-        or isinstance(doc_version, bool)
-        or doc_version <= 0
-    ):
+    if not isinstance(doc_version, int) or isinstance(doc_version, bool) or doc_version <= 0:
         errors.append(
             _refuse(
                 "INVALID_VALUE",
@@ -273,9 +268,7 @@ def _envelope(data: Mapping[str, object], shown: str) -> list[BehaviorRefusal]:
             seen.add(parent)
     provenance = data.get("provenance")
     if not isinstance(provenance, Mapping):
-        errors.append(
-            _refuse("INVALID_PROVENANCE", f"{shown}: provenance must be an object")
-        )
+        errors.append(_refuse("INVALID_PROVENANCE", f"{shown}: provenance must be an object"))
     else:
         for key in sorted(set(provenance) - _PROVENANCE_KEYS):
             errors.append(
@@ -374,9 +367,7 @@ def _frend_section(data: Mapping[str, object], shown: str) -> list[BehaviorRefus
         "max_input_chars": lambda value: _validate_limit(
             "max_input_chars", cast(int | None, value)
         ),
-        "max_unit_chars": lambda value: _validate_limit(
-            "max_unit_chars", cast(int | None, value)
-        ),
+        "max_unit_chars": lambda value: _validate_limit("max_unit_chars", cast(int | None, value)),
     }
     for key, validator in validators.items():
         if key not in data:
@@ -413,9 +404,7 @@ def _frend_section(data: Mapping[str, object], shown: str) -> list[BehaviorRefus
         try:
             validate_groups(cast(Mapping[str, Sequence[str]], group_orders))
         except (TypeError, ValueError) as error:
-            errors.append(
-                _refuse("INVALID_VALUE", f"{shown}: sections.frend.groups: {error}")
-            )
+            errors.append(_refuse("INVALID_VALUE", f"{shown}: sections.frend.groups: {error}"))
     return errors
 
 
@@ -590,9 +579,7 @@ def resolve_behavior(
                 None,
             )
             if candidate is None:
-                raise BehaviorLoadError(
-                    [_refuse("EXTENDS_INCONSISTENT", _inconsistent(doc, memo))]
-                )
+                raise BehaviorLoadError([_refuse("EXTENDS_INCONSISTENT", _inconsistent(doc, memo))])
             merged.append(candidate)
             for sequence in sequences:
                 while candidate in sequence:
