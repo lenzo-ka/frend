@@ -52,6 +52,7 @@ include = ["frend*"]
 [tool.setuptools.package-data]
 frend = [
     "py.typed",
+    "behaviors/*.json",
     # Tables by locale: data/<locale>/ (en, ...) and the cross-locale data/root/.
     "data/*/*.json",
     "data/*/*.txt",

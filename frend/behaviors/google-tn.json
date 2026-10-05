@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "google-tn",
+  "version": 1,
+  "extends": [],
+  "provenance": {"source": "frend", "note": "Google TN conformance; needs the external profile tables"},
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "profile": "google-tn",
+      "groups": {"tts-sanity": {"order": ["silent", "described", "named"]}}
+    }
+  }
+}

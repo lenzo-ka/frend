@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "cycle-b",
+  "version": 1,
+  "extends": [
+    "cycle-a"
+  ],
+  "provenance": {
+    "source": "frend tests"
+  },
+  "sections": {}
+}

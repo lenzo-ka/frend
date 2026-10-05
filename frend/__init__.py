@@ -11,6 +11,7 @@ from __future__ import annotations
 
 __version__ = "0.1.0"
 
+from frend.behavior import BehaviorLoadError, ResolvedBehavior, resolve_behavior
 from frend.fold_resolve import Resolution, resolve
 from frend.input_folds import InputFold, apply_input_fold
 from frend.input_limits import (
@@ -50,6 +51,7 @@ from frend.verbalize import (
 )
 
 __all__ = [
+    "BehaviorLoadError",
     "ChoiceGraph",
     "ChoiceLattice",
     "DEFAULT_MAX_INPUT_CHARS",
@@ -67,6 +69,7 @@ __all__ = [
     "ReadingPath",
     "ReadingRank",
     "Resolution",
+    "ResolvedBehavior",
     "SemanticRank",
     "SpokenAlternative",
     "VerbalizedLattice",
@@ -78,6 +81,7 @@ __all__ = [
     "freeze_after_setup",
     "normalize",
     "resolve",
+    "resolve_behavior",
     "resolve_lattice",
     "resolve_choices",
     "route_geometry",

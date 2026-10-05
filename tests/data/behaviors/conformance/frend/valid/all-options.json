@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "behavior-schema",
+  "name": "all-options",
+  "version": 1,
+  "extends": [],
+  "provenance": {
+    "source": "frend tests"
+  },
+  "sections": {
+    "frend": {
+      "schema_version": 1,
+      "case_variant_lookup": true,
+      "fold": null,
+      "groups": {
+        "tts-sanity": {
+          "order": [
+            "named",
+            "described",
+            "silent"
+          ]
+        }
+      },
+      "max_input_chars": 1000,
+      "max_unit_chars": 100,
+      "profile": null,
+      "symbol_run_threshold": 3
+    }
+  }
+}

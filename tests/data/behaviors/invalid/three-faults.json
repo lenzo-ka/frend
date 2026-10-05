@@ -1,0 +1,10 @@
+{
+  "schema_version": 2,
+  "kind": "behavior-schema",
+  "name": "three-faults",
+  "version": 1,
+  "extends": [],
+  "provenance": {},
+  "sections": {},
+  "unexpected": true
+}

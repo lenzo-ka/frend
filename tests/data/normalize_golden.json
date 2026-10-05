@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "rows": [
+    {
+      "source": "align_one_best",
+      "name": "row-01",
+      "text": "",
+      "normalized": "",
+      "offsets_repr": "NormalizedText(text='', units=[], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-02",
+      "text": "hello world",
+      "normalized": " hello   world ",
+      "offsets_repr": "NormalizedText(text=' hello   world ', units=[NormalizedUnit(output_span=(0, 7), source_span=(0, 5), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(7, 8), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 15), source_span=(6, 11), reader='letters:token', provenance='rule:spelled-token-say')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-03",
+      "text": "I",
+      "normalized": " I ",
+      "offsets_repr": "NormalizedText(text=' I ', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-04",
+      "text": "V",
+      "normalized": " V ",
+      "offsets_repr": "NormalizedText(text=' V ', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='letter:name', provenance='surface:unsupported')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-05",
+      "text": "I saw V on 3/24 at 12.00",
+      "normalized": " I   saw   V   on   three twenty fourths   at   twelve point o o ",
+      "offsets_repr": "NormalizedText(text=' I   saw   V   on   three twenty fourths   at   twelve point o o ', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 9), source_span=(2, 5), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(9, 10), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 13), source_span=(6, 7), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(13, 14), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 18), source_span=(8, 10), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(18, 19), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(19, 41), source_span=(11, 15), reader='fraction:flexible', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal'), NormalizedUnit(output_span=(41, 42), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(42, 46), source_span=(16, 18), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(46, 47), source_span=(18, 19), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(47, 65), source_span=(19, 24), reader='number:decimal', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+lexical:en_US')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-06",
+      "text": "1/3/2026",
+      "normalized": " the third of January twenty twenty-six ",
+      "offsets_repr": "NormalizedText(text=' the third of January twenty twenty-six ', units=[NormalizedUnit(output_span=(0, 40), source_span=(0, 8), reader='date:flexible', provenance='icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-07",
+      "text": "on 3/24",
+      "normalized": " on   three twenty fourths ",
+      "offsets_repr": "NormalizedText(text=' on   three twenty fourths ', units=[NormalizedUnit(output_span=(0, 4), source_span=(0, 2), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(4, 5), source_span=(2, 3), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(5, 27), source_span=(3, 7), reader='fraction:flexible', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-08",
+      "text": "-5 and 5th",
+      "normalized": " minus five   and   fifth ",
+      "offsets_repr": "NormalizedText(text=' minus five   and   fifth ', units=[NormalizedUnit(output_span=(0, 12), source_span=(0, 2), reader='number:decimal', provenance='icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(12, 13), source_span=(2, 3), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 18), source_span=(3, 6), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(18, 19), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(19, 26), source_span=(7, 10), reader='ordinal:flexible', provenance='icu-rbnf:%spellout-ordinal')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-09",
+      "text": "$1,234.50",
+      "normalized": " one thousand two hundred thirty four dollars and fifty cents ",
+      "offsets_repr": "NormalizedText(text=' one thousand two hundred thirty four dollars and fifty cents ', units=[NormalizedUnit(output_span=(0, 62), source_span=(0, 9), reader='number:currency:USD', provenance='icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-10",
+      "text": "1/4",
+      "normalized": " one quarter ",
+      "offsets_repr": "NormalizedText(text=' one quarter ', units=[NormalizedUnit(output_span=(0, 13), source_span=(0, 3), reader='fraction:flexible', provenance='icu-rbnf:%spellout-numbering+lexical:en_US')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-11",
+      "text": "ΟΣ'Α",
+      "normalized": "ΟΣ' alpha ",
+      "offsets_repr": "NormalizedText(text=\"ΟΣ' alpha \", units=[NormalizedUnit(output_span=(0, 1), source_span=(0, 1), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(1, 2), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(2, 3), source_span=(2, 3), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(3, 10), source_span=(3, 4), reader='symbol:letter', provenance='icu-name:letter')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-12",
+      "text": "a b",
+      "normalized": " a   b ",
+      "offsets_repr": "NormalizedText(text=' a   b ', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 7), source_span=(2, 3), reader='letter:name', provenance='surface:unsupported')], fold='typographic')"
+    },
+    {
+      "source": "align_one_best",
+      "name": "row-13",
+      "text": "10:30",
+      "normalized": " ten thirty ",
+      "offsets_repr": "NormalizedText(text=' ten thirty ', units=[NormalizedUnit(output_span=(0, 12), source_span=(0, 5), reader='time:flexible', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering')], fold='typographic')"
+    },
+    {
+      "source": "typographic_fold_synthetic",
+      "name": "curly-quotation",
+      "text": "Mira wrote “yes”.",
+      "normalized": " mira   wrote  \" yes \"  ",
+      "offsets_repr": "NormalizedText(text=' mira   wrote  \" yes \"  ', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 14), source_span=(5, 10), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(14, 15), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(15, 16), source_span=(11, 12), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(16, 21), source_span=(12, 15), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(21, 22), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(22, 24), source_span=(16, 17), reader='symbol:cldr', provenance='surface:silence')], fold='typographic')"
+    },
+    {
+      "source": "typographic_fold_synthetic",
+      "name": "nonbreaking-space-measure",
+      "text": "A 5 kg parcel.",
+      "normalized": " A   five kilograms   parcel .",
+      "offsets_repr": "NormalizedText(text=' A   five kilograms   parcel .', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 20), source_span=(2, 6), reader='measure:kilogram', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide'), NormalizedUnit(output_span=(20, 21), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(21, 29), source_span=(7, 13), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(29, 30), source_span=(13, 14), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "typographic_fold_synthetic",
+      "name": "minus-range",
+      "text": "A 26−27 finish.",
+      "normalized": " A   twenty-six to twenty-seven   finish .",
+      "offsets_repr": "NormalizedText(text=' A   twenty-six to twenty-seven   finish .', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 32), source_span=(2, 7), reader='range:dash', provenance='range:cardinal+to+cardinal'), NormalizedUnit(output_span=(32, 33), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(33, 41), source_span=(8, 14), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(41, 42), source_span=(14, 15), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "typographic_fold_synthetic",
+      "name": "nonbreaking-hyphen-range",
+      "text": "The years 1946‑1947 passed.",
+      "normalized": " the   years   nineteen forty-six to nineteen forty-seven   passed .",
+      "offsets_repr": "NormalizedText(text=' the   years   nineteen forty-six to nineteen forty-seven   passed .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 13), source_span=(4, 9), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(13, 14), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 58), source_span=(10, 19), reader='range:dash', provenance='range:date+to+date'), NormalizedUnit(output_span=(58, 59), source_span=(19, 20), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(59, 67), source_span=(20, 26), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(67, 68), source_span=(26, 27), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "typographic_fold_synthetic",
+      "name": "curly-apostrophe-year",
+      "text": "It began in ’94.",
+      "normalized": " it   began   in   ninety-four .",
+      "offsets_repr": "NormalizedText(text=' it   began   in   ninety-four .', units=[NormalizedUnit(output_span=(0, 4), source_span=(0, 2), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(4, 5), source_span=(2, 3), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(5, 12), source_span=(3, 8), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(12, 13), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 17), source_span=(9, 11), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(17, 18), source_span=(11, 12), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(18, 31), source_span=(12, 15), reader='date:elided-year', provenance='icu-rbnf:%spellout-numbering-year'), NormalizedUnit(output_span=(31, 32), source_span=(15, 16), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "cardinal-money-a",
+      "text": "I paid $12 for 42 pens.",
+      "normalized": " I   paid   twelve dollars   for   forty-two   pens .",
+      "offsets_repr": "NormalizedText(text=' I   paid   twelve dollars   for   forty-two   pens .', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 10), source_span=(2, 6), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(10, 11), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(11, 27), source_span=(7, 10), reader='number:currency:USD', provenance='icu-rbnf:%spellout-numbering+lexical:en_US'), NormalizedUnit(output_span=(27, 28), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 33), source_span=(11, 14), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(33, 34), source_span=(14, 15), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(34, 45), source_span=(15, 17), reader='number:decimal', provenance='icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(45, 46), source_span=(17, 18), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(46, 52), source_span=(18, 22), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(52, 53), source_span=(22, 23), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "cardinal-money-b",
+      "text": "The 1,234 tickets cost €7 each.",
+      "normalized": " the   one thousand two hundred thirty-four  tickets  cost   seven euros   each .",
+      "offsets_repr": "NormalizedText(text=' the   one thousand two hundred thirty-four  tickets  cost   seven euros   each .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 44), source_span=(4, 9), reader='number:decimal', provenance='icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(44, 45), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(45, 46), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(46, 47), source_span=(11, 12), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(47, 48), source_span=(12, 13), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(48, 49), source_span=(13, 14), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(49, 50), source_span=(14, 15), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(50, 51), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(51, 52), source_span=(16, 17), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(52, 53), source_span=(17, 18), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(53, 59), source_span=(18, 22), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(59, 60), source_span=(22, 23), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(60, 73), source_span=(23, 25), reader='number:currency:EUR', provenance='icu-rbnf:%spellout-numbering+lexical:en_US'), NormalizedUnit(output_span=(73, 74), source_span=(25, 26), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(74, 80), source_span=(26, 30), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(80, 81), source_span=(30, 31), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "decimal-percent-a",
+      "text": "The rate rose 3.14%.",
+      "normalized": " the   rate   rose   three point one four percent   ",
+      "offsets_repr": "NormalizedText(text=' the   rate   rose   three point one four percent   ', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 12), source_span=(4, 8), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(12, 13), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 19), source_span=(9, 13), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(19, 20), source_span=(13, 14), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(20, 50), source_span=(14, 19), reader='number:percent', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(50, 52), source_span=(19, 20), reader='symbol:cldr', provenance='surface:silence')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "decimal-percent-b",
+      "text": "A -0.75% change followed.",
+      "normalized": " A   minus zero point seven five percent   change  followed.",
+      "offsets_repr": "NormalizedText(text=' A   minus zero point seven five percent   change  followed.', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 41), source_span=(2, 8), reader='number:percent', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(41, 42), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(42, 50), source_span=(9, 15), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(50, 51), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(51, 52), source_span=(16, 17), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(52, 53), source_span=(17, 18), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(53, 54), source_span=(18, 19), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(54, 55), source_span=(19, 20), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(55, 56), source_span=(20, 21), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(56, 57), source_span=(21, 22), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(57, 58), source_span=(22, 23), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(58, 59), source_span=(23, 24), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(59, 60), source_span=(24, 25), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "ordinal-date-a",
+      "text": "The 21st meeting is March 24, 2026.",
+      "normalized": " the   twenty-first  meeting  is   March twenty-fourth, twenty twenty-six .",
+      "offsets_repr": "NormalizedText(text=' the   twenty-first  meeting  is   March twenty-fourth, twenty twenty-six .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 20), source_span=(4, 8), reader='ordinal:flexible', provenance='icu-rbnf:%spellout-ordinal'), NormalizedUnit(output_span=(20, 21), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(21, 22), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(22, 23), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(23, 24), source_span=(11, 12), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(24, 25), source_span=(12, 13), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(25, 26), source_span=(13, 14), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(26, 27), source_span=(14, 15), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(27, 28), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 29), source_span=(16, 17), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(29, 33), source_span=(17, 19), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(33, 34), source_span=(19, 20), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(34, 74), source_span=(20, 34), reader='date:text-flexible', provenance='icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year'), NormalizedUnit(output_span=(74, 75), source_span=(34, 35), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "ordinal-date-b",
+      "text": "The 3rd review is on 2026-10-05.",
+      "normalized": " the   third   review   is   on   the fifth of October twenty twenty-six .",
+      "offsets_repr": "NormalizedText(text=' the   third   review   is   on   the fifth of October twenty twenty-six .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 13), source_span=(4, 7), reader='ordinal:flexible', provenance='icu-rbnf:%spellout-ordinal'), NormalizedUnit(output_span=(13, 14), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 22), source_span=(8, 14), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(22, 23), source_span=(14, 15), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(23, 27), source_span=(15, 17), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(27, 28), source_span=(17, 18), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 32), source_span=(18, 20), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(32, 33), source_span=(20, 21), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(33, 73), source_span=(21, 31), reader='date:flexible', provenance='icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year'), NormalizedUnit(output_span=(73, 74), source_span=(31, 32), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "fraction-measure-a",
+      "text": "Add 1/2 kg of flour.",
+      "normalized": " add   one / two kilograms   of   flour .",
+      "offsets_repr": "NormalizedText(text=' add   one / two kilograms   of   flour .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 11), source_span=(4, 5), reader='number:decimal', provenance='icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(11, 12), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(12, 27), source_span=(6, 10), reader='measure:kilogram', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide'), NormalizedUnit(output_span=(27, 28), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 32), source_span=(11, 13), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(32, 33), source_span=(13, 14), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(33, 40), source_span=(14, 19), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(40, 41), source_span=(19, 20), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "fraction-measure-b",
+      "text": "Pour 3/4 L of water.",
+      "normalized": " pour   three / four liters   of   water .",
+      "offsets_repr": "NormalizedText(text=' pour   three / four liters   of   water .', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 14), source_span=(5, 6), reader='number:decimal', provenance='icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(14, 15), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(15, 28), source_span=(7, 10), reader='measure:liter', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide'), NormalizedUnit(output_span=(28, 29), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(29, 33), source_span=(11, 13), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(33, 34), source_span=(13, 14), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(34, 41), source_span=(14, 19), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(41, 42), source_span=(19, 20), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "mixed-measure-a",
+      "text": "He is 5 ft 3 in tall.",
+      "normalized": " he   is   five feet, three inches   tall .",
+      "offsets_repr": "NormalizedText(text=' he   is   five feet, three inches   tall .', units=[NormalizedUnit(output_span=(0, 4), source_span=(0, 2), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(4, 5), source_span=(2, 3), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(5, 9), source_span=(3, 5), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(9, 10), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 35), source_span=(6, 15), reader='measure:foot-and-inch', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units'), NormalizedUnit(output_span=(35, 36), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(36, 42), source_span=(16, 20), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(42, 43), source_span=(20, 21), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "mixed-measure-b",
+      "text": "The box is 2 ft 4 in wide.",
+      "normalized": " the   box   is   two feet, four inches   wide .",
+      "offsets_repr": "NormalizedText(text=' the   box   is   two feet, four inches   wide .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 11), source_span=(4, 7), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(11, 12), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(12, 16), source_span=(8, 10), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(16, 17), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(17, 40), source_span=(11, 20), reader='measure:foot-and-inch', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units'), NormalizedUnit(output_span=(40, 41), source_span=(20, 21), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(41, 47), source_span=(21, 25), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(47, 48), source_span=(25, 26), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "time-a",
+      "text": "Meet me at 5:30 PM.",
+      "normalized": " meet   me   at   five thirty p m .",
+      "offsets_repr": "NormalizedText(text=' meet   me   at   five thirty p m .', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 11), source_span=(5, 7), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(11, 12), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(12, 16), source_span=(8, 10), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(16, 17), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(17, 34), source_span=(11, 18), reader='time:flexible', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+surface:letters'), NormalizedUnit(output_span=(34, 35), source_span=(18, 19), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "time-b",
+      "text": "The train leaves at 08:05.",
+      "normalized": " the   train   leaves   at   eight o five .",
+      "offsets_repr": "NormalizedText(text=' the   train   leaves   at   eight o five .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 13), source_span=(4, 9), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(13, 14), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 22), source_span=(10, 16), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(22, 23), source_span=(16, 17), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(23, 27), source_span=(17, 19), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(27, 28), source_span=(19, 20), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 42), source_span=(20, 25), reader='time:flexible', provenance='icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(42, 43), source_span=(25, 26), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "duration-a",
+      "text": "2:08.34",
+      "normalized": " two minutes eight seconds and thirty-four milliseconds ",
+      "offsets_repr": "NormalizedText(text=' two minutes eight seconds and thirty-four milliseconds ', units=[NormalizedUnit(output_span=(0, 56), source_span=(0, 7), reader='measure:duration:numeric', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "duration-b",
+      "text": "31:18.85",
+      "normalized": " thirty-one minutes eighteen seconds and eighty-five milliseconds ",
+      "offsets_repr": "NormalizedText(text=' thirty-one minutes eighteen seconds and eighty-five milliseconds ', units=[NormalizedUnit(output_span=(0, 66), source_span=(0, 8), reader='measure:duration:numeric', provenance='icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "range-a",
+      "text": "Read pages 5-10.",
+      "normalized": " read   pages   five to ten .",
+      "offsets_repr": "NormalizedText(text=' read   pages   five to ten .', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 14), source_span=(5, 10), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(14, 15), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(15, 28), source_span=(11, 15), reader='range:dash', provenance='range:cardinal+to+cardinal'), NormalizedUnit(output_span=(28, 29), source_span=(15, 16), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "range-b",
+      "text": "The record covers 2020-2024.",
+      "normalized": " the   record   covers   twenty twenty to twenty twenty-four .",
+      "offsets_repr": "NormalizedText(text=' the   record   covers   twenty twenty to twenty twenty-four .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 14), source_span=(4, 10), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(14, 15), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(15, 23), source_span=(11, 17), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(23, 24), source_span=(17, 18), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(24, 61), source_span=(18, 27), reader='range:dash', provenance='range:date+to+date'), NormalizedUnit(output_span=(61, 62), source_span=(27, 28), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "telephone-a",
+      "text": "Call (650) 696-1060.",
+      "normalized": " call   six five o sil six nine six sil one o six o .",
+      "offsets_repr": "NormalizedText(text=' call   six five o sil six nine six sil one o six o .', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 52), source_span=(5, 19), reader='telephone:number', provenance='icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-cardinal+lexical:en_US+measured:telephone'), NormalizedUnit(output_span=(52, 53), source_span=(19, 20), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "telephone-b",
+      "text": "Dial 212-868-4444.",
+      "normalized": " dial   two one two sil eight six eight sil four four four four .",
+      "offsets_repr": "NormalizedText(text=' dial   two one two sil eight six eight sil four four four four .', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 64), source_span=(5, 17), reader='telephone:number', provenance='icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-cardinal+measured:telephone'), NormalizedUnit(output_span=(64, 65), source_span=(17, 18), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "url",
+      "text": "Visit http://www.ucc.ie/celt/trotula.html today.",
+      "normalized": " visit   h t t p colon slash slash w w w dot u c c dot i e slash celt slash trotula dot h t m l   today .",
+      "offsets_repr": "NormalizedText(text=' visit   h t t p colon slash slash w w w dot u c c dot i e slash celt slash trotula dot h t m l   today .', units=[NormalizedUnit(output_span=(0, 7), source_span=(0, 5), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(7, 8), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 96), source_span=(6, 41), reader='electronic:url', provenance='measured:electronic'), NormalizedUnit(output_span=(96, 97), source_span=(41, 42), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(97, 104), source_span=(42, 47), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(104, 105), source_span=(47, 48), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "email",
+      "text": "Write jane.doe@example.org, please.",
+      "normalized": " write   jane dot doe at example dot org ,  please .",
+      "offsets_repr": "NormalizedText(text=' write   jane dot doe at example dot org ,  please .', units=[NormalizedUnit(output_span=(0, 7), source_span=(0, 5), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(7, 8), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 41), source_span=(6, 26), reader='electronic:email', provenance='measured:electronic+lexical:en_US'), NormalizedUnit(output_span=(41, 42), source_span=(26, 27), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(42, 43), source_span=(27, 28), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(43, 51), source_span=(28, 34), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(51, 52), source_span=(34, 35), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "letters-acronyms-a",
+      "text": "NASA met the FBI.",
+      "normalized": " nasa   met   the   f b i .",
+      "offsets_repr": "NormalizedText(text=' nasa   met   the   f b i .', units=[NormalizedUnit(output_span=(0, 6), source_span=(0, 4), reader='abbreviation', provenance='measured:acronym-word'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 12), source_span=(5, 8), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(12, 13), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 18), source_span=(9, 12), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(18, 19), source_span=(12, 13), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(19, 26), source_span=(13, 16), reader='abbreviation', provenance='measured:acronym-spelled'), NormalizedUnit(output_span=(26, 27), source_span=(16, 17), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "letters-acronyms-b",
+      "text": "Say A B C and XYZ.",
+      "normalized": " say   A   B   C   and   xyz .",
+      "offsets_repr": "NormalizedText(text=' say   A   B   C   and   xyz .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 9), source_span=(4, 5), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(9, 10), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 13), source_span=(6, 7), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(13, 14), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 17), source_span=(8, 9), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(17, 18), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(18, 23), source_span=(10, 13), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(23, 24), source_span=(13, 14), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(24, 29), source_span=(14, 17), reader='letters:run', provenance='measured:acronym-word'), NormalizedUnit(output_span=(29, 30), source_span=(17, 18), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "abbreviation-written-a",
+      "text": "Dr. Smith cited 500 B.C.",
+      "normalized": " Doctor   smith   cited   five hundred b c ",
+      "offsets_repr": "NormalizedText(text=' Doctor   smith   cited   five hundred b c ', units=[NormalizedUnit(output_span=(0, 8), source_span=(0, 3), reader='abbreviation', provenance='icukit-abbreviation:title/precedes-name'), NormalizedUnit(output_span=(8, 9), source_span=(3, 4), reader=None, provenance='surface:inter-sentence-whitespace'), NormalizedUnit(output_span=(9, 16), source_span=(4, 9), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(16, 17), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(17, 24), source_span=(10, 15), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(24, 25), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(25, 43), source_span=(16, 24), reader='date:era', provenance='icu-rbnf:%spellout-numbering+surface:letters')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "abbreviation-written-b",
+      "text": "Mr. Jones dated it A.D. 1066.",
+      "normalized": " Mister   jones   dated   it   a d   ten sixty-six .",
+      "offsets_repr": "NormalizedText(text=' Mister   jones   dated   it   a d   ten sixty-six .', units=[NormalizedUnit(output_span=(0, 8), source_span=(0, 3), reader='abbreviation', provenance='icukit-abbreviation:title/precedes-name'), NormalizedUnit(output_span=(8, 9), source_span=(3, 4), reader=None, provenance='surface:inter-sentence-whitespace'), NormalizedUnit(output_span=(9, 16), source_span=(4, 9), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(16, 17), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(17, 24), source_span=(10, 15), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(24, 25), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(25, 29), source_span=(16, 18), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(29, 30), source_span=(18, 19), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(30, 35), source_span=(19, 23), reader='abbreviation', provenance='measured:acronym-spelled'), NormalizedUnit(output_span=(35, 36), source_span=(23, 24), reader=None, provenance='surface:inter-sentence-whitespace'), NormalizedUnit(output_span=(36, 51), source_span=(24, 28), reader='date:y', provenance='icu-rbnf:%spellout-numbering-year'), NormalizedUnit(output_span=(51, 52), source_span=(28, 29), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "symbol-a",
+      "text": "Choose A & B.",
+      "normalized": " choose   A   and   b ",
+      "offsets_repr": "NormalizedText(text=' choose   A   and   b ', units=[NormalizedUnit(output_span=(0, 8), source_span=(0, 6), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(8, 9), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(9, 12), source_span=(7, 8), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(12, 13), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 18), source_span=(9, 10), reader='symbol:cldr', provenance='cldr-symbol:and'), NormalizedUnit(output_span=(18, 19), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(19, 22), source_span=(11, 13), reader='letters:initial', provenance='surface:letter')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "symbol-b",
+      "text": "Use + or =.",
+      "normalized": " use      or      ",
+      "offsets_repr": "NormalizedText(text=' use      or      ', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 8), source_span=(4, 5), reader='symbol:cldr', provenance='surface:silence'), NormalizedUnit(output_span=(8, 9), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(9, 13), source_span=(6, 8), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(13, 14), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 16), source_span=(9, 10), reader='symbol:cldr', provenance='surface:silence'), NormalizedUnit(output_span=(16, 18), source_span=(10, 11), reader='symbol:cldr', provenance='surface:silence')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "symbol-run-repeated",
+      "text": "****",
+      "normalized": " line of asterisk ",
+      "offsets_repr": "NormalizedText(text=' line of asterisk ', units=[NormalizedUnit(output_span=(0, 18), source_span=(0, 4), reader='symbol:run', provenance='lexical:en_US+cldr-symbol:asterisk')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "symbol-run-spaced",
+      "text": "* * * *",
+      "normalized": " line of asterisk ",
+      "offsets_repr": "NormalizedText(text=' line of asterisk ', units=[NormalizedUnit(output_span=(0, 18), source_span=(0, 7), reader='symbol:run', provenance='lexical:en_US+cldr-symbol:asterisk')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "symbol-run-mixed",
+      "text": "×+÷=",
+      "normalized": " line of symbols ",
+      "offsets_repr": "NormalizedText(text=' line of symbols ', units=[NormalizedUnit(output_span=(0, 17), source_span=(0, 4), reader='symbol:run', provenance='lexical:en_US+cldr-symbol:multiplication sign+cldr-symbol:plus sign+cldr-symbol:division sign+cldr-symbol:equal')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "symbol-run-emoji",
+      "text": "😀😀😀😀",
+      "normalized": " line of grinning face ",
+      "offsets_repr": "NormalizedText(text=' line of grinning face ', units=[NormalizedUnit(output_span=(0, 23), source_span=(0, 4), reader='symbol:run', provenance='lexical:en_US+icu-name:symbol')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "script-run-greek",
+      "text": "Θ Α",
+      "normalized": " theta alpha ",
+      "offsets_repr": "NormalizedText(text=' theta alpha ', units=[NormalizedUnit(output_span=(0, 13), source_span=(0, 3), reader='symbol:script-run', provenance='icu-name:letter')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "script-run-cyrillic",
+      "text": "Т Е С Т",
+      "normalized": "  ",
+      "offsets_repr": "NormalizedText(text='  ', units=[NormalizedUnit(output_span=(0, 2), source_span=(0, 7), reader='symbol:script-run', provenance='surface:silence')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "offsets-sentences",
+      "text": "I paid $12.\n\nIt was 5% off.",
+      "normalized": " I   paid   twelve dollars .  it   was   five percent   off .",
+      "offsets_repr": "NormalizedText(text=' I   paid   twelve dollars .  it   was   five percent   off .', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='word:single-letter', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 10), source_span=(2, 6), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(10, 11), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(11, 27), source_span=(7, 10), reader='number:currency:USD', provenance='icu-rbnf:%spellout-numbering+lexical:en_US'), NormalizedUnit(output_span=(27, 28), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 29), source_span=(11, 13), reader=None, provenance='surface:inter-sentence-whitespace'), NormalizedUnit(output_span=(29, 33), source_span=(13, 15), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(33, 34), source_span=(15, 16), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(34, 39), source_span=(16, 19), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(39, 40), source_span=(19, 20), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(40, 54), source_span=(20, 22), reader='number:percent', provenance='icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(54, 55), source_span=(22, 23), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(55, 60), source_span=(23, 26), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(60, 61), source_span=(26, 27), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "boundary-leading",
+      "text": "\nPlain text.",
+      "normalized": " plain   text .",
+      "offsets_repr": "NormalizedText(text=' plain   text .', units=[NormalizedUnit(output_span=(0, 0), source_span=(0, 1), reader=None, provenance='surface:boundary-whitespace'), NormalizedUnit(output_span=(0, 7), source_span=(1, 6), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(7, 8), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 14), source_span=(7, 11), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(14, 15), source_span=(11, 12), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "boundary-both",
+      "text": "  a.  b.  ",
+      "normalized": " a .   b .",
+      "offsets_repr": "NormalizedText(text=' a .   b .', units=[NormalizedUnit(output_span=(0, 0), source_span=(0, 2), reader=None, provenance='surface:boundary-whitespace'), NormalizedUnit(output_span=(0, 3), source_span=(2, 3), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 5), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(5, 6), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 9), source_span=(6, 7), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(9, 10), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 10), source_span=(8, 10), reader=None, provenance='surface:boundary-whitespace')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "boundary-inter-sentence",
+      "text": "a.\n\nb",
+      "normalized": " a .  b ",
+      "offsets_repr": "NormalizedText(text=' a .  b ', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 5), source_span=(2, 4), reader=None, provenance='surface:inter-sentence-whitespace'), NormalizedUnit(output_span=(5, 8), source_span=(4, 5), reader='letter:name', provenance='surface:unsupported')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "boundary-whitespace-only",
+      "text": " \n ",
+      "normalized": "",
+      "offsets_repr": "NormalizedText(text='', units=[NormalizedUnit(output_span=(0, 0), source_span=(0, 3), reader=None, provenance='surface:boundary-whitespace')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "boundary-trailing-fragment",
+      "text": "a. trailing text without terminal punctuation",
+      "normalized": " a . trailing  text  without terminal punctuation",
+      "offsets_repr": "NormalizedText(text=' a . trailing  text  without terminal punctuation', units=[NormalizedUnit(output_span=(0, 3), source_span=(0, 1), reader='letter:name', provenance='surface:unsupported'), NormalizedUnit(output_span=(3, 4), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(4, 5), source_span=(2, 3), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 8), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 9), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(9, 10), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 11), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(11, 12), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(12, 13), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 14), source_span=(11, 12), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 20), source_span=(12, 16), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(20, 21), source_span=(16, 17), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(21, 22), source_span=(17, 18), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(22, 23), source_span=(18, 19), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(23, 24), source_span=(19, 20), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(24, 25), source_span=(20, 21), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(25, 26), source_span=(21, 22), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(26, 27), source_span=(22, 23), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(27, 28), source_span=(23, 24), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(28, 29), source_span=(24, 25), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(29, 30), source_span=(25, 26), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(30, 31), source_span=(26, 27), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(31, 32), source_span=(27, 28), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(32, 33), source_span=(28, 29), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(33, 34), source_span=(29, 30), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(34, 35), source_span=(30, 31), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(35, 36), source_span=(31, 32), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(36, 37), source_span=(32, 33), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(37, 38), source_span=(33, 34), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(38, 39), source_span=(34, 35), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(39, 40), source_span=(35, 36), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(40, 41), source_span=(36, 37), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(41, 42), source_span=(37, 38), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(42, 43), source_span=(38, 39), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(43, 44), source_span=(39, 40), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(44, 45), source_span=(40, 41), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(45, 46), source_span=(41, 42), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(46, 47), source_span=(42, 43), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(47, 48), source_span=(43, 44), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(48, 49), source_span=(44, 45), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "offsets-non-ascii",
+      "text": "😀 𐐀 é 漢字.",
+      "normalized": "      é 漢字.",
+      "offsets_repr": "NormalizedText(text='      é 漢字.', units=[NormalizedUnit(output_span=(0, 2), source_span=(0, 1), reader='symbol:icu', provenance='surface:silence'), NormalizedUnit(output_span=(2, 3), source_span=(1, 2), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(3, 5), source_span=(2, 3), reader='symbol:letter', provenance='surface:silence'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 8), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 9), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(9, 10), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 11), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(11, 12), source_span=(9, 10), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    },
+    {
+      "source": "normalize_golden_inputs",
+      "name": "written-spaced-colon",
+      "text": "The display showed 7: 31.",
+      "normalized": " the  display  showed   seven thirty-one .",
+      "offsets_repr": "NormalizedText(text=' the  display  showed   seven thirty-one .', units=[NormalizedUnit(output_span=(0, 5), source_span=(0, 3), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(5, 6), source_span=(3, 4), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(6, 7), source_span=(4, 5), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(7, 8), source_span=(5, 6), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(8, 9), source_span=(6, 7), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(9, 10), source_span=(7, 8), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(10, 11), source_span=(8, 9), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(11, 12), source_span=(9, 10), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(12, 13), source_span=(10, 11), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(13, 14), source_span=(11, 12), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(14, 22), source_span=(12, 18), reader='letters:token', provenance='rule:spelled-token-say'), NormalizedUnit(output_span=(22, 23), source_span=(18, 19), reader=None, provenance='surface:passthrough'), NormalizedUnit(output_span=(23, 41), source_span=(19, 24), reader='time:spaced-colon', provenance='icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering'), NormalizedUnit(output_span=(41, 42), source_span=(24, 25), reader=None, provenance='surface:passthrough')], fold='typographic')"
+    }
+  ]
+}
