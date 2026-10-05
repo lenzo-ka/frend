@@ -69,6 +69,7 @@ from frend.letters import (
     spelled,
     spelled_token_prior,
     spelled_token_rule,
+    spellout_dictionary_entry,
     split_acronym_surface,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
@@ -1062,15 +1063,27 @@ _MARKS = icu.UnicodeSet("[:M:]")
 _MARKS.freeze()
 
 
+def _spellout_decision(entry: dict[str, object] | None) -> str | None:
+    """A corpus-counted spell-or-say decision."""
+    if entry is None or entry.get("decision") not in {"spell", "say"}:
+        return None
+    if "counts" not in entry:
+        return None
+    return str(entry["decision"])
+
+
 # A spell-out ("MD" read "M D") names each letter; an expansion reads the text as words.
 def _spoken_letters(
-    value: LettersValue, locale: str, profile: str | None = None
+    value: LettersValue,
+    locale: str,
+    profile: str | None = None,
+    case_variant_lookup: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     """A letter token spelled or read as a word, weighted by its measured population.
 
-    Capital runs use the acronym prior; relevant bounded non-uppercase tokens use their
-    exact spell-or-say prior. A plural or possessive rides on an acronym's last letter.
-    An initial is its letter.
+    Capital runs and bounded non-uppercase tokens use the spell-out dictionary, then
+    the vowel rule. A plural or possessive rides on an acronym's last letter. An initial
+    is its letter.
     """
     letters = _NFC.normalize(value.letters)
     if value.suffix == ".":
@@ -1087,15 +1100,25 @@ def _spoken_letters(
         if spelling is None:
             raise NotImplementedError(f"no authoritative letter names for {locale}")
         word = _NFC.normalize(value.surface).lower()
-        entry = spelled_token_prior(value.letters, locale)
-        if entry is None:
+        dictionary = (
+            None
+            if profile == GOOGLE_TN
+            else spellout_dictionary_entry(
+                value.surface, locale, case_variant_lookup=case_variant_lookup
+            )
+        )
+        if (decision := _spellout_decision(dictionary)) is not None:
+            spell_share = dictionary.get("spell_share", int(decision == "spell"))
+            shares = {"spell": spell_share, "say": 1 - spell_share}
+            source = "dictionary:spelled-token"
+        elif profile == GOOGLE_TN and (entry := spelled_token_prior(value.letters, locale)):
+            shares = entry["shares"]
+            source = "measured:spelled-token"
+        else:
             decision = spelled_token_rule(value.letters)
             other = "say" if decision == "spell" else "spell"
             shares = {decision: 1, other: 0}
             source = "rule:spelled-token"
-        else:
-            shares = entry["shares"]
-            source = "measured:spelled-token"
         return _ranked(
             (
                 SpokenAlternative(
@@ -1126,6 +1149,8 @@ def _spoken_letters(
             profile=profile,
             profile_surface=parsed_surface[0],
             surface_subkey=parsed_surface[1],
+            dictionary_surface=value.surface,
+            case_variant_lookup=case_variant_lookup,
         )
     )
     if not readings:
@@ -1324,17 +1349,16 @@ def _with_acronym_readings(
     profile: str | None = None,
     profile_surface: str | None = None,
     surface_subkey: str = "bare",
+    dictionary_surface: str | None = None,
+    case_variant_lookup: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     """An acronym ("FBI", "NASA") also reads spelled and as a word, weighted as measured.
 
-    kal ruled that frend says both: the share the corpus spells an all-capitals token
-    weights "f b i", the rest weights "fbi" (``data/en/acronym_priors.json``,
-    ``tools/build_acronym_priors.py``), by the acronym's own counts where icukit's lexicon
-    lists it or icukit reads it as a Roman numeral, blended toward its consonant-vowel
-    pattern and then its shape (``letter_key``: length, vowel). An adequately supported
-    exact surface and suffix row then replaces that share, smoothed toward it; a sparse
-    or absent row leaves it unchanged. icukit's long forms follow. A spelled form
-    icukit already gives ("M D") takes the weight, not a copy.
+    The shipped dictionary decides first by exact surface and weights both readings.
+    An unattested capital run retains the established shape/CV prior: replacing that
+    fallback with the vowel rule regressed held-out UNSEEN tokens. The explicit Google-TN
+    profile additionally applies its external exact-surface evidence. icukit's long forms
+    follow, and an existing spelled form ("M D") takes the weight rather than a duplicate.
     """
     letters = "".join(ch for ch in surface if ch.isalpha() or _MARKS.contains(ch))
     if len(letters) < 2 or not letters.isupper():
@@ -1342,38 +1366,45 @@ def _with_acronym_readings(
     spelling = spelled(letters, locale)
     if spelling is None:
         return alternatives
-    table = _acronym_priors(locale=locale)
-    if not table:
-        return _ranked((spelling, *alternatives))
-
-    def blend(counts: dict[str, int], parent: Decimal) -> Decimal:
-        return (Decimal(counts.get("spelled", 0)) + 5 * parent) / (sum(counts.values()) + 5)
-
-    overall = table["*"]
-    share = blend(
-        table.get(letter_key(letters, locale), {}),
-        Decimal(overall["spelled"]) / sum(overall.values()),
+    dictionary = (
+        None
+        if profile == GOOGLE_TN
+        else spellout_dictionary_entry(
+            dictionary_surface or surface,
+            locale,
+            case_variant_lookup=case_variant_lookup,
+        )
     )
-    if (pattern := cv_pattern(letters, locale)) is not None and f"cv:{pattern}" in table:
-        # Its consonant-vowel pattern ("GUS" is mostly said, "GWR" spelled) over its shape.
-        share = blend(table[f"cv:{pattern}"], share)
-    for key in (f"surface:{letters}", f"roman:{letters}"):
-        if key in table:
-            # The run's own evidence ("NASA" is a word 2118 times to 4, "XI" 955 to 7)
-            # over its shape's; a Roman numeral's number readings are not counted here.
-            own = {label: table[key].get(label, 0) for label in ("spelled", "word")}
-            share = blend(own, share)
-    if profile == GOOGLE_TN:
-        surfaces, minimum_support, parent_strength = _acronym_surface_priors(locale=locale)
-        exact_surface = surface if profile_surface is None else profile_surface
-        surface_counts = surfaces.get(exact_surface, {}).get(surface_subkey, {})
-        support = sum(surface_counts.get(label, 0) for label in ("spelled", "word"))
-        if support >= minimum_support > 0:
-            # Sparse rows abstain completely, leaving the established shape/CV prior
-            # unchanged. Retaining the suffix prevents a plural from training a bare run.
-            share = (Decimal(surface_counts.get("spelled", 0)) + parent_strength * share) / (
-                support + parent_strength
-            )
+    if (decision := _spellout_decision(dictionary)) is not None:
+        share = Decimal(str(dictionary.get("spell_share", int(decision == "spell"))))
+    else:
+        table = _acronym_priors(locale=locale)
+        if not table:
+            return _ranked((spelling, *alternatives))
+
+        def blend(counts: dict[str, int], parent: Decimal) -> Decimal:
+            return (Decimal(counts.get("spelled", 0)) + 5 * parent) / (sum(counts.values()) + 5)
+
+        overall = table["*"]
+        share = blend(
+            table.get(letter_key(letters, locale), {}),
+            Decimal(overall["spelled"]) / sum(overall.values()),
+        )
+        if (pattern := cv_pattern(letters, locale)) is not None and f"cv:{pattern}" in table:
+            share = blend(table[f"cv:{pattern}"], share)
+        for key in (f"surface:{letters}", f"roman:{letters}"):
+            if key in table:
+                own = {label: table[key].get(label, 0) for label in ("spelled", "word")}
+                share = blend(own, share)
+        if profile == GOOGLE_TN:
+            surfaces, minimum_support, parent_strength = _acronym_surface_priors(locale=locale)
+            exact_surface = surface if profile_surface is None else profile_surface
+            surface_counts = surfaces.get(exact_surface, {}).get(surface_subkey, {})
+            support = sum(surface_counts.get(label, 0) for label in ("spelled", "word"))
+            if support >= minimum_support > 0:
+                share = (Decimal(surface_counts.get("spelled", 0)) + parent_strength * share) / (
+                    support + parent_strength
+                )
     # Each capital by its own lower case ("İB" is "i b", "ΟΣ" "ο σ"), not the run's.
     forms = [SpokenAlternative(spelling.text, "measured:acronym-spelled", share)]
     if letters == surface:
@@ -2854,6 +2885,7 @@ def verbalize_edge(
     rerank_by_context: bool = True,
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedUnit:
@@ -2878,6 +2910,7 @@ def verbalize_edge(
         rerank_by_context=rerank_by_context,
         context_threshold=context_threshold,
         profile=profile,
+        case_variant_lookup=case_variant_lookup,
     )
 
 
@@ -2957,6 +2990,7 @@ def _verbalize_edge(
     rerank_by_context: bool = True,
     context_threshold: float = CONTEXT_THRESHOLD,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
 ) -> VerbalizedUnit:
     """Verbalize one edge and optionally apply shipped source measurements.
 
@@ -3065,7 +3099,13 @@ def _verbalize_edge(
                             else letter_form,
                         )
             else:
-                alternatives = _with_acronym_readings(written, expanded, locale, profile=profile)
+                alternatives = _with_acronym_readings(
+                    written,
+                    expanded,
+                    locale,
+                    profile=profile,
+                    case_variant_lookup=case_variant_lookup,
+                )
                 if is_chain(written) and not written.isupper():
                     # A dotted chain of any case is spelled ("e.g." "e g", "j.r.r." "j r
                     # r"): the corpus spells every one it writes.
@@ -3130,7 +3170,7 @@ def _verbalize_edge(
             key_value = value.text
             path = "symbol"
         elif isinstance(value, LettersValue):
-            alternatives = _spoken_letters(value, locale, profile)
+            alternatives = _spoken_letters(value, locale, profile, case_variant_lookup)
             if not value.suffix:
                 # A run that is a lexicon abbreviation in capitals ("MR", "DR") is also
                 # offered its expansions.
@@ -3360,6 +3400,7 @@ def verbalize_lattice(
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedLattice:
@@ -3379,6 +3420,7 @@ def verbalize_lattice(
         supplements=supplements,
         context=context,
         profile=profile,
+        case_variant_lookup=case_variant_lookup,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
     )
@@ -3391,6 +3433,7 @@ def _verbalize_lattice_validated(
     supplements: CuratedSupplements | None = None,
     context: TextContext | None = None,
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
 ) -> VerbalizedLattice:
@@ -3423,6 +3466,7 @@ def _verbalize_lattice_validated(
                         supplements=supplements,
                         context=context,
                         profile=profile,
+                        case_variant_lookup=case_variant_lookup,
                     )
                     for edge_id in path.edge_ids
                 ),
@@ -3444,6 +3488,7 @@ def _verbalize_lattice_validated(
                 supplements=supplements,
                 context=context,
                 profile=profile,
+                case_variant_lookup=case_variant_lookup,
             )
             for edge_id in path.edge_ids
         )

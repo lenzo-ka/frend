@@ -96,13 +96,92 @@ def test_consonant_only_rule_spells_first():
     assert [item.text for item in unit.alternatives] == ["x y z", "xyz"]
 
 
-def test_exact_token_prior_ranks_but_keeps_both_readings(monkeypatch):
+def test_spellout_dictionary_precedes_the_vowel_rule(monkeypatch):
     from frend import verbalize
 
     monkeypatch.setattr(
         verbalize,
-        "spelled_token_prior",
-        lambda token, locale: {"shares": {"spell": 0.9, "say": 0.1}},
+        "spellout_dictionary_entry",
+        lambda token, locale, **_kwargs: {
+            "counts": {"say": 99, "spell": 1},
+            "decision": "say",
+            "spell_share": 0.01,
+        },
+    )
+    lattice = resolve_lattice(list(detect("BBC", _DETECTORS)), source_text="BBC")
+    unit = verbalize_lattice(lattice).best_path.units[0]
+    assert [item.text for item in unit.alternatives[:2]] == ["bbc", "b b c"]
+
+
+def test_unattested_acronym_keeps_the_measured_fallback(monkeypatch):
+    from frend import verbalize
+
+    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args, **_kwargs: None)
+    consonants = resolve_lattice(list(detect("BBC", _DETECTORS)), source_text="BBC")
+    vowel = resolve_lattice(list(detect("FBI", _DETECTORS)), source_text="FBI")
+    assert verbalize_lattice(consonants).best_path.units[0].best.text == "b b c"
+    assert verbalize_lattice(vowel).best_path.units[0].best.text == "f b i"
+
+
+def test_source_label_without_counts_abstains(monkeypatch):
+    from frend import verbalize
+
+    monkeypatch.setattr(
+        verbalize,
+        "spellout_dictionary_entry",
+        lambda token, locale, **_kwargs: {
+            "decision": "say",
+            "label": "wikipedia:say",
+            "source": "wikimedia/enwiki-lists-of-acronyms",
+        },
+    )
+    lattice = resolve_lattice(list(detect("BBC", _DETECTORS)), source_text="BBC")
+    assert verbalize_lattice(lattice).best_path.units[0].best.text == "b b c"
+
+
+def test_dictionary_case_variant_lookup_is_opt_in(monkeypatch):
+    from frend import letters
+
+    monkeypatch.setattr(
+        letters,
+        "_spellout_dictionary",
+        lambda _locale: (
+            {"FBI": ("spell", 0, 10), "NASA": ("say", 10, 0)},
+            {"fbi": "FBI"},
+            "google/tn-en_with_types",
+        ),
+    )
+    assert letters.spellout_dictionary_entry("NASA")["decision"] == "say"
+    assert letters.spellout_dictionary_entry("Fbi") is None
+    assert letters.spellout_dictionary_entry("Fbi", case_variant_lookup=True)["decision"] == "spell"
+
+
+def test_ordinary_word_is_not_changed_to_spelling_by_the_dictionary():
+    for word in ("word", "zijn", "échec"):
+        found = [d for d in LettersDetector().detect(word) if d["type"] == "letters:token"]
+        lattice = resolve_lattice(found, source_text=word)
+        assert verbalize_lattice(lattice).best_path.units[0].best.text == word
+
+
+def test_lowercase_context_words_stay_words_with_case_variants_enabled():
+    from frend import normalize
+
+    assert " ".join(normalize("it is", case_variant_lookup=True).split()) == "it is"
+    assert " ".join(normalize("or else", case_variant_lookup=True).split()) == "or else"
+
+
+def test_dictionary_precedes_the_vowel_rule_for_a_lowercase_token(monkeypatch):
+    from frend import verbalize
+
+    monkeypatch.setattr(
+        verbalize,
+        "spellout_dictionary_entry",
+        lambda token, locale, **_kwargs: {
+            "counts": {"say": 1, "spell": 9},
+            "decision": "spell",
+            "source": "google/tn-en_with_types",
+            "spell_share": 0.9,
+        },
     )
     lattice = resolve_lattice(list(detect("pdf", (LettersDetector(),))), source_text="pdf")
     unit = verbalize_lattice(lattice).best_path.units[0]
@@ -200,13 +279,23 @@ def test_profile_off_is_the_main_output_byte_for_byte(monkeypatch):
         lambda **_kwargs: (_ for _ in ()).throw(AssertionError("profile table consulted")),
     )
     assert repr((_read("AIDS"), _read("CE"), _read("PAR's"))).encode() == (
-        b"([['a i d s', 'aids']], [['ce', 'c e']], [[\"par's\", \"p a r's\"]])"
+        b"([['a i d s', 'aids']], [['c e', 'ce']], [[\"par's\", \"p a r's\"]])"
     )
 
 
 def test_google_tn_profile_uses_the_external_surface_table(tmp_path, monkeypatch):
     from frend import verbalize
 
+    monkeypatch.setattr(
+        verbalize,
+        "spellout_dictionary_entry",
+        lambda *_args, **_kwargs: {
+            "counts": {"say": 0, "spell": 10},
+            "decision": "spell",
+            "source": "google/tn-en_with_types",
+            "spell_share": 1.0,
+        },
+    )
     table = tmp_path / "acronym_surfaces.json"
     _profile_table(table, {"GWR": {"bare": {"word": 5}}})
     monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(table))
@@ -262,6 +351,7 @@ def test_surface_prior_abstains_below_its_selected_support(monkeypatch):
     from frend import verbalize
 
     fallback = {"*": {"spelled": 0, "word": 10}}
+    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(verbalize, "_acronym_priors", lambda **_kwargs: fallback)
     monkeypatch.setattr(
         verbalize,
@@ -286,6 +376,7 @@ def test_acronym_surface_prior_keeps_suffix_subkeys_separate(monkeypatch):
     from frend.letters import LettersValue
 
     fallback = {"*": {"spelled": 0, "word": 10}}
+    monkeypatch.setattr(verbalize, "spellout_dictionary_entry", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(verbalize, "_acronym_priors", lambda **_kwargs: fallback)
     surfaces = {
         "ABC": {

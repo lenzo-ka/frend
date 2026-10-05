@@ -227,6 +227,7 @@ def _sentence(
     fold: InputFold | None,
     locale: str,
     profile: str | None,
+    case_variant_lookup: bool,
     offsets: bool,
     max_input_chars: int | None,
     max_unit_chars: int | None,
@@ -256,6 +257,7 @@ def _sentence(
     verbalized = _verbalize_lattice_validated(
         lattice,
         profile=profile,
+        case_variant_lookup=case_variant_lookup,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
     )
@@ -280,6 +282,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     fold: InputFold | None = "typographic",
     offsets: Literal[False] = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
@@ -294,6 +297,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     fold: InputFold | None = "typographic",
     offsets: Literal[True],
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
@@ -308,6 +312,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     fold: InputFold | None = "typographic",
     offsets: bool,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
@@ -321,6 +326,7 @@ def normalize(
     *,
     locale: str = "en_US",
     profile: str | None = None,
+    case_variant_lookup: bool = False,
     fold: InputFold | None = "typographic",
     offsets: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
@@ -336,6 +342,10 @@ def normalize(
     """
     if not isinstance(offsets, bool):
         raise TypeError(f"offsets must be a bool, got {type(offsets).__name__}")
+    if not isinstance(case_variant_lookup, bool):
+        raise TypeError(
+            f"case_variant_lookup must be a bool, got {type(case_variant_lookup).__name__}"
+        )
     validate_input(text, max_input_chars=max_input_chars)
     validate_unit_length(0, max_unit_chars=max_unit_chars)
     SymbolDetector("root", run_threshold=symbol_run_threshold)
@@ -403,6 +413,7 @@ def normalize(
             fold=fold,
             locale=locale,
             profile=profile,
+            case_variant_lookup=case_variant_lookup,
             offsets=offsets,
             max_input_chars=max_input_chars,
             max_unit_chars=max_unit_chars,

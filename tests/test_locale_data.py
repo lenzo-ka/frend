@@ -26,6 +26,7 @@ _MEASURED = (
     "grouped_id_priors",
     "number_priors",
     "range_priors",
+    "spellout_dictionary",
     "spelled_token_priors",
     "spoken_priors",
     "telephone_priors",
@@ -252,7 +253,9 @@ def test_every_table_names_locale_and_corpus():
     in) and the corpus it was counted from; type_priors counts the corpus README's 90
     training shards (00-89)."""
     tables = {
-        path.stem: path for path in sorted(_DATA.rglob("*_priors.json")) if "root" not in path.parts
+        path.stem: path
+        for path in sorted(_DATA.rglob("*.json"))
+        if "root" not in path.parts and path.stem in _MEASURED
     }
     assert set(tables) == set(_MEASURED)
     for name, path in tables.items():
@@ -307,6 +310,106 @@ def test_shipped_spelled_token_priors_have_attested_exceptions():
     assert document["tokens"]["by"]["counts"] == {"say": 4_335_164, "spell": 0}
     assert document["tokens"]["fMRI"]["counts"] == {"say": 0, "spell": 678}
     assert document["provenance"]["acronym_cases"]["NASA"]["say"] == 19_509
+
+
+def test_shipped_spellout_dictionary_is_compact_private_and_source_labeled():
+    path = _DATA / "en" / "spellout_dictionary.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    assert set(document) == {"casefold", "provenance", "tokens"}
+    assert path.stat().st_size < 2_000_000
+    rows = {row[0]: row[1:] for row in document["tokens"]}
+    aliases = dict(document["casefold"])
+    assert "NASA" not in rows
+    assert rows["FBI"][0] == "spell"
+    assert "zijn" not in rows
+    assert "échec" not in rows
+    assert rows["IT"][0] == "spell"
+    assert rows["OR"][0] == "spell"
+    assert "it" not in aliases
+    assert "or" not in aliases
+    assert all(
+        isinstance(surface, str)
+        and decision in {"say", "spell"}
+        and isinstance(say_count, int)
+        and isinstance(spell_count, int)
+        for surface, decision, say_count, spell_count in document["tokens"]
+    )
+    from frend.letters import is_spelled_token, spelled_token_rule, split_acronym_surface
+
+    assert all(
+        decision != spelled_token_rule(surface)
+        for surface, decision, *_counts in document["tokens"]
+    )
+    assert all(
+        split_acronym_surface(surface) is not None or is_spelled_token(surface) for surface in rows
+    )
+    assert all(target in rows and key == target.casefold() for key, target in aliases.items())
+    provenance = document["provenance"]
+    assert set(provenance) == {
+        "columns",
+        "corpus",
+        "license",
+        "locale",
+        "privacy",
+        "selection",
+        "source",
+        "training_shards",
+    }
+    assert set(provenance["selection"]) == {
+        "development_shards",
+        "minimum_purity",
+        "minimum_support",
+        "objective",
+        "ordinary_word_filter",
+        "ordinary_word_spell_rows_dropped",
+        "rule",
+    }
+
+    def string_values(value, path=()):
+        if isinstance(value, str):
+            yield path, value
+        elif isinstance(value, dict):
+            for key, child in value.items():
+                yield from string_values(child, (*path, key))
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                yield from string_values(child, (*path, index))
+
+    fixed = {
+        ("provenance", "corpus"): "google-tn:en_with_types",
+        ("provenance", "license"): "CC-BY-SA-4.0",
+        ("provenance", "locale"): "en",
+        ("provenance", "privacy"): "rows retain only token, decision, and aggregate counts",
+        ("provenance", "selection", "objective"): (
+            "maximize S0 first-choice spell-versus-say labels"
+        ),
+        ("provenance", "selection", "ordinary_word_filter"): (
+            "drop spell decisions with unambiguous exact-headword lexical evidence"
+        ),
+        ("provenance", "selection", "rule"): (
+            "retain only decisions differing from the exact surface AEIOU fallback"
+        ),
+        ("provenance", "source"): "google/tn-en_with_types",
+    }
+    columns = ["surface", "decision", "say_count", "spell_count"]
+    for value_path, value in string_values(document):
+        if value_path in fixed:
+            assert value == fixed[value_path]
+        elif value_path[:2] == ("provenance", "columns"):
+            assert value == columns[value_path[2]]
+        elif value_path[:2] == ("provenance", "training_shards"):
+            assert re.fullmatch(r"output-000[0-8][0-9]-of-00100", value)
+        elif value_path[:3] == ("provenance", "selection", "development_shards"):
+            assert re.fullmatch(r"output-0009[0-4]-of-00100", value)
+        elif value_path[0] == "tokens":
+            assert value == document["tokens"][value_path[1]][value_path[2]]
+            assert value_path[2] in (0, 1)
+        elif value_path[0] == "casefold":
+            assert value == document["casefold"][value_path[1]][value_path[2]]
+            assert value_path[2] in (0, 1)
+        else:
+            pytest.fail(f"unapproved string value at {value_path}: {value!r}")
+    assert data_sources.source_class(provenance["source"]) in data_sources.SHIPPABLE_CLASSES
 
 
 def _evaluator():

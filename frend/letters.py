@@ -12,10 +12,11 @@ predicate (:func:`is_letter_run`), so it counts what this reader matches, except
 Roman numerals the reader leaves to icukit (see :func:`is_letter_run`). A
 run leaves a following period as written; an initial takes its period, as icukit's
 abbreviations do, so "S." ties "South" on span and the corpus decides (a letter, 26,596
-of 26,792 times in shard 0). Which reading comes
-first is measured (``data/en/acronym_priors.json``), by the run's length and vowels; the
-vowels are the locale's (``lexical.json``'s ``letter.vowels``), and a locale without
-them has no vowel key.
+of 26,792 times in shard 0). Which reading comes first is taken from the case-preserved
+spell-out dictionary. Optional unanimous case-variant lookup is caller-selected and
+off by default. A missing bounded-token row uses the vowel rule. The older acronym
+prior remains the fallback for unattested capital runs because the vowel rule regressed
+held-out UNSEEN tokens; it also handles Roman numerals and the explicit Google-TN profile.
 
 A non-uppercase token of two through six letters in the locale's script is also an
 ambiguous spell-or-say candidate. Training counts rank the word and letter-name
@@ -50,6 +51,7 @@ __all__ = [
     "letter_names",
     "numeral_share",
     "spelled",
+    "spellout_dictionary_entry",
     "spelled_token_prior",
     "spelled_token_rule",
 ]
@@ -193,6 +195,51 @@ def spelled_token_prior(token: str, locale: str = "en_US") -> dict[str, object] 
     """The measured exception row for ``token``, or ``None`` when the rule decides."""
     priors = _spelled_token_priors(canonical_locale(locale))
     return None if priors is None else priors.get(_NFC.normalize(token))
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _spellout_dictionary(
+    locale: str,
+) -> tuple[dict[str, tuple[str, int, int]], dict[str, str], str] | None:
+    """Load the compact exact rows and optional case-variant aliases for one locale."""
+    from frend.locale_data import measured_table
+
+    table = measured_table("spellout_dictionary", locale)
+    if table is None:
+        return None
+    rows = {
+        surface: (decision, say_count, spell_count)
+        for surface, decision, say_count, spell_count in table["tokens"]
+    }
+    return rows, dict(table.get("casefold", ())), table["provenance"]["source"]
+
+
+def spellout_dictionary_entry(
+    token: str,
+    locale: str = "en_US",
+    *,
+    case_variant_lookup: bool = False,
+) -> dict[str, object] | None:
+    """Return an exact row, or an opted-in unanimous case-variant row."""
+    table = _spellout_dictionary(canonical_locale(locale))
+    if table is None:
+        return None
+    token = _NFC.normalize(token)
+    exact, aliases, source = table
+    row = exact.get(token)
+    if row is None and case_variant_lookup:
+        target = aliases.get(token.casefold())
+        row = None if target is None else exact.get(target)
+    if row is None:
+        return None
+    decision, say_count, spell_count = row
+    counts = {"say": say_count, "spell": spell_count}
+    return {
+        "counts": counts,
+        "decision": decision,
+        "source": source,
+        "spell_share": spell_count / sum(counts.values()),
+    }
 
 
 def spelled_token_rule(token: str) -> str:

@@ -109,7 +109,9 @@ def _joined(texts_and_passthrough) -> str:
 def _score(
     item: tuple[tuple[str, str, str], str, str, str, str | None, str | None],
 ) -> tuple[str, bool, bool]:
-    (corpus_class, written, spoken), before, after, locale, profile, fold = item
+    (corpus_class, written, spoken), before, after, locale, profile, fold, case_variant_lookup = (
+        item
+    )
     first, any_ = _score_text(
         written,
         _expected(corpus_class, written, spoken),
@@ -118,6 +120,7 @@ def _score(
         locale,
         profile,
         fold,
+        case_variant_lookup,
     )
     return corpus_class, first, any_
 
@@ -140,6 +143,7 @@ def _score_text(
     locale: str = "en_US",
     profile: str | None = None,
     fold: str | None = "typographic",
+    case_variant_lookup: bool = False,
 ) -> tuple[bool, bool]:
     """Whether frend's first reading of ``written``, and whether any reading, says ``target``.
 
@@ -167,6 +171,7 @@ def _score_text(
                 apply_input_fold(after, fold),
             ),
             profile=profile,
+            case_variant_lookup=case_variant_lookup,
         )
     except FileNotFoundError:
         raise
@@ -199,8 +204,19 @@ _range_denominators = google_tn_rows.range_candidate_denominators
 def _score_joined(
     item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None, str | None],
 ) -> tuple[str, str, bool, bool]:
-    (separator, middle, written, target), (before, after), locale, profile, fold = item
-    return (separator, middle, *_score_text(written, target, before, after, locale, profile, fold))
+    (
+        (separator, middle, written, target),
+        (before, after),
+        locale,
+        profile,
+        fold,
+        case_variant_lookup,
+    ) = item
+    return (
+        separator,
+        middle,
+        *_score_text(written, target, before, after, locale, profile, fold, case_variant_lookup),
+    )
 
 
 def _rows(corpus_input: VerifiedInput, limit: int | None = _TEST_LINES):
@@ -238,6 +254,7 @@ def _per_token(
     profile: str | None = None,
     fold: str | None = "typographic",
     strata_seen: frozenset[str] | None = None,
+    case_variant_lookup: bool = False,
     *,
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
@@ -254,6 +271,7 @@ def _per_token(
             locale,
             profile,
             fold,
+            case_variant_lookup,
         )
         for sentence in sentences
         for index, row in enumerate(sentence)
@@ -466,12 +484,13 @@ def _running_text_rows(
     locale: str = "en_US",
     profile: str | None = None,
     fold: str | None = "typographic",
+    case_variant_lookup: bool = False,
 ) -> list[dict]:
     """Each number, separator, number triple of ``sentences`` rejoined as written and
     scored, grouped by separator and the corpus's reading of it."""
     items = list(
         (
-            (row, context, locale, profile, fold)
+            (row, context, locale, profile, fold, case_variant_lookup)
             for row, context in zip(
                 _running_text(sentences, locale),
                 google_tn_rows.running_text_contexts(sentences, locale),
@@ -508,6 +527,7 @@ def _held_out(
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
     record_sink: list[dict] | None = None,
+    case_variant_lookup: bool = False,
 ) -> dict:
     """The held-out shard ``name``: per token over its first ``_TEST_LINES`` lines, cut
     as the paper cuts the test shard, and running text over the whole shard."""
@@ -534,12 +554,13 @@ def _held_out(
                 interval_seed=interval_seed,
                 record_prefix=name,
                 record_sink=record_sink,
+                case_variant_lookup=case_variant_lookup,
             ),
         },
         "running_text": {
             "lines": f"all lines of {name}",
             "triples": len(_running_text(whole, locale)),
-            "rows": _running_text_rows(whole, workers, locale, profile, fold),
+            "rows": _running_text_rows(whole, workers, locale, profile, fold, case_variant_lookup),
         },
     }
     if match is not None:
@@ -560,6 +581,7 @@ def evaluate(
     intervals: int = 0,
     interval_seed: int = DEFAULT_INTERVAL_SEED,
     record_sink: list[dict] | None = None,
+    case_variant_lookup: bool = False,
 ) -> dict:
     profile = _validate_evaluation_profile(profile, locale)
     if skip_report_shard and held_out_shard == _TEST_FILE:
@@ -587,6 +609,7 @@ def evaluate(
             interval_seed=interval_seed,
             record_prefix=_TEST_FILE,
             record_sink=record_sink,
+            case_variant_lookup=case_variant_lookup,
         )
         report = {
             "fold": fold,
@@ -601,7 +624,9 @@ def evaluate(
                 )
             },
             "classes": per_token["classes"],
-            "running_text": _running_text_rows(sentences, workers, locale, profile, fold),
+            "running_text": _running_text_rows(
+                sentences, workers, locale, profile, fold, case_variant_lookup
+            ),
             "note": (
                 "frend reads each token alone, its sentence as context; "
                 "the published models read the sentence whole"
@@ -624,6 +649,7 @@ def evaluate(
             intervals,
             interval_seed,
             record_sink,
+            case_variant_lookup,
         )
     return report
 
@@ -785,6 +811,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
     parser.add_argument("--profile", choices=("google-tn",), default=None)
     parser.add_argument(
+        "--case-variant-lookup",
+        action="store_true",
+        help="opt in to unanimous casefold aliases in the spellout dictionary",
+    )
+    parser.add_argument(
         "--fold",
         choices=("typographic", "none"),
         default="typographic",
@@ -864,6 +895,7 @@ def main(argv: list[str] | None = None) -> int:
         intervals=args.intervals,
         interval_seed=args.interval_seed,
         record_sink=records,
+        case_variant_lookup=args.case_variant_lookup,
     )
     print(_render(report))
     if args.json:
