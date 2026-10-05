@@ -254,6 +254,43 @@ def test_c7_strict_parser_and_envelope_edges(tmp_path):
     assert neutral.kwargs == {}
 
 
+@pytest.mark.parametrize("groups", [None, []])
+def test_c7_non_mapping_groups_are_invalid_values(tmp_path, groups):
+    path = tmp_path / "bad-groups.json"
+    path.write_text(
+        json.dumps(
+            _document(
+                "bad-groups",
+                sections={"frend": {"schema_version": 1, "groups": groups}},
+            )
+        )
+    )
+
+    assert _error([path]).refusals[0].code == "INVALID_VALUE"
+
+
+def test_c7_exponent_overflow_is_invalid_json_inside_opaque_sections(tmp_path):
+    path = tmp_path / "overflow.json"
+    document = json.dumps(
+        _document(
+            "overflow",
+            sections={"icukit": {"nested": {"values": [0.0]}}},
+        )
+    ).replace("0.0", "1e999")
+    path.write_text(document)
+
+    assert _error([path]).refusals[0].code == "INVALID_JSON"
+
+
+@pytest.mark.parametrize("user_first", [False, True])
+def test_c7_shipped_name_collision_precedes_identical_digest_deduplication(tmp_path, user_first):
+    user = tmp_path / "google-tn.json"
+    user.write_bytes((ROOT / "frend/behaviors/google-tn.json").read_bytes())
+    refs = [user, "google-tn"] if user_first else ["google-tn", user]
+
+    assert _error(refs).refusals[0].code == "NAME_COLLISION"
+
+
 def test_c8_linearization_examples_and_canonical_digest(tmp_path):
     chain = [DATA / "chain"]
     graph = [DATA / "graph"]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 from collections.abc import Mapping, Sequence
@@ -122,6 +123,31 @@ class _InvalidJSON(ValueError):
     pass
 
 
+class _FrozenList(Sequence[object]):
+    """An immutable JSON array that retains JSON list equality semantics."""
+
+    __slots__ = ("_items",)
+
+    def __init__(self, items: Sequence[object]) -> None:
+        self._items = tuple(items)
+
+    def __getitem__(self, index: int | slice) -> object:
+        return self._items[index]
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, _FrozenList):
+            return self._items == other._items
+        if isinstance(other, list):
+            return list(self._items) == other
+        return NotImplemented
+
+    def __repr__(self) -> str:
+        return repr(list(self._items))
+
+
 def _refuse(code: str, detail: str) -> BehaviorRefusal:
     return BehaviorRefusal(code, detail)
 
@@ -137,6 +163,13 @@ def _object(pairs: list[tuple[str, object]]) -> dict[str, object]:
 
 def _constant(value: str) -> object:
     raise _InvalidJSON(f"non-finite number {value!r}")
+
+
+def _float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise _InvalidJSON(f"non-finite number {value!r}")
+    return parsed
 
 
 def _bounded(value: object, *, depth: int = 1, budget: list[int] | None = None) -> None:
@@ -173,7 +206,7 @@ def _freeze(value: object) -> object:
     if isinstance(value, Mapping):
         return MappingProxyType({str(key): _freeze(item) for key, item in value.items()})
     if isinstance(value, list):
-        return tuple(_freeze(item) for item in value)
+        return _FrozenList([_freeze(item) for item in value])
     return value
 
 
@@ -195,7 +228,10 @@ def _read(path: Path, shown: str) -> Mapping[str, object]:
         )
     try:
         parsed = json.loads(
-            raw.decode("utf-8"), object_pairs_hook=_object, parse_constant=_constant
+            raw.decode("utf-8"),
+            object_pairs_hook=_object,
+            parse_constant=_constant,
+            parse_float=_float,
         )
         if not isinstance(parsed, Mapping):
             raise _InvalidJSON("top level is not an object")
@@ -331,17 +367,17 @@ def _frend_section(data: Mapping[str, object], shown: str) -> list[BehaviorRefus
         )
     groups = data.get("groups")
     group_orders: dict[str, object] | None = None
-    if groups is not None:
-        group_orders = {}
+    if "groups" in data:
         if not isinstance(groups, Mapping):
             errors.append(
                 _refuse(
                     "INVALID_VALUE",
-                    f"{shown}: sections.frend.groups: groups must be a mapping or None, got "
+                    f"{shown}: sections.frend.groups: groups must be a mapping, got "
                     f"{type(groups).__name__}",
                 )
             )
         else:
+            group_orders = {}
             for group, spec in groups.items():
                 if not isinstance(spec, Mapping) or set(spec) != {"order"}:
                     errors.append(
@@ -523,6 +559,16 @@ def resolve_behavior(
             cycle = " -> ".join((*stack, doc.name))
             raise BehaviorLoadError([_refuse("EXTENDS_CYCLE", cycle)])
         previous = docs.get(doc.name)
+        if doc.name in shipped_behaviors() and not is_shipped:
+            raise BehaviorLoadError(
+                [
+                    _refuse(
+                        "NAME_COLLISION",
+                        f"behavior {doc.name!r} is shipped with frend and also found at {shown}; "
+                        f'give your file another name and use "extends": ["{doc.name}"]',
+                    )
+                ]
+            )
         if previous is not None:
             if previous.digest != doc.digest:
                 raise BehaviorLoadError(
@@ -535,16 +581,6 @@ def resolve_behavior(
                     ]
                 )
             return previous
-        if doc.name in shipped_behaviors() and not is_shipped:
-            raise BehaviorLoadError(
-                [
-                    _refuse(
-                        "NAME_COLLISION",
-                        f"behavior {doc.name!r} is shipped with frend and also found at {shown}; "
-                        f'give your file another name and use "extends": ["{doc.name}"]',
-                    )
-                ]
-            )
         docs[doc.name] = doc
         doc.parents = tuple(load(parent, (*stack, doc.name)) for parent in doc.extends)
         return doc

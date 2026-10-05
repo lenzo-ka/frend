@@ -55,6 +55,10 @@
     "valid/frend.json": {
       "sha256": "sha256:b8ded99c37643ae25581ef92b993719a0653c5412a016b47ee5d843a98c35bbb",
       "expected": "valid"
+    },
+    "valid/icukit.json": {
+      "sha256": "sha256:56610f5392d6a425aa5917f593414c0efaf661ab5f09475d60e0cf356519da15",
+      "expected": "valid"
     }
   }
 }

@@ -147,6 +147,22 @@ def main():
 
     env("valid/empty.json", base("empty"), "valid")
     env(
+        "valid/icukit.json",
+        base(
+            "icukit",
+            sections={
+                "icukit": {
+                    "schema_version": 1,
+                    "pipeline": [
+                        {"type": "sentence", "options": {"base": "en-tn@1"}},
+                        {"type": "words", "options": {"locale": "en"}},
+                    ],
+                }
+            },
+        ),
+        "valid",
+    )
+    env(
         "valid/frend.json",
         base(
             "frend",
