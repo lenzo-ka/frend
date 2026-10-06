@@ -1,0 +1,41 @@
+written	spoken	class	source
+0	zero	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+1	um	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+2	dois	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+10	dez	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+16	dezasseis	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+17	dezassete	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+19	dezanove	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+21	vinte e um	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+100	cem	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+101	cento e um	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+1000	mil	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+1000000	um milhão	cardinal	ICU 78.3 rbnf pt_PT %spellout-numbering
+1.º	primeiro	ordinal	ICU 78.3 rbnf pt_PT %spellout-ordinal-masculine
+2.º	segundo	ordinal	ICU 78.3 rbnf pt_PT %spellout-ordinal-masculine
+3.º	terceiro	ordinal	ICU 78.3 rbnf pt_PT %spellout-ordinal-masculine
+10.º	décimo	ordinal	ICU 78.3 rbnf pt_PT %spellout-ordinal-masculine
+21.º	vigésimo primeiro	ordinal	ICU 78.3 rbnf pt_PT %spellout-ordinal-masculine
+01/01/2000	primeiro de janeiro de dois mil	date	CLDR pt_PT yMMMMd "d 'de' MMMM 'de' y" and ICU month names; Cunha and Cintra, Nova Gramática do Português Contemporâneo, "Numerais"
+02/01/2000	dois de janeiro de dois mil	date	CLDR pt_PT yMMMMd "d 'de' MMMM 'de' y" and ICU month names
+15/03/2024	quinze de março de dois mil e vinte e quatro	date	CLDR pt_PT yMMMMd "d 'de' MMMM 'de' y" and ICU month names
+30/04/2024	trinta de abril de dois mil e vinte e quatro	date	CLDR pt_PT yMMMMd "d 'de' MMMM 'de' y" and ICU month names
+14:00	catorze horas	time	Cunha and Cintra, Nova Gramática do Português Contemporâneo, "Horas"
+14:30	catorze e trinta	time	Cunha and Cintra, Nova Gramática do Português Contemporâneo, "Horas"; Portal da Língua Portuguesa, entry for telling time
+14:30	catorze horas e trinta	time	Cunha and Cintra, Nova Gramática do Português Contemporâneo, "Horas"; Portal da Língua Portuguesa, entry for telling time
+09:15	nove horas e quinze	time	Cunha and Cintra, Nova Gramática do Português Contemporâneo, "Horas"; Portal da Língua Portuguesa, entry for telling time
+23:45	vinte e três horas e quarenta e cinco	time	Cunha and Cintra, Nova Gramática do Português Contemporâneo, "Horas"; Portal da Língua Portuguesa, entry for telling time
+1 €	um euro	money	Banco de Portugal, "O euro", usage of euro
+2 €	dois euros	money	Banco de Portugal, "O euro", usage of euro
+0,01 €	um cêntimo	money	Banco de Portugal, "O euro", usage of cêntimo
+0,02 €	dois cêntimos	money	Banco de Portugal, "O euro", usage of cêntimo
+1,50 €	um euro e cinquenta cêntimos	money	Banco de Portugal, "O euro", usage of euro and cêntimo
+2,25 €	dois euros e vinte e cinco cêntimos	money	Banco de Portugal, "O euro", usage of euro and cêntimo
+0,1	zero vírgula um	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+0,5	zero vírgula cinco	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+1,5	um vírgula cinco	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+3,14	três vírgula um quatro	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+7,25	sete vírgula dois cinco	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+10,01	dez vírgula zero um	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+100,5	cem vírgula cinco	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"
+0,05	zero vírgula zero cinco	decimal	ICU 78.3 rbnf pt_PT x,x rule with "vírgula"

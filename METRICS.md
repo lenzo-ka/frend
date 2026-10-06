@@ -254,3 +254,34 @@ which has not been reported on the same shard-99 cut. An earlier commit, `276ef3
 a same-cut report, and milestone reports are permitted. Scorer differences must be
 stated. Sources: `sota/report.md`,
 `checkpoint-5db817b/results.md`, and `LOG.md` (2026-10-01).
+
+## Eleven-locale fixture coverage
+
+`tools/locale_gate.py` defines the report-only scoring contract for `en_US`,
+`es_MX`, `es_ES`, `fr_FR`, `de_DE`, `pt_BR`, `pt_PT`, `it_IT`, `zh_CN`,
+`ko_KR`, and `ja_JP`. It reads an external NeMo fixture checkout as plain UTF-8
+text and uses the independently sourced `frend/data/pt_PT/checked.tsv` workload;
+NeMo code and data are not vendored.
+
+The coverage report records exact keep-all-graph recall in three views. `strict`
+keeps Latin and Hangul spaces significant after NFC, case folding, removal of
+format characters, and punctuation folding. `presentation` additionally joins
+only scripts whose ICU script property says letters do not break. `insensitive`
+is a diagnostic whitespace-free view and maps `〇` to `零`. Spanish fixture cases
+count once and pass if either regional locale offers the target. Coverage changes
+are measurements, not acceptance thresholds.
+
+Run coverage with:
+
+```console
+.venv/bin/python -B tools/locale_gate.py coverage \
+  --nemo-root ../other/NeMo-text-processing/tests/nemo_text_processing \
+  --out-dir /path/outside/the/repository
+```
+
+The PR0 resource baselines are five fresh-process runs. Per-locale first-hit
+probes each use their own process; the sequential probe, resident-set readings,
+and two workload passes use another fresh process. `soak --unseen` performs three
+passes over 2,000 generated inputs per locale and also repeats in fresh processes.
+The JSON embeds the `GateBudget` ceilings and reports medians plus base min-max
+ranges. `compare` lists every per-case flip and marks every negative flip.
