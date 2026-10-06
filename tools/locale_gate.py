@@ -340,7 +340,7 @@ def offers(graph: ChoiceGraph, wanted: str, *, form: Callable[[str], str]) -> bo
         for current, boundary in tuple(states.get(position, ())):
             for edge, unit in outgoing.get(position, ()):
                 for alternative in unit.alternatives:
-                    if edge.kind == "passthrough":
+                    if edge.kind == "passthrough" and alternative.provenance.startswith("surface:"):
                         value = current
                         next_boundary = boundary
                         for char in unicodedata.normalize("NFC", alternative.text).casefold():
@@ -619,7 +619,233 @@ def coverage(nemo_root: Path, out_dir: Path, checked_path: Path = CHECKED_PT_PT)
     return report
 
 
-def compare(base: dict, head: dict) -> dict:
+def _comparison(
+    metric: str,
+    base: Mapping[str, int],
+    head: Mapping[str, int],
+    limit: float,
+    budget: str,
+) -> dict:
+    head_median = head["median"]
+    outside_base_range = head_median < base["min"] or head_median > base["max"]
+    breached = head_median > limit
+    return {
+        "metric": metric,
+        "base": dict(base),
+        "head": dict(head),
+        "limit": limit,
+        "budget": budget,
+        "breached": breached,
+        "outside_base_range": outside_base_range,
+        "passed": not (breached and outside_base_range),
+    }
+
+
+def _ratio_comparison(
+    metric: str,
+    base: Mapping[str, int],
+    head: Mapping[str, int],
+    ratio: float,
+    *,
+    additive_ns: int = 0,
+) -> dict:
+    limit = max(base["median"] * ratio, base["median"] + additive_ns)
+    budget = f"{ratio:.3f}x"
+    if additive_ns:
+        budget += f" or +{additive_ns / 1_000_000:.3f} ms"
+    return _comparison(metric, base, head, limit, budget)
+
+
+def _delta_comparison(
+    metric: str,
+    base: Mapping[str, int],
+    head: Mapping[str, int],
+    delta_mib: float,
+) -> dict:
+    delta_bytes = delta_mib * 2**20
+    return _comparison(
+        metric,
+        base,
+        head,
+        base["median"] + delta_bytes,
+        f"+{delta_mib:g} MiB",
+    )
+
+
+def _absolute_comparison(
+    metric: str,
+    base: Mapping[str, int],
+    head: Mapping[str, int],
+    limit_mib: float,
+) -> dict:
+    return _comparison(metric, base, head, limit_mib * 2**20, f"{limit_mib:g} MiB")
+
+
+def _runtime_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
+    base_summary = base["summary"]
+    head_summary = head["summary"]
+    checks = []
+    for locale in sorted(set(base_summary["first_hit_ns"]) & set(head_summary["first_hit_ns"])):
+        checks.append(
+            _ratio_comparison(
+                f"runtime.first_hit_ns.{locale}",
+                base_summary["first_hit_ns"][locale],
+                head_summary["first_hit_ns"][locale],
+                budget.first_hit_ratio,
+                additive_ns=100_000,
+            )
+        )
+    checks.append(
+        _ratio_comparison(
+            "runtime.sequential_first_hit_total_ns",
+            base_summary["sequential_first_hit_total_ns"],
+            head_summary["sequential_first_hit_total_ns"],
+            budget.sequential_first_hit_total_ratio,
+        )
+    )
+    checks.append(
+        _delta_comparison(
+            "runtime.rss_loaded_bytes",
+            base_summary["rss_loaded_bytes"],
+            head_summary["rss_loaded_bytes"],
+            budget.rss_loaded_delta_mib,
+        )
+    )
+    for name in ("rss_workload_pass1_bytes", "rss_workload_pass2_bytes"):
+        checks.append(
+            _delta_comparison(
+                f"runtime.{name}",
+                base_summary[name],
+                head_summary[name],
+                budget.rss_workload_delta_mib,
+            )
+        )
+    plateau = {}
+    for side, document in (("base", base), ("head", head)):
+        values = [
+            run["rss_workload_pass2_bytes"] - run["rss_workload_pass1_bytes"]
+            for run in document.get("runs", ())
+        ]
+        if values:
+            plateau[side] = _median_range(values)
+    if set(plateau) == {"base", "head"}:
+        checks.append(
+            _absolute_comparison(
+                "runtime.rss_workload_plateau_bytes",
+                plateau["base"],
+                plateau["head"],
+                budget.rss_plateau_delta_mib,
+            )
+        )
+    for locale in sorted(set(base_summary["locales"]) & set(head_summary["locales"])):
+        for statistic, ratio in (
+            ("warm_p50_ns", budget.warm_p50_ratio),
+            ("warm_p95_ns", budget.warm_p95_ratio),
+        ):
+            checks.append(
+                _ratio_comparison(
+                    f"runtime.locales.{locale}.{statistic}",
+                    base_summary["locales"][locale][statistic],
+                    head_summary["locales"][locale][statistic],
+                    ratio,
+                    additive_ns=100_000,
+                )
+            )
+    return checks
+
+
+def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
+    return [
+        _absolute_comparison(
+            "soak.pass3_minus_pass1_bytes",
+            base["summary"]["pass3_minus_pass1_bytes"],
+            head["summary"]["pass3_minus_pass1_bytes"],
+            budget.rss_unseen_soak_delta_mib,
+        )
+    ]
+
+
+def _fold_key(row: Mapping) -> tuple[str, str, str]:
+    return str(row["id"]), str(row["locale"]), str(row["mode"])
+
+
+def _fold_comparisons(base: dict, head: dict, budget: GateBudget, index: int) -> list[dict]:
+    base_rows = {
+        _fold_key(row): row["timings_ns"]["resolve_k64"]
+        for row in base["rows"]
+        if "resolve_k64" in row.get("timings_ns", {})
+    }
+    head_rows = {
+        _fold_key(row): row["timings_ns"]["resolve_k64"]
+        for row in head["rows"]
+        if "resolve_k64" in row.get("timings_ns", {})
+    }
+    common = sorted(set(base_rows) & set(head_rows))
+    checks = []
+    if common:
+        base_median = statistics.median(base_rows[key] for key in common)
+        head_median = statistics.median(head_rows[key] for key in common)
+        limit = base_median * budget.fold_median_ratio
+        checks.append(
+            {
+                "metric": f"fold[{index}].resolve_k64.median_ns",
+                "base": base_median,
+                "head": head_median,
+                "limit": limit,
+                "budget": f"{budget.fold_median_ratio:.3f}x",
+                "breached": head_median > limit,
+                "passed": head_median <= limit,
+            }
+        )
+    for key in sorted(base_rows):
+        head_value = head_rows.get(key)
+        limit = base_rows[key] * budget.fold_row_ratio
+        checks.append(
+            {
+                "metric": f"fold[{index}].resolve_k64.row",
+                "row": {"id": key[0], "locale": key[1], "mode": key[2]},
+                "base": base_rows[key],
+                "head": head_value,
+                "limit": limit,
+                "budget": f"{budget.fold_row_ratio:.3f}x",
+                "breached": head_value is None or head_value > limit,
+                "passed": head_value is not None and head_value <= limit,
+            }
+        )
+    return checks
+
+
+def _max_alternative_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
+    checks = []
+    for locale in sorted(set(base.get("locales", {})) & set(head.get("locales", {}))):
+        base_value = base["locales"][locale]["total"]["max_alternatives"]
+        head_value = head["locales"][locale]["total"]["max_alternatives"]
+        limit = base_value + budget.max_alternatives_per_edge_delta
+        checks.append(
+            {
+                "metric": f"coverage.locales.{locale}.max_alternatives",
+                "base": base_value,
+                "head": head_value,
+                "limit": limit,
+                "budget": f"+{budget.max_alternatives_per_edge_delta}",
+                "breached": head_value > limit,
+                "passed": head_value <= limit,
+            }
+        )
+    return checks
+
+
+def compare(
+    base: dict,
+    head: dict,
+    *,
+    base_runtime: dict | None = None,
+    head_runtime: dict | None = None,
+    base_soak: dict | None = None,
+    head_soak: dict | None = None,
+    base_folds: Sequence[dict] = (),
+    head_folds: Sequence[dict] = (),
+) -> dict:
     base_rows = {row["id"]: row for row in base.get("cases", ())}
     head_rows = {row["id"]: row for row in head.get("cases", ())}
     fields = ("strict", "presentation", "insensitive", "first_strict", "first_presentation")
@@ -642,12 +868,25 @@ def compare(base: dict, head: dict) -> dict:
                     ),
                 }
             )
+    budget = GateBudget()
+    resource_checks = _max_alternative_comparisons(base, head, budget)
+    if base_runtime is not None and head_runtime is not None:
+        resource_checks.extend(_runtime_comparisons(base_runtime, head_runtime, budget))
+    if base_soak is not None and head_soak is not None:
+        resource_checks.extend(_soak_comparisons(base_soak, head_soak, budget))
+    for index, (base_fold, head_fold) in enumerate(zip(base_folds, head_folds, strict=True), 1):
+        resource_checks.extend(_fold_comparisons(base_fold, head_fold, budget, index))
     return {
-        "schema": 1,
+        "schema": 2,
         "base_only": sorted(set(base_rows) - set(head_rows)),
         "head_only": sorted(set(head_rows) - set(base_rows)),
         "flips": flips,
         "negative_flips": [row for row in flips if row["negative"]],
+        "resources": {
+            "budget": asdict(budget),
+            "checks": resource_checks,
+            "failures": [check for check in resource_checks if not check["passed"]],
+        },
     }
 
 
@@ -825,8 +1064,9 @@ def runtime(nemo_root: Path, out_dir: Path, checked_path: Path, repeat: int) -> 
     return report
 
 
-def _unseen_inputs(locale: str, count: int = 2000) -> list[str]:
-    seed = sum(ord(char) for char in locale) * 10_000_000
+def _unseen_inputs(locale: str, pass_index: int, count: int = 2000) -> list[str]:
+    locale_index = GATE_LOCALES.index(locale)
+    seed = (locale_index + 1) * 1_000_000_000_000 + pass_index * 100_000_000
     return [str(seed + index * 7919) for index in range(count)]
 
 
@@ -835,9 +1075,9 @@ def _soak_child() -> dict:
     for locale in GATE_LOCALES:
         normalize("123", locale=locale)
     rss_passes = []
-    for _pass in range(3):
+    for pass_index in range(3):
         for locale in GATE_LOCALES:
-            for text in _unseen_inputs(locale):
+            for text in _unseen_inputs(locale, pass_index):
                 normalize(text, locale=locale)
         gc.collect()
         rss_passes.append(rss_bytes())
@@ -952,6 +1192,12 @@ def _parser() -> argparse.ArgumentParser:
     compare_parser = subparsers.add_parser("compare")
     compare_parser.add_argument("--base", type=Path, required=True)
     compare_parser.add_argument("--head", type=Path, required=True)
+    compare_parser.add_argument("--base-runtime", type=Path)
+    compare_parser.add_argument("--head-runtime", type=Path)
+    compare_parser.add_argument("--base-soak", type=Path)
+    compare_parser.add_argument("--head-soak", type=Path)
+    compare_parser.add_argument("--base-fold", type=Path, action="append", default=[])
+    compare_parser.add_argument("--head-fold", type=Path, action="append", default=[])
     compare_parser.add_argument("--out", type=Path)
     grep_parser = subparsers.add_parser("fixture-grep")
     grep_parser.add_argument("--nemo-root", type=Path, required=True)
@@ -974,15 +1220,37 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.command == "soak":
         soak(args.out_dir, args.repeat, args.unseen)
     elif args.command == "compare":
+        for label, left, right in (
+            ("runtime", args.base_runtime, args.head_runtime),
+            ("soak", args.base_soak, args.head_soak),
+        ):
+            if (left is None) != (right is None):
+                raise SystemExit(f"compare requires both --base-{label} and --head-{label}")
+        if len(args.base_fold) != len(args.head_fold):
+            raise SystemExit(
+                "compare requires the same number of --base-fold and --head-fold files"
+            )
+
+        def read_optional(path: Path | None) -> dict | None:
+            return json.loads(path.read_text(encoding="utf-8")) if path is not None else None
+
         payload = compare(
             json.loads(args.base.read_text(encoding="utf-8")),
             json.loads(args.head.read_text(encoding="utf-8")),
+            base_runtime=read_optional(args.base_runtime),
+            head_runtime=read_optional(args.head_runtime),
+            base_soak=read_optional(args.base_soak),
+            head_soak=read_optional(args.head_soak),
+            base_folds=[read_optional(path) for path in args.base_fold],
+            head_folds=[read_optional(path) for path in args.head_fold],
         )
         text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
         if args.out:
             args.out.write_text(text, encoding="utf-8")
         else:
             print(text, end="")
+        if payload["resources"]["failures"]:
+            return 1
     elif args.command == "fixture-grep":
         payload = {
             value: [str(path) for path in paths]

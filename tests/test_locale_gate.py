@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import csv
+import functools
 import importlib.util
+import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -58,7 +60,7 @@ def test_audio_groups_score_any_admissible_form(tmp_path):
 
 def test_es_fixtures_load_under_both_es_locales(tmp_path):
     root = _fixture(tmp_path, "es", "test_cases_cardinal.txt", "1~uno\n")
-    cases = gate.load_cases(root, "es", ("es_MX", "es_ES"))
+    cases = gate.load_cases(root, "es", gate.LOCALES["es"])
     assert [case.locale for case in cases] == ["es_MX", "es_ES"]
 
 
@@ -148,10 +150,151 @@ def test_offers_dp_matches_bruteforce_on_tiny_graph():
         )
 
 
+def test_offers_spaces_spoken_alternative_on_passthrough_edge():
+    edges = (
+        SimpleNamespace(start=0, end=1, kind="reading"),
+        SimpleNamespace(start=1, end=2, kind="passthrough"),
+        SimpleNamespace(start=2, end=3, kind="reading"),
+    )
+    units = (
+        SimpleNamespace(alternatives=(SpokenAlternative("five", "test:reading"),)),
+        SimpleNamespace(
+            alternatives=(
+                SpokenAlternative("-", "surface:passthrough"),
+                SpokenAlternative("to", "lexical:en_US"),
+            )
+        ),
+        SimpleNamespace(alternatives=(SpokenAlternative("ten", "test:reading"),)),
+    )
+    graph = SimpleNamespace(lattice=SimpleNamespace(edges=edges, text_length=3), units=units)
+    assert gate.offers(graph, "five to ten", form=gate.strict_form)
+    assert not gate.offers(graph, "five toten", form=gate.strict_form)
+
+
 def test_runtime_refuses_tracemalloc(monkeypatch):
     monkeypatch.setitem(sys.modules, "tracemalloc", SimpleNamespace())
     with pytest.raises(RuntimeError, match="tracemalloc"):
-        gate._refuse_tracemalloc()
+        gate.runtime(Path("unused"), Path("unused"), Path("unused"), 1)
+    with pytest.raises(RuntimeError, match="tracemalloc"):
+        gate._soak_child()
+
+
+def test_unseen_soak_inputs_are_disjoint_across_passes():
+    passes = [set(gate._unseen_inputs("en_US", pass_index, 20)) for pass_index in range(3)]
+    assert all(left.isdisjoint(right) for left in passes for right in passes if left is not right)
+
+
+def test_unseen_soak_exposes_unbounded_input_keyed_cache(monkeypatch):
+    retained_bytes = 0
+
+    @functools.cache
+    def broken_normalize(text, *, locale):
+        nonlocal retained_bytes
+        retained_bytes += 1024
+        return bytearray(1024), text, locale
+
+    monkeypatch.setattr(gate, "GATE_LOCALES", ("en_US",))
+    monkeypatch.setattr(gate, "normalize", broken_normalize)
+    monkeypatch.setattr(gate, "rss_bytes", lambda: retained_bytes)
+    result = gate._soak_child()
+    assert result["pass3_minus_pass1_bytes"] > gate.GateBudget().rss_unseen_soak_delta_mib * 2**20
+
+
+def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
+    mib = 2**20
+
+    def measurement(median, minimum=None, maximum=None):
+        return {
+            "median": median,
+            "min": median if minimum is None else minimum,
+            "max": median if maximum is None else maximum,
+        }
+
+    runtime_base = {
+        "summary": {
+            "first_hit_ns": {"en_US": measurement(1_000_000)},
+            "sequential_first_hit_total_ns": measurement(1_000_000),
+            "rss_loaded_bytes": measurement(100 * mib, 99 * mib, base_max_rss_mib * mib),
+            "rss_workload_pass1_bytes": measurement(120 * mib),
+            "rss_workload_pass2_bytes": measurement(121 * mib),
+            "locales": {
+                "en_US": {
+                    "warm_p50_ns": measurement(1_000_000),
+                    "warm_p95_ns": measurement(2_000_000),
+                }
+            },
+        },
+        "runs": [{"rss_workload_pass1_bytes": 120 * mib, "rss_workload_pass2_bytes": 121 * mib}],
+    }
+    runtime_head = json.loads(json.dumps(runtime_base))
+    runtime_head["summary"]["rss_loaded_bytes"] = measurement(head_rss_mib * mib)
+    soak = {"summary": {"pass3_minus_pass1_bytes": measurement(mib)}}
+    fold = {
+        "rows": [
+            {
+                "id": "short-en_US-001",
+                "locale": "en_US",
+                "mode": "plain",
+                "timings_ns": {"resolve_k64": 1_000_000},
+            }
+        ]
+    }
+    return runtime_base, runtime_head, soak, fold
+
+
+@pytest.mark.parametrize(
+    ("head_rss_mib", "base_max_rss_mib", "expected_status"),
+    ((109, 108, 1), (109, 110, 0)),
+)
+def test_resource_gate_fails_breach_but_passes_within_noise(
+    tmp_path, head_rss_mib, base_max_rss_mib, expected_status
+):
+    runtime_base, runtime_head, soak, fold = _resource_documents(head_rss_mib, base_max_rss_mib)
+    documents = {
+        "base.json": {"cases": []},
+        "head.json": {"cases": []},
+        "base-runtime.json": runtime_base,
+        "head-runtime.json": runtime_head,
+        "base-soak.json": soak,
+        "head-soak.json": soak,
+        "base-fold.json": fold,
+        "head-fold.json": fold,
+    }
+    for name, document in documents.items():
+        (tmp_path / name).write_text(json.dumps(document), encoding="utf-8")
+    output = tmp_path / "compare.json"
+    status = gate.main(
+        [
+            "compare",
+            "--base",
+            str(tmp_path / "base.json"),
+            "--head",
+            str(tmp_path / "head.json"),
+            "--base-runtime",
+            str(tmp_path / "base-runtime.json"),
+            "--head-runtime",
+            str(tmp_path / "head-runtime.json"),
+            "--base-soak",
+            str(tmp_path / "base-soak.json"),
+            "--head-soak",
+            str(tmp_path / "head-soak.json"),
+            "--base-fold",
+            str(tmp_path / "base-fold.json"),
+            "--head-fold",
+            str(tmp_path / "head-fold.json"),
+            "--out",
+            str(output),
+        ]
+    )
+    assert status == expected_status
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    failures = payload["resources"]["failures"]
+    assert bool(failures) is bool(expected_status)
+    assert next(
+        check
+        for check in payload["resources"]["checks"]
+        if check["metric"] == "runtime.rss_loaded_bytes"
+    )["outside_base_range"] is bool(expected_status)
 
 
 def test_fixture_grep_finds_substrings(tmp_path):
