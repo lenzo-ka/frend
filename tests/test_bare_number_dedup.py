@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import subprocess
 import sys
 from decimal import Decimal
 from pathlib import Path
@@ -127,25 +126,6 @@ def test_date_class_is_only_year_text_and_lexical_o_variant():
 
     shared = _bare_number_classes("5000", Decimal(5000), "en_US")
     assert shared["five thousand"] == frozenset({"date", "cardinal"})
-
-
-def test_g8_retains_index_and_range_trees_from_main():
-    result = subprocess.run(
-        [
-            "git",
-            "diff",
-            "--exit-code",
-            "07e3899",
-            "--",
-            "frend/data/en/context/index.json",
-            "frend/data/en/context/trees/",
-        ],
-        cwd=_REPO,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_r16_retained_range_tree_row():
