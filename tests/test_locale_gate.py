@@ -309,7 +309,7 @@ def test_no_unbounded_cache_is_keyed_on_input():
 
 
 def test_checked_set_rows_all_carry_a_source_locator():
-    path = REPO / "frend/data/pt_PT/checked.tsv"
+    path = REPO / "tests/data/locales/pt_PT_checked.tsv"
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle, delimiter="\t"))
     assert all(row["source"].strip() for row in rows)

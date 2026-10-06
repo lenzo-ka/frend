@@ -260,7 +260,7 @@ stated. Sources: `sota/report.md`,
 `tools/locale_gate.py` defines the report-only scoring contract for `en_US`,
 `es_MX`, `es_ES`, `fr_FR`, `de_DE`, `pt_BR`, `pt_PT`, `it_IT`, `zh_CN`,
 `ko_KR`, and `ja_JP`. It reads an external NeMo fixture checkout as plain UTF-8
-text and uses the independently sourced `frend/data/pt_PT/checked.tsv` workload;
+text and uses the independently sourced `tests/data/locales/pt_PT_checked.tsv` workload;
 NeMo code and data are not vendored.
 
 The coverage report records exact keep-all-graph recall in three views. `strict`

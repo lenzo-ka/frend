@@ -36,7 +36,7 @@ from frend.lattice import ChoiceGraph
 from frend.normalize import _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
-CHECKED_PT_PT = REPO / "frend" / "data" / "pt_PT" / "checked.tsv"
+CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
 EXCLUSIONS_PATH = Path(__file__).with_name("nemo_exclusions.tsv")
 CONVENTIONS_PATH = Path(__file__).with_name("locale_conventions.json")
 
