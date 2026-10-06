@@ -43,6 +43,7 @@ from frend.letters import LettersDetector
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
+from frend.spacing import unit_gap
 from frend.symbols import (
     DEFAULT_SYMBOL_RUN_THRESHOLD,
     SymbolDetector,
@@ -218,6 +219,20 @@ def _unit_text(unit: VerbalizedUnit) -> str:
     return f" {unit.best.text} "
 
 
+def _joined_unit_texts(units: tuple[VerbalizedUnit, ...]) -> list[str]:
+    """Render units while closing only ICU-declared unspaced boundaries."""
+    parts: list[str] = []
+    previous: VerbalizedUnit | None = None
+    for unit in units:
+        part = _unit_text(unit)
+        if previous is not None and not unit_gap(previous.best.text, unit.best.text):
+            parts[-1] = parts[-1].rstrip(" ")
+            part = part.lstrip(" ")
+        parts.append(part)
+        previous = unit
+    return parts
+
+
 def _sentence(
     text: str,
     *,
@@ -264,14 +279,15 @@ def _sentence(
         groups=groups,
     )
     rendered: list[tuple[str, ReadingEdge, VerbalizedUnit]] | None = [] if offsets else None
-    parts = []
-    for edge_id, unit in zip(
-        verbalized.best_path.edge_ids,
-        verbalized.best_path.units,
+    edge_ids = verbalized.best_path.edge_ids
+    units = verbalized.best_path.units
+    parts = _joined_unit_texts(units)
+    for edge_id, unit, part in zip(
+        edge_ids,
+        units,
+        parts,
         strict=True,
     ):
-        part = _unit_text(unit)
-        parts.append(part)
         if rendered is not None:
             assert edges is not None
             rendered.append((part, edges[edge_id], unit))

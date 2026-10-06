@@ -34,6 +34,7 @@ from icukit.detectors import detect
 from frend import apply_input_fold, compose_choices, normalize, resolve_choices
 from frend.lattice import ChoiceGraph
 from frend.normalize import _reading_detectors
+from frend.spacing import unit_gap
 
 REPO = Path(__file__).resolve().parents[1]
 CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
@@ -321,7 +322,7 @@ def _append_piece(current: str, piece: str, boundary: bool, form: Callable[[str]
         return current
     if not current or not boundary:
         return current + piece
-    if form is presentation_form and _unspaced(current[-1]) and _unspaced(piece[0]):
+    if not unit_gap(current, piece):
         return current + piece
     if form is insensitive_form:
         return current + piece

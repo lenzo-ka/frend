@@ -94,6 +94,7 @@ from frend.ranges import (
     range_sub_key,
     written_sub_key,
 )
+from frend.spacing import strip_soft_hyphens
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import (
     ScriptRunValue,
@@ -482,7 +483,10 @@ def _number_leaf(value: Decimal, kind: str, locale: str) -> tuple[SpokenAlternat
     formatter = _spellout_formatter(locale)
     return _ranked(
         [
-            SpokenAlternative(_format_exact(formatter, value, ruleset), f"icu-rbnf:{ruleset}")
+            SpokenAlternative(
+                strip_soft_hyphens(_format_exact(formatter, value, ruleset)),
+                f"icu-rbnf:{ruleset}",
+            )
             for ruleset in _applicable_rule_sets(kind, locale)
         ]
     )
@@ -3194,6 +3198,12 @@ def _verbalize_edge(
     group_settings = dict(validate_groups(groups) or ())
 
     def _finish(alternatives: Sequence[SpokenAlternative]) -> tuple[SpokenAlternative, ...]:
+        alternatives = tuple(
+            alternative
+            if alternative.provenance.startswith("surface:")
+            else dataclasses.replace(alternative, text=strip_soft_hyphens(alternative.text))
+            for alternative in alternatives
+        )
         setting = group_settings.get(CHAR_DETAIL)
         if setting is None:
             return tuple(alternatives)
