@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "es_MX": [
+    {
+      "id": "es-ES-decimal-comma",
+      "pattern": "\\d,\\d",
+      "why": "NeMo Spanish uses Spain conventions; the ICU 78.3 es_MX decimal symbol is '.'."
+    },
+    {
+      "id": "es-ES-dot-grouping",
+      "pattern": "\\d\\.\\d{3}(?!\\d)",
+      "why": "NeMo Spanish uses Spain conventions; the ICU 78.3 es_MX grouping symbol is ','."
+    },
+    {
+      "id": "es-dollar-is-USD",
+      "pattern": "\\$",
+      "why": "NeMo Spanish uses US dollars; the ICU 78.3 default currency for es_MX is MXN."
+    }
+  ]
+}

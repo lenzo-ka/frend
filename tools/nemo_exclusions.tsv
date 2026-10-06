@@ -1,0 +1,24 @@
+locale	case_id	target	reason	adjudicated_by
+de_DE	test_cases_fraction.txt:1	null nulltel	undefined zero-over-zero fixture is not a reading	adjudication-r4
+de_DE	test_cases_normalize_with_audio.txt:1	123	raw-digit audio form is not a spoken-reading requirement	adjudication-r4
+de_DE	test_cases_normalize_with_audio.txt:2	101	raw-digit audio form is not a spoken-reading requirement	adjudication-r4
+de_DE	test_cases_normalize_with_audio.txt:3	1001	raw-digit audio form is not a spoken-reading requirement	adjudication-r4
+de_DE	test_cases_normalize_with_audio.txt:4	1101	raw-digit audio form is not a spoken-reading requirement	adjudication-r4
+de_DE	test_cases_normalize_with_audio.txt:5	1000000	raw-digit audio form is not a spoken-reading requirement	adjudication-r4
+de_DE	test_cases_normalize_with_audio.txt:16	4567	raw-digit audio form is not a spoken-reading requirement	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:11	500.501	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:11	500.501	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:12	500.001.º	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:12	500.001.º	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:13	500.001.ª	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:13	500.001.ª	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:14	11.ª	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:14	11.ª	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:15	11.º	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:15	11.º	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:16	12.º	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:16	12.º	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:17	200,0101	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:17	200,0101	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_MX	test_cases_normalize_with_audio.txt:18	1.000.200,21	surface-preserving corpus artifact is not a reading	adjudication-r4
+es_ES	test_cases_normalize_with_audio.txt:18	1.000.200,21	surface-preserving corpus artifact is not a reading	adjudication-r4
