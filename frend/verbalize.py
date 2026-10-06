@@ -1801,20 +1801,54 @@ def _bare_number_ranked(
     table = load_number_priors(locale)
     assert table is not None
 
-    def choice(item: SpokenAlternative) -> str:
-        if "numbering-year" in item.provenance:
-            return "date"
-        if item.provenance.startswith("icu-rbnf:%spellout-cardinal"):
-            return "digit"
-        return "cardinal"
+    classes = _bare_number_classes(written, Decimal(written), locale)
 
     weighted = []
     for item in alternatives:
-        prior = table.lookup(written, choice(item))
+        item_classes = classes.get(item.text, frozenset())
+        choice = None
+        if "date" in item_classes:
+            choice = "date"
+            date_prior = table.lookup(written, choice)
+            if date_prior is not None and date_prior.share == 0 and "cardinal" in item_classes:
+                choice = "cardinal"
+        elif "cardinal" in item_classes:
+            choice = "cardinal"
+        elif "digit" in item_classes:
+            choice = "digit"
+        prior = None if choice is None else table.lookup(written, choice)
         weighted.append(
             item if prior is None else SpokenAlternative(item.text, item.provenance, prior.share)
         )
     return _ranked(weighted)
+
+
+def _bare_number_classes(written: str, value: Decimal, locale: str) -> dict[str, frozenset[str]]:
+    """Map each bare-number text to its DATE, CARDINAL, and DIGIT classes.
+
+    DATE is deliberately only the year rule's own text and its lexical ``o`` form;
+    ``_year_leaf`` also contains cardinal rule-set texts, which are CARDINAL alone
+    unless their text is independently produced by the year rule.
+    """
+    by_text: dict[str, set[str]] = {}
+
+    def add(items: Sequence[SpokenAlternative], class_: str) -> None:
+        for item in items:
+            by_text.setdefault(item.text, set()).add(class_)
+
+    year_source = "icu-rbnf:%spellout-numbering-year"
+    year_o_source = f"{year_source}+{lexical_source(locale)}"
+    add(
+        tuple(
+            item
+            for item in _year_leaf(value, locale)
+            if item.provenance == year_source or item.provenance == year_o_source
+        ),
+        "date",
+    )
+    add(_number_leaf(value, "cardinal", locale), "cardinal")
+    add(_spoken_digits(DigitsValue(written), locale), "digit")
+    return {text: frozenset(classes) for text, classes in by_text.items()}
 
 
 def _spoken_number(
