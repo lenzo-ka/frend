@@ -9,7 +9,7 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
 _SELF = Path(__file__).relative_to(_REPO).as_posix()
-_LOCAL = re.compile(r"/Users/|/home/|/mnt/|[A-Za-z]:\\\\|~/dev|/Volumes/|kalman|\bk02\b")
+_LOCAL = re.compile(r"/Users/|/home/|/mnt/|\b[A-Za-z]:\\[A-Za-z]|~/dev|/Volumes/|kalman|\bk02\b")
 
 
 def _tracked_text() -> list[tuple[str, str]]:
