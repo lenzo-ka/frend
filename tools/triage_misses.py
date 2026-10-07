@@ -908,7 +908,12 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--per-sentence-out must be outside the repository")
     profile = _validate_evaluation_profile(args.profile, LOCALE)
 
-    corpus_dir = (args.corpus_dir or store_root(SOURCE_ID)).resolve(strict=True)
+    if args.corpus_dir is None:
+        try:
+            args.corpus_dir = store_root(SOURCE_ID)
+        except ValueError as exc:
+            parser.error(str(exc))
+    corpus_dir = args.corpus_dir.resolve(strict=True)
     verified = verified_inputs(
         SOURCE_ID,
         [corpus_dir / name for name in SHARDS],

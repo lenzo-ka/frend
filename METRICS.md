@@ -3,7 +3,7 @@
 This file defines frend's English text-normalization measurements. Percentages are
 accuracies; `pp` means percentage points. Results are not comparable unless the data
 cut, scorer, profile, and commit all match. Paths beginning with `lanes/` are relative
-to `~/dev/lenzo/agents/untracked/frend/lanes/`.
+to the external experiment-lane workspace.
 
 ## Data and split
 
@@ -227,19 +227,19 @@ outputs. The important harness-to-figure mapping is:
 
 | Figure | Command | Durable output |
 |---|---|---|
-| S0 score, strata, triage, absolute CIs | `tools/triage_misses.py --strata VOCAB --intervals 1000 --interval-seed 20261002 --per-sentence-out PATH` | `/Volumes/k02/processed/frend/google/tn-en_with_types/{strata,intervals}/` |
+| S0 score, strata, triage, absolute CIs | `tools/triage_misses.py --strata VOCAB --intervals 1000 --interval-seed 20261002 --per-sentence-out PATH` | `$FREND_PROCESSED/frend/google/tn-en_with_types/{strata,intervals}/` |
 | Shard-95 score and CIs | `tools/evaluate_google_tn.py --held-out-shard output-00095-of-00100 --skip-report-shard --strata VOCAB --intervals 1000 --per-sentence-out PATH` | evaluator JSON/receipt paths; checkpoint copies are in `checkpoint-5db817b/` |
 | Paired deltas and gates | `tools/compare_runs.py --a ARM_A --b ARM_B --intervals 1000 --interval-seed 20261002 --json OUT` | `.../intervals/s0-comparison.json` and lane `*-paired.json` files |
 | Bootstrap implementation | imported `tools/bootstrap_intervals.py` | method, seed, defined draws, and floor are embedded in each report |
-| Warm/cold profile latency | `tools/benchmark_latency.py --profile google-tn --corpus-dir CORPUS --output OUT` | `/Volumes/k02/processed/frend/latency-profile-ab-fugu-fixes-a50ee50.json` |
-| Fold scaling | `tools/benchmark_fold.py --data-dir /Volumes/k02/processed/frend/fold-bench --output OUT --mode-timeout 2` | `/Volumes/k02/processed/frend/fold-bench/results/frend-lt-87a5e6a.json` |
-| Streaming lookahead | `tools/measure_lookahead.py --corpus-dir CORPUS --output OUT` | `/Volumes/k02/processed/frend/streaming/s0-lookahead*.json` and `s0-static-*-fugu.json` |
-| Length evidence | `lanes/length-bounds/measure-isolated-buckets.py` | `/Volumes/k02/processed/frend/length-bounds/` |
+| Warm/cold profile latency | `tools/benchmark_latency.py --profile google-tn --corpus-dir CORPUS --output OUT` | `$FREND_PROCESSED/frend/latency-profile-ab-fugu-fixes-a50ee50.json` |
+| Fold scaling | `tools/benchmark_fold.py --data-dir "$FREND_PROCESSED/frend/fold-bench" --output OUT --mode-timeout 2` | `$FREND_PROCESSED/frend/fold-bench/results/frend-lt-87a5e6a.json` |
+| Streaming lookahead | `tools/measure_lookahead.py --corpus-dir CORPUS --output OUT` | `$FREND_PROCESSED/frend/streaming/s0-lookahead*.json` and `s0-static-*-fugu.json` |
+| Length evidence | `lanes/length-bounds/measure-isolated-buckets.py` | `$FREND_PROCESSED/frend/length-bounds/` |
 
 For `google-tn`, set `FREND_GOOGLE_TN_PROFILE_PATH` to the external acronym table and
 `FREND_GOOGLE_TN_BRITISHISMS_PATH` to the external spelling table. The current tables
 and their build/check receipts live under
-`/Volumes/k02/processed/frend/google/tn-en_with_types/{ranker,ukus}/`. Exact invocations
+`$FREND_PROCESSED/frend/google/tn-en_with_types/{ranker,ukus}/`. Exact invocations
 and artifact names are recorded in the named lane `results.md` files.
 
 ## Published comparison target

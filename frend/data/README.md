@@ -332,12 +332,13 @@ Only counts are stored; the shared attribution applies.
 The context trees (`frend.context`): which of a span's readings the running text
 around it favors. `tools/build_context_trees.py` trains one cartlet decision tree per
 reading-choice problem (a problem is the sorted labels of a span's readings) from P7's
-stored example set on kalman (`frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc`:
+stored example set in the corpus store
+(`$FREND_PROCESSED/frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc`:
 training shards 05, 15, ..., 85, disjoint from the shards the other tables count; every
 token where frend offers two or more readings, labeled by the reading the corpus says,
 at most 30,000 per problem, seed 20260928, and every lone "-" with its spoken form).
 Seeded and reproducible: `--check` rebuilds from the stored set (each file checked
-against its receipt) and compares byte for byte, so it needs the kalman mount.
+against its receipt) and compares byte for byte, so it needs the corpus store.
 
 - `index.json`: provenance (the corpus, the set's fingerprint, receipt and file
   hashes, the training parameters), the 200 frequent words (the words most often
@@ -347,7 +348,7 @@ against its receipt) and compares byte for byte, so it needs the kalman mount.
   which the set never writes between numbers, reads the hyphen's), and every tree's
   file, hash, size and label counts.
 - Only the `range:range` problem from the ranges plan's P6 is trained, using its own stored set
-  (`frend/google/tn-en_with_types/p6-range-examples/36373cb1123ca6d5`, derived by
+  (`$FREND_PROCESSED/frend/google/tn-en_with_types/p6-range-examples/36373cb1123ca6d5`, derived by
   `--derive-range-examples` from the same shards 05, ..., 85: every range triple the
   rules can emit on, less the punctuation dashes, with its sentence either side), with
   the range family of features added; `index.json`'s `range_examples` names that set,

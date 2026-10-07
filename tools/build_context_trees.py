@@ -1,8 +1,9 @@
 # ruff: noqa: E501 -- exact measured problem keys are deliberately written in full.
 """Train frend's context trees (``frend/data/en/context/``) from the stored example set.
 
-The example set is P7 stage A's (``frend/google/tn-en_with_types/p7-examples/<fingerprint>``
-on kalman, ``/Volumes/k02/processed/``): every token of training shards 05, 15, ..., 85
+The example set is P7 stage A's
+(``$FREND_PROCESSED/frend/google/tn-en_with_types/p7-examples/<fingerprint>``):
+every token of training shards 05, 15, ..., 85
 where frend offers two or more readings, with the reading the corpus says, sampled per
 problem (at most 30,000, seed 20260928), and every standalone "-" and "–" with the
 corpus's spoken form. Each record keeps its token and up to three corpus tokens either
@@ -96,9 +97,7 @@ def _range_denominators(sentences):
 
 
 LOCALE = "en_US"
-DEFAULT_EXAMPLES = Path(
-    "/Volumes/k02/processed/frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc"
-)
+EXAMPLES_RELATIVE = Path("frend/google/tn-en_with_types/p7-examples/d1fcf656b9eb98dc")
 DEFAULT_OUT = _REPO / "frend" / "data" / "en" / "context"
 SEED = 20260928
 CAP = 60_000
@@ -114,8 +113,8 @@ _ANY_CAP = 64  # combinations tried per record, as the evaluator tries per token
 _MOUNT_TIMEOUT = "900"
 _FILES = ("receipt.json", "examples.jsonl.gz", "dash_examples.jsonl.gz")
 _RANGE_FILES = ("receipt.json", "range_examples.jsonl.gz")
-RANGE_EXAMPLES_ROOT = Path("/Volumes/k02/processed/frend/google/tn-en_with_types/p6-range-examples")
-DEFAULT_RANGE_EXAMPLES = RANGE_EXAMPLES_ROOT / "36373cb1123ca6d5"
+RANGE_EXAMPLES_RELATIVE = Path("frend/google/tn-en_with_types/p6-range-examples")
+DEFAULT_RANGE_FINGERPRINT = "36373cb1123ca6d5"
 RANGE_DERIVATION = "frend/google/tn-en_with_types/p6-range-examples"
 # P7's example shards, the range set's too.
 RANGE_SHARDS = tuple(f"output-{index:05d}-of-00100" for index in range(5, 90, 10))
@@ -1189,7 +1188,7 @@ def _main_set_files(index: dict) -> set[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--examples", type=Path, default=DEFAULT_EXAMPLES)
+    parser.add_argument("--examples", type=Path)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--cache", type=Path, default=None, help="local copy of the set")
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) // 2))
@@ -1197,7 +1196,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--range-examples",
         type=Path,
-        default=DEFAULT_RANGE_EXAMPLES,
         help="the range example set (its directory)",
     )
     parser.add_argument(
@@ -1207,6 +1205,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--range-cache", type=Path, default=None, help="local copy of it")
     parser.add_argument(
+        "--range-examples-root",
+        type=Path,
+        help="destination root for --derive-range-examples",
+    )
+    parser.add_argument(
         "--derive-range-examples",
         type=Path,
         default=None,
@@ -1214,12 +1217,27 @@ def main(argv: list[str] | None = None) -> int:
         help="derive the range example set from CORPUS_DIR (written under its fingerprint)",
     )
     args = parser.parse_args(argv)
+    processed_root = os.environ.get("FREND_PROCESSED")
     if args.derive_range_examples is not None:
-        receipt = derive_range_examples(args.derive_range_examples, RANGE_EXAMPLES_ROOT)
+        if args.range_examples_root is None:
+            if processed_root is None:
+                parser.error("--range-examples-root is required when FREND_PROCESSED is not set")
+            args.range_examples_root = Path(processed_root) / RANGE_EXAMPLES_RELATIVE
+        receipt = derive_range_examples(args.derive_range_examples, args.range_examples_root)
         print(json.dumps({k: receipt[k] for k in ("fingerprint", "counts")}))
         return 0
+    if args.examples is None:
+        if processed_root is None:
+            parser.error("--examples is required when FREND_PROCESSED is not set")
+        args.examples = Path(processed_root) / EXAMPLES_RELATIVE
     if args.no_range_examples:
         args.range_examples = None
+    elif args.range_examples is None:
+        if processed_root is None:
+            parser.error("--range-examples is required when FREND_PROCESSED is not set")
+        args.range_examples = (
+            Path(processed_root) / RANGE_EXAMPLES_RELATIVE / DEFAULT_RANGE_FINGERPRINT
+        )
     with tempfile.TemporaryDirectory() as scratch:
         cache = args.cache or Path(scratch) / "examples"
         range_cache = args.range_cache or Path(scratch) / "range-examples"

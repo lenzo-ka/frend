@@ -18,7 +18,6 @@ import time
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-_DEFAULT_DATA = Path("/Volumes/k02/processed/frend/fold-bench")
 _MODES = (
     "lattice_build",
     "resolve_k1",
@@ -377,7 +376,7 @@ def _run(args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=_DEFAULT_DATA)
+    parser.add_argument("--data-dir", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--mode-timeout", type=float, default=2.0)
@@ -390,6 +389,11 @@ def main(argv: list[str] | None = None) -> int:
         return _worker(args)
     if args.output is None:
         parser.error("--output is required")
+    if args.data_dir is None:
+        processed_root = os.environ.get("FREND_PROCESSED")
+        if processed_root is None:
+            parser.error("--data-dir is required when FREND_PROCESSED is not set")
+        args.data_dir = Path(processed_root) / "frend" / "fold-bench"
     args.output = _external_output(args.output)
     return _run(args)
 

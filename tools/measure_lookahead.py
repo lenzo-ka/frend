@@ -43,7 +43,6 @@ from triage_misses import (  # noqa: E402
     _reservoir_sample,
 )
 
-OUTPUT_ROOT = Path("/Volumes/k02/processed/frend/streaming")
 DEFAULT_SENTENCE_TOKEN_CAP = 64
 DEFAULT_CHUNK_SIZE = 32
 _PROFILE_NAMES = ("default", "google-tn")
@@ -94,9 +93,7 @@ def commit_lookahead(signatures: list[object]) -> int:
     return last_mismatch + 1
 
 
-def validate_output_path(
-    path: Path, *, output_root: Path = OUTPUT_ROOT, repo: Path = _REPO
-) -> Path:
+def validate_output_path(path: Path, *, output_root: Path, repo: Path = _REPO) -> Path:
     """Resolve an output path and require the dedicated external streaming tree."""
     resolved = path.expanduser().resolve()
     root = output_root.expanduser().resolve()
@@ -735,6 +732,7 @@ def _chunks(values: list, size: int):
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--corpus-dir", type=Path, default=None)
+    parser.add_argument("--processed-root", type=Path, default=None)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--sentences-per-shard", type=int, default=MAX_SENTENCES_PER_SHARD)
@@ -764,8 +762,15 @@ def main(argv: list[str] | None = None) -> int:
         help="profile(s) to measure; default is both default and google-tn",
     )
     args = parser.parse_args(argv)
+    if args.processed_root is None:
+        processed_root = os.environ.get("FREND_PROCESSED")
+        if processed_root is None:
+            parser.error("--processed-root is required when FREND_PROCESSED is not set")
+        args.processed_root = Path(processed_root)
     try:
-        output = validate_output_path(args.output)
+        output = validate_output_path(
+            args.output, output_root=args.processed_root / "frend" / "streaming"
+        )
     except ValueError as exc:
         parser.error(str(exc))
     if not 1 <= args.sentences_per_shard <= MAX_SENTENCES_PER_SHARD:
@@ -783,7 +788,12 @@ def main(argv: list[str] | None = None) -> int:
     for profile in profiles:
         _validate_evaluation_profile(_profile_value(profile), LOCALE)
 
-    corpus_dir = (args.corpus_dir or store_root(SOURCE_ID)).resolve(strict=True)
+    if args.corpus_dir is None:
+        try:
+            args.corpus_dir = store_root(SOURCE_ID)
+        except ValueError as exc:
+            parser.error(str(exc))
+    corpus_dir = args.corpus_dir.resolve(strict=True)
     verified = verified_inputs(
         SOURCE_ID,
         [corpus_dir / name for name in SHARDS],

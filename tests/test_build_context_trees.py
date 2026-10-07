@@ -178,6 +178,36 @@ def test_q16_apportionment_preserves_the_winning_probability():
     assert next(iter(distribution)) == "best"
 
 
+def test_cli_example_sets_fall_back_to_processed_root(tmp_path, monkeypatch):
+    builder = _builder()
+    seen = {}
+    processed = tmp_path / "processed"
+    monkeypatch.setenv("FREND_PROCESSED", str(processed))
+
+    def fake_build(examples, _out, **kwargs):
+        seen["examples"] = examples
+        seen["range_examples"] = kwargs["range_examples"]
+        return {"provenance": {"problems": {}}}
+
+    monkeypatch.setattr(builder, "build", fake_build)
+    assert builder.main(["--out", str(tmp_path / "out"), "--workers", "1"]) == 0
+    assert seen == {
+        "examples": processed / builder.EXAMPLES_RELATIVE,
+        "range_examples": (
+            processed / builder.RANGE_EXAMPLES_RELATIVE / builder.DEFAULT_RANGE_FINGERPRINT
+        ),
+    }
+
+
+def test_cli_example_set_without_option_or_environment_refuses(tmp_path, monkeypatch, capsys):
+    builder = _builder()
+    monkeypatch.delenv("FREND_PROCESSED", raising=False)
+
+    with pytest.raises(SystemExit):
+        builder.main(["--out", str(tmp_path / "out"), "--no-range-examples"])
+    assert "--examples is required when FREND_PROCESSED is not set" in capsys.readouterr().err
+
+
 def test_a_set_that_is_not_its_receipts_is_refused(tmp_path):
     builder = _builder()
     examples = _example_set(tmp_path / "set")

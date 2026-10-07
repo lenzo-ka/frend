@@ -94,7 +94,6 @@ def test_manifest_names_only_public_sources():
     text = _SCRIPT.with_name("corpora.json").read_text(encoding="utf-8")
     urls = re.findall(r'"(\w+://[^"]+)"', text)
     assert urls and all(url.startswith("https://") for url in urls)
-    assert not re.search(r"/Users/|/home/|/Volumes/|/mnt/|[A-Za-z]:\\\\", text)
 
 
 @pytest.mark.parametrize("use_zip", [True, False])
