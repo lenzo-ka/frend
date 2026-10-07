@@ -43,6 +43,7 @@ from frend.letters import LettersDetector
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
+from frend.spacing import unit_gap
 from frend.symbols import (
     DEFAULT_SYMBOL_RUN_THRESHOLD,
     SymbolDetector,
@@ -53,7 +54,7 @@ from frend.symbols import (
 from frend.symbols import (
     _overlaps as _symbol_overlaps,
 )
-from frend.verbalize import VerbalizedUnit, _verbalize_lattice_validated
+from frend.verbalize import SpokenAlternative, VerbalizedUnit, _verbalize_lattice_validated
 from frend.written_forms import WrittenFormsDetector
 
 __all__ = ["NormalizedText", "NormalizedUnit", "normalize"]
@@ -212,10 +213,34 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     return ranges
 
 
-def _unit_text(unit: VerbalizedUnit) -> str:
-    if unit.best.provenance == "surface:passthrough":
-        return unit.best.text
-    return f" {unit.best.text} "
+def _alternative_text(alternative: SpokenAlternative) -> str:
+    if alternative.provenance == "surface:passthrough":
+        return alternative.text
+    return f" {alternative.text} "
+
+
+def _append_alternative_part(
+    parts: list[str],
+    previous_text: str | None,
+    alternative: SpokenAlternative,
+) -> None:
+    """Append one unit exactly as the public renderer does."""
+    part = _alternative_text(alternative)
+    if previous_text is not None and not unit_gap(previous_text, alternative.text):
+        parts[-1] = parts[-1].rstrip(" ")
+        part = part.lstrip(" ")
+    parts.append(part)
+
+
+def _joined_unit_texts(units: tuple[VerbalizedUnit, ...]) -> list[str]:
+    """Render units while closing only ICU-declared unspaced boundaries."""
+    parts: list[str] = []
+    previous_text: str | None = None
+    for unit in units:
+        alternative = unit.best
+        _append_alternative_part(parts, previous_text, alternative)
+        previous_text = alternative.text
+    return parts
 
 
 def _sentence(
@@ -264,14 +289,15 @@ def _sentence(
         groups=groups,
     )
     rendered: list[tuple[str, ReadingEdge, VerbalizedUnit]] | None = [] if offsets else None
-    parts = []
-    for edge_id, unit in zip(
-        verbalized.best_path.edge_ids,
-        verbalized.best_path.units,
+    edge_ids = verbalized.best_path.edge_ids
+    units = verbalized.best_path.units
+    parts = _joined_unit_texts(units)
+    for edge_id, unit, part in zip(
+        edge_ids,
+        units,
+        parts,
         strict=True,
     ):
-        part = _unit_text(unit)
-        parts.append(part)
         if rendered is not None:
             assert edges is not None
             rendered.append((part, edges[edge_id], unit))

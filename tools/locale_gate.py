@@ -33,7 +33,7 @@ from icukit.detectors import detect
 
 from frend import apply_input_fold, compose_choices, normalize, resolve_choices
 from frend.lattice import ChoiceGraph
-from frend.normalize import _reading_detectors
+from frend.normalize import _append_alternative_part, _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
 CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
@@ -316,50 +316,35 @@ def admissible_targets(
     return tuple(values)
 
 
-def _append_piece(current: str, piece: str, boundary: bool, form: Callable[[str], str]) -> str:
-    if not piece:
-        return current
-    if not current or not boundary:
-        return current + piece
-    if form is presentation_form and _unspaced(current[-1]) and _unspaced(piece[0]):
-        return current + piece
-    if form is insensitive_form:
-        return current + piece
-    return current + " " + piece
-
-
 def offers(graph: ChoiceGraph, wanted: str, *, form: Callable[[str], str]) -> bool:
     """Return whether an exact complete route offers ``wanted`` under ``form``."""
     target = form(wanted)
     outgoing: dict[int, list[tuple[Any, Any]]] = defaultdict(list)
     for edge, unit in zip(graph.lattice.edges, graph.units, strict=True):
         outgoing[edge.start].append((edge, unit))
-    states: dict[int, set[tuple[str, bool]]] = defaultdict(set)
-    states[0].add(("", True))
+    states: dict[int, dict[tuple[str, str | None, bool | None], str]] = defaultdict(dict)
+    states[0][("", None, None)] = ""
     for position in range(graph.lattice.text_length + 1):
-        for current, boundary in tuple(states.get(position, ())):
+        for (_canonical, previous_text, _previous_surface), rendered in tuple(
+            states.get(position, {}).items()
+        ):
             for edge, unit in outgoing.get(position, ()):
                 for alternative in unit.alternatives:
-                    if edge.kind == "passthrough" and alternative.provenance.startswith("surface:"):
-                        value = current
-                        next_boundary = boundary
-                        for char in unicodedata.normalize("NFC", alternative.text).casefold():
-                            category = unicodedata.category(char)
-                            if category == "Cf" and form is not _strict_keep_cf:
-                                continue
-                            if category.startswith("P") or char.isspace():
-                                next_boundary = True
-                                continue
-                            rendered = "零" if form is insensitive_form and char == "〇" else char
-                            value = _append_piece(value, rendered, next_boundary, form)
-                            next_boundary = False
-                    else:
-                        spoken = form(alternative.text)
-                        value = _append_piece(current, spoken, boundary, form)
-                        next_boundary = True
-                    if target.startswith(value):
-                        states[edge.end].add((value, next_boundary))
-    return any(value == target for value, _boundary in states[graph.lattice.text_length])
+                    parts = [rendered] if previous_text is not None else []
+                    _append_alternative_part(parts, previous_text, alternative)
+                    value = "".join(parts)
+                    canonical = form(value)
+                    if target.startswith(canonical):
+                        key = (
+                            canonical,
+                            alternative.text,
+                            alternative.provenance == "surface:passthrough",
+                        )
+                        states[edge.end].setdefault(key, value)
+    return any(
+        canonical == target
+        for canonical, _previous_text, _previous_surface in states[graph.lattice.text_length]
+    )
 
 
 def _digit_positions(text: str) -> set[int]:

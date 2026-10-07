@@ -11,8 +11,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from icukit.detectors import detect
 
-from frend import SpokenAlternative, normalize
+from frend import SpokenAlternative, compose_choices, normalize, resolve_choices
+from frend.normalize import _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -169,6 +171,26 @@ def test_offers_spaces_spoken_alternative_on_passthrough_edge():
     graph = SimpleNamespace(lattice=SimpleNamespace(edges=edges, text_length=3), units=units)
     assert gate.offers(graph, "five to ten", form=gate.strict_form)
     assert not gate.offers(graph, "five toten", form=gate.strict_form)
+
+
+@pytest.mark.parametrize(
+    ("locale", "written", "other"),
+    [
+        ("zh_CN", "漢 字", "漢字"),
+        ("zh_CN", "漢。字", "漢字"),
+        ("zh_CN", "A漢", "A 漢"),
+        ("zh_CN", "漢1字", "漢 初一 字"),
+        ("ko_KR", "한1글", "한일글"),
+    ],
+)
+def test_offers_matches_renderer_spacing(locale, written, other):
+    detections = detect(written, _reading_detectors(locale))
+    graph = compose_choices(resolve_choices(detections, source_text=written, locale=locale))
+    rendered = normalize(written, locale=locale)
+
+    assert gate.offers(graph, rendered, form=gate.strict_form)
+    assert gate.strict_form(other) != gate.strict_form(rendered)
+    assert not gate.offers(graph, other, form=gate.strict_form)
 
 
 def test_runtime_refuses_tracemalloc(monkeypatch):
