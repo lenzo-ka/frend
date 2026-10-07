@@ -115,3 +115,21 @@ def test_output_inside_repository_refuses():
                 str(repository / "fold-result.json"),
             ]
         )
+
+
+def test_data_dir_falls_back_to_processed_root(tmp_path, monkeypatch):
+    tool = _tool()
+    seen = {}
+    monkeypatch.setenv("FREND_PROCESSED", str(tmp_path / "processed"))
+    monkeypatch.setattr(tool, "_run", lambda args: seen.update(data_dir=args.data_dir) or 0)
+
+    assert tool.main(["--output", str(tmp_path / "result.json")]) == 0
+    assert seen["data_dir"] == tmp_path / "processed" / "frend" / "fold-bench"
+
+
+def test_data_dir_without_option_or_environment_refuses(tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv("FREND_PROCESSED", raising=False)
+
+    with pytest.raises(SystemExit):
+        _tool().main(["--output", str(tmp_path / "result.json")])
+    assert "--data-dir is required when FREND_PROCESSED is not set" in capsys.readouterr().err

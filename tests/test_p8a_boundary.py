@@ -169,6 +169,20 @@ def test_verified_inputs_reject_wrong_identity(tmp_path, monkeypatch):
         corpus_inputs.verified_inputs(source, [link], locale="en_US", pools=("training",))
 
 
+def test_corpus_store_root_uses_environment_or_refuses(tmp_path, monkeypatch):
+    corpus_inputs = _load("corpus_inputs")
+    monkeypatch.setattr(corpus_inputs, "_entry", lambda _source_id: {"dest": "en_with_types"})
+    monkeypatch.setenv("FREND_CORPORA", str(tmp_path / "corpora"))
+    assert (
+        corpus_inputs.store_root("google/tn-en_with_types")
+        == (tmp_path / "corpora" / "google" / "tn-en_with_types" / "en_with_types").resolve()
+    )
+
+    monkeypatch.delenv("FREND_CORPORA")
+    with pytest.raises(ValueError, match="--corpus-dir.*FREND_CORPORA"):
+        corpus_inputs.store_root("google/tn-en_with_types")
+
+
 def test_internal_taint_is_transitive():
     from corpus_inputs import VerifiedInput
     from corpus_receipts import derive_receipt

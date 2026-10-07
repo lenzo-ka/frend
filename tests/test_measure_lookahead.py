@@ -52,6 +52,15 @@ def test_output_must_be_external_and_below_streaming_root(tmp_path: Path):
         validate_output_path(tmp_path / "elsewhere.json", output_root=output_root, repo=repo)
 
 
+def test_processed_root_without_option_or_environment_refuses(tmp_path, monkeypatch, capsys):
+    import measure_lookahead
+
+    monkeypatch.delenv("FREND_PROCESSED", raising=False)
+    with pytest.raises(SystemExit):
+        measure_lookahead.main(["--output", str(tmp_path / "measurement.json")])
+    assert "--processed-root is required when FREND_PROCESSED is not set" in capsys.readouterr().err
+
+
 def test_static_tree_extent_uses_decision_features_not_complete_schema():
     from frend.context import context_model, features
 

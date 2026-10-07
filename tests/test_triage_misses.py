@@ -38,6 +38,14 @@ def _evidence(module, **changes):
     return module.MissEvidence(**fields)
 
 
+def test_corpus_without_option_or_environment_refuses(tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv("FREND_CORPORA", raising=False)
+
+    with pytest.raises(SystemExit):
+        _triage().main(["--output-dir", str(tmp_path / "out")])
+    assert "--corpus-dir is required when FREND_CORPORA is not set" in capsys.readouterr().err
+
+
 def test_classifier_partitions_d_s_r_v_p_o_and_e():
     triage = _triage()
     examples = [_evidence(triage)]

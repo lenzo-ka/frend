@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from collections.abc import Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -13,7 +14,6 @@ from typing import TextIO
 from frend.locale_data import canonical_locale
 
 _CATALOG = Path(__file__).with_name("corpora.json")
-_CORPUS_ROOT = Path("/Volumes/k02/corpora/unpacked")
 _LICENSE_CLASSES = {
     "google/tn-en_with_types": "shippable-share-alike",
     "google/tn-ru_with_types": "shippable-share-alike",
@@ -79,9 +79,12 @@ def _entry(source_id: str) -> dict:
 
 
 def store_root(source_id: str) -> Path:
+    corpus_root = os.environ.get("FREND_CORPORA")
+    if corpus_root is None:
+        raise ValueError("--corpus-dir is required when FREND_CORPORA is not set")
     entry = _entry(source_id)
     provider, store_name = source_id.split("/", 1)
-    return (_CORPUS_ROOT / provider / store_name / str(entry["dest"])).resolve()
+    return (Path(corpus_root) / provider / store_name / str(entry["dest"])).resolve()
 
 
 def _sha256(path: Path) -> str:

@@ -96,3 +96,50 @@ def test_output_inside_repository_refuses():
                 str(_REPO / "latency-result.json"),
             ]
         )
+
+
+def test_profile_corpus_falls_back_to_corpora_root(tmp_path, monkeypatch):
+    tool = _tool()
+    seen = {}
+    monkeypatch.setenv("FREND_CORPORA", str(tmp_path / "corpora"))
+    monkeypatch.setattr(
+        tool, "_profile_run", lambda args: seen.update(corpus_dir=args.corpus_dir) or 0
+    )
+
+    assert (
+        tool.main(
+            [
+                "--profile",
+                "google-tn",
+                "--subject-root",
+                str(_REPO),
+                "--expected-head",
+                "irrelevant",
+                "--output",
+                str(tmp_path / "result.json"),
+            ]
+        )
+        == 0
+    )
+    assert seen["corpus_dir"] == (
+        tmp_path / "corpora" / "google" / "tn-en_with_types" / "en_with_types"
+    )
+
+
+def test_profile_corpus_without_option_or_environment_refuses(tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv("FREND_CORPORA", raising=False)
+
+    with pytest.raises(SystemExit):
+        _tool().main(
+            [
+                "--profile",
+                "google-tn",
+                "--subject-root",
+                str(_REPO),
+                "--expected-head",
+                "irrelevant",
+                "--output",
+                str(tmp_path / "result.json"),
+            ]
+        )
+    assert "--corpus-dir is required when FREND_CORPORA is not set" in capsys.readouterr().err

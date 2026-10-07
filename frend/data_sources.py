@@ -68,8 +68,7 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
             "class": "shippable",
             "vendored": ("root/tlds-alpha-by-domain.txt",),
         },
-        # kal's own break-exception lists (~/dev/lenzo/break_exceptions), curated by
-        # tools/import_break_exceptions.py.
+        # kal's own break-exception lists, curated by tools/import_break_exceptions.py.
         "lenzo/break_exceptions": {
             "license": "LicenseRef-kal-own-work",
             "class": "shippable",
@@ -77,9 +76,9 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
         },
         # Forms frend writes by hand, each with its reason (<locale>/lexical.json).
         "frend/curated": {"license": "BSD-2-Clause", "class": "shippable", "vendored": ()},
-        # Festival's hand-curated word lists (github.com/festvox/festival, checked out at
-        # ~/dev/festvox): free to use and distribute with its notice kept and changes
-        # marked, which en/context/festival_classes.json carries.
+        # Festival's hand-curated word lists (github.com/festvox/festival): free to use
+        # and distribute with its notice kept and changes marked, which
+        # en/context/festival_classes.json carries.
         "festvox/festival": {
             "license": "LicenseRef-Festival",
             "class": "shippable",

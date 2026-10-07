@@ -194,7 +194,6 @@ def _worker(args: argparse.Namespace) -> int:
     return 0
 
 
-_GOOGLE_TN_CORPUS = Path("/Volumes/k02/corpora/unpacked/google/tn-en_with_types/en_with_types")
 _PROFILE_BUCKETS = (("le5", 1, 5), ("6-10", 6, 10), ("11-20", 11, 20), ("21-40", 21, 40))
 
 
@@ -592,7 +591,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--compare", nargs=2, type=Path)
     parser.add_argument("--profile", choices=("google-tn",), default=None)
-    parser.add_argument("--corpus-dir", type=Path, default=_GOOGLE_TN_CORPUS)
+    parser.add_argument("--corpus-dir", type=Path)
     parser.add_argument("--profile-sample-per-bucket", type=int, default=100)
     parser.add_argument("--profile-cold-runs", type=int, default=20)
     parser.add_argument("--profile-warmup", type=int, default=10)
@@ -629,6 +628,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.subject_root is None or args.expected_head is None:
         parser.error("--subject-root and --expected-head are required")
     if args.profile is not None:
+        if args.corpus_dir is None:
+            corpora_root = os.environ.get("FREND_CORPORA")
+            if corpora_root is None:
+                parser.error("--corpus-dir is required when FREND_CORPORA is not set")
+            args.corpus_dir = Path(corpora_root) / "google" / "tn-en_with_types" / "en_with_types"
         return _profile_run(args)
     return _run(args)
 
