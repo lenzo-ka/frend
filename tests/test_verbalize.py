@@ -286,6 +286,21 @@ def test_curated_supplement_is_additive_and_weighted_form_ranks_first():
     assert any(item.provenance.startswith("icu-rbnf:") for item in alternatives[1:])
 
 
+def test_curated_supplement_preserves_soft_hyphen():
+    lattice = resolve_lattice(
+        [_det("2026", "number:decimal", NumberValue("2026"))], source_text="2026"
+    )
+    curated = SpokenAlternative("co\u00adoperate", "curated:test-guide")
+
+    alternatives = (
+        verbalize_lattice(lattice, supplements={("number:decimal", "2026"): (curated,)})
+        .best_path.units[0]
+        .alternatives
+    )
+
+    assert curated in alternatives
+
+
 def test_measured_sources_order_by_share(monkeypatch):
     from frend.spoken_priors import SourceMeasurement
 

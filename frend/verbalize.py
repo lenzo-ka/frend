@@ -3199,9 +3199,9 @@ def _verbalize_edge(
 
     def _finish(alternatives: Sequence[SpokenAlternative]) -> tuple[SpokenAlternative, ...]:
         alternatives = tuple(
-            alternative
-            if alternative.provenance.startswith("surface:")
-            else dataclasses.replace(alternative, text=strip_soft_hyphens(alternative.text))
+            dataclasses.replace(alternative, text=strip_soft_hyphens(alternative.text))
+            if alternative.provenance.startswith("icu-")
+            else alternative
             for alternative in alternatives
         )
         setting = group_settings.get(CHAR_DETAIL)
