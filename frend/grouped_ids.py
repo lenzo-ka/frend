@@ -80,8 +80,11 @@ def is_valid_isbn(text: str) -> bool:
     """
     groups = _groups(text)
     if groups is None:
-        return False
-    compact = "".join(groups)
+        if not text.isascii():
+            return False
+        compact = text.upper()
+    else:
+        compact = "".join(groups)
     if len(compact) == 10 and compact[:9].isdigit() and compact[-1] in "0123456789X":
         values = [int(char) for char in compact[:9]] + [
             10 if compact[-1] == "X" else int(compact[-1])
