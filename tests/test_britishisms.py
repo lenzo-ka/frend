@@ -153,6 +153,55 @@ def _profile(path: Path, *, pairs, rules=None, support=1, fold=False, digest="0"
     )
 
 
+@pytest.mark.parametrize(
+    ("pairs", "rules", "original", "duplicate"),
+    [
+        ({}, None, '"profile": "google-tn"', '"profile": "wrong", "profile": "google-tn"'),
+        (
+            {
+                "colour": {
+                    "lower": {
+                        "class": "respelling",
+                        "target": "color",
+                        "converted": 1,
+                        "left": 0,
+                    }
+                }
+            },
+            None,
+            '"target": "color"',
+            '"target": "wrong", "target": "color"',
+        ),
+        (
+            {},
+            {
+                "our-to-or": {
+                    "lower": {
+                        "converted": 3,
+                        "eligible": 4,
+                        "rate": 0.75,
+                        "enabled": True,
+                        "stems": ["col"],
+                    }
+                }
+            },
+            '"enabled": true',
+            '"enabled": false, "enabled": true',
+        ),
+    ],
+    ids=("top-level", "pair-row", "rule-row"),
+)
+def test_profile_rejects_duplicate_json_object_keys(tmp_path, pairs, rules, original, duplicate):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(britishisms, pairs=pairs, rules=rules)
+    text = britishisms.read_text(encoding="utf-8")
+    assert text.count(original) == 1
+    britishisms.write_text(text.replace(original, duplicate), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate JSON object key"):
+        _load_britishisms_for(*_file_key(britishisms))
+
+
 @pytest.mark.parametrize("target", ["", " ", "-"])
 def test_profile_rejects_non_alphabetic_rewrite_targets(tmp_path, target):
     britishisms = tmp_path / "britishisms.json"
