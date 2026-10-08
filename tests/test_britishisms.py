@@ -320,6 +320,47 @@ def test_profile_rule_generalizes_only_for_a_learned_stem(tmp_path, monkeypatch)
     assert _best("flour", "google-tn") == "flour"
 
 
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        ("converted", None),
+        ("converted", "3"),
+        ("converted", True),
+        ("eligible", None),
+        ("eligible", 4.0),
+        ("eligible", False),
+        ("rate", None),
+        ("rate", "0.75"),
+        ("rate", 1),
+        ("stems", None),
+        ("stems", "col"),
+    ],
+)
+def test_profile_rejects_enabled_rule_with_missing_or_mistyped_audit_field(
+    tmp_path, field, bad_value
+):
+    britishisms = tmp_path / "britishisms.json"
+    row = {
+        "converted": 3,
+        "eligible": 4,
+        "rate": 0.75,
+        "enabled": True,
+        "stems": ["col"],
+    }
+    if bad_value is None:
+        del row[field]
+    else:
+        row[field] = bad_value
+    _profile(
+        britishisms,
+        pairs={},
+        rules={"our-to-or": {"lower": row}},
+    )
+
+    with pytest.raises(ValueError, match="bad rule"):
+        _load_britishisms_for(*_file_key(britishisms))
+
+
 def test_profile_tables_must_name_identical_source_shard_digests(tmp_path, monkeypatch):
     acronym = tmp_path / "acronym_surfaces.json"
     britishisms = tmp_path / "britishisms.json"
