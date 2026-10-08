@@ -463,9 +463,9 @@ def test_profile_rule_generalizes_only_for_a_learned_stem(tmp_path, monkeypatch)
         rules={
             "our-to-or": {
                 "lower": {
-                    "converted": 3,
+                    "converted": 4,
                     "eligible": 4,
-                    "rate": 0.75,
+                    "rate": 1.0,
                     "enabled": True,
                     "stems": ["col"],
                 }
@@ -517,6 +517,109 @@ def test_profile_rejects_enabled_rule_with_missing_or_mistyped_audit_field(
 
     with pytest.raises(ValueError, match="bad rule"):
         _load_britishisms_for(*_file_key(britishisms))
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        {
+            "converted": 5,
+            "eligible": 4,
+            "rate": 1.25,
+            "enabled": True,
+            "stems": ["col"],
+        },
+        {
+            "converted": 3,
+            "eligible": 4,
+            "rate": float("nan"),
+            "enabled": True,
+            "stems": ["col"],
+        },
+        {
+            "converted": 3,
+            "eligible": 4,
+            "rate": 1.25,
+            "enabled": True,
+            "stems": ["col"],
+        },
+        {
+            "converted": 3,
+            "eligible": 4,
+            "rate": 0.5,
+            "enabled": True,
+            "stems": ["col"],
+        },
+        {
+            "converted": 1,
+            "eligible": 100,
+            "rate": 0.01,
+            "enabled": True,
+            "stems": ["col"],
+        },
+        {
+            "converted": 4,
+            "eligible": 4,
+            "rate": 1.0,
+            "enabled": False,
+            "stems": ["col"],
+        },
+    ],
+    ids=(
+        "converted-exceeds-eligible",
+        "non-finite-rate",
+        "out-of-range-rate",
+        "count-inconsistent-rate",
+        "enabled-below-threshold",
+        "disabled-at-threshold",
+    ),
+)
+def test_profile_rejects_rule_with_inconsistent_audit_metadata(tmp_path, row):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(
+        britishisms,
+        pairs={},
+        rules={"our-to-or": {"lower": row}},
+    )
+
+    with pytest.raises(ValueError, match="bad rule audit fields"):
+        _load_britishisms_for(*_file_key(britishisms))
+
+
+def test_profile_accepts_builder_output_with_positive_rule_evidence(tmp_path):
+    from corpus_inputs import VerifiedInput
+
+    for index in range(90):
+        (tmp_path / f"output-{index:05d}-of-00100").write_text("", encoding="utf-8")
+    (tmp_path / "output-00000-of-00100").write_text(
+        "PLAIN\tcolour\tcolor\n" * 3 + "PLAIN\tcolour\t<self>\n" + "PLAIN\tflour\t<self>\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "output-00080-of-00100").write_text(
+        "PLAIN\tcolour\tcolor\nPLAIN\tcolours\tcolors\nPLAIN\tflour\t<self>\n",
+        encoding="utf-8",
+    )
+    inputs = [
+        VerifiedInput(
+            "source",
+            path.name,
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+            "license",
+            path,
+        )
+        for path in sorted(tmp_path.glob("output-*-of-00100"))
+    ]
+    document = _builder().build_document(tmp_path, inputs=inputs)
+    row = document["rules"]["our-to-or"]["lower"]
+    assert row["converted"] > 0
+    assert row["eligible"] > 0
+    assert row["enabled"] is True
+    britishisms = tmp_path / "britishisms.json"
+    britishisms.write_text(json.dumps(document), encoding="utf-8")
+
+    table = _load_britishisms_for(*_file_key(britishisms))
+
+    assert table.rules["our-to-or"]["lower"] == frozenset({"col"})
 
 
 def test_profile_tables_must_name_identical_source_shard_digests(tmp_path, monkeypatch):

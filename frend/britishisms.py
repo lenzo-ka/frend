@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -200,18 +201,30 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
         for shape, row in shapes.items():
             if not isinstance(row, dict) or not isinstance(row.get("stems", []), list):
                 raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad rule stems")
-            if row.get("enabled") is True:
-                if (
-                    not isinstance(row.get("converted"), int)
-                    or isinstance(row.get("converted"), bool)
-                    or not isinstance(row.get("eligible"), int)
-                    or isinstance(row.get("eligible"), bool)
-                    or not isinstance(row.get("rate"), float)
-                    or not isinstance(row.get("stems"), list)
-                ):
-                    raise ValueError(
-                        f"invalid Google-TN PLAIN rewrite data at {path}: bad rule audit fields"
-                    )
+            converted = row.get("converted")
+            eligible = row.get("eligible")
+            rate = row.get("rate")
+            is_enabled = row.get("enabled")
+            if (
+                not isinstance(converted, int)
+                or isinstance(converted, bool)
+                or not isinstance(eligible, int)
+                or isinstance(eligible, bool)
+                or not isinstance(rate, float)
+                or not isinstance(is_enabled, bool)
+                or converted < 0
+                or eligible < 0
+                or converted > eligible
+                or not math.isfinite(rate)
+                or not 0 <= rate <= 1
+                or rate != (converted / eligible if eligible else 0.0)
+                or is_enabled
+                != ("respelling" in admitted_classes and eligible > 0 and rate >= threshold)
+            ):
+                raise ValueError(
+                    f"invalid Google-TN PLAIN rewrite data at {path}: bad rule audit fields"
+                )
+            if is_enabled:
                 selected_shapes[shape] = frozenset(row["stems"])
         if selected_shapes:
             enabled[name] = selected_shapes
