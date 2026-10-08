@@ -220,6 +220,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
                 not isinstance(row, dict)
                 or row.get("class") not in admitted_classes
                 or not isinstance(row.get("target"), str)
+                or not row["target"].isalpha()
                 or row["target"] != row["target"].casefold()
                 or not isinstance(row.get("converted"), int)
                 or isinstance(row.get("converted"), bool)

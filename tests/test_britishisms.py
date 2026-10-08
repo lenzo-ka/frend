@@ -9,7 +9,7 @@ import pytest
 from icukit.detectors import detect
 
 from frend import resolve_lattice, verbalize_lattice
-from frend.britishisms import apply_edit_rule
+from frend.britishisms import _file_key, _load_britishisms_for, apply_edit_rule
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
@@ -125,6 +125,48 @@ def _profile(path: Path, *, pairs, rules=None, support=1, fold=False, digest="0"
         ),
         encoding="utf-8",
     )
+
+
+@pytest.mark.parametrize("target", ["", " ", "-"])
+def test_profile_rejects_non_alphabetic_rewrite_targets(tmp_path, target):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(
+        britishisms,
+        pairs={
+            "colour": {
+                "lower": {
+                    "class": "respelling",
+                    "target": target,
+                    "converted": 1,
+                    "left": 0,
+                }
+            }
+        },
+    )
+
+    with pytest.raises(ValueError, match="bad pair row"):
+        _load_britishisms_for(*_file_key(britishisms))
+
+
+def test_profile_accepts_alphabetic_rewrite_target(tmp_path):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(
+        britishisms,
+        pairs={
+            "colour": {
+                "lower": {
+                    "class": "respelling",
+                    "target": "color",
+                    "converted": 1,
+                    "left": 0,
+                }
+            }
+        },
+    )
+
+    table = _load_britishisms_for(*_file_key(britishisms))
+
+    assert table.pairs["colour"]["lower"]["target"] == "color"
 
 
 def _acronym_profile(path: Path, *, digest="0" * 64):
