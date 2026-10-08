@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 import frend
+import frend.behavior as behavior_module
 from frend import BehaviorLoadError, SpokenAlternative
 from frend.behavior import resolve_behavior, shipped_behaviors
 from frend.profiles import validate_groups
@@ -357,6 +358,37 @@ def test_c8_linearization_examples_and_canonical_digest(tmp_path):
     assert one.members[0].digest == two.members[0].digest
     assert one.digest == two.digest == together.digest
     assert _names(together) == ["canonical"]
+
+
+def test_c8_document_limit_stops_loading_at_the_33rd_distinct_document(tmp_path, monkeypatch):
+    parent_names = [f"parent-{index:02d}" for index in range(1, 34)]
+    (tmp_path / "root.json").write_text(
+        json.dumps(_document("root", extends=parent_names)), encoding="utf-8"
+    )
+    for name in parent_names:
+        (tmp_path / f"{name}.json").write_text(json.dumps(_document(name)), encoding="utf-8")
+
+    loaded: list[str] = []
+    original_load_document = behavior_module._load_document
+
+    def recording_load_document(path, shown, shipped):
+        document = original_load_document(path, shown, shipped)
+        loaded.append(document.name)
+        return document
+
+    monkeypatch.setattr(behavior_module, "_load_document", recording_load_document)
+
+    error = _error(["root"], search=[tmp_path])
+    assert error.refusals[0].code == "TOO_MANY_DOCUMENTS"
+    assert loaded == ["root", *parent_names[:32]]
+
+    loaded.clear()
+    (tmp_path / "root.json").write_text(
+        json.dumps(_document("root", extends=parent_names[:31])), encoding="utf-8"
+    )
+    resolved = resolve_behavior(["root"], search=[tmp_path])
+    assert len(resolved.members) == 32
+    assert loaded == ["root", *parent_names[:31]]
 
 
 def test_c9_only_google_tn_ships_and_resolves_exactly():
