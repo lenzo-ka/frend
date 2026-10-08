@@ -192,6 +192,17 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
             if not isinstance(row, dict) or not isinstance(row.get("stems", []), list):
                 raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad rule stems")
             if row.get("enabled") is True:
+                if (
+                    not isinstance(row.get("converted"), int)
+                    or isinstance(row.get("converted"), bool)
+                    or not isinstance(row.get("eligible"), int)
+                    or isinstance(row.get("eligible"), bool)
+                    or not isinstance(row.get("rate"), float)
+                    or not isinstance(row.get("stems"), list)
+                ):
+                    raise ValueError(
+                        f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad rule audit fields"
+                    )
                 selected_shapes[shape] = frozenset(row["stems"])
         if selected_shapes:
             enabled[name] = selected_shapes
