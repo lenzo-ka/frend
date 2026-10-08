@@ -414,6 +414,118 @@ def test_emit_decision():
     assert empty.detect("5-10") == []
 
 
+@pytest.mark.parametrize("bad_count", [True, -1, 1.5])
+def test_range_prior_counts_must_be_nonnegative_integers(bad_count):
+    """Truth values, negative counts and non-integers are not corpus evidence."""
+    from copy import deepcopy
+
+    from frend.ranges import RangePriorTable
+
+    document = {
+        "readings": {"dash": {"range": 1, "single_token": {"other": 1}}},
+        "kinds": {
+            "dash": {
+                "matched": 1,
+                "source_matched": {"cardinal+to+cardinal": 1},
+                "sub_keys": {
+                    "1+1": {
+                        "matched": 1,
+                        "source_matched": {"cardinal+to+cardinal": 1},
+                    }
+                },
+            }
+        },
+    }
+    count_paths = (
+        ("readings", "dash", "range"),
+        ("readings", "dash", "single_token", "other"),
+        ("kinds", "dash", "matched"),
+        ("kinds", "dash", "source_matched", "cardinal+to+cardinal"),
+        ("kinds", "dash", "sub_keys", "1+1", "matched"),
+        (
+            "kinds",
+            "dash",
+            "sub_keys",
+            "1+1",
+            "source_matched",
+            "cardinal+to+cardinal",
+        ),
+    )
+    for path in count_paths:
+        invalid = deepcopy(document)
+        row = invalid
+        for part in path[:-1]:
+            row = row[part]
+        row[path[-1]] = bad_count
+        with pytest.raises(ValueError):
+            RangePriorTable(invalid)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        ("readings", "dash"),
+        ("readings", "dash", "single_token"),
+        ("kinds", "dash"),
+        ("kinds", "dash", "source_matched"),
+        ("kinds", "dash", "sub_keys"),
+        ("kinds", "dash", "sub_keys", "1+1"),
+        ("kinds", "dash", "sub_keys", "1+1", "source_matched"),
+    ],
+)
+def test_range_prior_rows_must_be_mappings(path):
+    from copy import deepcopy
+
+    from frend.ranges import RangePriorTable
+
+    document = {
+        "readings": {"dash": {"range": 1, "single_token": {"other": 1}}},
+        "kinds": {
+            "dash": {
+                "matched": 1,
+                "source_matched": {"cardinal+to+cardinal": 1},
+                "sub_keys": {
+                    "1+1": {
+                        "matched": 1,
+                        "source_matched": {"cardinal+to+cardinal": 1},
+                    }
+                },
+            }
+        },
+    }
+    invalid = deepcopy(document)
+    row = invalid
+    for part in path[:-1]:
+        row = row[part]
+    row[path[-1]] = []
+    with pytest.raises(ValueError):
+        RangePriorTable(invalid)
+
+
+def test_range_prior_sub_keys_must_not_be_null():
+    from frend.ranges import RangePriorTable
+
+    document = {
+        "readings": {},
+        "kinds": {"dash": {"matched": 0, "source_matched": {}, "sub_keys": None}},
+    }
+    with pytest.raises(ValueError, match=r"kinds\.dash\.sub_keys must be a mapping"):
+        RangePriorTable(document)
+
+
+def test_valid_range_prior_counts_preserve_emission_decision():
+    from frend.ranges import RangePriorTable
+
+    table = RangePriorTable(
+        {
+            "readings": {"dash": {"range": 3, "single_token": {"word": 1, "telephone": 2}}},
+            "kinds": {},
+        }
+    )
+    assert table.emission("dash:1+1") == (3, 3)
+    assert table.emits("dash:1+1")
+
+
 def test_minus_reading_survives_in_the_choice_lattice():
     """The one span wins by geometry; the old edges ("5" and "-10") stay in the choice
     lattice, so the minus reading survives for alignment."""

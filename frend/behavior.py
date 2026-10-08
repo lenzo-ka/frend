@@ -570,21 +570,21 @@ def resolve_behavior(
                     ]
                 )
             return previous
+        if len(docs) >= _MAX_DOCUMENTS:
+            raise BehaviorLoadError(
+                [
+                    _refuse(
+                        "TOO_MANY_DOCUMENTS",
+                        f"behavior composition contains {len(docs) + 1} documents; maximum is "
+                        f"{_MAX_DOCUMENTS}",
+                    )
+                ]
+            )
         docs[doc.name] = doc
         doc.parents = tuple(load(parent, (*stack, doc.name)) for parent in doc.extends)
         return doc
 
     roots = tuple(load(ref, ()) for ref in refs)
-    if len(docs) > _MAX_DOCUMENTS:
-        raise BehaviorLoadError(
-            [
-                _refuse(
-                    "TOO_MANY_DOCUMENTS",
-                    f"behavior composition contains {len(docs)} documents; maximum is "
-                    f"{_MAX_DOCUMENTS}",
-                )
-            ]
-        )
     memo: dict[_Document, tuple[_Document, ...]] = {}
 
     def linearize(doc: _Document) -> tuple[_Document, ...]:

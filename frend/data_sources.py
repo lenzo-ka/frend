@@ -142,8 +142,11 @@ def shipping_refusals(
 
     catalog = {**_RECEIPT_INDEX, **dict(receipt_index or {})}
     resolved: set[str] = set()
+    walked_containers: set[int] = set()
 
-    def walk(value: object) -> None:
+    pending = [document]
+    while pending:
+        value = pending.pop()
         if isinstance(value, str):
             folded = value.casefold()
             if _LDC.search(value):
@@ -154,14 +157,19 @@ def shipping_refusals(
                 refusals.append("document carries internal-only ancestry")
             if value in catalog and value not in resolved:
                 resolved.add(value)
-                walk(catalog[value])
+                pending.append(catalog[value])
         elif isinstance(value, Mapping):
-            for key, item in value.items():
-                walk(key)
-                walk(item)
+            identity = id(value)
+            if identity in walked_containers:
+                continue
+            walked_containers.add(identity)
+            for key, item in reversed(list(value.items())):
+                pending.append(item)
+                pending.append(key)
         elif isinstance(value, (list, tuple, set, frozenset)):
-            for item in value:
-                walk(item)
-
-    walk(document)
+            identity = id(value)
+            if identity in walked_containers:
+                continue
+            walked_containers.add(identity)
+            pending.extend(reversed(list(value)))
     return tuple(dict.fromkeys(refusals))

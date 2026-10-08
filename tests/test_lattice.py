@@ -182,6 +182,14 @@ def test_lattice_with_caller_supplied_detections_does_not_claim_a_fold():
     assert lattice.raw_source_text == "5\u00a0km"
 
 
+def test_ranked_lattice_rejects_a_detection_from_a_different_source_surface():
+    with pytest.raises(ValueError, match=r"detection text '5'.*source_text\[0:1\] 'x'"):
+        resolve_lattice([_det("5", 0, 1, "number:cardinal")], source_text="x")
+
+    matching = _det("x", 0, 1, "reading")
+    assert resolve_lattice([matching], source_text="x").best_path.readings == (matching,)
+
+
 def test_ranked_projection_is_capped_and_reports_truncation():
     text = "xxxx"
     detections = [_det(text, 0, 4, "date:Md"), _det(text, 0, 4, "number:fraction")]
@@ -313,6 +321,14 @@ def test_lattice_ambiguity_matches_resolution(detections, expected):
     )
     assert actual == compatible == expected
     assert lattice.ambiguous == (lattice.structural_ambiguous or lattice.semantic_ambiguous)
+
+
+@pytest.mark.parametrize(("start", "end"), [(True, 2), ("0", "1"), (0.9, 1.9)])
+def test_lattice_rejects_non_integer_and_boolean_detection_offsets(start, end):
+    detection = _det("xx", 0, 1, "x")
+    detection.update(start=start, end=end)
+    with pytest.raises(ValueError, match="detection offsets must be integers"):
+        resolve_lattice([detection])
 
 
 def test_resolve_lattice_contract_names_the_choice_carrier():
