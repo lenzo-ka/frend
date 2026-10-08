@@ -108,7 +108,15 @@ def test_choices_record_dropped_detections_rather_than_discarding_them():
     ]
     choices = resolve_choices(detections)
     assert len(choices.dropped) == 3
-    assert [edge.id for edge in _readings(choices)] == ["c3"]
+    assert [(edge.id, edge.start, edge.end) for edge in _readings(choices)] == [("c3", 1, 3)]
+
+
+@pytest.mark.parametrize(("start", "end"), [(True, 2), ("0", "1"), (0.9, 1.9)])
+def test_choices_reject_non_integer_and_boolean_detection_offsets(start, end):
+    detection = _det("xx", 0, 1, "x")
+    detection.update(start=start, end=end)
+    with pytest.raises(ValueError, match="detection offsets must be integers"):
+        resolve_choices([detection])
 
 
 @pytest.mark.parametrize("reading_cap", [0, -1, True, 1.0])

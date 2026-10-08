@@ -109,13 +109,27 @@ Detection = Mapping[str, Any]
 DEFAULT_EPSILON = 1
 
 
+def _detection_span(detection: Detection) -> tuple[int, int]:
+    start = detection["start"]
+    end = detection["end"]
+    if (
+        not isinstance(start, int)
+        or isinstance(start, bool)
+        or not isinstance(end, int)
+        or isinstance(end, bool)
+    ):
+        raise ValueError(f"detection offsets must be integers, got start={start!r} and end={end!r}")
+    return start, end
+
+
 def candidate_weight(detection: Detection) -> Decimal:
     """Return the portable geometric length of ``detection``.
 
     This compatibility helper is not the fold weight. The fold encoding also
     depends on the lattice's furthest span end and is computed in `_candidates`.
     """
-    length = int(detection["end"]) - int(detection["start"])
+    start, end = _detection_span(detection)
+    length = end - start
     return Decimal(length)
 
 
@@ -248,9 +262,10 @@ def _content_key(detection: Detection) -> tuple:
         (getattr(c, "name", None), getattr(c, "start", None), getattr(c, "end", None))
         for c in detection.get("captures", ())
     )
+    start, end = _detection_span(detection)
     return (
-        int(detection["start"]),
-        int(detection["end"]),
+        start,
+        end,
         detection.get("type"),
         repr(detection.get("value")),
         captures,
@@ -318,8 +333,7 @@ def _candidates(detections: Sequence[Detection]) -> tuple[list[Candidate], int]:
     valid: list[tuple[int, int, int, Detection]] = []
     span_end = 0
     for i, det in enumerate(detections):
-        start = int(det["start"])
-        end = int(det["end"])
+        start, end = _detection_span(det)
         if end <= start or start < 0:
             # Precondition: detections are valid spans over nonnegative positions
             # (0 <= start < end), as detector output always is. Zero-length,
