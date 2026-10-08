@@ -23,6 +23,7 @@ from build_spoken_priors import _default_corpus_dir  # noqa: E402
 from google_tn_rows import TRAINING_SHARDS, corpus_label, full_training_set  # noqa: E402
 
 from frend.britishisms import CASE_SHAPES, EDIT_RULES, PAIR_CLASSES, case_shape  # noqa: E402
+from frend.locale_data import canonical_locale  # noqa: E402
 from frend.profiles import GOOGLE_TN, google_tn_britishisms_path  # noqa: E402
 
 _SUPPORTS = (1, 2, 3, 5, 10, 20, 50)
@@ -379,7 +380,17 @@ def _selection(training: Counts, development: Counts):
     return supports, classes, selected, case_folding, candidates
 
 
-def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1) -> dict:
+def _english_locale(locale: str) -> str:
+    canonical = canonical_locale(locale)
+    if canonical.split("_", 1)[0] != "en":
+        raise ValueError(
+            f"Britishism rewrite profile requires an English locale, got {canonical!r}"
+        )
+    return canonical
+
+
+def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1, locale: str = "en") -> dict:
+    locale = _english_locale(locale)
     items = list(inputs) if inputs is not None else _training_files(corpus_dir)
     if inputs is not None:
         _require_training_inputs(items)
@@ -423,7 +434,7 @@ def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1) -> dict:
     return {
         "schema_version": 1,
         "profile": GOOGLE_TN,
-        "locale": "en",
+        "locale": locale,
         "provenance": {
             "attribution": "derived from Sproat & Jaitly (2016) Google TN corpus",
             "corpus": corpus_label(corpus_dir),
@@ -481,6 +492,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--jobs", type=int, default=1)
     args = parser.parse_args(argv)
+    locale = _english_locale(args.locale)
     profile_out = _external_profile_output(args.profile_out or google_tn_britishisms_path())
     corpus_dir = args.corpus_dir or _default_corpus_dir()
     from corpus_inputs import verified_inputs, write_verification_receipt
@@ -488,12 +500,12 @@ def main(argv: list[str] | None = None) -> int:
     verified = verified_inputs(
         args.source_id,
         _training_files(corpus_dir),
-        locale=args.locale,
+        locale=locale,
         pools=tuple(args.pools),
         root=corpus_dir,
     )
-    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
-    rendered = _render(build_document(corpus_dir, inputs=verified, jobs=args.jobs))
+    write_verification_receipt(args.receipt, verified, locale=locale, pools=tuple(args.pools))
+    rendered = _render(build_document(corpus_dir, inputs=verified, jobs=args.jobs, locale=locale))
     if args.check:
         current = profile_out.read_text(encoding="utf-8") if profile_out.exists() else ""
         if current != rendered:
