@@ -81,6 +81,15 @@ class BritishismTable:
 _FILE_KEYS: dict[str, tuple[tuple[int, int, int, int, int], tuple[str, int, int, str]]] = {}
 
 
+def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON object key {key!r}")
+        result[key] = value
+    return result
+
+
 def _missing(path: Path) -> FileNotFoundError:
     return FileNotFoundError(
         f"{GOOGLE_TN!r} Britishism profile data is missing at {path}; build it from your "
@@ -137,7 +146,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
         or hashlib.sha256(content).hexdigest() != sha256
     ):
         raise ValueError(f"{GOOGLE_TN!r} Britishism profile data changed while being loaded")
-    data = json.loads(content)
+    data = json.loads(content, object_pairs_hook=_reject_duplicate_keys)
     if not isinstance(data, dict) or data.get("schema_version") != 1:
         raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: wrong schema version")
     if data.get("profile") != GOOGLE_TN:
