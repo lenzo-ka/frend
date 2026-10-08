@@ -1,4 +1,4 @@
-"""Build Kestrel's corpus-measured UK-to-US spelling profile.
+"""Build Kestrel's corpus-measured Google-TN PLAIN rewrites.
 
 The output is licensed-corpus-derived profile data and must stay outside the repository.
 Exact written-form counts use training shards 00--89. Selection learns exact-form support
@@ -69,7 +69,7 @@ def _open(item):
 
 
 def _is_respelling(written: str, output: str) -> bool:
-    """Whether one or two declared UK-to-US edits produce ``output`` exactly."""
+    """Whether one or two declared respelling edits produce ``output`` exactly."""
     frontier = {written}
     for _depth in range(2):
         following = set()
@@ -384,7 +384,7 @@ def _english_locale(locale: str) -> str:
     canonical = canonical_locale(locale)
     if canonical.split("_", 1)[0] != "en":
         raise ValueError(
-            f"Britishism rewrite profile requires an English locale, got {canonical!r}"
+            f"Google-TN PLAIN rewrite profile requires an English locale, got {canonical!r}"
         )
     return canonical
 

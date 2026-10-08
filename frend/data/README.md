@@ -213,9 +213,10 @@ smoothing strength, and the 00--79 training / 80--89 development split. Because 
 contains corpus surfaces verbatim it is never included in frend's package; the shared
 Google TN attribution and CC BY-SA 4.0 license above apply to that derived file.
 
-The same profile's PLAIN-token spelling table is built by
-`tools/build_britishisms.py`. Its default external path is the acronym table's directory
-under `britishisms.json`, overridable with `FREND_GOOGLE_TN_BRITISHISMS_PATH`. Written
+The same profile's Google-TN PLAIN rewrite table is built by
+`tools/build_britishisms.py`. For compatibility, its default external path remains the
+acronym table's directory under `britishisms.json`, and
+`FREND_GOOGLE_TN_BRITISHISMS_PATH` remains its environment-variable override. Written
 forms retain separate lower, Title, and UPPER evidence and record converted and left-as-is
 counts over shards 00--89. Every differing pair is classified as respelling, diacritic
 removal, expansion/abbreviation, or other. Shards 00--79 train the exact pairs and a small
