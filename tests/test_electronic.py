@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from copy import deepcopy
+from decimal import Decimal
 from importlib.resources import files
 
 import pytest
@@ -230,6 +231,122 @@ def test_priors_table_records_its_sources_and_counts_only():
     assert all(key == "*" or ":" in key for key in table["letters"])
     assert "com" in top_level_domains() and "pdf" not in top_level_domains()
     assert json.dumps(table)
+
+
+@pytest.mark.parametrize(
+    ("loader_name", "path"),
+    [
+        ("load_electronic_priors", ("letters", "*")),
+        ("load_electronic_priors", ("digits", "*")),
+        ("load_electronic_priors", ("separators", ".")),
+        ("load_electronic_span_priors", ("features", "hashtag", "classes")),
+    ],
+)
+@pytest.mark.parametrize("bad_count", [-1, True, 1.5, None])
+def test_electronic_prior_rows_refuse_invalid_counts(monkeypatch, loader_name, path, bad_count):
+    loader = getattr(electronic, loader_name)
+    document = deepcopy(loader())
+    assert document is not None
+    row = document
+    for key in path:
+        row = row[key]
+    if bad_count is None:
+        row.clear()
+        row["zero"] = 0
+    else:
+        row[next(iter(row))] = bad_count
+
+    table_name = (
+        "electronic_priors" if loader_name == "load_electronic_priors" else "electronic_span_priors"
+    )
+    cached_loader = (
+        electronic._electronic_priors
+        if loader_name == "load_electronic_priors"
+        else electronic._electronic_span_priors
+    )
+    monkeypatch.setattr(
+        electronic,
+        "measured_table",
+        lambda name, _locale: document if name == table_name else None,
+    )
+    cached_loader.cache_clear()
+    try:
+        with pytest.raises(ValueError, match="count row"):
+            loader()
+    finally:
+        cached_loader.cache_clear()
+
+
+def test_valid_electronic_prior_rows_stay_normalized():
+    assert sum(electronic.letter_probabilities("abc", tld=False).values()) == Decimal(1)
+    assert sum(electronic.digit_probabilities("2004").values()) == Decimal(1)
+    assert sum(electronic.separator_names(".").values()) == Decimal(1)
+
+
+def test_letter_probabilities_refuse_malformed_mock_evidence(monkeypatch):
+    monkeypatch.setattr(
+        electronic,
+        "load_electronic_priors",
+        lambda **_kwargs: {"letters": {"*": {"word": -1, "spelled": 2}}},
+    )
+    with pytest.raises(ValueError, match="count row"):
+        electronic.letter_probabilities("abc", tld=False)
+
+
+@pytest.mark.parametrize(
+    ("document", "consume"),
+    [
+        (
+            {"letters": {"*": {}}},
+            lambda: electronic.letter_probabilities("abc", tld=False),
+        ),
+        (
+            {"letters": {"*": {"word": 1}, "lower:3:v": {}}},
+            lambda: electronic.letter_probabilities("abc", tld=False),
+        ),
+        (
+            {"letters": {"*": {"word": 1}, "tld:com": {}}},
+            lambda: electronic.letter_probabilities("com", tld=True),
+        ),
+        (
+            {"digits": {"*": {"cardinal": 1}, "4:n": {}}},
+            lambda: electronic.digit_probabilities("2004"),
+        ),
+        (
+            {"separators": {".": {}}},
+            lambda: electronic.separator_names("."),
+        ),
+    ],
+)
+def test_probability_consumers_refuse_present_empty_rows(monkeypatch, document, consume):
+    monkeypatch.setattr(electronic, "load_electronic_priors", lambda **_kwargs: document)
+    with pytest.raises(ValueError, match="count row"):
+        consume()
+
+
+def test_span_consumer_refuses_present_empty_class_row(monkeypatch):
+    monkeypatch.setattr(
+        electronic,
+        "load_electronic_span_priors",
+        lambda **_kwargs: {"features": {"hashtag": {"classes": {}}}},
+    )
+    with pytest.raises(ValueError, match=r"features\.hashtag\.classes"):
+        electronic._supported_span_features("#abc", "en_US")
+
+
+def test_probability_consumers_preserve_absent_optional_rows(monkeypatch):
+    monkeypatch.setattr(
+        electronic,
+        "load_electronic_priors",
+        lambda **_kwargs: {
+            "letters": {"*": {"word": 1}},
+            "digits": {"*": {"cardinal": 1}},
+            "separators": {},
+        },
+    )
+    assert electronic.letter_probabilities("abc", tld=False) == {"word": Decimal(1)}
+    assert electronic.digit_probabilities("2004") == {"cardinal": Decimal(1)}
+    assert electronic.separator_names(".") == {}
 
 
 def _assert_span_prior_is_aggregate(document):
