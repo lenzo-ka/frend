@@ -70,6 +70,35 @@ def test_builder_counts_converted_and_left_and_validates_on_80_89(tmp_path):
     assert document["selection"]["development_shards"][0] == "output-00080-of-00100"
 
 
+def test_builder_abstains_when_top_exact_rewrites_tie(tmp_path):
+    builder = _builder()
+    counts = builder.Counts()
+    counts.add("colour", "color")
+    counts.add("colour", "colur")
+    assert (
+        builder._exact_prediction(
+            counts,
+            ("colour", "lower"),
+            {"respelling": 1},
+        )
+        is None
+    )
+
+    for index in range(90):
+        (tmp_path / f"output-{index:05d}-of-00100").write_text("", encoding="utf-8")
+    (tmp_path / "output-00000-of-00100").write_text(
+        "PLAIN\tcolour\tcolor\nPLAIN\tcolour\tcolur\nPLAIN\ttheatre\ttheater\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "output-00080-of-00100").write_text(
+        "PLAIN\ttheatre\ttheater\n",
+        encoding="utf-8",
+    )
+    document = builder.build_document(tmp_path)
+    assert document["selection"]["admitted_classes"] == ["respelling"]
+    assert "colour" not in document["pairs"]
+
+
 def _shards(digest="0" * 64):
     return [
         {"relative_path": f"output-{index:05d}-of-00100", "sha256": digest} for index in range(90)

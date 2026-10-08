@@ -192,11 +192,16 @@ def _exact_prediction(
     candidates = [
         (converted, target, pair_class(key[0], target), counts.left[key])
         for target, converted in counts.converted.get(key, {}).items()
-        if pair_class(key[0], target) in supports
     ]
     if not candidates:
         return None
-    converted, target, class_name, left = max(candidates)
+    top_count = max(converted for converted, _target, _class_name, _left in candidates)
+    best = [candidate for candidate in candidates if candidate[0] == top_count]
+    if len(best) != 1:
+        return None
+    converted, target, class_name, left = best[0]
+    if class_name not in supports:
+        return None
     if converted >= supports[class_name] and converted > left:
         return target, class_name
     return None
@@ -386,17 +391,12 @@ def build_document(corpus_dir: Path, *, inputs=None, jobs: int = 1) -> dict:
     pairs: dict[str, dict[str, dict[str, object]]] = defaultdict(dict)
     for key in sorted(combined.converted):
         word, shape = key
-        choices = [
-            (converted, target, pair_class(word, target))
-            for target, converted in combined.converted[key].items()
-            if pair_class(word, target) in supports
-        ]
-        if not choices:
+        prediction = _exact_prediction(combined, key, supports)
+        if prediction is None:
             continue
-        converted, target, class_name = max(choices)
+        target, class_name = prediction
+        converted = combined.converted[key][target]
         left = combined.left[key]
-        if converted < supports[class_name] or converted <= left:
-            continue
         pairs[word][shape] = {
             "class": class_name,
             "target": target,
