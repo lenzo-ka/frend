@@ -7,7 +7,9 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
-from frend.number_priors import NumberPriorTable, load_number_priors
+import pytest
+
+from frend.number_priors import NumberPrior, NumberPriorTable, load_number_priors
 
 _REPO = Path(__file__).resolve().parents[1]
 
@@ -31,6 +33,56 @@ def test_table_uses_a_century_row_and_a_measured_fallback():
     assert table.lookup("1979", "date").share == Decimal("0.8")
     assert table.lookup("7199", "cardinal").share == Decimal("0.3")
     assert table.lookup("979", "date") is None
+
+
+@pytest.mark.parametrize(
+    ("section", "value"),
+    [
+        ("centuries", True),
+        ("all", True),
+        ("centuries", -1),
+        ("all", 1.5),
+    ],
+)
+def test_table_refuses_invalid_counts(section, value):
+    document = {
+        "all": {"date": 6, "cardinal": 3, "digit": 1},
+        "centuries": {"19": {"date": 8, "cardinal": 2}},
+    }
+    if section == "centuries":
+        document[section]["19"]["date"] = value
+    else:
+        document[section]["date"] = value
+
+    with pytest.raises(ValueError, match="counts must be nonnegative integers"):
+        NumberPriorTable(document)
+
+
+@pytest.mark.parametrize("section", ["centuries", "all"])
+def test_table_refuses_unknown_choice_keys(section):
+    document = {
+        "all": {"date": 6, "cardinal": 3, "digit": 1},
+        "centuries": {"19": {"date": 8, "cardinal": 2}},
+    }
+    if section == "centuries":
+        document[section]["19"]["year"] = 10
+    else:
+        document[section]["year"] = 10
+
+    with pytest.raises(ValueError, match="unknown choice keys"):
+        NumberPriorTable(document)
+
+
+def test_table_retains_exact_counts_and_shares_for_valid_rows():
+    table = NumberPriorTable(
+        {
+            "all": {"date": 6, "cardinal": 3, "digit": 1},
+            "centuries": {"19": {"date": 8, "cardinal": 2}},
+        }
+    )
+
+    assert table.lookup("1979", "date") == NumberPrior(8, Decimal("0.8"), 10)
+    assert table.lookup("7199", "digit") == NumberPrior(1, Decimal("0.1"), 10)
 
 
 def test_fixture_builder_counts_only_bare_four_digit_choices(tmp_path):
