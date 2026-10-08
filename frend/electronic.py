@@ -44,6 +44,7 @@ __all__ = [
 ]
 
 _ROOT_DATA = files("frend").joinpath("data", "root")
+_MISSING_ROW = object()
 
 # Blending strength for a sparse key toward its parent, as for spoken-prior sub-keys.
 PRIOR_STRENGTH = 5
@@ -224,7 +225,11 @@ def _supported_span_features(text: str, locale: str) -> tuple[str, ...]:
         return ()
     supported = []
     for feature in _span_features(text):
-        classes = document["features"].get(feature, {}).get("classes", {})
+        if feature not in document["features"]:
+            continue
+        row = document["features"][feature]
+        classes = row.get("classes") if isinstance(row, dict) else None
+        _validate_count_row(classes, f"features.{feature}.classes")
         electronic = classes.get("ELECTRONIC", 0)
         if electronic >= 3 and electronic > sum(classes.values()) - electronic:
             supported.append(feature)
@@ -409,17 +414,55 @@ def load_electronic_span_priors(*, locale: str = "en_US") -> dict | None:
     return _electronic_span_priors(canonical_locale(locale))
 
 
+def _validate_count_row(row: object, path: str) -> None:
+    if (
+        not isinstance(row, dict)
+        or not row
+        or any(type(count) is not int or count < 0 for count in row.values())
+        or sum(row.values()) == 0
+    ):
+        raise ValueError(f"invalid electronic prior count row at {path}")
+
+
+def _validate_electronic_priors(document: object) -> dict:
+    if not isinstance(document, dict):
+        raise ValueError("invalid electronic prior table")
+    for section in ("letters", "digits", "separators"):
+        rows = document.get(section)
+        if not isinstance(rows, dict):
+            raise ValueError(f"invalid electronic prior table: {section} must be an object")
+        for key, row in rows.items():
+            _validate_count_row(row, f"{section}.{key}")
+    return document
+
+
+def _validate_electronic_span_priors(document: object) -> dict:
+    if not isinstance(document, dict) or not isinstance(document.get("features"), dict):
+        raise ValueError("invalid electronic span prior table: features must be an object")
+    for feature, row in document["features"].items():
+        classes = row.get("classes") if isinstance(row, dict) else None
+        _validate_count_row(classes, f"features.{feature}.classes")
+    return document
+
+
 @lru_cache(maxsize=LOCALE_CACHE)
 def _electronic_priors(locale: str) -> dict | None:
-    return measured_table("electronic_priors", locale)
+    document = measured_table("electronic_priors", locale)
+    return None if document is None else _validate_electronic_priors(document)
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
 def _electronic_span_priors(locale: str) -> dict | None:
-    return measured_table("electronic_span_priors", locale)
+    document = measured_table("electronic_span_priors", locale)
+    return None if document is None else _validate_electronic_span_priors(document)
 
 
-def _blend(counts: dict[str, int], parent: dict[str, Decimal]) -> dict[str, Decimal]:
+def _blend(counts: object, parent: dict[str, Decimal], *, path: str) -> dict[str, Decimal]:
+    if counts is _MISSING_ROW:
+        counts = {}
+    else:
+        _validate_count_row(counts, path)
+    assert isinstance(counts, dict)
     total = sum(counts.values())
     keys = set(counts) | set(parent)
     return {
@@ -429,9 +472,13 @@ def _blend(counts: dict[str, int], parent: dict[str, Decimal]) -> dict[str, Deci
     }
 
 
-def _shares(counts: dict[str, int]) -> dict[str, Decimal]:
+def _shares(counts: object, *, path: str) -> dict[str, Decimal]:
+    if counts is _MISSING_ROW:
+        return {}
+    _validate_count_row(counts, path)
+    assert isinstance(counts, dict)
     total = sum(counts.values())
-    return {key: Decimal(value) / total for key, value in counts.items()} if total else {}
+    return {key: Decimal(value) / total for key, value in counts.items()}
 
 
 def letter_probabilities(run: str, *, tld: bool, locale: str = "en_US") -> dict[str, Decimal]:
@@ -441,10 +488,12 @@ def letter_probabilities(run: str, *, tld: bool, locale: str = "en_US") -> dict[
     if document is None:
         return {}
     table = document["letters"]
-    overall = _shares(table["*"])
-    shaped = _blend(table.get(letter_key(run, locale), {}), overall)
+    overall = _shares(table["*"], path="letters.*")
+    shape = letter_key(run, locale)
+    shaped = _blend(table.get(shape, _MISSING_ROW), overall, path=f"letters.{shape}")
     if tld and f"tld:{run.lower()}" in table:
-        return _blend(table[f"tld:{run.lower()}"], shaped)
+        key = f"tld:{run.lower()}"
+        return _blend(table[key], shaped, path=f"letters.{key}")
     return shaped
 
 
@@ -453,7 +502,12 @@ def digit_probabilities(run: str, *, locale: str = "en_US") -> dict[str, Decimal
     if document is None:
         return {}
     table = document["digits"]
-    return _blend(table.get(digit_key(run), {}), _shares(table["*"]))
+    key = digit_key(run)
+    return _blend(
+        table.get(key, _MISSING_ROW),
+        _shares(table["*"], path="digits.*"),
+        path=f"digits.{key}",
+    )
 
 
 def separator_names(character: str, *, locale: str = "en_US") -> dict[str, Decimal]:
@@ -461,7 +515,10 @@ def separator_names(character: str, *, locale: str = "en_US") -> dict[str, Decim
     document = load_electronic_priors(locale=locale)
     if document is None:
         return {}
-    return _shares(document["separators"].get(character, {}))
+    return _shares(
+        document["separators"].get(character, _MISSING_ROW),
+        path=f"separators.{character}",
+    )
 
 
 def tld_positions(parts: tuple[tuple[str, str], ...]) -> frozenset[int]:
