@@ -594,6 +594,34 @@ def test_a_declared_ldc_source_is_still_internal_only():
     assert data_sources.source_class("LDC/LDC93S6A") == data_sources.INTERNAL_ONLY
 
 
+def test_shipping_refusals_terminates_on_a_self_referential_sequence():
+    document = []
+    document.extend((document, "ldc:wsj0"))
+
+    assert data_sources.shipping_refusals(document) == ("document mentions an LDC corpus",)
+
+
+def test_shipping_refusals_terminates_on_a_self_referential_mapping():
+    document = {}
+    document["cycle"] = document
+    document["marker"] = "LDC93S6A"
+
+    assert data_sources.shipping_refusals(document) == ("document mentions an LDC corpus",)
+
+
+def test_shipping_refusals_terminates_on_a_deep_cyclic_graph():
+    document = []
+    document.append(document)
+    tail = document
+    for _ in range(sys.getrecursionlimit() + 1):
+        child = []
+        tail.append(child)
+        tail = child
+    document.append("ldc:wsj0")
+
+    assert data_sources.shipping_refusals(document) == ("document mentions an LDC corpus",)
+
+
 def test_every_declared_source_has_a_license_and_a_class():
     for source, entry in data_sources.SHIPPABLE_SOURCES.items():
         assert entry["class"] in data_sources.LICENSE_CLASSES, source
