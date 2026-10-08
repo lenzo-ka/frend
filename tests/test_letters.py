@@ -156,6 +156,43 @@ def test_dictionary_case_variant_lookup_is_opt_in(monkeypatch):
     assert letters.spellout_dictionary_entry("Fbi", case_variant_lookup=True)["decision"] == "spell"
 
 
+@pytest.mark.parametrize(
+    "row",
+    [
+        ("unknown", 1, 1),
+        ("say", -1, 2),
+        ("spell", True, 2),
+        ("spell", 0, 0),
+    ],
+)
+def test_spellout_dictionary_refuses_invalid_rows(monkeypatch, row):
+    from frend import letters
+
+    monkeypatch.setattr(
+        letters,
+        "_spellout_dictionary",
+        lambda _locale: ({"ABC": row}, {}, "probe"),
+    )
+    with pytest.raises(ValueError, match="spell-out dictionary"):
+        letters.spellout_dictionary_entry("ABC")
+
+
+def test_spellout_dictionary_retains_a_valid_measured_share(monkeypatch):
+    from frend import letters
+
+    monkeypatch.setattr(
+        letters,
+        "_spellout_dictionary",
+        lambda _locale: ({"ABC": ("say", 3, 1)}, {}, "probe"),
+    )
+    assert letters.spellout_dictionary_entry("ABC") == {
+        "counts": {"say": 3, "spell": 1},
+        "decision": "say",
+        "source": "probe",
+        "spell_share": 0.25,
+    }
+
+
 def test_ordinary_word_is_not_changed_to_spelling_by_the_dictionary():
     for word in ("word", "zijn", "échec"):
         found = [d for d in LettersDetector().detect(word) if d["type"] == "letters:token"]
