@@ -121,6 +121,8 @@ __all__ = [
 ]
 
 LEXICAL_SOURCE = "lexical:en_US"
+_DATE_MONTH_FIRST_KEYS = ("Mdy", "Md")
+_PLURAL_ONE = "one"
 
 
 def lexical_source(locale: str) -> str:
@@ -173,6 +175,10 @@ class SpokenAlternative:
     # Kept out of repr so ungrouped output stays byte-identical to earlier releases.
     group: str | None = field(default=None, repr=False)
     role: str | None = field(default=None, repr=False)
+    # A lexical-frame move can correct the public source label before the measured
+    # source table is rebuilt. Keep using the measurement attached to the identical
+    # pre-move text so a provenance correction does not itself reorder readings.
+    prior_provenance: str | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
@@ -322,7 +328,12 @@ def _rank_final(
             ranked.append((0, -alternative.weight, index, alternative))
             continue
         measurement = (
-            source_prior(kind, alternative.provenance, sub_key, locale=locale)
+            source_prior(
+                kind,
+                alternative.prior_provenance or alternative.provenance,
+                sub_key,
+                locale=locale,
+            )
             if kind is not None
             else None
         )
@@ -333,6 +344,7 @@ def _rank_final(
                 measurement.share,
                 alternative.group,
                 alternative.role,
+                alternative.prior_provenance,
             )
             ranked.append((1, -measurement.share, index, weighted))
             continue
@@ -749,13 +761,46 @@ def _compose(
 ) -> tuple[SpokenAlternative, ...]:
     composed = []
     for combination in product(*parts):
+        provenance = "+".join(item.provenance for item in combination)
+        prior_provenance = "+".join(
+            item.prior_provenance or item.provenance for item in combination
+        )
         composed.append(
             SpokenAlternative(
                 template.format(*(item.text for item in combination)),
-                "+".join(item.provenance for item in combination),
+                provenance,
                 sum((item.weight for item in combination), Decimal(0))
                 if all(item.weight is not None for item in combination)
                 else None,
+                prior_provenance=prior_provenance if prior_provenance != provenance else None,
+            )
+        )
+    return _ranked(composed)
+
+
+def _compose_lexical(
+    parts: Sequence[Sequence[SpokenAlternative]],
+    template: str,
+    locale: str,
+    *,
+    source_after: int,
+) -> tuple[SpokenAlternative, ...]:
+    """Compose a locale-owned frame and retain where its source enters the phrase."""
+    composed = []
+    for combination in product(*parts):
+        provenances = [item.provenance for item in combination]
+        provenances.insert(source_after, lexical_source(locale))
+        prior_provenance = "+".join(
+            item.prior_provenance or item.provenance for item in combination
+        )
+        composed.append(
+            SpokenAlternative(
+                template.format(*(item.text for item in combination)),
+                "+".join(provenances),
+                sum((item.weight for item in combination), Decimal(0))
+                if all(item.weight is not None for item in combination)
+                else None,
+                prior_provenance=prior_provenance,
             )
         )
     return _ranked(composed)
@@ -774,12 +819,24 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
         for item in _signed_integer_leaf(numerator, negative, locale)
     )
     denominator_words = []
-    singular = _plural_rules(locale).select(int(numerator)) == "one"
+    singular = _plural_rules(locale).select(int(numerator)) == _PLURAL_ONE
+    plural_suffix = _lexical("fraction.plural_suffix", locale)
     for ordinal in _number_leaf(denominator, "ordinal", locale):
+        if not singular and plural_suffix is None:
+            continue
         denominator_words.append(
             SpokenAlternative(
-                (ordinal.text if singular else f"{ordinal.text}s").replace("-", " "),
-                ordinal.provenance,
+                (
+                    ordinal.text
+                    if singular or plural_suffix is None
+                    else f"{ordinal.text}{plural_suffix}"
+                ).replace("-", " "),
+                (
+                    ordinal.provenance
+                    if singular or plural_suffix is None
+                    else f"{ordinal.provenance}+{lexical_source(locale)}"
+                ),
+                prior_provenance=ordinal.provenance if not singular else None,
             )
         )
     irregular = (_lexical("fraction.denominators", locale) or {}).get(str(int(denominator)))
@@ -788,7 +845,17 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
             0, SpokenAlternative(irregular[0 if singular else 1], lexical_source(locale))
         )
     fraction = _compose([numerator_words, _ranked(denominator_words)], "{} {}")
-    over = _compose([numerator_words, _number_leaf(denominator, "cardinal", locale)], "{} over {}")
+    over_pattern = _lexical("fraction.over", locale)
+    over = (
+        ()
+        if over_pattern is None
+        else _compose_lexical(
+            [numerator_words, _number_leaf(denominator, "cardinal", locale)],
+            over_pattern,
+            locale,
+            source_after=1,
+        )
+    )
     if whole is not None:
         whole_words = _number_leaf(whole, "cardinal", locale)
         mixed_fraction = list(fraction)
@@ -797,10 +864,22 @@ def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative,
         )
         if numerator == 1 and single is not None:
             mixed_fraction.insert(0, SpokenAlternative(single, lexical_source(locale)))
-        mixed = _compose([whole_words, _ranked(mixed_fraction)], "{} and {}")
-        mixed_over = _compose([whole_words, over], "{} and {}")
+        mixed_pattern = _lexical("fraction.mixed", locale)
+        if mixed_pattern is None:
+            raise NotImplementedError(f"no mixed-fraction frame for {locale!r}")
+        mixed = _compose_lexical(
+            [whole_words, _ranked(mixed_fraction)], mixed_pattern, locale, source_after=1
+        )
+        mixed_over = (
+            _compose_lexical([whole_words, over], mixed_pattern, locale, source_after=1)
+            if over
+            else ()
+        )
         return _ranked([*mixed, *mixed_over])
-    return _ranked([*fraction, *over])
+    alternatives = _ranked([*fraction, *over])
+    if not alternatives:
+        raise NotImplementedError(f"no fraction frame for {locale!r}")
+    return alternatives
 
 
 def _currency_units(currency: str, locale: str):
@@ -863,17 +942,21 @@ def _spoken_money(value: Decimal, currency: str, locale: str) -> tuple[SpokenAlt
         return _ranked(alternatives)
     bare_name = _currency_unit_name(currency, Decimal(major), False, locale)
     if minor:
+        minor_joiner = _lexical("money.minor_joiner", locale)
+        if minor_joiner is None:
+            return _ranked(alternatives)
         minor_words = tuple(
             SpokenAlternative(item.text.replace("-", " "), item.provenance)
             for item in _number_leaf(Decimal(minor), "cardinal", locale)
         )
         minor_name = _currency_unit_name(currency, Decimal(minor), True, locale)
+        bare_major = _compose([major_words, (bare_name,)], "{} {}")
+        wide_major = _compose([major_words, wide_names], "{} {}")
+        minor_amount = _compose([minor_words, (minor_name,)], "{} {}")
         return _ranked(
             [
-                *_compose(
-                    [major_words, (bare_name,), minor_words, (minor_name,)], "{} {} and {} {}"
-                ),
-                *_compose([major_words, wide_names, minor_words, (minor_name,)], "{} {} and {} {}"),
+                *_compose_lexical([bare_major, minor_amount], minor_joiner, locale, source_after=1),
+                *_compose_lexical([wide_major, minor_amount], minor_joiner, locale, source_after=1),
             ]
         )
     alternatives[0:0] = _compose([major_words, (bare_name,)], "{} {}")
@@ -1890,12 +1973,16 @@ def _spoken_date(
             [*_year_leaf(Decimal(fields["y"]), locale), *_spoken_digits(DigitsValue(bare), locale)]
         )
     if set(fields) == {"M", "d", "y"}:
-        template = "{} {}, {}"
+        template = (_lexical("date.month_first", locale) or {}).get(_DATE_MONTH_FIRST_KEYS[0])
     elif set(fields) == {"M", "d"}:
-        template = "{} {}"
+        template = (_lexical("date.month_first", locale) or {}).get(_DATE_MONTH_FIRST_KEYS[1])
     else:
         template = " ".join("{}" for _ in parts)
-    month_first = _compose(parts, template)
+    month_first = (
+        ()
+        if template is None
+        else _compose_lexical(parts, template, locale, source_after=min(2, len(parts)))
+    )
     if not {"M", "d"} <= set(fields):
         return month_first
     # The corpus reads a day-first date as "the eighteenth of September", with or
@@ -1909,7 +1996,10 @@ def _spoken_date(
         day_parts.append(_year_leaf(Decimal(fields["y"]), locale))
     day_first_template = _day_first_template(len(day_parts), locale)
     day_first = () if day_first_template is None else _compose(day_parts, day_first_template)
-    return _ranked([*month_first, *day_first])
+    alternatives = _ranked([*month_first, *day_first])
+    if not alternatives:
+        raise NotImplementedError(f"no date frame for {locale!r}")
+    return alternatives
 
 
 def _bare_number_ranked(

@@ -1,12 +1,8 @@
 {
-  "locale": "es_ES",
+  "locale": "es_MX",
   "schema_version": 1,
   "source": "frend/curated",
   "forms": {
-    "decimal.fraction_as_number": {
-      "why": "RAE Diccionario panhispánico de dudas, s.v. coma, permits reading the digits after the decimal comma as a whole number when they do not begin with zero.",
-      "value": true
-    },
     "fraction.plural_suffix": {
       "why": "RAE/ASALE Nueva gramática de la lengua española 21.4.1 uses ordinal-derived masculine fraction nouns with a cardinal numerator, including 'dos quintos'; the regular plural adds -s.",
       "value": "s"

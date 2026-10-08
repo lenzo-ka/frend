@@ -6,6 +6,10 @@
     "decimal.fraction_as_number": {
       "why": "The locale convention permits reading the digits after the decimal separator as a whole number when they do not begin with zero.",
       "value": true
+    },
+    "fraction.plural_suffix": {
+      "why": "Aurélie Drouard's French grammar 'Expressing fractions in French' derives regular fraction nouns from ordinals and states that the denominator is plural when the numerator is plural, exemplified by 'deux cinquièmes'.",
+      "value": "s"
     }
   }
 }
