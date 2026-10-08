@@ -440,6 +440,13 @@ def _spellout_formatter(locale: str) -> icu.RuleBasedNumberFormat:
 
 
 @cache
+def _spellout_formatter_for(locale: str, ruleset: str) -> icu.RuleBasedNumberFormat:
+    formatter = icu.RuleBasedNumberFormat(icu.URBNFRuleSetTag.SPELLOUT, icu.Locale(locale))
+    formatter.setDefaultRuleSet(ruleset)
+    return formatter
+
+
+@cache
 def _spellout_rule_sets(locale: str) -> tuple[str, ...]:
     formatter = _spellout_formatter(locale)
     return tuple(
@@ -458,54 +465,96 @@ def _applicable_rule_sets(kind: str, locale: str) -> tuple[str, ...]:
             if "ordinal" not in name
             and ("numbering-year" in name or "cardinal" in name or "numbering" in name)
         )
-    return tuple(
+    applicable = tuple(
         name
         for name in names
         if "ordinal" not in name
         and "numbering-year" not in name
+        and "-days" not in name
+        and not name.endswith("-latn")
         and ("cardinal" in name or "numbering" in name)
     )
+    default = _spellout_formatter(locale).getDefaultRuleSetName()
+    return (default, *(name for name in applicable if name != default))
 
 
-def _format_exact(formatter: icu.RuleBasedNumberFormat, value: Decimal, ruleset: str) -> str:
-    """Cross into PyICU only through Decimal or an exact arbitrary-size integer."""
-    try:
-        return formatter.format(value, ruleset)
-    except Exception as exc:
-        if value == value.to_integral_value():
-            return formatter.format(int(value), ruleset)
-        raise NotImplementedError(
-            "the installed PyICU binding cannot accept a non-integral Decimal exactly"
-        ) from exc
+def _format_exact(locale: str, value: Decimal, ruleset: str) -> str:
+    """Format an integer without PyICU first coercing it through a binary64 float."""
+    if value != value.to_integral_value():
+        raise NotImplementedError("exact RBNF formatting is available only for integers")
+    integer = int(value)
+    if not -(2**63) <= integer < 2**63:
+        raise NotImplementedError("exact RBNF formatting is limited to signed int64")
+    exact = icu.Formattable()
+    exact.setInt64(integer)
+    return _spellout_formatter_for(locale, ruleset).format(exact)
 
 
 def _number_leaf(value: Decimal, kind: str, locale: str) -> tuple[SpokenAlternative, ...]:
+    alternatives = []
+    for ruleset in _applicable_rule_sets(kind, locale):
+        text = strip_soft_hyphens(_format_exact(locale, value, ruleset))
+        if any(unicodedata.category(character) == "Nd" for character in text):
+            continue
+        alternatives.append(SpokenAlternative(text, f"icu-rbnf:{ruleset}"))
+    return _ranked(alternatives)
+
+
+@dataclass(frozen=True)
+class DecimalRule:
+    separator: str
+    before: str
+    after: str
+    ruleset: str
+
+
+@cache
+def _decimal_separator_rules(locale: str) -> tuple[DecimalRule, ...]:
     formatter = _spellout_formatter(locale)
-    return _ranked(
-        [
-            SpokenAlternative(
-                strip_soft_hyphens(_format_exact(formatter, value, ruleset)),
-                f"icu-rbnf:{ruleset}",
-            )
-            for ruleset in _applicable_rule_sets(kind, locale)
-        ]
-    )
-
-
-def _decimal_separator_word(formatter: icu.RuleBasedNumberFormat, locale: str) -> SpokenAlternative:
     rules = formatter.getRules()
-    for rule_set in _applicable_rule_sets("cardinal", locale):
-        start = rules.find(f"{rule_set}:")
+    symbol = icu.DecimalFormatSymbols(icu.Locale(locale)).getSymbol(
+        icu.DecimalFormatSymbols.kDecimalSeparatorSymbol
+    )
+    preferred_descriptor = "x,x" if symbol == "," else "x.x"
+    pattern = re.compile(r"^(x[.,]x):\s*<%[^<]+<(\s*)([^<>%;]+?)(\s*)>%[^>]+>;$", re.MULTILINE)
+    found: list[DecimalRule] = []
+    for ruleset in _applicable_rule_sets("cardinal", locale):
+        start = rules.find(f"{ruleset}:")
         if start < 0:
             continue
         end = rules.find("\n%", start + 1)
         section = rules[start : len(rules) if end < 0 else end]
-        match = re.search(r"^x\.x:.*?<%[^<]+<\s+([A-Za-z]+)\s+>%[^>]+>;$", section, re.MULTILINE)
-        if match:
-            # DecimalFormatSymbols provides only punctuation; the RBNF rule is
-            # the locale data that states how that punctuation is spoken.
-            return SpokenAlternative(match.group(1), f"icu-rbnf:{rule_set}")
-    raise NotImplementedError("the locale's RBNF rules do not name a decimal separator")
+        matches = list(pattern.finditer(section))
+        preferred = [match for match in matches if match.group(1) == preferred_descriptor]
+        # Most comma-decimal locales use ICU's generic x.x descriptor. Spanish
+        # declares both descriptors, so its locale symbol selects between them.
+        for match in preferred or [item for item in matches if item.group(1) == "x.x"]:
+            separator = match.group(3).strip()
+            if not separator or all(
+                unicodedata.category(char).startswith("P") for char in separator
+            ):
+                continue
+            found.append(DecimalRule(separator, match.group(2), match.group(4), ruleset))
+            break
+    return tuple(found)
+
+
+def _rule_leaf(value: Decimal, ruleset: str, locale: str) -> SpokenAlternative:
+    return SpokenAlternative(
+        strip_soft_hyphens(_format_exact(locale, value, ruleset)), f"icu-rbnf:{ruleset}"
+    )
+
+
+def _decimal_digit(digit: str, ruleset: str, locale: str) -> tuple[SpokenAlternative, ...]:
+    words = [
+        _rule_leaf(Decimal(digit), ruleset, locale)
+        if _lexical("decimal.separator", locale) is not None
+        else _number_leaf(Decimal(digit), "cardinal", locale)[0]
+    ]
+    zero = _lexical("zero.digit", locale)
+    if digit == "0" and zero is not None:
+        words.append(SpokenAlternative(zero, lexical_source(locale)))
+    return _ranked(words)
 
 
 def _spoken_decimal(
@@ -518,19 +567,72 @@ def _spoken_decimal(
     integer_digits = digit_text[:exponent]
     fractional_digits = digit_text[exponent:]
     integer = Decimal(integer_digits or "0")
-    integer_alternatives = _signed_integer_leaf(integer, bool(sign), locale)
-    formatter = _spellout_formatter(locale)
-    parts = [] if omit_zero_integer and not sign and not integer else [integer_alternatives]
-    parts.append((_decimal_separator_word(formatter, locale),))
-    zero = _lexical("zero.digit", locale)
-    for digit in fractional_digits:
-        words = list(_number_leaf(Decimal(digit), "cardinal", locale))
-        if digit == "0" and zero is not None:
-            # ICU has no digit-reading rule that calls zero "o"; the corpus uses
-            # that spelling for zero digits in decimals.
-            words.append(SpokenAlternative(zero, lexical_source(locale)))
-        parts.append(_ranked(words))
-    alternatives = list(_compose(parts, " ".join("{}" for _ in parts)))
+    integer_words = _signed_integer_leaf(integer, bool(sign), locale)
+    alternatives: list[SpokenAlternative] = []
+    decimal_rules = list(_decimal_separator_rules(locale))
+    lexical_separator = _lexical("decimal.separator", locale)
+    if lexical_separator is not None:
+        cardinal = next(
+            (
+                ruleset
+                for ruleset in _applicable_rule_sets("cardinal", locale)
+                if ruleset == "%spellout-cardinal"
+            ),
+            _spellout_formatter(locale).getDefaultRuleSetName(),
+        )
+        decimal_rules.insert(0, DecimalRule(str(lexical_separator), "", "", cardinal))
+    if not decimal_rules:
+        raise NotImplementedError("the locale's RBNF rules do not name a decimal separator")
+    for rule in decimal_rules:
+        prefix = () if omit_zero_integer and not sign and not integer else integer_words
+        digit_parts = [_decimal_digit(digit, rule.ruleset, locale) for digit in fractional_digits]
+        digit_joiner = " " if rule.before else ""
+        for digits_spoken in _compose(digit_parts, digit_joiner.join("{}" for _ in digit_parts)):
+            for integer_spoken in prefix or (None,):
+                text = (
+                    f"{integer_spoken.text if integer_spoken else ''}"
+                    f"{rule.before if integer_spoken else rule.before.lstrip()}"
+                    f"{rule.separator}{rule.after}{digits_spoken.text}"
+                )
+                sources = [
+                    *(item.provenance for item in (integer_spoken,) if item is not None),
+                    (
+                        f"{lexical_source(locale)}+icu-rbnf:{rule.ruleset}"
+                        if lexical_separator == rule.separator
+                        else f"icu-rbnf:{rule.ruleset}"
+                    ),
+                    digits_spoken.provenance,
+                ]
+                alternatives.append(SpokenAlternative(text, "+".join(sources)))
+
+        fraction_as_number = _lexical("decimal.fraction_as_number", locale)
+        if fraction_as_number and not fractional_digits.startswith("0"):
+            fraction = _rule_leaf(Decimal(fractional_digits), rule.ruleset, locale)
+            for integer_spoken in prefix or (None,):
+                text = (
+                    f"{integer_spoken.text if integer_spoken else ''}"
+                    f"{rule.before if integer_spoken else rule.before.lstrip()}"
+                    f"{rule.separator}{rule.after}{fraction.text}"
+                )
+                provenance = "+".join(
+                    [
+                        *(item.provenance for item in (integer_spoken,) if item is not None),
+                        f"icu-rbnf:{rule.ruleset}",
+                    ]
+                )
+                alternatives.append(SpokenAlternative(text, provenance))
+
+        if (
+            not omit_zero_integer
+            and lexical_separator is None
+            and len(digits) <= 15
+            and Decimal(repr(float(value))) == value
+            and not (set(fractional_digits) <= {"0"} and value == value.to_integral_value())
+        ):
+            direct = strip_soft_hyphens(
+                _spellout_formatter_for(locale, rule.ruleset).format(float(value))
+            )
+            alternatives.append(SpokenAlternative(direct, f"icu-rbnf:{rule.ruleset}:direct"))
     if set(fractional_digits) <= {"0"} and value == value.to_integral_value():
         alternatives.extend(_number_leaf(value, "cardinal", locale))
     return _ranked(alternatives)
@@ -562,10 +664,16 @@ def _percent_name(locale: str) -> str:
 
 @cache
 def _currency_name(currency: str, plural: bool, locale: str) -> str:
+    amount = 2 if plural else 1
     rendered = _measure_formatter(locale).formatMeasure(
-        icu.Measure(2 if plural else 1, icu.CurrencyUnit(currency))
+        icu.Measure(amount, icu.CurrencyUnit(currency))
     )
-    return rendered.split(" ", 1)[1]
+    number = icu.NumberFormat.createInstance(icu.Locale(locale)).format(amount)
+    name = rendered.replace(number, "", 1).strip()
+    decimal = icu.DecimalFormatSymbols(icu.Locale(locale)).getSymbol(
+        icu.DecimalFormatSymbols.kDecimalSeparatorSymbol
+    )
+    return re.sub(rf"^{re.escape(decimal)}0+\s*", "", name)
 
 
 @cache
@@ -594,15 +702,24 @@ def _capture(detection: object, name: str) -> object | None:
     )
 
 
-def _compact_scale(magnitude: int, locale: str) -> SpokenAlternative:
+def _compact_scale(magnitude: int, amount: Decimal, locale: str) -> SpokenAlternative:
     formatter = icu.CompactDecimalFormat.createInstance(
         icu.Locale(locale), icu.UNumberCompactStyle.LONG
     )
-    rendered = formatter.format(10**magnitude)
-    words = re.findall(r"[^\W\d_]+", rendered, re.UNICODE)
-    if not words:
+    scale_amount = amount if abs(amount) >= 1 else Decimal(1).copy_sign(amount)
+    value = float(scale_amount * 10**magnitude)
+    integer_position = icu.FieldPosition(icu.UNumberFormatFields.INTEGER_FIELD)
+    rendered = formatter.format(value, integer_position)
+    fraction_position = icu.FieldPosition(icu.UNumberFormatFields.FRACTION_FIELD)
+    formatter.format(value, fraction_position)
+    start = integer_position.getBeginIndex()
+    end = max(integer_position.getEndIndex(), fraction_position.getEndIndex())
+    if start == end:
+        raise NotImplementedError(f"cannot locate the compact amount in {rendered!r}")
+    scale = f"{rendered[:start]}{rendered[end:]}".strip()
+    if not scale:
         raise NotImplementedError("the locale's long compact pattern has no scale word")
-    return SpokenAlternative(" ".join(words), "icu-compact:long")
+    return SpokenAlternative(scale, "icu-compact:long")
 
 
 def _spoken_compact(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
@@ -623,7 +740,7 @@ def _spoken_compact(detection: object, locale: str) -> tuple[SpokenAlternative, 
         if fraction is not None
         else _number_leaf(mantissa, "cardinal", locale)
     )
-    scale = _compact_scale(int(compact.value), locale)
+    scale = _compact_scale(int(compact.value), mantissa, locale)
     return _compose([mantissa_words, (scale,)], "{} {}")
 
 
@@ -1922,6 +2039,11 @@ def _spoken_number(
         )
         return _ranked([*base, *spelled])
     if type_.startswith(("number:cardinal", "number:int", "number:decimal")):
+        if abs(decimal) >= 2**63:
+            integer = _capture(detection, "integer")
+            if integer is None:
+                raise NotImplementedError("an integer beyond int64 has no written capture")
+            return _spoken_big_integer(str(integer.text), locale, negative=decimal < 0)
         cardinals = _number_leaf(decimal, "cardinal", locale)
         written = str(getattr(_capture(detection, "integer"), "text", ""))
         if (
@@ -2202,6 +2324,54 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
             SpokenAlternative(spoken, f"icu-rbnf:%spellout-cardinal+{lexical_source(locale)}")
         )
     return _ranked(forms)
+
+
+def _spoken_big_integer(
+    written_raw: str, locale: str, *, negative: bool = False
+) -> tuple[SpokenAlternative, ...]:
+    """Read an integer outside ICU's exact int64 range without rounding its value."""
+    grouping = icu.DecimalFormatSymbols(icu.Locale(locale)).getSymbol(
+        icu.DecimalFormatSymbols.kGroupingSeparatorSymbol
+    )
+    digits = "".join(character for character in written_raw if character.isdecimal())
+    if not digits:
+        raise NotImplementedError("an integer beyond int64 has no written digits")
+    alternatives = [
+        SpokenAlternative(
+            item.text,
+            "icu-rbnf:digits-beyond-int64",
+            item.weight,
+            item.group,
+            item.role,
+        )
+        for item in _spoken_digits(DigitsValue(digits), locale)
+    ]
+    if grouping and grouping in written_raw:
+        groups = written_raw.split(grouping)
+        if all(group.isdecimal() for group in groups):
+            words = [(_number_leaf(Decimal(group), "cardinal", locale)[0],) for group in groups]
+            alternatives.extend(
+                SpokenAlternative(
+                    item.text,
+                    "icu-rbnf:groups-beyond-int64",
+                    item.weight,
+                    item.group,
+                    item.role,
+                )
+                for item in _compose(words, " ".join("{}" for _ in words))
+            )
+    ranked = _ranked(alternatives)
+    if not negative:
+        return ranked
+    positive_one = _number_leaf(Decimal(1), "cardinal", locale)[0].text
+    negative_one = _number_leaf(Decimal(-1), "cardinal", locale)[0].text
+    prefix = negative_one.removesuffix(positive_one).strip()
+    return tuple(
+        SpokenAlternative(
+            f"{prefix} {item.text}", item.provenance, item.weight, item.group, item.role
+        )
+        for item in ranked
+    )
 
 
 def _grouped_id_group(group: str, locale: str) -> tuple[SpokenAlternative, ...]:
@@ -2622,7 +2792,7 @@ def _fill_slot(detection: Mapping, slot: Mapping, locale: str) -> SpokenAlternat
     ruleset = f"%spellout-cardinal-{slot.get('gender')}-{slot.get('case')}"
     if ruleset not in _spellout_rule_sets(locale):
         return None
-    text = _format_exact(_spellout_formatter(locale), amount, ruleset)
+    text = _format_exact(locale, amount, ruleset)
     return SpokenAlternative(text, f"icu-rbnf:{ruleset}")
 
 

@@ -1,0 +1,11 @@
+{
+  "locale": "pt_PT",
+  "schema_version": 1,
+  "source": "frend/curated",
+  "forms": {
+    "decimal.fraction_as_number": {
+      "why": "Cunha and Cintra, Nova Gramática do Português Contemporâneo, Numerais, supports a whole-number reading after the decimal separator when the fractional digits do not begin with zero.",
+      "value": true
+    }
+  }
+}

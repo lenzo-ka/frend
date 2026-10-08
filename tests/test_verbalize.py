@@ -33,6 +33,8 @@ from frend.electronic import ElectronicDetector
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
+    _decimal_separator_rules,
+    _spellout_rule_sets,
     _weekday_name,
     register_curated_alternative,
     verbalize_edge,
@@ -409,26 +411,47 @@ def test_rules_without_decimal_separator_degrade_without_passing_float(monkeypat
     seen = []
 
     class RejectingFormatter:
-        def format(self, value, ruleset):
-            seen.append((value, ruleset))
-            if isinstance(value, Decimal):
-                raise TypeError("Decimal rejected")
-            return str(value)
+        def format(self, value):
+            seen.append(value)
+            return str(value.getInt64())
 
         def getRules(self):
             return ""
 
-    monkeypatch.setattr("frend.verbalize._spellout_formatter", lambda locale: RejectingFormatter())
-    result = verbalize_lattice(
-        resolve_lattice(
-            [_det("0.125", "number:decimal", NumberValue("0.125"))], source_text="0.125"
+        def getNumberOfRuleSetNames(self):
+            return 1
+
+        def getRuleSetName(self, index):
+            assert index == 0
+            return "%spellout-numbering"
+
+        def getDefaultRuleSetName(self):
+            return "%spellout-numbering"
+
+    _spellout_rule_sets.cache_clear()
+    _decimal_separator_rules.cache_clear()
+    try:
+        monkeypatch.setattr(
+            "frend.verbalize._spellout_formatter", lambda locale: RejectingFormatter()
         )
-    )
+        monkeypatch.setattr(
+            "frend.verbalize._spellout_formatter_for", lambda locale, ruleset: RejectingFormatter()
+        )
+        result = verbalize_lattice(
+            resolve_lattice(
+                [_det("0.125", "number:decimal", NumberValue("0.125"))], source_text="0.125"
+            )
+        )
+    finally:
+        _spellout_rule_sets.cache_clear()
+        _decimal_separator_rules.cache_clear()
 
     assert result.best_path.spoken == "0.125"
     assert result.best_path.units[0].verbalized is False
-    assert seen and seen[0][0] == 0
-    assert not any(isinstance(value, float) for value, _ in seen)
+    assert seen and seen[0].getInt64() == 0
+    # Every value reaches ICU as an exact int64, never a double.
+    assert all(value.getType() == icu.Formattable.kInt64 for value in seen)
+    assert not any(isinstance(value, float) for value in seen)
 
 
 @pytest.mark.parametrize(

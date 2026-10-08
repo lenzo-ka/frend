@@ -1,0 +1,11 @@
+{
+  "locale": "ja",
+  "schema_version": 1,
+  "source": "frend/curated",
+  "forms": {
+    "decimal.separator": {
+      "why": "ICU %spellout-cardinal writes the interpunct ・, while %spellout-cardinal-financial names 点 but uses financial numerals. NHK 日本語発音アクセント新辞典 and NHK ことばのハンドブック give 小数点 as てん.",
+      "value": "点"
+    }
+  }
+}

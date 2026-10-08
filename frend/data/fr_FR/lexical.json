@@ -1,0 +1,11 @@
+{
+  "locale": "fr_FR",
+  "schema_version": 1,
+  "source": "frend/curated",
+  "forms": {
+    "decimal.fraction_as_number": {
+      "why": "The locale convention permits reading the digits after the decimal separator as a whole number when they do not begin with zero.",
+      "value": true
+    }
+  }
+}
