@@ -1,6 +1,37 @@
 # Changelog
 
 ## Unreleased
+- Add the public `normalize` speech API: pass plain text and receive its first-choice
+  spoken text, or request `NormalizedText` with source/output offsets and per-unit reader
+  and provenance metadata. It sentence-breaks documents, preserves boundary coverage,
+  joins scripts that do not use word spaces without inserting spaces, and exposes the
+  applied one-for-one typographic fold.
+- Add the opt-in external `google-tn` profile contract. It reproduces Google-TN labeling
+  choices with locally built, caller-configured acronym spell-or-say and English PLAIN
+  rewrite tables; neither corpus-derived table ships in the package, and both must come
+  from the same verified corpus inventory. The general-purpose default is unchanged.
+- Add behavior schemas v1: `resolve_behavior` strictly loads and composes named shipped
+  presets or caller JSON files in order, returning immutable effective arguments and
+  composition provenance. Schemas configure frend and carry opaque icukit sections;
+  verbalization groups include TTS-sanity and opt-in character-detail ordering.
+- Enforce public input limits and plain-text validation. Recognition accepts documents
+  of at most 4,194,304 Unicode code points by default, while graph-building units are
+  capped at 8,192; byte strings, NULs, lone surrogates, and excessive control or
+  unassigned text are refused rather than truncated. URL and email recognition is also
+  bounded. Public recognition folds selected typographic quotes, spaces, and hyphens
+  one-for-one by default while retaining original offsets. The document and
+  graph-building unit limits and the fold are configurable through `normalize`.
+  Standalone `ElectronicDetector` exposes separate URL, email, and input caps.
+  `validate_input`, `validate_unit_length`, and `apply_input_fold` are public APIs.
+- Add principal user-visible readers for training-supported telephone numbers, valid
+  ISBNs and grouped IDs, and fractional durations. Long symbol runs and separator lines
+  can be described as units, and electronic spans now cover measured delimiter forms,
+  hashtags, document names, and concatenated hosts without swallowing sentence
+  punctuation.
+- Choose acronym spell-or-say from an exact-case measured spell-out dictionary before
+  the vowel fallback, and keep an all-caps possessive attached to its acronym. Number
+  speech now uses exact large integers, locale decimal separators, and attached currency
+  names across supported locales; soft hyphens are removed from ICU readings.
 - Prune context trees by measured held-out use: omit 54 dormant P7 problem keys and
   the dormant `range:ratio` and `range:dimension` problems while retaining the useful
   `range:range` tree and its runtime reranking.
