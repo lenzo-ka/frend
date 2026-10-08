@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import io
 import json
@@ -498,3 +499,109 @@ def test_profile_output_must_be_outside_repository(tmp_path, monkeypatch):
                 str(destination),
             ]
         )
+
+
+def test_builder_refuses_non_english_locale_before_corpus_or_receipt(tmp_path, monkeypatch):
+    builder = _builder()
+    receipt = tmp_path / "receipt.json"
+    monkeypatch.setattr(
+        builder,
+        "_default_corpus_dir",
+        lambda: (_ for _ in ()).throw(AssertionError("corpus must not be opened")),
+    )
+
+    with pytest.raises(ValueError, match="English locale"):
+        builder.main(
+            [
+                "--locale",
+                "fr_FR",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "training",
+                "--receipt",
+                str(receipt),
+                "--profile-out",
+                str(tmp_path / "britishisms.json"),
+            ]
+        )
+
+    assert not receipt.exists()
+
+
+@pytest.mark.parametrize("locale", ["en", "en_US"])
+def test_build_document_emits_declared_canonical_english_locale(tmp_path, locale):
+    document = _builder().build_document(tmp_path, inputs=[], locale=locale)
+
+    assert document["locale"] == locale
+
+
+def test_builder_refuses_language_only_locale_for_regional_corpus(tmp_path, monkeypatch):
+    import corpus_inputs
+
+    name = "output-00000-of-00100"
+    contents = "PLAIN\tcolour\tcolor\n"
+    digest = hashlib.sha256(contents.encode()).hexdigest()
+    (tmp_path / name).write_text(contents, encoding="utf-8")
+    monkeypatch.setattr(corpus_inputs, "_entry", lambda _source_id: {"shards": {name: digest}})
+    builder = _builder()
+    monkeypatch.setattr(builder, "_training_files", lambda _corpus_dir: [tmp_path / name])
+    receipt = tmp_path / "receipt.json"
+    output = tmp_path / "britishisms.json"
+
+    with pytest.raises(ValueError, match="declared for en_US, not en"):
+        builder.main(
+            [
+                "--corpus-dir",
+                str(tmp_path),
+                "--locale",
+                "en",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "training",
+                "--receipt",
+                str(receipt),
+                "--profile-out",
+                str(output),
+            ]
+        )
+
+    assert not receipt.exists()
+    assert not output.exists()
+
+
+def test_builder_emits_verified_canonical_source_locale(tmp_path, monkeypatch):
+    import corpus_inputs
+
+    name = "output-00000-of-00100"
+    contents = "PLAIN\tcolour\tcolor\n"
+    digest = hashlib.sha256(contents.encode()).hexdigest()
+    (tmp_path / name).write_text(contents, encoding="utf-8")
+    monkeypatch.setattr(corpus_inputs, "_entry", lambda _source_id: {"shards": {name: digest}})
+    builder = _builder()
+    monkeypatch.setattr(builder, "_training_files", lambda _corpus_dir: [tmp_path / name])
+    receipt = tmp_path / "receipt.json"
+    output = tmp_path / "britishisms.json"
+
+    assert (
+        builder.main(
+            [
+                "--corpus-dir",
+                str(tmp_path),
+                "--locale",
+                "en-us",
+                "--source-id",
+                "google/tn-en_with_types",
+                "--pool",
+                "training",
+                "--receipt",
+                str(receipt),
+                "--profile-out",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    assert json.loads(receipt.read_text(encoding="utf-8"))["locale"] == "en_US"
+    assert json.loads(output.read_text(encoding="utf-8"))["locale"] == "en_US"
