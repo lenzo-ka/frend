@@ -128,3 +128,7 @@ def test_lexical_composition_records_lexical_provenance(written, lexical_text):
 )
 def test_english_fraction_and_money_unchanged(written, spoken):
     assert normalize(written, locale="en_US") == spoken
+
+
+def test_english_ambiguous_numeric_date_keeps_context_rank_after_provenance_move():
+    assert normalize("1/3/2026", locale="en_US") == (" the third of January twenty twenty-six ")

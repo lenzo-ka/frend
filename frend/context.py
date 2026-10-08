@@ -464,7 +464,16 @@ def rerank(
     distinct = distinct_readings(alternatives)
     if len(distinct) < 2:
         return alternatives, None
-    labels = problem_labels([alternatives[index].provenance for index in distinct])
+    # A provenance-only migration must keep asking the already-built context tree the
+    # same question.  The public provenance remains the corrected source label, while
+    # ``prior_provenance`` names the label under which this identical spoken reading
+    # was measured when the tree was built.
+    labels = problem_labels(
+        [
+            alternatives[index].prior_provenance or alternatives[index].provenance
+            for index in distinct
+        ]
+    )
     problem = "\t".join(sorted(labels))
     tree = model.tree(problem)
     if tree is None:
