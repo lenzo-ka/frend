@@ -175,7 +175,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
     try:
         admitted_classes = frozenset(selection["admitted_classes"])
         minimum_support = {
-            name: int(value) for name, value in selection["class_minimum_support"].items()
+            name: value for name, value in selection["class_minimum_support"].items()
         }
         case_folding = selection["case_folding"]["enabled"]
         threshold = float(selection["rule_rate_threshold"])
@@ -209,7 +209,10 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
     if (
         not admitted_classes <= set(PAIR_CLASSES)
         or set(minimum_support) != set(admitted_classes)
-        or any(value <= 0 for value in minimum_support.values())
+        or any(
+            not isinstance(value, int) or isinstance(value, bool) or value <= 0
+            for value in minimum_support.values()
+        )
         or not isinstance(case_folding, bool)
         or not 0 <= threshold <= 1
         or not set(enabled) <= _RULES.keys()

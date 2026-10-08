@@ -169,6 +169,24 @@ def test_profile_accepts_alphabetic_rewrite_target(tmp_path):
     assert table.pairs["colour"]["lower"]["target"] == "color"
 
 
+@pytest.mark.parametrize("support", [1.5, "1", True])
+def test_profile_rejects_non_integer_minimum_support(tmp_path, support):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(britishisms, pairs={}, support=support)
+
+    with pytest.raises(ValueError, match="bad selection"):
+        _load_britishisms_for(*_file_key(britishisms))
+
+
+def test_profile_accepts_positive_integer_minimum_support(tmp_path):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(britishisms, pairs={}, support=1)
+
+    table = _load_britishisms_for(*_file_key(britishisms))
+
+    assert table.minimum_support == {"respelling": 1}
+
+
 def _acronym_profile(path: Path, *, digest="0" * 64):
     path.write_text(
         json.dumps(
