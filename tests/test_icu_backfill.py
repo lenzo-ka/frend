@@ -78,6 +78,20 @@ def test_equal_backfill_posteriors_are_honestly_ambiguous():
     assert {reading.prior.p for reading in result.spans[0].readings} == {Decimal("0.5")}
 
 
+def test_multi_class_generated_likelihood_is_a_bounded_mixture():
+    blend = _blend(
+        {"N": {"cardinal": 3}},
+        {"cardinal": {"N.N": 1}, "decimal": {"N.N": 1}},
+        {"cardinal": 1, "decimal": 1},
+    )
+
+    prior = blend.reading_prior(_det("number:decimal", "1.2"))
+
+    assert prior is not None
+    assert prior.p == Decimal(1)
+    assert prior.generated_p == Decimal(1)
+
+
 def test_same_class_subtypes_do_not_duplicate_posterior_mass():
     blend = _blend(
         {"N": {"date": 3}},

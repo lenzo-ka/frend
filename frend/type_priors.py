@@ -114,11 +114,12 @@ def corpus_group(type_: str) -> str | None:
 
 
 def corpus_classes(type_: str) -> tuple[str, ...]:
-    """Map a reading ``type`` to the corpus classes whose counts it sums over.
+    """Map a reading ``type`` to its component corpus classes.
 
-    ``number:decimal*`` sums ``cardinal`` and ``decimal`` (the shape ``N`` vs
-    ``N.N`` already separates them); every other family maps to a single class.
-    Returns ``()`` for a type with no corpus support.
+    For measured counts, ``number:decimal*`` sums ``cardinal`` and ``decimal``
+    (the shape ``N`` vs ``N.N`` already separates them). Generated backfill mixes
+    their class-conditionals with equal weight. Every other family maps to a
+    single class. Returns ``()`` for a type with no corpus support.
     """
     return _classify(type_)
 
@@ -183,7 +184,9 @@ class ReadingPrior:
     ``False``, ``p`` is ``None`` (no positive base rate is asserted); ``n`` is
     still the shape's sample size for an *attested-zero* (a well-sampled shape
     whose class count is zero), and ``None`` for a truly absent or too-sparse
-    shape. No value is ever fabricated.
+    shape. No value is ever fabricated. ``generated_p`` is the backfill estimate
+    ``P(shape | group)``; a group with multiple component classes mixes their
+    class-conditionals with equal weight.
     """
 
     group: str
@@ -401,7 +404,13 @@ class IcuBackfillTable:
             if not isinstance(total, int) or isinstance(total, bool) or total <= 0:
                 raise ValueError(f"ICU backfill total for {class_!r} must be a positive integer")
             for shape_key, count in counts.items():
-                if not isinstance(shape_key, str) or not isinstance(count, int) or count < 0:
+                if (
+                    not isinstance(shape_key, str)
+                    or not isinstance(count, int)
+                    or isinstance(count, bool)
+                    or count < 0
+                    or count > total
+                ):
                     raise ValueError(f"invalid ICU backfill count for {class_!r}: {shape_key!r}")
 
     def has(self, class_: str, shape_key: str) -> bool:
@@ -511,7 +520,10 @@ class BlendedPrior:
             if (p := self.backfill.p_shape_given_class(class_, shape_key)) is not None
         ]
         if likelihoods:
-            likelihood = sum(likelihoods, Decimal(0))
+            # A reading can map to more than one generated class. Under the flat
+            # policy, mix those class-conditionals with equal weight; summing them
+            # could otherwise make the reported P(shape | group) exceed one.
+            likelihood = sum(likelihoods, Decimal(0)) / Decimal(len(classes))
             return ReadingPrior(
                 group,
                 shape_key,

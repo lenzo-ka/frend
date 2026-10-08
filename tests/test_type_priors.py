@@ -20,6 +20,7 @@ from frend.shape import shape
 from frend.type_priors import (
     MIN_N,
     CorpusPrior,
+    IcuBackfillTable,
     PriorTable,
     ReadingFeature,
     ReadingPrior,
@@ -551,6 +552,32 @@ def test_malformed_prior_table_is_rejected():
     # A well-formed table still loads and reads back.
     ok = PriorTable({"N/N": {"fraction": 3}}, {"source": "fixture"})
     assert ok.n("N/N") == 3
+
+
+@pytest.mark.parametrize("count", [True, False, -1, 4])
+def test_malformed_icu_backfill_count_is_rejected(count):
+    """Backfill counts are ordinary bounded counts, never booleans or values
+    outside ``[0, class total]``."""
+    with pytest.raises(ValueError, match="invalid ICU backfill count"):
+        IcuBackfillTable(
+            {"date": {"N/N": count}},
+            {"date": 3},
+            {"source": "fixture"},
+        )
+
+
+def test_accepted_icu_backfill_probabilities_are_bounded():
+    table = IcuBackfillTable(
+        {"date": {"zero": 0, "partial": 1, "whole": 3}},
+        {"date": 3},
+        {"source": "fixture"},
+    )
+
+    assert table.p_shape_given_class("date", "zero") is None
+    probabilities = [
+        table.p_shape_given_class("date", shape_key) for shape_key in ("partial", "whole")
+    ]
+    assert all(p is not None and Decimal(0) < p <= Decimal(1) for p in probabilities)
 
 
 def test_supported_base_rate_log_is_finite_under_astronomical_totals():

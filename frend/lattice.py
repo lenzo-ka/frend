@@ -386,8 +386,9 @@ def resolve_choices(
     ``tier="measured"``, ``p`` is ``P(class | shape)``, independent of the rest
     of the input, and ``generated_p`` is ``None``. At ``tier="icu-backfill"``,
     ``p`` is a posterior renormalized over readings at that edge's span, so it
-    changes when a span-mate is added or removed; ``generated_p`` is
-    ``P(shape | class)``, a different conditional rather than a base rate.
+    changes when a span-mate is added or removed; ``generated_p`` is the generated
+    ``P(shape | group)`` estimate (an equal mixture for a multi-class group), a
+    different conditional rather than a base rate.
     ``tier`` and ``supported`` can shift with span-mates too. No probability
     field is comparable across tiers or calls. The comparable metadata is the
     three geometry integers and ``provenance``, ``shape``, ``group``, and ``n``.
