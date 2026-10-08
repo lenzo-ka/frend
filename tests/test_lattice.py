@@ -182,6 +182,14 @@ def test_lattice_with_caller_supplied_detections_does_not_claim_a_fold():
     assert lattice.raw_source_text == "5\u00a0km"
 
 
+def test_ranked_lattice_rejects_a_detection_from_a_different_source_surface():
+    with pytest.raises(ValueError, match=r"detection text '5'.*source_text\[0:1\] 'x'"):
+        resolve_lattice([_det("5", 0, 1, "number:cardinal")], source_text="x")
+
+    matching = _det("x", 0, 1, "reading")
+    assert resolve_lattice([matching], source_text="x").best_path.readings == (matching,)
+
+
 def test_ranked_projection_is_capped_and_reports_truncation():
     text = "xxxx"
     detections = [_det(text, 0, 4, "date:Md"), _det(text, 0, 4, "number:fraction")]

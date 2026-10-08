@@ -16,6 +16,7 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Literal
 
 from frend.fold_resolve import (
+    Candidate,
     CoverScore,
     Detection,
     _candidates,
@@ -350,6 +351,23 @@ def _content_identity(detection: Detection) -> Hashable:
 _CHOICE_READING_CAP = 1 << 16
 
 
+def _validate_detection_surfaces(candidates: Sequence[Candidate], source_text: str | None) -> None:
+    """Refuse valid detection spans that declare text from another source."""
+    if source_text is None:
+        return
+    for candidate in candidates:
+        detection = candidate.detection
+        if "text" not in detection:
+            continue
+        actual = source_text[candidate.start : candidate.end]
+        declared = detection["text"]
+        if declared != actual:
+            raise ValueError(
+                f"detection text {declared!r} does not match "
+                f"source_text[{candidate.start}:{candidate.end}] {actual!r}"
+            )
+
+
 def resolve_choices(
     detections: Sequence[Detection],
     *,
@@ -429,6 +447,7 @@ def resolve_choices(
         raise ValueError(
             f"source_text length {text_length} is shorter than detection extent {detected_length}"
         )
+    _validate_detection_surfaces(candidates, source_text)
     if len(candidates) > reading_cap:
         raise ValueError(
             f"this carries {len(candidates)} readings over the {reading_cap} reading "
@@ -716,6 +735,7 @@ def _resolve_lattice_validated(
         raise ValueError(
             f"source_text length {text_length} is shorter than detection extent {detected_length}"
         )
+    _validate_detection_surfaces(candidates, source_text)
 
     canonical = canonical_locale(locale)
     sources = _resolve_sources(canonical, feature_sources, class_prior, class_prior_source)
