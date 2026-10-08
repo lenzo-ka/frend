@@ -10,7 +10,7 @@ from icukit.abbreviation_recognize import AbbreviationDetector
 from icukit.detectors import detect
 from icukit.recognize import FlexibleNumberDetector
 
-from frend import resolve_lattice
+from frend import normalize, resolve_lattice
 from frend.letters import LettersDetector, cv_pattern, is_roman, is_spelled_token, numeral_share
 from frend.verbalize import verbalize_lattice
 
@@ -51,6 +51,31 @@ def _spans(text: str) -> list[tuple[str, str]]:
 )
 def test_detects_runs_initials_and_suffixes(text, expected):
     assert _spans(text) == expected
+
+
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+def test_uppercase_acronym_possessive_suffix_matches_lowercase(apostrophe):
+    uppercase = f"FBI{apostrophe}S"
+    lowercase = f"FBI{apostrophe}s"
+
+    assert _spans(uppercase) == [("letters:run", uppercase)]
+    assert normalize(uppercase, fold=None) == normalize(lowercase, fold=None) == " f b i's "
+
+
+@pytest.mark.parametrize(
+    ("uppercase", "lowercase", "expected"), [("JR'S", "JR's", " jr's "), ("KY'S", "KY's", " ky's ")]
+)
+def test_uppercase_possessive_uses_lowercase_suffix_dictionary_row(uppercase, lowercase, expected):
+    assert normalize(uppercase, fold=None) == normalize(lowercase, fold=None) == expected
+
+
+@pytest.mark.parametrize("stem", ["IT", "WHAT", "THAT", "SHE"])
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+def test_uppercase_contractions_are_not_acronym_possessives(stem, apostrophe):
+    text = f"{stem}{apostrophe}S"
+
+    assert _spans(text) == []
+    assert normalize(text, fold=None) == text
 
 
 @pytest.mark.parametrize("text", ["A&I", "I saw it", "McDonald", "ATMs2", "U.S.A", "GRA-B", "II"])
