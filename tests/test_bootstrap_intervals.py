@@ -96,6 +96,67 @@ def test_interval_seed_is_deterministic():
     assert first == second
 
 
+@pytest.mark.parametrize("replicates", [True, 1.0, 0, -1])
+@pytest.mark.parametrize(
+    ("helper_name", "metrics"),
+    [
+        ("percentile_ratio_intervals", {"accuracy": ([1, 0], [1, 1])}),
+        (
+            "paired_delta_intervals",
+            {"accuracy": ([1, 0], [1, 1], [1, 1], [1, 1])},
+        ),
+    ],
+)
+def test_interval_helpers_require_positive_integer_replicates(
+    monkeypatch, helper_name, metrics, replicates
+):
+    bootstrap = _tool("bootstrap_intervals")
+    monkeypatch.setattr(
+        bootstrap,
+        "_numpy",
+        lambda: pytest.fail("invalid replicates reached NumPy setup"),
+    )
+    with pytest.raises(ValueError, match="^replicates must be a positive integer$"):
+        getattr(bootstrap, helper_name)(metrics, replicates, 7)
+
+
+def test_interval_helpers_retain_seeded_results_for_positive_integer_replicates():
+    bootstrap = _tool("bootstrap_intervals")
+    ratio = bootstrap.percentile_ratio_intervals(
+        {"accuracy": ([1, 0, 1], [1, 2, 3])}, 137, 20261002
+    )
+    paired = bootstrap.paired_delta_intervals(
+        {"accuracy": ([1, 0, 1], [1, 2, 3], [1, 1, 1], [1, 2, 3])},
+        137,
+        20261002,
+    )
+    assert ratio == {
+        "accuracy": {
+            "ci95": [0.14285714285714285, 1.0],
+            "defined_replicates": 137,
+        }
+    }
+    assert paired == {
+        "accuracy": {
+            "ci95": [0.0, 0.39999999999999997],
+            "defined_replicates": 137,
+        }
+    }
+
+
+def test_interval_helpers_accept_numpy_integer_replicates():
+    bootstrap = _tool("bootstrap_intervals")
+    np = bootstrap._numpy()
+    ratio_metrics = {"accuracy": ([1, 0, 1], [1, 2, 3])}
+    paired_metrics = {"accuracy": ([1, 0, 1], [1, 2, 3], [1, 1, 1], [1, 2, 3])}
+    assert bootstrap.percentile_ratio_intervals(
+        ratio_metrics, np.int64(137), 20261002
+    ) == bootstrap.percentile_ratio_intervals(ratio_metrics, 137, 20261002)
+    assert bootstrap.paired_delta_intervals(
+        paired_metrics, np.int64(137), 20261002
+    ) == bootstrap.paired_delta_intervals(paired_metrics, 137, 20261002)
+
+
 def test_resampling_clusters_on_sentences_not_tokens():
     bootstrap = _tool("bootstrap_intervals")
     metrics = {"accuracy": ([100, 0], [100, 1])}
