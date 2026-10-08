@@ -157,7 +157,7 @@ def _read_item(item) -> tuple[bool, Counts]:
     counts = Counts()
     with _open(item) as handle:
         for line in handle:
-            parts = line.rstrip("\n").split("\t")
+            parts = line.rstrip("\r\n").split("\t")
             if len(parts) < 3 or parts[0] != "PLAIN":
                 continue
             written = parts[1]

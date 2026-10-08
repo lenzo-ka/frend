@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import sys
 from pathlib import Path
@@ -68,6 +69,31 @@ def test_builder_counts_converted_and_left_and_validates_on_80_89(tmp_path):
     assert document["rules"]["our-to-or"]["lower"]["enabled"] is True
     assert document["selection"]["classes"]["respelling"]["enabled"] is True
     assert document["selection"]["development_shards"][0] == "output-00080-of-00100"
+
+
+def test_builder_crlf_rows_match_lf_counts_and_predictions(tmp_path, monkeypatch):
+    builder = _builder()
+    for index in range(90):
+        (tmp_path / f"output-{index:05d}-of-00100").touch()
+
+    def build(newline):
+        monkeypatch.setattr(
+            builder,
+            "_open",
+            lambda _item: io.StringIO(f"PLAIN\tcolour\tcolor{newline}"),
+        )
+        return builder.build_document(tmp_path)
+
+    lf = build("\n")
+    crlf = build("\r\n")
+
+    assert builder._render(crlf).encode() == builder._render(lf).encode()
+    assert crlf["pairs"]["colour"]["lower"] == {
+        "class": "respelling",
+        "target": "color",
+        "converted": 90,
+        "left": 0,
+    }
 
 
 def test_builder_abstains_when_top_exact_rewrites_tie(tmp_path):
