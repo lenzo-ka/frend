@@ -37,7 +37,7 @@ import frend
 spoken = frend.normalize("Meet me at 5:30. It costs $12.")
 aligned = frend.normalize("Meet me at 5:30.", offsets=True)
 behavior = frend.resolve_behavior(["google-tn"])
-profiled = frend.normalize("****", **behavior.kwargs)
+print(behavior.kwargs)
 print(aligned.text)
 for unit in aligned.units:
     print(unit.output_span, unit.source_span, unit.reader, unit.provenance)
@@ -52,6 +52,22 @@ Named behavior schemas compose in caller order, with later presets winning key b
 Resolve shipped names or JSON files with `resolve_behavior`, then spread its immutable
 `kwargs` into `normalize`; the result also records member digests, setters, and any opaque
 icukit sections. Explicit call keywords remain Python's normal duplicate-key error.
+
+Resolving a behavior schema only composes its configuration; it does not load external
+profile data. Applying the `google-tn` behavior to `normalize` does load profile data and
+requires both corpus-derived tables, built from the same verified Google TN inventory.
+Configure both local tables explicitly before using that profile:
+
+```sh
+FREND_GOOGLE_TN_PROFILE_PATH=acronym_surfaces.json \
+FREND_GOOGLE_TN_BRITISHISMS_PATH=britishisms.json \
+python - <<'PY'
+import frend
+
+behavior = frend.resolve_behavior(["google-tn"])
+print(frend.normalize("****", **behavior.kwargs))
+PY
+```
 
 ### Input limits
 
