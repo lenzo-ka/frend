@@ -704,6 +704,18 @@ class _Joint:
     sources: Mapping[str, int]
 
 
+def _prior_count(value: object, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(f"{field} must be a nonnegative integer")
+    return value
+
+
+def _prior_count_mapping(value: object, field: str) -> dict[str, int]:
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{field} must be a mapping")
+    return {str(key): _prior_count(count, f"{field}.{key}") for key, count in value.items()}
+
+
 class RangePriorTable:
     """``data/<locale>/range_priors.json``: E (``readings``: range triples against single
     tokens, per emit key and per class) and J (``kinds``: the credited joint sources per
@@ -716,26 +728,39 @@ class RangePriorTable:
             raise ValueError("a range table needs readings and kinds")
         rows: dict[str, tuple[int, int]] = {}
         for key, row in readings.items():
-            positives = row.get("range")
-            singles = row.get("single_token")
-            if not isinstance(positives, int) or positives < 0 or not isinstance(singles, Mapping):
-                raise ValueError(f"readings.{key} must hold range and single_token counts")
-            if any(not isinstance(n, int) or n < 0 for n in singles.values()):
-                raise ValueError(f"readings.{key}.single_token counts must be nonnegative")
+            if not isinstance(row, Mapping):
+                raise ValueError(f"readings.{key} must be a mapping")
+            positives = _prior_count(row.get("range"), f"readings.{key}.range")
+            singles = _prior_count_mapping(row.get("single_token"), f"readings.{key}.single_token")
             rows[str(key)] = (positives, sum(singles.values()))
         self._readings = MappingProxyType(rows)
         joint: dict[str, tuple[_Joint, Mapping[str, _Joint]]] = {}
         for cls, record in kinds.items():
-            sources = dict(record.get("source_matched", {}))
-            matched = record.get("matched")
+            if not isinstance(record, Mapping):
+                raise ValueError(f"kinds.{cls} must be a mapping")
+            sources = _prior_count_mapping(
+                record.get("source_matched", {}), f"kinds.{cls}.source_matched"
+            )
+            matched = _prior_count(record.get("matched"), f"kinds.{cls}.matched")
             if matched != sum(sources.values()):
                 raise ValueError(f"kinds.{cls}: source counts must sum to matched")
+            sub_key_rows = record.get("sub_keys", {})
+            if not isinstance(sub_key_rows, Mapping):
+                raise ValueError(f"kinds.{cls}.sub_keys must be a mapping")
             sub_keys = {}
-            for sub_key, sub in (record.get("sub_keys") or {}).items():
-                sub_sources = dict(sub.get("source_matched", {}))
-                if sub.get("matched") != sum(sub_sources.values()):
+            for sub_key, sub in sub_key_rows.items():
+                if not isinstance(sub, Mapping):
+                    raise ValueError(f"kinds.{cls}.sub_keys.{sub_key} must be a mapping")
+                sub_sources = _prior_count_mapping(
+                    sub.get("source_matched", {}),
+                    f"kinds.{cls}.sub_keys.{sub_key}.source_matched",
+                )
+                sub_matched = _prior_count(
+                    sub.get("matched"), f"kinds.{cls}.sub_keys.{sub_key}.matched"
+                )
+                if sub_matched != sum(sub_sources.values()):
                     raise ValueError(f"kinds.{cls}.sub_keys.{sub_key}: counts must sum")
-                sub_keys[f"{cls}:{sub_key}"] = _Joint(sub["matched"], MappingProxyType(sub_sources))
+                sub_keys[f"{cls}:{sub_key}"] = _Joint(sub_matched, MappingProxyType(sub_sources))
             joint[str(cls)] = (
                 _Joint(matched, MappingProxyType(sources)),
                 MappingProxyType(sub_keys),
