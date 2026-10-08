@@ -567,6 +567,7 @@ def _spoken_decimal(
     integer_digits = digit_text[:exponent]
     fractional_digits = digit_text[exponent:]
     integer = Decimal(integer_digits or "0")
+    integer_words = _signed_integer_leaf(integer, bool(sign), locale)
     alternatives: list[SpokenAlternative] = []
     decimal_rules = list(_decimal_separator_rules(locale))
     lexical_separator = _lexical("decimal.separator", locale)
@@ -580,8 +581,9 @@ def _spoken_decimal(
             _spellout_formatter(locale).getDefaultRuleSetName(),
         )
         decimal_rules.insert(0, DecimalRule(str(lexical_separator), "", "", cardinal))
+    if not decimal_rules:
+        raise NotImplementedError("the locale's RBNF rules do not name a decimal separator")
     for rule in decimal_rules:
-        integer_words = _signed_integer_leaf(integer, bool(sign), locale)
         prefix = () if omit_zero_integer and not sign and not integer else integer_words
         digit_parts = [_decimal_digit(digit, rule.ruleset, locale) for digit in fractional_digits]
         digit_joiner = " " if rule.before else ""
@@ -589,7 +591,8 @@ def _spoken_decimal(
             for integer_spoken in prefix or (None,):
                 text = (
                     f"{integer_spoken.text if integer_spoken else ''}"
-                    f"{rule.before}{rule.separator}{rule.after}{digits_spoken.text}"
+                    f"{rule.before if integer_spoken else rule.before.lstrip()}"
+                    f"{rule.separator}{rule.after}{digits_spoken.text}"
                 )
                 sources = [
                     *(item.provenance for item in (integer_spoken,) if item is not None),
@@ -608,7 +611,8 @@ def _spoken_decimal(
             for integer_spoken in prefix or (None,):
                 text = (
                     f"{integer_spoken.text if integer_spoken else ''}"
-                    f"{rule.before}{rule.separator}{rule.after}{fraction.text}"
+                    f"{rule.before if integer_spoken else rule.before.lstrip()}"
+                    f"{rule.separator}{rule.after}{fraction.text}"
                 )
                 provenance = "+".join(
                     [
@@ -619,7 +623,8 @@ def _spoken_decimal(
                 alternatives.append(SpokenAlternative(text, provenance))
 
         if (
-            lexical_separator is None
+            not omit_zero_integer
+            and lexical_separator is None
             and len(digits) <= 15
             and Decimal(repr(float(value))) == value
             and not (set(fractional_digits) <= {"0"} and value == value.to_integral_value())
