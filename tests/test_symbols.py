@@ -228,8 +228,9 @@ def test_code_context_does_not_become_a_symbol_run(text):
     assert "line of" not in frend.normalize(text, fold=None)
 
 
-def test_unclosed_fenced_code_runs_to_the_end_of_the_document():
-    text = "```\n----"
+@pytest.mark.parametrize("marker", ["````", "`````", "~~~~", "~~~~~"])
+def test_unclosed_fenced_code_excludes_its_marker_and_body(marker):
+    text = f"{marker}\n----"
     assert not any(item["type"] == "symbol:run" for item in SymbolDetector().detect(text))
     assert "line of" not in frend.normalize(text, fold=None)
 
@@ -241,10 +242,19 @@ def test_disallowed_mixed_punctuation_keeps_only_its_repeated_subrun():
     ]
 
 
-@pytest.mark.parametrize("text", ["-", "=", "_", "#", "~"])
+@pytest.mark.parametrize("text", ["-", "=", "_", "#"])
 def test_same_nonterminal_punctuation_can_form_a_run(text):
     run = next(item for item in SymbolDetector().detect(text * 4) if item["type"] == "symbol:run")
     assert run["value"].symbols == (text,) * 4
+
+
+def test_an_unfenced_tilde_run_is_still_read():
+    run = next(
+        item
+        for item in SymbolDetector().detect("before ~~~~ after")
+        if item["type"] == "symbol:run"
+    )
+    assert run["text"] == "~~~~"
 
 
 def test_icu_graphemes_are_single_units_and_zwj_runs_retain_components():
