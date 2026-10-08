@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import TypedDict
+from operator import index
+from typing import SupportsIndex, TypedDict
 
 DEFAULT_INTERVAL_SEED = 20261002
 CI_LEVEL = 0.95
@@ -25,15 +26,26 @@ def _numpy():
     return np
 
 
+def _validate_replicates(replicates: SupportsIndex) -> int:
+    if isinstance(replicates, bool):
+        raise ValueError("replicates must be a positive integer")
+    try:
+        replicates = index(replicates)
+    except TypeError as error:
+        raise ValueError("replicates must be a positive integer") from error
+    if replicates < 1:
+        raise ValueError("replicates must be a positive integer")
+    return replicates
+
+
 def percentile_ratio_intervals(
     metrics: Mapping[str, tuple[Sequence[int | bool], Sequence[int | bool]]],
-    replicates: int,
+    replicates: SupportsIndex,
     seed: int,
 ) -> dict[str, BootstrapInterval]:
     """Bootstrap ratio intervals, drawing sentence indices once for every metric."""
+    replicates = _validate_replicates(replicates)
     np = _numpy()
-    if replicates < 1:
-        raise ValueError("replicates must be positive")
     if not metrics:
         return {}
     lengths = {len(numerators) for numerators, _denominators in metrics.values()}
@@ -83,13 +95,12 @@ def paired_delta_intervals(
             Sequence[int | bool],
         ],
     ],
-    replicates: int,
+    replicates: SupportsIndex,
     seed: int,
 ) -> dict[str, BootstrapInterval]:
     """Paired B-minus-A ratio intervals using the same sentence draw for both arms."""
+    replicates = _validate_replicates(replicates)
     np = _numpy()
-    if replicates < 1:
-        raise ValueError("replicates must be positive")
     if not metrics:
         return {}
     lengths = {len(vector) for vectors in metrics.values() for vector in vectors}
