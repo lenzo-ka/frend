@@ -14,6 +14,7 @@ __all__ = ["NumericDurationDetector", "fractional_duration_shape"]
 
 
 _FRACTIONAL_DURATION = re.compile(r"[0-9]+:[0-5][0-9]\.[0-9]{2}")
+_FRACTIONAL_DURATION_UNITS = frozenset({"minute", "second"})
 
 
 def fractional_duration_shape(text: str, locale: str = "en_US") -> bool:
@@ -34,6 +35,10 @@ def _has_fraction(detection: Mapping) -> bool:
     )
 
 
+def _nonnegative_integer(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
 @lru_cache(maxsize=LOCALE_CACHE)
 def _preferred_unit(locale: str) -> str | None:
     """The exact shape's unit when its measured support beats all opposition."""
@@ -48,9 +53,9 @@ def _preferred_unit(locale: str) -> str | None:
     support = record.get("preferred_count")
     opposition = record.get("other_count")
     if (
-        not isinstance(preferred, str)
-        or not isinstance(support, int)
-        or not isinstance(opposition, int)
+        preferred not in _FRACTIONAL_DURATION_UNITS
+        or not _nonnegative_integer(support)
+        or not _nonnegative_integer(opposition)
         or support <= opposition
     ):
         return None
