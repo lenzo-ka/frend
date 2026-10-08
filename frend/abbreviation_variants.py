@@ -396,9 +396,20 @@ def abbreviation_weights(
         return None
     expansions = measured_keys(locale).get(key, frozenset())
     key_counts: dict[str, int] = {}
-    for counts in rows.values():
+    for case, counts in rows.items():
+        case_total = 0
         for name, count in counts.items():
+            if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+                raise ValueError(
+                    f"abbreviation prior count for {key!r}/{case!r}/{name!r} "
+                    "must be a non-negative integer"
+                )
+            case_total += count
             key_counts[name] = key_counts.get(name, 0) + count
+        if case_total == 0:
+            raise ValueError(
+                f"abbreviation prior row for {key!r}/{case!r} must have a positive total"
+            )
     key_total = sum(key_counts.values())
     case_counts = rows.get(written_case(written, locale) or "")
     case_total = sum(case_counts.values()) if case_counts else 0
