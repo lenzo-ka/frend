@@ -492,8 +492,8 @@ MUTATIONS = [
         "Restore date ordering half slices",
         "tests/test_verbalize.py::test_date_alternatives_are_never_cut_to_a_prefix",
         "frend/verbalize.py",
-        "return _ranked([*month_first, *day_first])",
-        "return _ranked([*month_first[:4], *day_first[:4]])",
+        "alternatives = _ranked([*month_first, *day_first])",
+        "alternatives = _ranked([*month_first[:4], *day_first[:4]])",
     ),
     Mutation(
         "Bypass shared builder normalization",

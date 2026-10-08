@@ -67,6 +67,8 @@ def test_every_lexical_form_says_why():
 # Module-level constants a lexical emitter reads that are not spoken forms.
 _NOT_SPOKEN = {
     ("verbalize.py", "_DURATION_UNITS"): "ICU unit identifiers passed to format_measure",
+    ("verbalize.py", "_DATE_MONTH_FIRST_KEYS"): "field-set names in lexical date data",
+    ("verbalize.py", "_PLURAL_ONE"): "an ICU plural-category name",
     ("verbalize.py", "ELECTRONIC_SOURCE"): "a provenance label",
 }
 _LETTER = re.compile(r"[^\W\d_]")
@@ -406,14 +408,8 @@ def _lexical_constant_sites(source: str, name: str) -> list[str]:
     return sorted(set(found))
 
 
-# Lettered templates ``_compose`` fills from parts that can carry the lexical label,
-# still written in the code: hand-written English the table does not yet hold. Each is
-# filed for P8 (fugu review of P2, findings 1 and 2). The test fails when one is moved
-# into the table, so the entry goes with it.
-_OPEN = {
-    "verbalize.py ['{} and {}']": "a whole and a fraction ('three and a half')",
-    "verbalize.py ['{} {} and {} {}']": "money's major and minor units",
-}
+# No spoken lexical form may remain written in code.
+_OPEN = {}
 
 
 def _unlined(site: str) -> str:
@@ -562,6 +558,7 @@ def _units(text, detectors):
         unit
         for unit in compose_choices(lattice).units
         if unit.verbalized
+        and unit.alternatives
         and unit.alternatives[0].provenance != "surface:passthrough"
         and (not run_ids or unit.edge_id in run_ids)
     ]
@@ -571,10 +568,13 @@ def _units(text, detectors):
 # only the form gives.
 _CONSUMERS = [
     (
-        "date.day_first",
+        ("date.day_first", "date.month_first"),
         "9/30/1908",
         [FlexibleDateDetector("en_US")],
-        "the thirtieth of September nineteen o eight",
+        (
+            "the thirtieth of September nineteen o eight",
+            "September thirtieth, nineteen o eight",
+        ),
     ),
     ("zero.digit", "3.05", [FlexibleNumberDetector("en_US")], "three point o five"),
     ("zero.minute", "10:05", [FlexibleTimeDetector("en_US")], "ten oh five"),
@@ -615,7 +615,7 @@ _CONSUMERS = [
         "line of symbols",
     ),
     (
-        "currency.units",
+        ("currency.units", "money.minor_joiner"),
         "$1.50",
         [FlexibleCurrencyDetector("en_US", "USD")],
         "one dollar and fifty cents",
@@ -626,8 +626,19 @@ _CONSUMERS = [
         [FlexibleCurrencyDetector("en_US", "USD")],
         "two united states dollars",
     ),
-    ("fraction.denominators", "1/2", [FlexibleFractionDetector("en_US")], "one half"),
-    ("fraction.one", "3 1/2", [FlexibleFractionDetector("en_US")], "three and a half"),
+    (
+        ("fraction.denominators", "fraction.over"),
+        "1/2",
+        [FlexibleFractionDetector("en_US")],
+        ("one half", "one over two"),
+    ),
+    (
+        ("fraction.one", "fraction.mixed"),
+        "3 1/2",
+        [FlexibleFractionDetector("en_US")],
+        "three and a half",
+    ),
+    ("fraction.plural_suffix", "2/3", [FlexibleFractionDetector("en_US")], "two thirds"),
     ("ordinal.article", "V.", [FlexibleOrdinalDetector("en_US")], "the fifth"),
     ("sign.plus", "+5", [FlexibleNumberDetector("en_US")], "plus five"),
     ("numeral.plural", "1990s", [PluralNumeralDetector("en_US")], "nineteen nineties"),
@@ -703,7 +714,7 @@ _GOLDEN = {
         [
             (
                 "September thirtieth, nineteen o eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-year+lexical:en_US",
             ),
             (
                 "the thirtieth of September nineteen o eight",
@@ -711,7 +722,7 @@ _GOLDEN = {
             ),
             (
                 "September thirtieth, nineteen oh-eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-year",
             ),
             (
                 "the thirtieth of September nineteen oh-eight",
@@ -719,11 +730,11 @@ _GOLDEN = {
             ),
             (
                 "September thirtieth, one thousand nine hundred eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering",
             ),
             (
                 "September thirtieth, one thousand nine hundred and eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-verbose",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-verbose",
             ),
             (
                 "the thirtieth of September one thousand nine hundred eight",
@@ -805,15 +816,15 @@ _GOLDEN = {
         [
             (
                 "one dollar and fifty cents",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
             ),
             (
                 "one united states dollars and fifty cents",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
             ),
             (
                 "one US dollars and fifty cents",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
             ),
         ],
     ],
@@ -828,23 +839,41 @@ _GOLDEN = {
         [
             ("one half", "icu-rbnf:%spellout-numbering+lexical:en_US"),
             ("one second", "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"),
-            ("one over two", "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering"),
+            (
+                "one over two",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+            ),
         ],
     ],
     ("fraction.one", "3 1/2"): [
         [
-            ("three and a half", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            (
+                "three and a half",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US",
+            ),
             (
                 "three and one second",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal",
             ),
             (
                 "three and one half",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
             ),
             (
                 "three and one over two",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+            ),
+        ],
+    ],
+    ("fraction.plural_suffix", "2/3"): [
+        [
+            (
+                "two thirds",
+                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal+lexical:en_US",
+            ),
+            (
+                "two over three",
+                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
             ),
         ],
     ],
@@ -970,7 +999,8 @@ def test_each_lexical_reading_is_emitted_as_before(key, text, detectors, form, n
         [(item.text, item.provenance) for item in unit.alternatives]
         for unit in _units(text, detectors)
     ]
-    assert emitted == _GOLDEN[(key, text)]
+    primary = key[0] if isinstance(key, tuple) else key
+    assert emitted == _GOLDEN[(primary, text)]
 
 
 def test_the_electronic_digit_forms_are_emitted_as_before():
@@ -979,14 +1009,19 @@ def test_the_electronic_digit_forms_are_emitted_as_before():
 
 
 def test_the_golden_readings_cover_every_consumer():
-    assert set(_GOLDEN) == {(key, text) for key, text, *_ in _CONSUMERS}
+    assert set(_GOLDEN) == {
+        (key[0] if isinstance(key, tuple) else key, text) for key, text, *_ in _CONSUMERS
+    }
 
 
 def test_every_read_form_has_a_consumer_here():
     en = set(_tables()["en"]["forms"])
     # The zero words and the vowels are read as sets, not emitted: tests below and
     # tests/test_letters.py::test_the_vowels_are_the_locales cover them.
-    assert {key for key, *_ in _CONSUMERS} | {"zero.words", "letter.vowels"} == en - _UNREAD
+    consumed = {
+        item for key, *_ in _CONSUMERS for item in (key if isinstance(key, tuple) else (key,))
+    }
+    assert consumed | {"zero.words", "letter.vowels"} == en - _UNREAD
 
 
 def _spoken(text, detectors):
@@ -1007,16 +1042,18 @@ def test_an_empty_locale_turns_each_lexical_feature_off(monkeypatch, key, text, 
     assert lexical_forms("ru") == {}
 
     with_table = _spoken(text, detectors)
+    expected = () if form is None else form if isinstance(form, tuple) else (form,)
     lexical = {spoken for spoken, provenance in with_table if _LEXICAL in provenance}
     assert lexical, (key, sorted(with_table))
-    if form is not None:
-        assert form in lexical, (key, sorted(lexical))
+    assert set(expected) <= lexical, (key, sorted(lexical))
 
     ru = dict(lexical_forms("ru_RU"))
     monkeypatch.setattr(verbalize_module, "_lexical_for", lambda locale: ru)
     without = _spoken(text, detectors)
+    spoken_without = {spoken for spoken, _ in without}
     assert not {spoken for spoken, provenance in without if _LEXICAL in provenance}
-    assert not lexical & {spoken for spoken, _ in without}
+    assert not lexical & spoken_without
+    assert not set(expected) & spoken_without
 
 
 def test_an_empty_locale_says_no_zero_word_and_no_zero_digit():

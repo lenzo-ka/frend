@@ -248,6 +248,29 @@
       "why": "the corpus reads a whole and a single half or quarter with an article ('1 1/2' 'one and a half'); no CLDR pattern puts one there",
       "value": "a {0}"
     },
+    "fraction.over": {
+      "why": "the English alternative for a fraction says the numerator 'over' the denominator; ICU RBNF supplies both numbers but no fraction frame",
+      "value": "{0} over {1}"
+    },
+    "fraction.mixed": {
+      "why": "the English frame for a mixed fraction joins the whole and fraction with 'and'; ICU RBNF supplies the numeric parts but no mixed-fraction frame",
+      "value": "{0} and {1}"
+    },
+    "fraction.plural_suffix": {
+      "why": "regular English fraction denominators pluralize their ordinal with 's'; ICU RBNF supplies only the ordinal",
+      "value": "s"
+    },
+    "money.minor_joiner": {
+      "why": "the corpus joins an English currency's major and minor units with 'and'; ICU supplies the amounts and CLDR names but no spoken major-minor frame",
+      "value": "{0} and {1}"
+    },
+    "date.month_first": {
+      "why": "US English says month-first dates with a space before the day and a comma before the year; CLDR's written date patterns do not specify this spoken composition",
+      "value": {
+        "Mdy": "{0} {1}, {2}",
+        "Md": "{0} {1}"
+      }
+    },
     "ordinal.article": {
       "why": "the corpus reads a Roman numeral or Roman ordinal with 'the' ('Henry II' 'the second', 'V.' 'the fifth'); no CLDR pattern puts an article before an ordinal",
       "value": "the {0}"

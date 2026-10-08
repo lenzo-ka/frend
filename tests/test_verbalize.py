@@ -569,15 +569,16 @@ def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(mon
     from frend.spoken_priors import SpokenPriorTable
 
     ordinal = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"
-    over = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering"
+    measured_over = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering"
+    over = "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering"
     table = SpokenPriorTable(
         {
             "fraction": {
                 "total": 4,
                 "matched": 4,
                 "unmatched": 0,
-                "source_matched": {ordinal: 3, over: 1},
-                "sub_keys": {"2": {"matched": 4, "source_matched": {ordinal: 3, over: 1}}},
+                "source_matched": {ordinal: 3, measured_over: 1},
+                "sub_keys": {"2": {"matched": 4, "source_matched": {ordinal: 3, measured_over: 1}}},
                 "unmatched_by_reason": {
                     "unrecognized": 0,
                     "unverbalized": 0,

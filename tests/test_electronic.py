@@ -335,8 +335,13 @@ _LEXICAL_VALUE_SCHEMA = {
     "currency.region_names": {"USD": _PAIR},
     "fraction.denominators": {"2": _PAIR, "4": _PAIR},
     "fraction.one": _FORM,
+    "fraction.over": _FORM,
+    "fraction.mixed": _FORM,
+    "fraction.plural_suffix": _FORM,
+    "money.minor_joiner": _FORM,
     "ordinal.article": _FORM,
     "date.day_first": _FORM,
+    "date.month_first": {"Mdy": "{0} {1}, {2}", "Md": "{0} {1}"},
     "sign.plus": _FORM,
     "numeral.plural": [
         {
