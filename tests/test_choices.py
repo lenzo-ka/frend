@@ -122,6 +122,15 @@ def test_choices_reject_source_text_shorter_than_the_detection_extent():
         resolve_choices([_det("xx", 0, 2, "x")], source_text="x")
 
 
+def test_choices_reject_a_detection_from_a_different_source_surface():
+    with pytest.raises(ValueError, match=r"detection text '5'.*source_text\[0:1\] 'x'"):
+        resolve_choices([_det("5", 0, 1, "number:cardinal")], source_text="x")
+
+    matching = _det("x", 0, 1, "reading")
+    (edge,) = _readings(resolve_choices([matching], source_text="x"))
+    assert edge.detection == matching
+
+
 def test_choices_snapshot_detections_against_caller_mutation():
     nested = {"parts": ["kept"]}
     bad = _det("xx", 0, 0, "bad", nested=nested)
