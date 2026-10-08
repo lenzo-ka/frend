@@ -3,6 +3,7 @@
 import pytest
 from icukit import FlexibleNumericDurationDetector
 
+from frend import durations
 from frend.durations import NumericDurationDetector
 
 
@@ -23,6 +24,58 @@ def _signature(detector, written: str) -> list[tuple]:
 def test_fractional_colon_keeps_the_elapsed_seconds_parse():
     found = NumericDurationDetector("en_US").detect("2:08.34")
     assert [detection["value"].unit for detection in found] == ["second"]
+
+
+@pytest.mark.parametrize(
+    ("preferred_unit", "preferred_count", "other_count"),
+    [
+        ("fortnight", 2, 1),
+        ("second", True, 0),
+        ("second", 2, False),
+        ("second", -1, 0),
+        ("second", 2, -1),
+        ("second", 1.5, 0),
+        ("second", 2, 0.5),
+    ],
+)
+def test_malformed_duration_prior_abstains(
+    monkeypatch, preferred_unit, preferred_count, other_count
+):
+    monkeypatch.setattr(
+        durations,
+        "measured_table",
+        lambda *_args: {
+            "numeric_duration": {
+                "preferred_unit": preferred_unit,
+                "preferred_count": preferred_count,
+                "other_count": other_count,
+            }
+        },
+    )
+    durations._preferred_unit.cache_clear()
+    assert durations._preferred_unit("en_US") is None
+    found = NumericDurationDetector("en_US").detect("2:08.34")
+    assert [detection["value"].unit for detection in found] == ["minute", "second"]
+    durations._preferred_unit.cache_clear()
+
+
+def test_valid_duration_prior_requires_strictly_greater_support(monkeypatch):
+    record = {
+        "preferred_unit": "second",
+        "preferred_count": 2,
+        "other_count": 1,
+    }
+    monkeypatch.setattr(
+        durations,
+        "measured_table",
+        lambda *_args: {"numeric_duration": record},
+    )
+    durations._preferred_unit.cache_clear()
+    assert durations._preferred_unit("en_US") == "second"
+    record["other_count"] = 2
+    durations._preferred_unit.cache_clear()
+    assert durations._preferred_unit("en_US") is None
+    durations._preferred_unit.cache_clear()
 
 
 @pytest.mark.parametrize(
