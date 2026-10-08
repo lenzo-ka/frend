@@ -18,6 +18,19 @@ from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
 __all__ = ["NumberPrior", "NumberPriorTable", "load_number_priors"]
 
+_CHOICES = frozenset({"date", "cardinal", "digit"})
+
+
+def _validated_counts(value: Mapping[object, object], label: str) -> Mapping[str, int]:
+    counts: dict[str, int] = {}
+    for name, count in value.items():
+        if not isinstance(name, str) or name not in _CHOICES:
+            raise ValueError(f"{label} has unknown choice keys")
+        if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+            raise ValueError(f"{label} counts must be nonnegative integers")
+        counts[name] = count
+    return MappingProxyType(counts)
+
 
 @dataclass(frozen=True)
 class NumberPrior:
@@ -39,18 +52,12 @@ class NumberPriorTable:
         for key, value in raw.items():
             if not isinstance(value, Mapping):
                 raise ValueError(f"centuries.{key} must be a mapping")
-            counts = {str(name): count for name, count in value.items()}
-            if any(not isinstance(count, int) or count < 0 for count in counts.values()):
-                raise ValueError(f"centuries.{key} counts must be nonnegative integers")
-            rows[str(key)] = MappingProxyType(counts)
+            rows[str(key)] = _validated_counts(value, f"centuries.{key}")
         total = document.get("all")
         if not isinstance(total, Mapping):
             raise ValueError("a number-prior table needs all-century counts")
-        all_counts = {str(name): count for name, count in total.items()}
-        if any(not isinstance(count, int) or count < 0 for count in all_counts.values()):
-            raise ValueError("all-century counts must be nonnegative integers")
         self._rows = MappingProxyType(rows)
-        self._all = MappingProxyType(all_counts)
+        self._all = _validated_counts(total, "all-century")
         self.provenance = MappingProxyType(dict(document.get("provenance", {})))
 
     def lookup(self, written: str, choice: str) -> NumberPrior | None:
