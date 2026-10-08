@@ -323,6 +323,14 @@ def test_lattice_ambiguity_matches_resolution(detections, expected):
     assert lattice.ambiguous == (lattice.structural_ambiguous or lattice.semantic_ambiguous)
 
 
+@pytest.mark.parametrize(("start", "end"), [(True, 2), ("0", "1"), (0.9, 1.9)])
+def test_lattice_rejects_non_integer_and_boolean_detection_offsets(start, end):
+    detection = _det("xx", 0, 1, "x")
+    detection.update(start=start, end=end)
+    with pytest.raises(ValueError, match="detection offsets must be integers"):
+        resolve_lattice([detection])
+
+
 def test_resolve_lattice_contract_names_the_choice_carrier():
     assert "future phase" not in getdoc(resolve_lattice)
     assert "resolve_choices" in getdoc(resolve_lattice)
