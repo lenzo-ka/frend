@@ -220,7 +220,7 @@ def spellout_dictionary_entry(
     *,
     case_variant_lookup: bool = False,
 ) -> dict[str, object] | None:
-    """Return an exact row, or an opted-in unanimous case-variant row."""
+    """Return a valid exact row, or an opted-in unanimous case-variant row."""
     table = _spellout_dictionary(canonical_locale(locale))
     if table is None:
         return None
@@ -233,12 +233,22 @@ def spellout_dictionary_entry(
     if row is None:
         return None
     decision, say_count, spell_count = row
+    if decision not in ("say", "spell"):
+        raise ValueError(f"spell-out dictionary decision must be 'say' or 'spell': {decision!r}")
+    if any(
+        isinstance(count, bool) or not isinstance(count, int) or count < 0
+        for count in (say_count, spell_count)
+    ):
+        raise ValueError("spell-out dictionary counts must be nonnegative integers")
+    total = say_count + spell_count
+    if total == 0:
+        raise ValueError("spell-out dictionary counts must have a positive total")
     counts = {"say": say_count, "spell": spell_count}
     return {
         "counts": counts,
         "decision": decision,
         "source": source,
-        "spell_share": spell_count / sum(counts.values()),
+        "spell_share": spell_count / total,
     }
 
 
