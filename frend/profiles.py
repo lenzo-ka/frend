@@ -108,14 +108,7 @@ def validate_groups(
         if len(order) != len(roles) or set(order) != set(roles):
             listed = ", ".join(repr(role) for role in roles)
             raise ValueError(f"group {group!r} order must list each of {listed} exactly once")
-        if (
-            isinstance(raw_setting, GroupSetting)
-            and raw_setting.order == order
-            and raw_setting.options == options
-        ):
-            normalized.append((group, raw_setting))
-        else:
-            normalized.append((group, GroupSetting(order, MappingProxyType(options))))
+        normalized.append((group, GroupSetting(order, MappingProxyType(options))))
     return tuple(normalized)
 
 

@@ -501,7 +501,14 @@ def test_c17_group_objects_options_and_refusals_are_exact(tmp_path):
     assert isinstance(numbered, GroupSetting)
     assert sequence.options == object_default.options == {"digits": "each"}
     assert numbered.options == {"digits": "number"}
-    assert dict(validate_groups({"char-detail": numbered}))["char-detail"] is numbered
+    assert dict(validate_groups({"char-detail": numbered}))["char-detail"] is not numbered
+    source_options = {"digits": "number"}
+    source = GroupSetting(order, source_options)
+    frozen = dict(validate_groups({"char-detail": source}))["char-detail"]
+    source_options["digits"] = "each"
+    assert frozen.options == {"digits": "number"}
+    with pytest.raises(TypeError):
+        frozen.options["digits"] = "each"  # type: ignore[index]
     full_order = GroupSetting(order, {})
     assert dict(validate_groups({"char-detail": full_order}))["char-detail"].options == {
         "digits": "each"
@@ -602,7 +609,8 @@ def test_c18_behavior_options_compose_key_by_key_and_round_trip(tmp_path):
     )
     once = dict(validate_groups(second.kwargs["groups"]))
     twice = dict(validate_groups(once))
-    assert twice["char-detail"] is once["char-detail"]
+    assert twice["char-detail"] is not once["char-detail"]
+    assert twice["char-detail"] == once["char-detail"]
 
 
 @pytest.mark.parametrize(("_label", "text", "expected"), NUMBER_EXAMPLES)
