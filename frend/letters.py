@@ -91,10 +91,31 @@ _M = _character_class(_MARKS)
 _MARK_RANGES = _character_class(_MARKS, bracket=False)
 _CAPITAL = f"{_LU}{_M}*"
 _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
-_RUN = re.compile(rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s|['’]s)?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
+_RUN = re.compile(
+    rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s|['’][sS])?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)"
+)
 _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(?![\w{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
 _SHORT_TOKEN = re.compile(rf"{_BEFORE}((?:{_L}{_M}*){{2,6}})(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
+# Uppercase apostrophe-S is ambiguous with an uppercase English contraction. Preserve
+# the ordinary closed-class contractions that the previous suffix grammar left alone.
+_EN_UPPERCASE_S_CONTRACTION_STEMS = frozenset(
+    {
+        "HE",
+        "SHE",
+        "IT",
+        "THAT",
+        "WHAT",
+        "WHO",
+        "WHERE",
+        "WHEN",
+        "WHY",
+        "HOW",
+        "THERE",
+        "HERE",
+        "LET",
+    }
+)
 
 
 def capitals(letters: str) -> tuple[str, ...] | None:
@@ -151,11 +172,12 @@ def split_acronym_surface(token: str) -> tuple[str, str] | None:
     """Return an acronym's NFC base and suffix subkey, or ``None``.
 
     The suffix grammar is the detector's: a lower-case ``s`` is plural and either
-    apostrophe followed by ``s`` is possessive. An upper-case final ``S`` remains part
-    of the case-preserved base (``AIDS`` is bare, while ``AIDS's`` is possessive).
+    apostrophe followed by ``s`` or ``S`` is possessive. An upper-case final ``S``
+    without an apostrophe remains part of the case-preserved base (``AIDS`` is bare,
+    while ``AIDS'S`` is possessive).
     """
     token = _NFC.normalize(token)
-    if token.endswith(("'s", "’s")):
+    if len(token) >= 2 and token[-2] in "'’" and token[-1] in "sS":
         letters, subkey = token[:-2], "possessive"
     elif token.endswith("s"):
         letters, subkey = token[:-1], "plural"
@@ -227,6 +249,10 @@ def spellout_dictionary_entry(
     token = _NFC.normalize(token)
     exact, aliases, source = table
     row = exact.get(token)
+    if row is None and len(token) >= 2 and token[-2] in "'’" and token[-1] == "S":
+        # The detector treats uppercase and lowercase possessive suffixes alike. Their
+        # case is not part of the acronym, so reuse the measured lowercase-suffix row.
+        row = exact.get(f"{token[:-1]}s")
     if row is None and case_variant_lookup:
         target = aliases.get(token.casefold())
         row = None if target is None else exact.get(target)
@@ -408,6 +434,12 @@ class LettersDetector:
             letters, suffix = match.group(1), match.group(2) or ""
             if not is_letter_run(letters):
                 # Capitals of two scripts ("AΒ") are not one run.
+                continue
+            if (
+                suffix.endswith("S")
+                and canonical_locale(self.locale).split("_", 1)[0] == "en"
+                and letters in _EN_UPPERCASE_S_CONTRACTION_STEMS
+            ):
                 continue
             if (
                 not suffix
