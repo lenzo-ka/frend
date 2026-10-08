@@ -11,7 +11,13 @@ import pytest
 from icukit.detectors import detect
 
 from frend import resolve_lattice, verbalize_lattice
-from frend.britishisms import _file_key, _load_britishisms_for, apply_edit_rule
+from frend.britishisms import (
+    _file_key,
+    _load_britishisms_for,
+    apply_edit_rule,
+    load_britishisms,
+)
+from frend.profiles import google_tn_britishisms_path
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
@@ -26,6 +32,36 @@ def _builder():
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def test_builder_help_describes_google_tn_plain_rewrites(capsys):
+    with pytest.raises(SystemExit, match="0"):
+        _builder().main(["--help"])
+
+    help_text = capsys.readouterr().out
+    assert "Google-TN PLAIN rewrites" in help_text
+    assert "Britishism" not in help_text
+    assert "UK-to-US" not in help_text
+
+
+def test_missing_loader_error_describes_google_tn_plain_rewrites(tmp_path):
+    missing = tmp_path / "missing.json"
+    with pytest.raises(FileNotFoundError) as caught:
+        _file_key(missing)
+
+    message = str(caught.value)
+    assert "Google-TN PLAIN rewrite profile data is missing" in message
+    assert "Britishism" not in message
+
+
+def test_compatibility_path_identifiers_keep_env_var_and_default_filename(tmp_path, monkeypatch):
+    configured = tmp_path / "legacy-name.json"
+    monkeypatch.setenv("FREND_GOOGLE_TN_BRITISHISMS_PATH", str(configured))
+    assert google_tn_britishisms_path() == configured
+
+    monkeypatch.delenv("FREND_GOOGLE_TN_BRITISHISMS_PATH")
+    monkeypatch.setenv("FREND_GOOGLE_TN_PROFILE_PATH", str(tmp_path / "acronym_surfaces.json"))
+    assert google_tn_britishisms_path() == tmp_path / "britishisms.json"
 
 
 @pytest.mark.parametrize(
@@ -152,6 +188,34 @@ def _profile(path: Path, *, pairs, rules=None, support=1, fold=False, digest="0"
         ),
         encoding="utf-8",
     )
+
+
+def test_validation_loader_error_describes_google_tn_plain_rewrites(tmp_path):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(britishisms, pairs={})
+    document = json.loads(britishisms.read_text(encoding="utf-8"))
+    document["schema_version"] = 2
+    britishisms.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(ValueError) as caught:
+        _load_britishisms_for(*_file_key(britishisms))
+
+    message = str(caught.value)
+    assert "invalid Google-TN PLAIN rewrite data" in message
+    assert "Britishism" not in message
+
+
+def test_locale_loader_error_describes_google_tn_plain_rewrites(tmp_path, monkeypatch):
+    britishisms = tmp_path / "britishisms.json"
+    _profile(britishisms, pairs={})
+    monkeypatch.setenv("FREND_GOOGLE_TN_BRITISHISMS_PATH", str(britishisms))
+
+    with pytest.raises(ValueError) as caught:
+        load_britishisms(locale="fr")
+
+    message = str(caught.value)
+    assert "Google-TN PLAIN rewrite data is for en, not fr" in message
+    assert "Britishism" not in message
 
 
 @pytest.mark.parametrize(

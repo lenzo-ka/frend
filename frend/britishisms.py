@@ -1,4 +1,4 @@
-"""Corpus-measured Kestrel UK-to-US respelling for the ``google-tn`` profile."""
+"""Corpus-measured Google-TN PLAIN rewrites."""
 
 from __future__ import annotations
 
@@ -92,7 +92,7 @@ def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]
 
 def _missing(path: Path) -> FileNotFoundError:
     return FileNotFoundError(
-        f"{GOOGLE_TN!r} Britishism profile data is missing at {path}; build it from your "
+        f"Google-TN PLAIN rewrite profile data is missing at {path}; build it from your "
         "licensed Google TN corpus with tools/build_britishisms.py --profile-out PATH"
     )
 
@@ -117,7 +117,7 @@ def _file_key(path: Path) -> tuple[str, int, int, str]:
         after.st_size,
     )
     if freshness != after_freshness:
-        raise ValueError(f"{GOOGLE_TN!r} Britishism profile data changed while being read")
+        raise ValueError("Google-TN PLAIN rewrite profile data changed while being read")
     key = (str(resolved), stat.st_mtime_ns, stat.st_size, hashlib.sha256(content).hexdigest())
     _FILE_KEYS[str(resolved)] = (freshness, key)
     return key
@@ -128,7 +128,7 @@ def load_britishisms(*, locale: str = "en_US") -> BritishismTable:
     table = _load_britishisms_for(*_file_key(google_tn_britishisms_path()))
     effective = canonical_locale(locale)
     if effective.split("_", 1)[0] != table.locale.split("_", 1)[0]:
-        raise ValueError(f"{GOOGLE_TN!r} Britishism data is for {table.locale}, not {effective}")
+        raise ValueError(f"Google-TN PLAIN rewrite data is for {table.locale}, not {effective}")
     return table
 
 
@@ -145,20 +145,20 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
         or stat.st_size != size
         or hashlib.sha256(content).hexdigest() != sha256
     ):
-        raise ValueError(f"{GOOGLE_TN!r} Britishism profile data changed while being loaded")
+        raise ValueError("Google-TN PLAIN rewrite profile data changed while being loaded")
     data = json.loads(content, object_pairs_hook=_reject_duplicate_keys)
     if not isinstance(data, dict) or data.get("schema_version") != 1:
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: wrong schema version")
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: wrong schema version")
     if data.get("profile") != GOOGLE_TN:
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: wrong profile name")
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: wrong profile name")
     locale = data.get("locale")
     provenance = data.get("provenance")
     source_shards = provenance.get("source_shards") if isinstance(provenance, dict) else None
     if not isinstance(locale, str) or not locale:
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: no locale")
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: no locale")
     if not isinstance(source_shards, list) or len(source_shards) != 90:
         raise ValueError(
-            f"invalid {GOOGLE_TN!r} Britishism data at {path}: "
+            f"invalid Google-TN PLAIN rewrite data at {path}: "
             "expected all 90 verified training shards"
         )
     expected_names = {f"output-{index:05d}-of-00100" for index in range(90)}
@@ -170,7 +170,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
         for item in source_shards
     ):
         raise ValueError(
-            f"invalid {GOOGLE_TN!r} Britishism data at {path}: invalid source-shard digests"
+            f"invalid Google-TN PLAIN rewrite data at {path}: invalid source-shard digests"
         )
     selection = data.get("selection")
     pairs = data.get("pairs")
@@ -180,7 +180,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
         or not isinstance(pairs, dict)
         or not isinstance(rules, dict)
     ):
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: missing tables")
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: missing tables")
     try:
         admitted_classes = frozenset(selection["admitted_classes"])
         minimum_support = {
@@ -189,17 +189,17 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
         case_folding = selection["case_folding"]["enabled"]
         threshold = float(selection["rule_rate_threshold"])
     except (KeyError, TypeError, ValueError) as exc:
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad selection") from exc
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad selection") from exc
     if any(not isinstance(name, str) or not isinstance(row, dict) for name, row in rules.items()):
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad rules table")
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad rules table")
     enabled: dict[str, dict[str, frozenset[str]]] = {}
     for name, shapes in rules.items():
         if not isinstance(shapes, dict) or not set(shapes) <= set(CASE_SHAPES):
-            raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad rule shapes")
+            raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad rule shapes")
         selected_shapes = {}
         for shape, row in shapes.items():
             if not isinstance(row, dict) or not isinstance(row.get("stems", []), list):
-                raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad rule stems")
+                raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad rule stems")
             if row.get("enabled") is True:
                 if (
                     not isinstance(row.get("converted"), int)
@@ -210,7 +210,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
                     or not isinstance(row.get("stems"), list)
                 ):
                     raise ValueError(
-                        f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad rule audit fields"
+                        f"invalid Google-TN PLAIN rewrite data at {path}: bad rule audit fields"
                     )
                 selected_shapes[shape] = frozenset(row["stems"])
         if selected_shapes:
@@ -232,12 +232,12 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
             for stem in stems
         )
     ):
-        raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad selection")
+        raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad selection")
     for word, shapes in pairs.items():
         if not isinstance(word, str) or word != word.casefold() or not isinstance(shapes, dict):
-            raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad pair row")
+            raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad pair row")
         if not shapes or not set(shapes) <= set(CASE_SHAPES):
-            raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad pair shapes")
+            raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad pair shapes")
         for row in shapes.values():
             if (
                 not isinstance(row, dict)
@@ -252,7 +252,7 @@ def _load_britishisms_for(path_text: str, mtime_ns: int, size: int, sha256: str)
                 or row["converted"] < 0
                 or row["left"] < 0
             ):
-                raise ValueError(f"invalid {GOOGLE_TN!r} Britishism data at {path}: bad pair row")
+                raise ValueError(f"invalid Google-TN PLAIN rewrite data at {path}: bad pair row")
     shards = tuple(sorted((item["relative_path"], item["sha256"]) for item in source_shards))
     return BritishismTable(
         canonical_locale(locale),
