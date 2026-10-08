@@ -49,6 +49,19 @@ def test_grouped_ids_span_the_token_and_read_each_character(written, spoken):
     assert forms[0] == spoken
 
 
+@pytest.mark.parametrize(
+    ("compact", "grouped", "invalid"),
+    [
+        ("0306406152", "0-306-40615-2", "0306406153"),
+        ("9780306406157", "978-0-306-40615-7", "9780306406158"),
+    ],
+)
+def test_isbn_validation_is_separator_neutral(compact, grouped, invalid):
+    assert grouped_module.is_valid_isbn(compact)
+    assert grouped_module.is_valid_isbn(grouped)
+    assert not grouped_module.is_valid_isbn(invalid)
+
+
 def test_isbn_label_enables_the_checksum_case_telephone_rejects():
     text = "ISBN 123-456-7881"
     assert TelephoneDetector("en_US").detect(text) == []
