@@ -86,6 +86,45 @@ def test_a_key_never_written_in_title_case_ranks_by_its_key():
     assert abbreviation_weights("Mr.", ["Mister"]) == abbreviation_weights("Mr", ["Mister"])
 
 
+@pytest.mark.parametrize(
+    "counts",
+    [
+        {"as-written": -1, "spelled": 2},
+        {"as-written": True, "spelled": 2},
+        {"as-written": 1.5, "spelled": 2},
+        {"as-written": 0, "spelled": 0},
+    ],
+)
+def test_malformed_abbreviation_prior_counts_raise(monkeypatch, counts):
+    from frend import abbreviation_variants
+
+    monkeypatch.setattr(
+        abbreviation_variants,
+        "abbreviation_priors",
+        lambda **_kwargs: {"mr": {"lower": counts}},
+    )
+    with pytest.raises(ValueError):
+        abbreviation_variants.abbreviation_weights("mr", ["mr"])
+
+
+def test_valid_abbreviation_prior_counts_produce_bounded_weights(monkeypatch):
+    from frend import abbreviation_variants
+
+    monkeypatch.setattr(
+        abbreviation_variants,
+        "abbreviation_priors",
+        lambda **_kwargs: {
+            "mr": {
+                "lower": {"as-written": 1, "spelled": 2},
+                "upper": {"as-written": 2, "spelled": 1},
+            }
+        },
+    )
+    weights = abbreviation_variants.abbreviation_weights("mr", ["mr", "m r"])
+    assert weights is not None
+    assert all(weight is not None and Decimal(0) <= weight <= Decimal(1) for weight in weights)
+
+
 def test_corpus_surface_st_reads_saint_first():
     assert _first("st Paul") == "saint paul"
     assert "street" in _alternatives("st Paul")
