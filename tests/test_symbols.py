@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+
 import pytest
 from icukit.detectors import detect
 
@@ -39,6 +41,53 @@ def test_symbol_reads_as_the_corpus_measures_it(text, first):
 def test_every_cldr_name_and_silence_are_offered():
     forms = _forms("&")
     assert {"ampersand", "and", ""} <= set(forms)
+
+
+@pytest.mark.parametrize(
+    ("text", "names"),
+    [
+        ("¹", {"superscript one"}),
+        ("²", {"superscript two", "squared"}),
+        ("³", {"superscript three", "cubed"}),
+    ],
+)
+def test_cldr_named_digit_like_symbols_are_read_but_decimal_digits_are_not(text, names):
+    (detection,) = SymbolDetector().detect(text)
+    assert detection["type"] == "symbol:cldr"
+    assert names <= {name for name, _source in detection["value"].names}
+    for decimal_digit in "123":
+        assert SymbolDetector().detect(decimal_digit) == []
+
+
+@pytest.mark.parametrize(
+    ("text", "spoken"),
+    [("x¹", "superscript one"), ("x²", "superscript two")],
+)
+def test_cldr_named_digit_like_symbol_is_spoken_first_inside_a_token(text, spoken):
+    normalized = frend.normalize(text, fold=None).strip()
+
+    assert spoken in normalized
+    assert normalized != text
+
+
+def test_measured_spoken_digit_like_alternative_can_outrank_cldr_first_name(monkeypatch):
+    import frend.verbalize as verbalize_module
+    from frend.spoken_priors import SourceMeasurement
+
+    shares = {
+        "surface:silence": Decimal("0.99"),
+        "cldr-symbol:superscript two": Decimal("0.8"),
+        "cldr-symbol:squared": Decimal("0.9"),
+    }
+
+    def measured(_kind, source, _sub_key, *, locale="en_US"):
+        del locale
+        share = shares.get(source)
+        return None if share is None else SourceMeasurement(1, share)
+
+    monkeypatch.setattr(verbalize_module, "source_prior", measured)
+
+    assert normalize_spoken(frend.normalize("x²", fold=None)) == "x squared"
 
 
 @pytest.mark.parametrize("text", ["ᵋ", "々"])
