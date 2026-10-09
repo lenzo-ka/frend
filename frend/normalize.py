@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Literal, overload
 
 from icukit import break_sentence_spans
-from icukit.detectors import date_detectors, detect
+from icukit.detectors import DetectorSet, date_detectors
 from icukit.recognize import (
     AlphanumericRunsDetector,
     FlexibleCompactDetector,
@@ -42,7 +43,7 @@ from frend.lattice import ReadingEdge, _resolve_lattice_validated
 from frend.letters import LettersDetector, _dotted_acronym_suffix_spans
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
-from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
+from frend.ranges import RangeDetector, _date_interval_gang, icu_range_readers
 from frend.spacing import unit_gap
 from frend.symbols import (
     DEFAULT_SYMBOL_RUN_THRESHOLD,
@@ -114,15 +115,35 @@ _MEASURE_UNITS = (
 _MIXED_MEASURES = ("foot-and-inch", "pound-and-ounce")
 
 
-class _DetectorRegistry(tuple[object, ...]):
-    """Built detectors plus optional families unavailable for this locale."""
+class _DetectorRegistry(Sequence[object]):
+    """One retained icukit gang plus optional families unavailable for its locale.
 
-    missing_families: tuple[str, ...]
+    The sequence methods preserve the detector-profile interface used by offline tools.
+    Production recognition goes through :meth:`detect`, so icukit can compile the gang
+    once and retain its shared scan plan and tables for later texts.
+    """
 
-    def __new__(cls, detectors: list[object], missing_families: list[str]) -> _DetectorRegistry:
-        registry = super().__new__(cls, detectors)
-        registry.missing_families = tuple(missing_families)
-        return registry
+    def __init__(self, detectors: list[object], missing_families: list[str]) -> None:
+        self.gang = DetectorSet(tuple(detectors))
+        self.missing_families = tuple(missing_families)
+
+    def __getitem__(self, index):
+        return self.gang.detectors[index]
+
+    def __iter__(self) -> Iterator[object]:
+        return iter(self.gang.detectors)
+
+    def __len__(self) -> int:
+        return len(self.gang.detectors)
+
+    def detect(self, text: str) -> list:
+        return self.gang.detect(text)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _date_detector_gang(locale: str) -> DetectorSet:
+    """The retained strict date gang also used to protect sentence boundaries."""
+    return date_detectors(locale, _DATE_SKELETONS)
 
 
 @dataclass(frozen=True)
@@ -154,7 +175,7 @@ def _reading_detectors(
 
     runs = AlphanumericRunsDetector(locale)
     written = WrittenFormsDetector(locale)
-    dates = date_detectors(locale, _DATE_SKELETONS).with_(
+    dates = _date_detector_gang(locale).with_(
         FlexibleDateDetector(locale),
         FlexibleTextDateDetector(locale),
         PluralNumeralDetector(locale),
@@ -193,7 +214,7 @@ def _reading_detectors(
         (number, written),
         (SymbolDetector(locale, run_threshold=symbol_run_threshold),),
         numbers,
-        (*dates.detectors, *date_interval_readers(locale), written),
+        (*dates.detectors, *_date_interval_gang(locale).detectors, written),
         (FlexibleFractionDetector(locale),),
         (FlexibleOrdinalDetector(locale), number, runs),
         (FlexibleTimeDetector(locale), NumericDurationDetector(locale), runs, written),
@@ -233,7 +254,7 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     # spans, so keep each boundary strictly inside a date edge in one unit.
     crossing_dates = sorted(
         (int(edge["start"]), int(edge["end"]))
-        for edge in detect(text, date_detectors(locale, _DATE_SKELETONS).detectors)
+        for edge in _date_detector_gang(locale).detect(text)
         if str(edge.get("type", "")).startswith("date:")
     )
     date_index = 0
@@ -308,7 +329,7 @@ def _sentence(
     symbol_run_threshold: int,
     groups: GroupOrders | None,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
-    detections = detect(text, _reading_detectors(locale, symbol_run_threshold))
+    detections = _reading_detectors(locale, symbol_run_threshold).detect(text)
     detections = [
         detection
         for detection in detections

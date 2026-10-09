@@ -54,7 +54,7 @@ from types import MappingProxyType
 from typing import Any, Literal
 
 import icu
-from icukit.detectors import Capture, DateTimeValue, NumberValue
+from icukit.detectors import Capture, DateTimeValue, DetectorSet, NumberValue
 
 from frend.durations import fractional_duration_shape
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
@@ -144,6 +144,12 @@ def date_interval_readers(locale: str) -> tuple[object, ...]:
         SpeakableDateIntervalDetector(reader)
         for reader in generated_detectors(locale, [SPOKEN_DATE_INTERVALS]).detectors
     )
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _date_interval_gang(locale: str) -> DetectorSet:
+    """Retain the filtered interval readers as one compiled gang per locale."""
+    return DetectorSet(tuple(date_interval_readers(locale)))
 
 
 class SpeakableDateIntervalDetector:
@@ -989,6 +995,7 @@ class RangeDetector:
     ) -> None:
         self.locale = canonical_locale(locale)
         self.endpoints = tuple(endpoints)
+        self._endpoint_gang = DetectorSet(self.endpoints)
         self._table = table
         self._ends: dict[str, Mapping | None] = {}
         self._date_ends: dict[str, Mapping | None] = {}
@@ -1002,9 +1009,7 @@ class RangeDetector:
     # -- ends
 
     def _read(self, text: str) -> list:
-        from icukit.detectors import detect
-
-        return list(detect(text, self.endpoints)) if text.strip() else []
+        return self._endpoint_gang.detect(text) if text.strip() else []
 
     def end(self, text: str) -> Mapping | None:
         """``text`` read whole as a range's end (R7): the first reading, in icukit's
@@ -1329,8 +1334,7 @@ class RangeDetector:
             # do not build a parallel frend reading.
             icu_spans = {
                 (found["start"], found["end"])
-                for reader in date_interval_readers(self.locale)
-                for found in reader.detect(text)
+                for found in _date_interval_gang(self.locale).detect(text)
             }
             date_candidates = [
                 found

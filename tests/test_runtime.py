@@ -7,6 +7,7 @@ import subprocess
 import sys
 
 import frend  # noqa: F401 - imported so the process state below includes it
+from frend.normalize import _reading_detectors
 
 _FROZEN_AT_IMPORT = gc.get_freeze_count()
 
@@ -40,3 +41,17 @@ def test_freeze_after_setup_freezes_what_is_alive_and_leaves_collection_on():
 def test_this_process_keeps_its_frozen_objects():
     """The tests above leave the test process's frozen generation as they found it."""
     assert gc.get_freeze_count() == _FROZEN_AT_IMPORT
+
+
+def test_normalize_retains_one_compiled_reading_gang_per_locale():
+    threshold = 987_654
+    registry = _reading_detectors("en_US", threshold)
+
+    assert registry.gang._compiled is None
+    frend.normalize("123", symbol_run_threshold=threshold)
+    compiled = registry.gang._compiled
+    frend.normalize("456", symbol_run_threshold=threshold)
+
+    assert compiled is not None
+    assert registry.gang._compiled is compiled
+    assert _reading_detectors("en_US", threshold).gang is registry.gang
