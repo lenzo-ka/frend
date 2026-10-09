@@ -534,6 +534,24 @@ def test_builder_graph_has_exact_legacy_shape_and_round_trips(monkeypatch):
     assert dumps(loads(serialized)) == serialized
 
 
+def test_builder_shares_equal_retained_graph_values():
+    """The retained alignment graph interns equal immutable attribute values."""
+    alignment = build_align_graph(
+        choices("abc", [(0, 3, ["one two three", "first second third"], prior())])
+    )
+    attributes = [
+        attribute for item in alignment.graph.tiers[0].items for attribute in item.attributes
+    ]
+    repeated = [
+        [candidate for candidate in attributes if candidate == attribute]
+        for attribute in set(attributes)
+        if attributes.count(attribute) > 1
+    ]
+
+    assert repeated
+    assert all(len({id(attribute) for attribute in group}) == 1 for group in repeated)
+
+
 def test_carrier_log_survives_underflowing_p():
     """Kill math.log(float(ratio)); use a much larger scored span-mate."""
     alignment = build_align_graph(
