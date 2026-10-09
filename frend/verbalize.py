@@ -634,7 +634,7 @@ def _spoken_decimal(
 ) -> tuple[SpokenAlternative, ...]:
     sign, digits, exponent = value.as_tuple()
     if exponent >= 0:
-        return _number_leaf(value, "cardinal", locale)
+        return _signed_integer_leaf(abs(value), bool(sign), locale)
     digit_text = "".join(str(digit) for digit in digits).rjust(-exponent + 1, "0")
     integer_digits = digit_text[:exponent]
     fractional_digits = digit_text[exponent:]
@@ -708,7 +708,7 @@ def _spoken_decimal(
                 SpokenAlternative(direct, _rbnf_provenance(f"{rule.ruleset}:direct", locale))
             )
     if set(fractional_digits) <= {"0"} and value == value.to_integral_value():
-        alternatives.extend(_number_leaf(value, "cardinal", locale))
+        alternatives.extend(_signed_integer_leaf(abs(value), bool(sign), locale))
     return _ranked(alternatives)
 
 
@@ -796,7 +796,9 @@ def _compact_scale(magnitude: int, amount: Decimal, locale: str) -> SpokenAltern
     return SpokenAlternative(scale, "icu-compact:long")
 
 
-def _spoken_compact(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
+def _spoken_compact(
+    detection: object, locale: str, *, preserve_negative_zero: bool = False
+) -> tuple[SpokenAlternative, ...]:
     integer = _capture(detection, "integer")
     compact = _capture(detection, "compact")
     if integer is None or compact is None:
@@ -809,10 +811,12 @@ def _spoken_compact(detection: object, locale: str) -> tuple[SpokenAlternative, 
     if sign is not None and str(sign.text).strip() == "-":
         mantissa_text = f"-{mantissa_text}"
     mantissa = Decimal(mantissa_text)
+    if not preserve_negative_zero and not mantissa:
+        mantissa = abs(mantissa)
     mantissa_words = (
         _spoken_decimal(mantissa, locale)
         if fraction is not None
-        else _number_leaf(mantissa, "cardinal", locale)
+        else _signed_integer_leaf(abs(mantissa), mantissa.is_signed(), locale)
     )
     scale = _compact_scale(int(compact.value), mantissa, locale)
     return _compose([mantissa_words, (scale,)], "{} {}")
@@ -2161,17 +2165,26 @@ def _bare_number_classes(written: str, value: Decimal, locale: str) -> dict[str,
 
 
 def _spoken_number(
-    type_: str, value: NumberValue, detection: object, locale: str
+    type_: str,
+    value: NumberValue,
+    detection: object,
+    locale: str,
+    *,
+    preserve_negative_zero: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     try:
         decimal = Decimal(value.decimal)
     except InvalidOperation as exc:
         raise ValueError(f"invalid captured decimal {value.decimal!r}") from exc
+    if not preserve_negative_zero and not decimal:
+        decimal = abs(decimal)
     if type_.startswith("fraction:") or type_.startswith("number:fraction"):
         return _spoken_fraction(detection, locale)
     compact = _capture(detection, "compact")
     if compact is not None:
-        alternatives = _spoken_compact(detection, locale)
+        alternatives = _spoken_compact(
+            detection, locale, preserve_negative_zero=preserve_negative_zero
+        )
         if value.currency is None:
             return alternatives
         names = list(_currency_wide_names(value.currency, decimal, locale))
@@ -2203,7 +2216,8 @@ def _spoken_number(
         amount = decimal.scaleb(2)
         if fraction is not None and integer is not None:
             digits = "".join(ch for ch in str(integer.text) if ch.isdigit())
-            amount = Decimal(f"{'-' if decimal < 0 else ''}{digits or '0'}.{fraction.text}")
+            sign = "-" if decimal.is_signed() else ""
+            amount = Decimal(f"{sign}{digits or '0'}.{fraction.text}")
         suffix = _percent_name(locale)
         return tuple(
             SpokenAlternative(f"{item.text} {suffix}", item.provenance, item.weight)
@@ -2232,7 +2246,7 @@ def _spoken_number(
             if integer is None:
                 raise NotImplementedError("an integer beyond int64 has no written capture")
             return _spoken_big_integer(str(integer.text), locale, negative=decimal < 0)
-        cardinals = _number_leaf(decimal, "cardinal", locale)
+        cardinals = _signed_integer_leaf(abs(decimal), decimal.is_signed(), locale)
         written = str(getattr(_capture(detection, "integer"), "text", ""))
         if (
             len(written) >= 2
@@ -2245,6 +2259,26 @@ def _spoken_number(
             return _ranked([*cardinals, *_spoken_digits(DigitsValue(written), locale)])
         return cardinals
     raise NotImplementedError(f"unsupported NumberValue reading class {type_!r}")
+
+
+def _has_leading_minus(detection: object, context: TextContext | None) -> bool:
+    """Whether a captured minus is a sign rather than an in-token separator.
+
+    ICU recognizes the right side of ``1-0`` as the signed number ``-0``.  A zero's
+    sign bit therefore needs its written left context: a minus after a letter or digit
+    belongs to that run, while one at the start or after non-alphanumeric context is a
+    genuine leading sign.
+    """
+    sign = _capture(detection, "sign")
+    if sign is None or str(getattr(sign, "text", "")).strip() not in _MINUS_SIGNS:
+        return False
+    start = int(sign.start)
+    if context is None:
+        return start == 0
+    position = context.offset + start
+    if position == 0:
+        return context.bos
+    return not context.text[position - 1].isalnum()
 
 
 def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
@@ -2262,7 +2296,9 @@ def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     return formatted.replace(written, "{}", 1)
 
 
-def _spoken_measure(value: MeasureValue, locale: str) -> tuple[SpokenAlternative, ...]:
+def _spoken_measure(
+    value: MeasureValue, locale: str, *, preserve_negative_zero: bool = False
+) -> tuple[SpokenAlternative, ...]:
     """Speak a measure: the amount as frend reads any number, the unit as ICU names it.
 
     A rate ("578.3/km²", unit ``per-square-kilometer``) is ICU's "per square kilometer";
@@ -2271,6 +2307,8 @@ def _spoken_measure(value: MeasureValue, locale: str) -> tuple[SpokenAlternative
     choice, so that form is lexical over them.
     """
     amount = Decimal(value.decimal)
+    if not preserve_negative_zero and not amount:
+        amount = abs(amount)
     head = _measure_template(amount, value.unit, locale)
     templates = [(head, "icu-measure:wide")]
     if value.unit.startswith("per-") and _lexical("measure.per_plural", locale):
@@ -3582,6 +3620,7 @@ def _verbalize_edge(
         placed = context.text[context.offset : context.offset + len(source_text)]
         if placed != source_text:
             raise ValueError("the context text does not hold the source text at its offset")
+    written_context = context
     if not apply_source_priors:
         context = None
     prior = edge.prior
@@ -3637,12 +3676,27 @@ def _verbalize_edge(
             path = "plural"
         elif isinstance(value, NumberValue) and type_.startswith("number:cardinal:roman"):
             alternatives = _roman_readings(
-                _spoken_number(type_, value, detection, locale), value, detection, locale
+                _spoken_number(
+                    type_,
+                    value,
+                    detection,
+                    locale,
+                    preserve_negative_zero=_has_leading_minus(detection, written_context),
+                ),
+                value,
+                detection,
+                locale,
             )
             key_value = value.decimal
             path = "roman"
         elif isinstance(value, NumberValue):
-            alternatives = _spoken_number(type_, value, detection, locale)
+            alternatives = _spoken_number(
+                type_,
+                value,
+                detection,
+                locale,
+                preserve_negative_zero=_has_leading_minus(detection, written_context),
+            )
             key_value = value.decimal
             path = "number"
         elif isinstance(value, AbbreviationValue):
@@ -3786,7 +3840,11 @@ def _verbalize_edge(
             key_value = value.unit
             path = "unit"
         elif isinstance(value, MeasureValue):
-            alternatives = _spoken_measure(value, locale)
+            alternatives = _spoken_measure(
+                value,
+                locale,
+                preserve_negative_zero=_has_leading_minus(detection, written_context),
+            )
             key_value = (value.decimal, value.unit)
             path = "measure"
         elif isinstance(value, ElectronicValue):
