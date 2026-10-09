@@ -213,6 +213,12 @@ MUTATIONS = [
         "for alignment_item in reversed(tuple(items.values())):",
     ),
     graph(
+        "Skip retained graph value sharing",
+        "test_builder_shares_equal_retained_graph_values",
+        "graph_document.build().share_values()",
+        "graph_document.build()",
+    ),
+    graph(
         "Underflow via float before log",
         "test_arc_weight_survives_an_underflowing_ratio_directly",
         "float((prior.p / maximum).ln())",

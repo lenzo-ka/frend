@@ -436,7 +436,7 @@ def build_align_graph(
         ((refs[left], refs[right]) for left, right in links),
         acyclic=True,
     )
-    graph = graph_document.build()
+    graph = graph_document.build().share_values()
     return AlignGraph(
         graph, MappingProxyType(items), refs[root], refs[sink], frozenset(kept), tuple(unalignable)
     )
