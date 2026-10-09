@@ -44,6 +44,24 @@ def test_readme_service_profile_parser_includes_unformatted_bullets():
     assert "en_GB" in _service_profile_bullets(with_unformatted_locale)
 
 
+def test_description_names_only_current_pipeline_dependencies():
+    metadata = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))["project"]
+    readme = _README.read_text(encoding="utf-8")
+
+    dependency_names = {
+        re.split(r"[<>=!~]", dependency, maxsplit=1)[0] for dependency in metadata["dependencies"]
+    }
+    pipeline_components = set(re.findall(r"^- \*\*(\w+)\*\*", readme, re.MULTILINE))
+    later_components = set(re.findall(r"^- \*\*(\w+)\*\* \(later\)", readme, re.MULTILINE))
+    named_components = {
+        component
+        for component in pipeline_components
+        if re.search(rf"\b{re.escape(component)}\b", metadata["description"])
+    }
+
+    assert named_components == (pipeline_components & dependency_names) - later_components
+
+
 def test_unreleased_changelog_names_public_features_since_pr_57():
     text = _CHANGELOG.read_text(encoding="utf-8")
     unreleased = text.partition("## Unreleased")[2].partition("\n## ")[0]
