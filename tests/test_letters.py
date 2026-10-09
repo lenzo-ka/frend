@@ -329,6 +329,17 @@ def test_an_initial_is_its_letter_not_an_abbreviation():
     assert _read("Jane S. Smith") == [["s"]]
 
 
+@pytest.mark.parametrize(
+    ("suffix", "spoken"),
+    [("", " s "), ("'s", " s's "), ("’s", " s's ")],
+)
+def test_a_single_dotted_initial_keeps_its_possessive_suffix(suffix, spoken):
+    text = f"S.{suffix}"
+
+    assert _spans(text) == [("letters:initial", text)]
+    assert normalize(text, fold=None) == spoken
+
+
 def test_roman_numerals_follow_the_corpus_per_surface():
     assert is_roman("II") and is_roman("CD") and not is_roman("ATM")
     assert numeral_share("II") > 0.9 > 0.1 > numeral_share("CD")

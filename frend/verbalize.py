@@ -1328,14 +1328,15 @@ def _spoken_letters(
     is its letter.
     """
     letters = _NFC.normalize(value.letters)
-    if value.suffix == ".":
+    if value.suffix.startswith("."):
         letter_form = spelled(letters, locale)
         if letter_form is None:
             raise NotImplementedError(f"no authoritative letter names for {locale}")
+        suffix = "'s" if len(value.suffix) > 1 else ""
         return (
-            SpokenAlternative(letter_form.text, "surface:letter")
+            SpokenAlternative(f"{letter_form.text}{suffix}", "surface:letter")
             if locale == "en_US"
-            else letter_form,
+            else SpokenAlternative(f"{letter_form.text}{suffix}", letter_form.provenance),
         )
     if not is_letter_run(letters):
         spelling = spelled(letters, locale)
