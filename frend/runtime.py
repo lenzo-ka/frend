@@ -34,6 +34,9 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
     leaves that locale's retained icukit detector gang and its shared scan tables
     resident for later requests.
     """
+    if isinstance(locales, (str, bytes)):
+        raise TypeError("locales must be an iterable of locale tags, not str or bytes")
+
     from frend.normalize import normalize
 
     order = tuple(dict.fromkeys(canonical_locale(locale) for locale in locales))
