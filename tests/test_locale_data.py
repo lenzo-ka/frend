@@ -449,6 +449,38 @@ def test_und_is_cldrs_root(tag):
     assert locale_data.locale_chain(tag) == ("root",)
 
 
+@pytest.mark.parametrize("written", ["1", "1st", "1 km"])
+def test_root_and_und_normalize_number_families_to_the_same_surface_fallback(written):
+    from frend import normalize
+
+    root = normalize(written, locale="root", offsets=True)
+    und = normalize(written, locale="und", offsets=True)
+
+    assert root == und
+    assert root.text == f" {written} "
+    assert len(root.units) == 1
+    assert root.units[0].provenance == "surface:unsupported"
+
+
+def test_root_and_und_normalize_varied_numbers_with_surface_fallbacks():
+    from frend import normalize
+
+    written = "42, 3.5 km, 50%, 1st, $5, 2024-01-03, 007"
+    observed = {}
+    for locale in ("root", "und"):
+        result = normalize(written, locale=locale, offsets=True)
+        fallbacks = [
+            written[unit.source_span[0] : unit.source_span[1]]
+            for unit in result.units
+            if unit.provenance == "surface:unsupported"
+        ]
+
+        assert fallbacks == ["42", "3.5 km", "50%", "1st", "5", "2024-01-03", "007"]
+        observed[locale] = result
+
+    assert observed["root"] == observed["und"]
+
+
 @pytest.mark.parametrize("tag", ["en_US_POSIX_POSIX", "en-US-posix-POSIX"])
 def test_a_repeated_variant_is_refused(tag):
     with pytest.raises(ValueError):
