@@ -114,7 +114,15 @@ print(json.dumps(_reading_detectors.cache_info()._asdict()))
     assert json.loads(result.stdout)["currsize"] == 1
 
 
-def test_prewarm_loads_each_requested_locale_once(monkeypatch):
+@pytest.mark.parametrize(
+    "locales",
+    (
+        ("en-US", "fr_FR", "en_US", "FR-fr"),
+        (locale for locale in ("en-US", "fr_FR", "en_US", "FR-fr")),
+    ),
+    ids=("tuple", "generator"),
+)
+def test_prewarm_loads_each_requested_locale_once(monkeypatch, locales):
     calls = []
 
     def record(text, *, locale):
@@ -122,7 +130,7 @@ def test_prewarm_loads_each_requested_locale_once(monkeypatch):
 
     normalize_module = importlib.import_module("frend.normalize")
     monkeypatch.setattr(normalize_module, "normalize", record)
-    loaded = frend.runtime.prewarm(("en-US", "fr_FR", "en_US", "FR-fr"))
+    loaded = frend.runtime.prewarm(locales)
     assert loaded == ("en_US", "fr_FR")
     assert calls == [
         ("123", "en_US"),
@@ -130,6 +138,25 @@ def test_prewarm_loads_each_requested_locale_once(monkeypatch):
         ("123", "fr_FR"),
         ("02.03.2003", "fr_FR"),
     ]
+
+
+@pytest.mark.parametrize("locales", ("en_US", b"en_US"), ids=("str", "bytes"))
+def test_prewarm_rejects_string_like_container_before_loading(locales, monkeypatch):
+    calls = []
+
+    def record(text, *, locale):
+        calls.append((text, locale))
+
+    normalize_module = importlib.import_module("frend.normalize")
+    monkeypatch.setattr(normalize_module, "normalize", record)
+
+    with pytest.raises(
+        TypeError,
+        match=r"locales must be an iterable of locale tags, not str or bytes",
+    ):
+        frend.runtime.prewarm(locales)
+
+    assert calls == []
 
 
 def test_prewarm_is_exported():
