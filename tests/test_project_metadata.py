@@ -62,3 +62,29 @@ def test_cartlet_floor_comment_matches_dependency_specifier():
     comment_floor = re.fullmatch(r"# cartlet (\d+(?:\.\d+)*) is the floor: .+", cartlet_comments[0])
     assert comment_floor is not None
     assert comment_floor.group(1) == dependency_floor.group(1)
+
+
+def test_tiergraph_floor_comment_matches_dependency_specifier():
+    text = _PYPROJECT.read_text(encoding="utf-8")
+    metadata = tomllib.loads(text)
+    tiergraph = next(
+        dependency
+        for dependency in metadata["project"]["dependencies"]
+        if dependency.startswith("tiergraph")
+    )
+
+    dependency_floor = re.fullmatch(r"tiergraph>=(\d+(?:\.\d+)*)", tiergraph)
+    project_preamble = text.partition("[project.urls]")[0]
+    tiergraph_comments = [
+        line
+        for line in project_preamble.splitlines()
+        if line.startswith("#") and "tiergraph" in line.casefold()
+    ]
+
+    assert dependency_floor is not None
+    assert len(tiergraph_comments) == 1
+    comment_floor = re.fullmatch(
+        r"# tiergraph (\d+(?:\.\d+)*) is the floor: .+", tiergraph_comments[0]
+    )
+    assert comment_floor is not None
+    assert comment_floor.group(1) == dependency_floor.group(1)
