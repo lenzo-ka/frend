@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import unicodedata
 from decimal import Decimal
 
 import pytest
@@ -387,6 +388,34 @@ def test_a_letter_of_the_locale_script_is_not_read_by_name():
     """Cyrillic is another script for en_US and the locale's own for ru."""
     assert [d["type"] for d in SymbolDetector("en_US").detect("Ж")] == ["symbol:letter"]
     assert SymbolDetector("ru").detect("Ж") == []
+
+
+@pytest.mark.parametrize("composed", ["ά", "й"])
+def test_a_decomposed_foreign_letter_reads_like_nfc_and_keeps_its_source(composed):
+    decomposed = unicodedata.normalize("NFD", composed)
+    assert decomposed != composed
+
+    (nfc_detection,) = SymbolDetector().detect(composed)
+    (nfd_detection,) = SymbolDetector().detect(decomposed)
+
+    assert nfd_detection["type"] == nfc_detection["type"] == "symbol:letter"
+    assert nfd_detection["value"].names == nfc_detection["value"].names
+    assert _forms(decomposed) == _forms(composed)
+    assert (nfd_detection["text"], nfd_detection["start"], nfd_detection["end"]) == (
+        decomposed,
+        0,
+        len(decomposed),
+    )
+    (capture,) = nfd_detection["captures"]
+    assert (capture.text, capture.start, capture.end) == (decomposed, 0, len(decomposed))
+
+
+@pytest.mark.parametrize(("locale", "composed"), [("en_US", "é"), ("ru", "й")])
+def test_an_in_script_decomposed_letter_remains_untouched(locale, composed):
+    decomposed = unicodedata.normalize("NFD", composed)
+
+    assert SymbolDetector(locale).detect(decomposed) == []
+    assert frend.normalize(decomposed, locale=locale, fold=None) == decomposed
 
 
 def test_spaced_letters_of_another_script_are_one_span():
