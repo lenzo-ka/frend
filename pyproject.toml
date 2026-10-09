@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "frend"
 dynamic = ["version"]
-description = "The front end: text normalization over tiergraph, icukit, and ipakit"
+description = "The front end: text normalization over tiergraph and icukit"
 authors = [
     {name = "Kevin Lenzo", email = "kevinlenzo@gmail.com"}
 ]
