@@ -2,13 +2,46 @@
 
 from __future__ import annotations
 
+import ast
 import re
 import tomllib
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
+_README = _REPO / "README.md"
 _PYPROJECT = _REPO / "pyproject.toml"
 _CHANGELOG = _REPO / "CHANGELOG.md"
+_SERVICE_LOCALES_TEST = _REPO / "tests" / "test_service_locales.py"
+
+
+def _service_profile_bullets(readme: str) -> tuple[str, ...]:
+    section = readme.partition("### Eleven-locale service profile")[2].partition("\n### ")[0]
+    return tuple(re.findall(r"^- (.+)$", section, re.MULTILINE))
+
+
+def test_readme_lists_checked_eleven_locale_service_profile():
+    readme = _README.read_text(encoding="utf-8")
+    documented = _service_profile_bullets(readme)
+
+    service_test = ast.parse(_SERVICE_LOCALES_TEST.read_text(encoding="utf-8"))
+    assignment = next(
+        statement
+        for statement in service_test.body
+        if isinstance(statement, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "LOCALES" for target in statement.targets
+        )
+    )
+    checked = ast.literal_eval(assignment.value)
+
+    assert documented == tuple(f"`{locale}`" for locale in checked)
+
+
+def test_readme_service_profile_parser_includes_unformatted_bullets():
+    readme = _README.read_text(encoding="utf-8")
+    with_unformatted_locale = readme.replace("- `en_US`", "- `en_US`\n- en_GB", 1)
+
+    assert "en_GB" in _service_profile_bullets(with_unformatted_locale)
 
 
 def test_unreleased_changelog_names_public_features_since_pr_57():

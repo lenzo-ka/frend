@@ -69,6 +69,22 @@ print(frend.normalize("****", **behavior.kwargs))
 PY
 ```
 
+### Eleven-locale service profile
+
+The checked service profile covers these eleven locales, in this order:
+
+- `en_US`
+- `es_MX`
+- `es_ES`
+- `fr_FR`
+- `de_DE`
+- `pt_BR`
+- `it_IT`
+- `zh_CN`
+- `ko_KR`
+- `ja_JP`
+- `pt_PT`
+
 ### Input limits
 
 The recognizer's document-scale guard accepts at most 4,194,304 Unicode code points by
