@@ -7,13 +7,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from tiergraph import (
-    AttributeDeclaration,
-    AttributeDomain,
-    AttributeValue,
     Graph,
-    Item,
     ItemRef,
-    NamespaceDeclaration,
     OrderedPolyadicTraversal,
     PolyadicRelationDeclaration,
     PolyadicRelationInstance,
@@ -21,11 +16,9 @@ from tiergraph import (
     QualifiedName,
     RelationEndpointKind,
     RelationSideDeclaration,
-    SimpleRelationDeclaration,
-    Tier,
-    TierDeclaration,
     XsdType,
 )
+from tiergraph.build import document, item
 
 __all__ = ["Field", "FieldTails", "build_field_tails", "ordered_fields"]
 
@@ -62,90 +55,95 @@ class FieldTails:
     candidates: tuple[ItemRef, ...]
 
 
-def _attribute(name: QualifiedName, value_type: XsdType, value: object) -> AttributeValue:
-    return AttributeValue(name, value_type, str(value))
-
-
 def build_field_tails(detections: Sequence[Mapping[str, Any]]) -> FieldTails:
     """Build ordered polyadic capture tails for ``detections`` in one graph."""
-    candidate_items: list[Item] = []
-    field_items: list[Item] = []
-    candidate_refs: list[ItemRef] = []
-    relations: list[PolyadicRelationInstance] = []
+    graph_document = document(NS, prefix="frend")
+    graph_document.attributes(
+        {
+            _TYPE: XsdType.STRING,
+            _NAME: XsdType.STRING,
+            _VALUE: XsdType.STRING,
+            _FORM: XsdType.STRING,
+            _START: XsdType.INTEGER,
+            _END: XsdType.INTEGER,
+        }
+    )
+    candidate_items = []
+    field_items = []
+    tails: list[tuple[int, tuple[int, ...], str]] = []
 
     for detection_index, detection in enumerate(detections):
-        candidate_ref = ItemRef(_CANDIDATES, detection_index)
-        candidate_refs.append(candidate_ref)
         detection_type = str(detection["type"])
         candidate_id = f"{detection_type}-{detection_index}"
         candidate_items.append(
-            Item(
+            item(
                 candidate_id,
-                (
-                    _attribute(_TYPE, XsdType.STRING, detection_type),
-                    _attribute(_START, XsdType.INTEGER, detection["start"]),
-                    _attribute(_END, XsdType.INTEGER, detection["end"]),
-                ),
+                attrs={
+                    _TYPE: detection_type,
+                    _START: str(detection["start"]),
+                    _END: str(detection["end"]),
+                },
             )
         )
 
-        targets: list[ItemRef] = []
+        targets: list[int] = []
         for capture_index, capture in enumerate(detection.get("captures", ())):
-            field_ref = ItemRef(_FIELDS, len(field_items))
-            targets.append(field_ref)
+            targets.append(len(field_items))
             field_items.append(
-                Item(
+                item(
                     f"{candidate_id}-field-{capture_index}",
-                    (
-                        _attribute(_NAME, XsdType.STRING, capture.name),
-                        _attribute(_VALUE, XsdType.STRING, capture.value),
-                        _attribute(_FORM, XsdType.STRING, capture.form),
-                        _attribute(_START, XsdType.INTEGER, capture.start),
-                        _attribute(_END, XsdType.INTEGER, capture.end),
-                    ),
+                    attrs={
+                        _NAME: str(capture.name),
+                        _VALUE: str(capture.value),
+                        _FORM: str(capture.form),
+                        _START: str(capture.start),
+                        _END: str(capture.end),
+                    },
                 )
             )
-        relations.append(
+        tails.append((detection_index, tuple(targets), f"{candidate_id}-field-tail"))
+
+    candidates = graph_document.tier(
+        _CANDIDATES,
+        candidate_items,
+        item_type=_CANDIDATE,
+        membership=_CANDIDATE_MEMBERSHIP,
+        long_name="Detection candidates",
+    )
+    fields = graph_document.tier(
+        _FIELDS,
+        field_items,
+        item_type=_FIELD,
+        membership=_FIELD_MEMBERSHIP,
+        long_name="Detection capture fields",
+    )
+    graph_document.declare(
+        PolyadicRelationDeclaration(
+            _FIELD_TAIL,
+            sources=RelationSideDeclaration(
+                (RelationEndpointKind.ITEM,), tiers=(_CANDIDATES,), maximum=1
+            ),
+            targets=RelationSideDeclaration(
+                (RelationEndpointKind.ITEM,), tiers=(_FIELDS,), allow_empty=True
+            ),
+            unique_sources=True,
+            distinct_targets=True,
+        )
+    )
+    for source, targets, durable_id in tails:
+        graph_document.relate(
             PolyadicRelationInstance(
                 _FIELD_TAIL,
-                (candidate_ref,),
-                tuple(targets),
-                durable_id=f"{candidate_id}-field-tail",
+                (candidates.ref(source),),
+                tuple(fields.ref(target) for target in targets),
+                durable_id=durable_id,
             )
         )
 
-    graph = Graph(
-        namespaces=(NamespaceDeclaration("frend", NS),),
-        tiers=(
-            Tier(TierDeclaration(_CANDIDATES, "Detection candidates"), tuple(candidate_items)),
-            Tier(TierDeclaration(_FIELDS, "Detection capture fields"), tuple(field_items)),
-        ),
-        relation_declarations=(
-            SimpleRelationDeclaration(_CANDIDATE_MEMBERSHIP, _CANDIDATES, _CANDIDATE),
-            SimpleRelationDeclaration(_FIELD_MEMBERSHIP, _FIELDS, _FIELD),
-            PolyadicRelationDeclaration(
-                _FIELD_TAIL,
-                sources=RelationSideDeclaration(
-                    (RelationEndpointKind.ITEM,), tiers=(_CANDIDATES,), maximum=1
-                ),
-                targets=RelationSideDeclaration(
-                    (RelationEndpointKind.ITEM,), tiers=(_FIELDS,), allow_empty=True
-                ),
-                unique_sources=True,
-                distinct_targets=True,
-            ),
-        ),
-        attribute_declarations=(
-            AttributeDeclaration(_TYPE, AttributeDomain.ITEM, XsdType.STRING),
-            AttributeDeclaration(_NAME, AttributeDomain.ITEM, XsdType.STRING),
-            AttributeDeclaration(_VALUE, AttributeDomain.ITEM, XsdType.STRING),
-            AttributeDeclaration(_FORM, AttributeDomain.ITEM, XsdType.STRING),
-            AttributeDeclaration(_START, AttributeDomain.ITEM, XsdType.INTEGER),
-            AttributeDeclaration(_END, AttributeDomain.ITEM, XsdType.INTEGER),
-        ),
-        polyadic_relations=tuple(relations),
+    return FieldTails(
+        graph_document.build(),
+        tuple(candidates.ref(index) for index in range(len(candidate_items))),
     )
-    return FieldTails(graph, tuple(candidate_refs))
 
 
 def ordered_fields(tails: FieldTails, candidate: ItemRef) -> tuple[Field, ...]:
