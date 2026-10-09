@@ -42,25 +42,16 @@ from math import prod
 from typing import Any, cast
 
 from tiergraph import (
-    AttributeDeclaration,
-    AttributeDomain,
     AttributeValuation,
-    AttributeValue,
-    BipartiteRelationDeclaration,
     ChildCombination,
     FoldDeclaration,
     FoldTransition,
     Graph,
-    Item,
     ItemRef,
-    NamespaceDeclaration,
     QualifiedName,
-    RelationInstance,
-    SimpleRelationDeclaration,
-    Tier,
-    TierDeclaration,
     XsdType,
 )
+from tiergraph.build import document, item
 from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
 from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
@@ -400,23 +391,23 @@ def build_lattice(
         points = list(range(span_end + 1))
     at = {point: index for index, point in enumerate(points)}
 
-    pos_items = tuple(
-        Item(f"p{p}", (AttributeValue(_WEIGHT, XsdType.DECIMAL, "0"),)) for p in range(len(points))
-    )
+    graph_document = document(NS, prefix="frend")
+    graph_document.attribute(_WEIGHT, XsdType.DECIMAL)
+    pos_items = [item(f"p{p}", attrs={_WEIGHT: "0"}) for p in range(len(points))]
 
     # candidates tier = real detections + skip edges. Durable ids are distinct
     # across both kinds ("c{i}" vs "skip{p}") and across the position tier
     # ("p{n}"), so a witness path is unambiguous to decode.
-    cand_items: list[Item] = []
-    offers: list[RelationInstance] = []
-    spans: list[RelationInstance] = []
+    cand_items = []
+    offers: list[tuple[int, int]] = []
+    spans: list[tuple[int, int]] = []
     id_to_index: dict[str, int] = {}
 
     def add(cand_id: str, start: int, end: int, weight: Decimal) -> None:
-        ref = ItemRef(_CAND, len(cand_items))
-        cand_items.append(Item(cand_id, (AttributeValue(_WEIGHT, XsdType.DECIMAL, str(weight)),)))
-        offers.append(RelationInstance(_OFFERS, ItemRef(_POS, start), ref))
-        spans.append(RelationInstance(_SPANS, ref, ItemRef(_POS, end)))
+        index = len(cand_items)
+        cand_items.append(item(cand_id, attrs={_WEIGHT: str(weight)}))
+        offers.append((start, index))
+        spans.append((index, end))
 
     for cand in cands:
         add(f"c{cand.index}", at[cand.start], at[cand.end], cand.weight)
@@ -424,22 +415,23 @@ def build_lattice(
     for p in range(len(points) - 1):
         add(f"skip{p}", p, p + 1, Decimal(0))
 
-    graph = Graph(
-        (NamespaceDeclaration("frend", NS),),
-        (
-            Tier(TierDeclaration(_POS, "Positions"), pos_items),
-            Tier(TierDeclaration(_CAND, "Candidates"), tuple(cand_items)),
-        ),
-        (
-            SimpleRelationDeclaration(QualifiedName(NS, "pos-membership"), _POS, _POS_T),
-            SimpleRelationDeclaration(QualifiedName(NS, "cand-membership"), _CAND, _CAND_T),
-            BipartiteRelationDeclaration(_OFFERS, _POS_T, _CAND_T, acyclic=True),
-            BipartiteRelationDeclaration(_SPANS, _CAND_T, _POS_T, acyclic=True),
-        ),
-        tuple(offers) + tuple(spans),
-        (AttributeDeclaration(_WEIGHT, AttributeDomain.ITEM, XsdType.DECIMAL),),
+    positions = graph_document.tier(
+        _POS,
+        pos_items,
+        item_type=_POS_T,
+        membership=QualifiedName(NS, "pos-membership"),
+        long_name="Positions",
     )
-    return graph, (ItemRef(_POS, 0),), id_to_index
+    candidates = graph_document.tier(
+        _CAND,
+        cand_items,
+        item_type=_CAND_T,
+        membership=QualifiedName(NS, "cand-membership"),
+        long_name="Candidates",
+    )
+    graph_document.link(_OFFERS, positions, candidates, offers, acyclic=True)
+    graph_document.link(_SPANS, candidates, positions, spans, acyclic=True)
+    return graph_document.build(), (positions.ref(0),), id_to_index
 
 
 def _span_signature(cover: Sequence[Detection]) -> tuple[tuple[int, int], ...]:

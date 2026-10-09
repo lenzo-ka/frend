@@ -8,6 +8,7 @@ fragments and keep the date, and keep the currency over the bare decimal.
 from __future__ import annotations
 
 import random
+from decimal import Decimal
 
 import pytest
 from icukit.detectors import detect
@@ -16,7 +17,25 @@ from icukit.recognize import (
     FlexibleDateDetector,
     FlexibleNumberDetector,
 )
-from tiergraph import WorkBudget, WorkMeter
+from tiergraph import (
+    AttributeDeclaration,
+    AttributeDomain,
+    AttributeValue,
+    BipartiteRelationDeclaration,
+    Graph,
+    Item,
+    ItemRef,
+    NamespaceDeclaration,
+    RelationInstance,
+    SimpleRelationDeclaration,
+    Tier,
+    TierDeclaration,
+    WorkBudget,
+    WorkMeter,
+    XsdType,
+    dumps,
+)
+from tiergraph.build import document as build_document
 
 from frend import DEFAULT_TIERGRAPH_WORK_BUDGET, BudgetExhausted, fold_resolve
 from frend.fold_resolve import CoverMargin, CoverScore, resolve, resolve_cover
@@ -33,6 +52,141 @@ def _det(start: int, end: int, type_: str, captures=()) -> dict:
         "value": None,
         "captures": tuple(captures),
     }
+
+
+def _direct_lattice(detections, *, boundaries_only=False):
+    """Reproduce the pre-migration graph as an exact parity oracle."""
+    cands, span_end = fold_resolve._candidates(detections)
+    if boundaries_only:
+        points = sorted(
+            {0, span_end}
+            | {candidate.start for candidate in cands}
+            | {candidate.end for candidate in cands}
+        )
+    else:
+        points = list(range(span_end + 1))
+    at = {point: index for index, point in enumerate(points)}
+    pos_items = tuple(
+        Item(
+            f"p{position}",
+            (AttributeValue(fold_resolve._WEIGHT, XsdType.DECIMAL, "0"),),
+        )
+        for position in range(len(points))
+    )
+    cand_items = []
+    offers = []
+    spans = []
+
+    def add(candidate_id, start, end, weight):
+        ref = ItemRef(fold_resolve._CAND, len(cand_items))
+        cand_items.append(
+            Item(
+                candidate_id,
+                (AttributeValue(fold_resolve._WEIGHT, XsdType.DECIMAL, str(weight)),),
+            )
+        )
+        offers.append(
+            RelationInstance(fold_resolve._OFFERS, ItemRef(fold_resolve._POS, start), ref)
+        )
+        spans.append(RelationInstance(fold_resolve._SPANS, ref, ItemRef(fold_resolve._POS, end)))
+
+    for candidate in cands:
+        add(
+            f"c{candidate.index}",
+            at[candidate.start],
+            at[candidate.end],
+            candidate.weight,
+        )
+    for position in range(len(points) - 1):
+        add(f"skip{position}", position, position + 1, Decimal(0))
+
+    return Graph(
+        (NamespaceDeclaration("frend", fold_resolve.NS),),
+        (
+            Tier(TierDeclaration(fold_resolve._POS, "Positions"), pos_items),
+            Tier(TierDeclaration(fold_resolve._CAND, "Candidates"), tuple(cand_items)),
+        ),
+        (
+            SimpleRelationDeclaration(
+                fold_resolve.QualifiedName(fold_resolve.NS, "pos-membership"),
+                fold_resolve._POS,
+                fold_resolve._POS_T,
+            ),
+            SimpleRelationDeclaration(
+                fold_resolve.QualifiedName(fold_resolve.NS, "cand-membership"),
+                fold_resolve._CAND,
+                fold_resolve._CAND_T,
+            ),
+            BipartiteRelationDeclaration(
+                fold_resolve._OFFERS,
+                fold_resolve._POS_T,
+                fold_resolve._CAND_T,
+                acyclic=True,
+            ),
+            BipartiteRelationDeclaration(
+                fold_resolve._SPANS,
+                fold_resolve._CAND_T,
+                fold_resolve._POS_T,
+                acyclic=True,
+            ),
+        ),
+        tuple(offers) + tuple(spans),
+        (
+            AttributeDeclaration(
+                fold_resolve._WEIGHT,
+                AttributeDomain.ITEM,
+                XsdType.DECIMAL,
+            ),
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    ("detections", "boundaries_only"),
+    [
+        ([], False),
+        ([_det(0, 1, "number")], False),
+        ([_det(2, 4, "number"), _det(2, 3, "date", captures=("field",))], False),
+        ([_det(40, 90, "electronic"), _det(40, 60, "number")], True),
+    ],
+    ids=("empty", "single", "overlap-and-gap", "boundary-compaction"),
+)
+def test_builder_lattice_has_exact_direct_construction_parity(detections, boundaries_only):
+    graph, roots, id_to_index = fold_resolve.build_lattice(
+        detections, boundaries_only=boundaries_only
+    )
+    expected = _direct_lattice(detections, boundaries_only=boundaries_only)
+
+    assert graph == expected
+    assert dumps(graph) == dumps(expected)
+    assert roots == (ItemRef(fold_resolve._POS, 0),)
+    assert id_to_index == {
+        f"c{index}": index
+        for index, detection in enumerate(detections)
+        if 0 <= detection["start"] < detection["end"]
+    }
+
+
+def test_build_lattice_uses_builder_without_direct_graph_construction(monkeypatch):
+    calls = 0
+    actual_document = getattr(fold_resolve, "document", build_document)
+
+    def tracking_document(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return actual_document(*args, **kwargs)
+
+    def reject_direct_graph_construction(*args, **kwargs):
+        raise AssertionError("build_lattice constructed Graph directly")
+
+    # ``raising=False`` keeps this tripwire executable against the pre-migration
+    # module, which had no imported ``document`` name. That negative control must
+    # reach and reject its direct ``Graph(...)`` call rather than fail in test setup.
+    monkeypatch.setattr(fold_resolve, "document", tracking_document, raising=False)
+    monkeypatch.setattr(fold_resolve, "Graph", reject_direct_graph_construction)
+    fold_resolve.build_lattice([_det(0, 2, "number")])
+
+    assert calls == 1
 
 
 DETECTORS = [
