@@ -237,11 +237,17 @@ def _spellout_dictionary(
     table = measured_table("spellout_dictionary", locale)
     if table is None:
         return None
-    rows = {
-        surface: (decision, say_count, spell_count)
-        for surface, decision, say_count, spell_count in table["tokens"]
-    }
-    return rows, dict(table.get("casefold", ())), table["provenance"]["source"]
+    rows = {}
+    for surface, decision, say_count, spell_count in table["tokens"]:
+        if surface in rows:
+            raise ValueError(f"duplicate spell-out dictionary surface: {surface!r}")
+        rows[surface] = decision, say_count, spell_count
+    aliases = {}
+    for folded, target in table.get("casefold", ()):
+        if folded in aliases:
+            raise ValueError(f"duplicate spell-out dictionary casefold alias: {folded!r}")
+        aliases[folded] = target
+    return rows, aliases, table["provenance"]["source"]
 
 
 def spellout_dictionary_entry(
