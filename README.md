@@ -4,7 +4,7 @@
 recognize the formatted values in it, resolve overlapping readings into a best
 non-overlapping cover, and verbalize the result toward a spoken form.
 
-frend is a *composition* over three sibling projects:
+frend builds its text-normalization pipeline on two sibling projects:
 
 - **tiergraph** -- the substrate: a layered hypergraph with a general, law-checked
   semiring fold (Boolean / counting / min-plus / max-plus, n-best, provenance). Resolution
@@ -13,9 +13,11 @@ frend is a *composition* over three sibling projects:
 - **icukit** -- recognition, recognition-only: strict ICU-inverting detectors plus flexible
   CLDR-generated recognizers that deposit candidate readings (including the non-canonical
   spellings real text carries).
-- **ipakit** (later) -- phonetics/IPA, for the pronunciation half of verbalization.
+- **ipakit** (caller-owned) -- an optional downstream phonetics/IPA step after frend
+  returns words.
 
-Pipeline shape: `text -> recognize (icukit) -> resolve (tiergraph.fold) -> verbalize -> phonetize (ipakit)`.
+frend's pipeline is `text -> recognize (icukit) -> resolve (tiergraph.fold) -> verbalize
+(words)`. A caller can then connect those words to its own `phonetize (ipakit)` step.
 
 **Input is plain text.** frend and icukit read a text string: the characters a reader
 would see, with nothing else in them. Markup of any kind -- Markdown, HTML or XML
@@ -132,8 +134,8 @@ octets. frend's caps count Unicode code points, not protocol octets.
 Status: recognize, resolve and verbalize are built, including a keep-all mode that
 carries every reading and its spoken forms instead of one best cover. A word-level
 alignment graph built from that output exports as finite-state grammar and acceptor text
-for a decoder, and attributes aligned output back to reading classes. Phonetization
-(ipakit) is not built yet.
+for a decoder, and attributes aligned output back to reading classes. Phonetization is
+outside frend; a caller may pass the returned words to ipakit.
 
 Evaluation definitions, frozen results, and reproduction commands are in [METRICS.md](METRICS.md).
 
