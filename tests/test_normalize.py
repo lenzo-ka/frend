@@ -30,6 +30,19 @@ def test_normalize_returns_a_string_by_default():
     assert "twelve" in result
 
 
+def test_missing_optional_detector_family_degrades_only_that_family():
+    plain = frend.normalize("12", locale="ar_EG")
+    result = frend.normalize("12", locale="ar_EG", offsets=True)
+    retained = frend.normalize("١ رطل و٢ أونصة", locale="ar_EG", offsets=True)
+
+    assert plain
+    assert isinstance(result, NormalizedText)
+    assert result.text == plain
+    assert result.missing_detector_families == ("measure:foot-and-inch",)
+    assert isinstance(retained, NormalizedText)
+    assert [unit.reader for unit in retained.units] == ["measure:pound-and-ounce"]
+
+
 def test_offsets_tile_output_and_slice_the_original_source():
     source = "I paid $12.\n\nIt was 5% off."
     result = frend.normalize(source, offsets=True)
