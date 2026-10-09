@@ -1,10 +1,11 @@
 """frend -- the front end.
 
-frend composes a fold/hypergraph substrate (tiergraph), internationalization
-recognition (icukit), and later phonetics (ipakit) into a text-normalization pipeline:
-recognize formatted values in running text, resolve overlapping readings into a best
-non-overlapping cover, and verbalize the result. It uses tiergraph as a substrate and
-keeps icukit recognition-only; resolution and verbalization live here.
+frend composes a fold/hypergraph substrate (tiergraph) and internationalization
+recognition (icukit) into a text-normalization pipeline: recognize formatted values in
+running text, resolve overlapping readings into a best non-overlapping cover, and
+verbalize the result. It uses tiergraph as a substrate and keeps icukit recognition-only;
+resolution and verbalization live here. Callers may pass the resulting words to a
+downstream phonetics system such as ipakit.
 """
 
 from __future__ import annotations

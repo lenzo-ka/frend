@@ -9,8 +9,10 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
 _README = _REPO / "README.md"
+_PACKAGE_INIT = _REPO / "frend" / "__init__.py"
 _PYPROJECT = _REPO / "pyproject.toml"
 _CHANGELOG = _REPO / "CHANGELOG.md"
+_FREND = _REPO / "frend"
 _SERVICE_LOCALES_TEST = _REPO / "tests" / "test_service_locales.py"
 
 
@@ -60,6 +62,41 @@ def test_description_names_only_current_pipeline_dependencies():
     }
 
     assert named_components == (pipeline_components & dependency_names) - later_components
+
+
+def test_project_metadata_names_phonetization_as_the_callers_step():
+    readme = _README.read_text(encoding="utf-8")
+    package_docstring = ast.get_docstring(
+        ast.parse(_PACKAGE_INIT.read_text(encoding="utf-8"), filename=str(_PACKAGE_INIT))
+    )
+
+    assert "A caller can then connect those words to its own `phonetize (ipakit)` step." in readme
+    assert "ipakit** (caller-owned)" in readme
+    assert "outside frend; a caller may pass the returned words to ipakit" in readme
+    assert package_docstring is not None
+    assert "Callers may pass the resulting words" in package_docstring
+    assert "later phonetics (ipakit) into" not in package_docstring
+
+
+def test_frend_modules_do_not_import_ipakit():
+    imported_by = []
+    for path in sorted(_FREND.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        imports = [
+            name
+            for node in ast.walk(tree)
+            for name in (
+                [alias.name for alias in node.names]
+                if isinstance(node, ast.Import)
+                else [node.module or ""]
+                if isinstance(node, ast.ImportFrom)
+                else []
+            )
+        ]
+        if any(name == "ipakit" or name.startswith("ipakit.") for name in imports):
+            imported_by.append(path.relative_to(_REPO).as_posix())
+
+    assert imported_by == []
 
 
 def test_unreleased_changelog_names_public_features_since_pr_57():
