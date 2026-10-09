@@ -1107,6 +1107,14 @@ def _select(
             if len(reading.detection.get("captures", ())) == max_capture_count
         ]
 
+    # A long cover list used to rebuild every detection's structural key and every
+    # span's rank list for every comparison.  Both are invariant for this resolve.
+    content_keys = {id(detection): _content_key(detection) for detection in detections}
+    rank_by_span = {
+        span: {content_keys[id(reading.detection)]: rank for rank, reading in enumerate(readings)}
+        for span, readings in span_readings.items()
+    }
+
     # Rank the covers deterministically: geometry first (never touched by the prior),
     # then span signature, then each reading's per-span rank (so the per-span winners
     # sort first within a signature), then a canonical content key.
@@ -1115,14 +1123,13 @@ def _select(
         ranks: list[int] = []
         for det in cover:
             span = (int(det["start"]), int(det["end"]))
-            order = [_content_key(r.detection) for r in span_readings[span]]
-            key = _content_key(det)
-            ranks.append(order.index(key) if key in order else len(order))
+            key = content_keys[id(det)]
+            ranks.append(rank_by_span[span].get(key, len(rank_by_span[span])))
         return (
             geometry,
             _span_signature(cover),
             tuple(ranks),
-            tuple(_content_key(d) for d in cover),
+            tuple(content_keys[id(d)] for d in cover),
         )
 
     # Each component of mutually overlapping spans is resolved alone; a sentence

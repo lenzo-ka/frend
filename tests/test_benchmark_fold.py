@@ -72,6 +72,27 @@ def test_small_fixture_times_every_fold_mode(tmp_path):
     assert row["top_level_size"] == 1
 
 
+def test_small_fixture_can_time_only_gate_mode(tmp_path):
+    data, _text, _detection = _fixture(tmp_path)
+    output = tmp_path / "lane" / "fixture.json"
+
+    assert (
+        _tool().main(
+            [
+                "--data-dir",
+                str(data),
+                "--output",
+                str(output),
+                "--only-mode",
+                "resolve_k64",
+            ]
+        )
+        == 0
+    )
+    row = json.loads(output.read_text(encoding="utf-8"))["rows"][0]
+    assert set(row["timings_ns"]) == {"resolve_k64"}
+
+
 def test_missing_expected_detection_id_refuses(tmp_path):
     data, _text, _detection = _fixture(tmp_path)
     (data / "short.en_US.plain.jsonl").write_text("", encoding="utf-8")
@@ -115,6 +136,15 @@ def test_output_inside_repository_refuses():
                 str(repository / "fold-result.json"),
             ]
         )
+
+
+def test_output_in_external_lane_is_allowed(tmp_path):
+    data, _text, _detection = _fixture(tmp_path)
+    lane = tmp_path / "lane"
+    output = lane / "fold.json"
+
+    assert _tool().main(["--data-dir", str(data), "--output", str(output)]) == 0
+    assert json.loads(output.read_text(encoding="utf-8"))["case_count"] == 1
 
 
 def test_data_dir_falls_back_to_processed_root(tmp_path, monkeypatch):

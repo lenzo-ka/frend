@@ -84,24 +84,25 @@ def _worker(args: argparse.Namespace) -> int:
             args.worker_output.write_text(json.dumps(result, sort_keys=True), encoding="utf-8")
 
     graph = roots = id_to_index = None
-    try:
-        (graph, roots, id_to_index), elapsed = _elapsed(
-            lambda: build_lattice(detections), args.mode_timeout
-        )
-        result["timings_ns"]["lattice_build"] = elapsed
-        result["lattice_position_nodes"] = len(graph.tiers[0].items)
-        result["lattice_candidate_nodes"] = len(graph.tiers[1].items)
-        result["lattice_nodes"] = sum(len(tier.items) for tier in graph.tiers)
-        result["lattice_edges"] = len(graph.relations)
-    except Exception as error:  # noqa: BLE001 - a benchmark records refusals
-        result["errors"]["lattice_build"] = f"{type(error).__name__}: {error}"
-    if graph is not None and roots is not None:
+    if args.only_mode is None or args.only_mode in {"lattice_build", "ranked_path_k64"}:
         try:
-            result["top_level_size"], _elapsed_ns = _elapsed(
-                lambda: _count_top_level(graph, roots), args.mode_timeout
+            (graph, roots, id_to_index), elapsed = _elapsed(
+                lambda: build_lattice(detections), args.mode_timeout
             )
+            result["timings_ns"]["lattice_build"] = elapsed
+            result["lattice_position_nodes"] = len(graph.tiers[0].items)
+            result["lattice_candidate_nodes"] = len(graph.tiers[1].items)
+            result["lattice_nodes"] = sum(len(tier.items) for tier in graph.tiers)
+            result["lattice_edges"] = len(graph.relations)
         except Exception as error:  # noqa: BLE001 - a benchmark records refusals
-            result["errors"]["top_level_size"] = f"{type(error).__name__}: {error}"
+            result["errors"]["lattice_build"] = f"{type(error).__name__}: {error}"
+        if graph is not None and roots is not None:
+            try:
+                result["top_level_size"], _elapsed_ns = _elapsed(
+                    lambda: _count_top_level(graph, roots), args.mode_timeout
+                )
+            except Exception as error:  # noqa: BLE001 - a benchmark records refusals
+                result["errors"]["top_level_size"] = f"{type(error).__name__}: {error}"
     emit()
 
     operations = {
@@ -120,6 +121,10 @@ def _worker(args: argparse.Namespace) -> int:
         operations["ranked_path_k64"] = lambda: _fold_covers(
             detections, graph, roots, id_to_index, 64
         )
+    if args.only_mode is not None:
+        operations = {
+            name: operation for name, operation in operations.items() if name == args.only_mode
+        }
     for name, operation in operations.items():
         try:
             _value, elapsed = _elapsed(operation, args.mode_timeout)
@@ -316,11 +321,8 @@ def _timeout_row(case: dict, seconds: float) -> dict:
 
 def _run(args: argparse.Namespace) -> int:
     data_dir = args.data_dir.resolve()
-    expected_results = data_dir / "results"
     output = _external_output(args.output)
-    if output.parent != expected_results:
-        raise SystemExit(f"--output must be directly under {expected_results}")
-    expected_results.mkdir(parents=True, exist_ok=True)
+    output.parent.mkdir(parents=True, exist_ok=True)
     cases = load_cases(data_dir)
     rows = []
     worker_output = output.with_suffix(output.suffix + ".worker")
@@ -333,6 +335,8 @@ def _run(args: argparse.Namespace) -> int:
         "--mode-timeout",
         str(args.mode_timeout),
     ]
+    if args.only_mode is not None:
+        command.extend(("--only-mode", args.only_mode))
     environment = dict(os.environ)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     for index, case in enumerate(cases, 1):
@@ -380,6 +384,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--mode-timeout", type=float, default=2.0)
+    parser.add_argument("--only-mode", choices=_MODES)
     parser.add_argument("--_worker", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--worker-output", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)

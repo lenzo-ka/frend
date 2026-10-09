@@ -319,6 +319,164 @@ def test_resource_gate_fails_breach_but_passes_within_noise(
     )["outside_base_range"] is bool(expected_status)
 
 
+def test_require_identical_checks_first_choice_and_all_offers():
+    row = {
+        "id": "en_US:fixture:1",
+        "written": "1",
+        "strict": True,
+        "presentation": True,
+        "insensitive": True,
+        "first_strict": True,
+        "first_presentation": True,
+        "first": " one ",
+        "offer_signature": [{"alternatives": [{"text": "one", "surface": False}]}],
+        "error": None,
+    }
+    same = gate.compare({"cases": [row]}, {"cases": [row]}, require_identical=True)
+    changed = json.loads(json.dumps(row))
+    changed["offer_signature"][0]["alternatives"][0]["text"] = "won"
+    different = gate.compare({"cases": [row]}, {"cases": [changed]}, require_identical=True)
+
+    assert same["identity"]["passed"]
+    assert not different["identity"]["passed"]
+    assert different["identity"]["mismatches"][0]["changes"] == {
+        "offer_signature": {
+            "base": row["offer_signature"],
+            "head": changed["offer_signature"],
+        }
+    }
+
+
+def test_require_identical_rejects_documents_that_both_omit_offer_signature():
+    row = {
+        "id": "en_US:fixture:1",
+        "written": "1",
+        "strict": True,
+        "presentation": True,
+        "insensitive": True,
+        "first_strict": True,
+        "first_presentation": True,
+        "first": " one ",
+        "error": None,
+    }
+    result = gate.compare({"cases": [row]}, {"cases": [row]}, require_identical=True)
+
+    assert not result["identity"]["passed"]
+    assert result["identity"]["mismatches"][0]["changes"]["offer_signature"] == {
+        "missing_on": ["base", "head"]
+    }
+
+
+def test_pr4_improvement_profile_enforces_stricter_runtime_and_fold_budgets():
+    base_runtime, head_runtime, soak, _fold = _resource_documents(100, 100)
+    head_runtime["summary"]["first_hit_ns"]["en_US"] = {
+        "median": 1_001_000,
+        "min": 1_001_000,
+        "max": 1_001_000,
+    }
+
+    def fold(value):
+        return {
+            "data_dir": "/outside/fold-bench",
+            "rows": [
+                {
+                    "id": "long-en_US-030",
+                    "locale": "en_US",
+                    "mode": "plain",
+                    "timings_ns": {"resolve_k64": value},
+                }
+            ],
+        }
+
+    common = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_runtime=base_runtime,
+        head_runtime=head_runtime,
+        base_soak=soak,
+        head_soak=soak,
+        base_folds=[fold(1_000_000)],
+        head_folds=[fold(847_000)],
+    )
+    strict = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_runtime=base_runtime,
+        head_runtime=head_runtime,
+        base_soak=soak,
+        head_soak=soak,
+        base_folds=[fold(1_000_000)],
+        head_folds=[fold(847_000)],
+        pr4_improvement=True,
+    )
+
+    assert not common["resources"]["failures"]
+    assert {failure["metric"] for failure in strict["resources"]["failures"]} == {
+        "runtime.first_hit_ns.en_US",
+        "fold[fold-bench].resolve_k64.corpus_median_ns",
+    }
+
+
+def test_runtime_comparison_uses_base_prewarm_when_both_sides_have_api():
+    base_runtime, head_runtime, _soak, _fold = _resource_documents(100, 100)
+    base_runtime["summary"]["sequential_first_hit_total_ns"] = {
+        "median": 2_000_000,
+        "min": 2_000_000,
+        "max": 2_000_000,
+    }
+    base_runtime["summary"]["prewarm_total_ns"] = {
+        "median": 100_000,
+        "min": 100_000,
+        "max": 100_000,
+    }
+    head_runtime["summary"]["prewarm_total_ns"] = {
+        "median": 1_000_000,
+        "min": 1_000_000,
+        "max": 1_000_000,
+    }
+    result = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_runtime=base_runtime,
+        head_runtime=head_runtime,
+    )
+
+    failure = next(
+        check
+        for check in result["resources"]["failures"]
+        if check["metric"] == "runtime.prewarm_total_ns_vs_base_prewarm"
+    )
+    assert failure["base"]["median"] == 100_000
+
+
+def test_fold_row_gate_requires_ratio_and_absolute_noise_floor():
+    def run(value):
+        return {
+            "data_dir": "/outside/fold-bench",
+            "rows": [
+                {
+                    "id": "short-en_US-001",
+                    "locale": "en_US",
+                    "mode": "plain",
+                    "timings_ns": {"resolve_k64": value},
+                }
+            ],
+        }
+
+    payload = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_folds=[run(100_000), run(110_000), run(90_000)],
+        head_folds=[run(200_000), run(210_000), run(190_000)],
+    )
+    row = next(
+        check for check in payload["resources"]["checks"] if check["metric"].endswith(".row")
+    )
+    assert row["head"]["median"] > row["ratio_limit"]
+    assert row["head"]["median"] - row["base"]["median"] < row["absolute_floor_ns"]
+    assert row["passed"]
+
+
 def test_fixture_grep_finds_substrings(tmp_path):
     root = _fixture(tmp_path, "en", "test_cases_word.txt", "haystack needle suffix~x\n")
     result = gate.fixture_grep(root, ("needle", "absent"))

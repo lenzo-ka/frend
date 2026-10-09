@@ -285,3 +285,15 @@ and two workload passes use another fresh process. `soak --unseen` performs thre
 passes over 2,000 generated inputs per locale and also repeats in fresh processes.
 The JSON embeds the `GateBudget` ceilings and reports medians plus base min-max
 ranges. `compare` lists every per-case flip and marks every negative flip.
+Use `compare --require-identical` for refactors that promise no output change: it
+compares the first-choice bytes and the complete factored keep-all offer graph for
+every input, and fails on any changed, added, or missing case.
+
+Fold comparisons use repeated base/head runs collected in alternating order. The
+corpus gate compares the median row time in each run, then compares the medians
+against the base-run spread. A single row is a regression only when its head median
+exceeds both 1.05 times its base median and an absolute noise floor equal to the
+larger of 0.25 ms and that row's base-run min-max spread. This conjunctive rule keeps
+sub-millisecond scheduler noise out of the gate; reports still list every per-row
+ratio exceedance separately. Benchmark output may be written to any directory
+outside the repository, including the lane's gate-artifact directory.
