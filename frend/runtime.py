@@ -7,6 +7,23 @@ caller's decision, made once its own setup is done.
 from __future__ import annotations
 
 import gc
+from collections.abc import Iterable
+
+from frend.locale_data import canonical_locale
+
+
+def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ...]:
+    """Load the production path once per unique canonical locale, in input order.
+
+    This is an optional startup operation.  Normalization remains lazy by default,
+    and prewarming never freezes the garbage collector.
+    """
+    from frend.normalize import normalize
+
+    order = tuple(dict.fromkeys(canonical_locale(locale) for locale in locales))
+    for locale in order:
+        normalize(probe_text, locale=locale)
+    return order
 
 
 def freeze_after_setup() -> int:

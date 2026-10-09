@@ -23,7 +23,7 @@ import time
 import unicodedata
 from collections import Counter, defaultdict
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -66,6 +66,10 @@ class GateBudget:
     warm_p95_ratio: float = 1.10
     fold_median_ratio: float = 1.02
     fold_row_ratio: float = 1.05
+    # A row fails only when it exceeds both the ratio and this absolute regression
+    # floor (or the wider observed base spread across repeated alternating runs).
+    # Sub-millisecond rows otherwise turn scheduler noise into false regressions.
+    fold_row_absolute_floor_ns: int = 250_000
     max_alternatives_per_edge_delta: int = 0
 
 
@@ -429,6 +433,25 @@ def _graph(case: FixtureCase) -> tuple[list[Mapping], ChoiceGraph]:
     return detections, compose_choices(lattice)
 
 
+def _offer_signature(graph: ChoiceGraph) -> list[dict]:
+    """A byte-output-complete signature of the factored keep-all graph."""
+    return [
+        {
+            "start": edge.start,
+            "end": edge.end,
+            "kind": edge.kind,
+            "alternatives": [
+                {
+                    "text": alternative.text,
+                    "surface": alternative.provenance == "surface:passthrough",
+                }
+                for alternative in unit.alternatives
+            ],
+        }
+        for edge, unit in zip(graph.lattice.edges, graph.units, strict=True)
+    ]
+
+
 def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str]) -> dict:
     targets = admissible_targets(case, exclusions)
     try:
@@ -470,6 +493,7 @@ def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str])
         max_alternatives = max((len(unit.alternatives) for unit in graph.units), default=0)
         error = None
         junk = sorted(junk_audit(first, case.locale))
+        offer_signature = _offer_signature(graph)
     except Exception as exc:  # A crash is a measured miss, never a hidden omission.
         hits = {name: [False] * len(targets) for name in ("strict", "presentation", "insensitive")}
         first = ""
@@ -478,6 +502,7 @@ def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str])
         detection_count = edge_count = max_alternatives = 0
         error = f"{type(exc).__name__}: {exc}"
         junk = []
+        offer_signature = []
     return {
         "id": f"{case.locale}:{case.case_id}",
         "locale": case.locale,
@@ -491,6 +516,7 @@ def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str])
         "presentation": any(hits["presentation"]),
         "insensitive": any(hits["insensitive"]),
         "first": first,
+        "offer_signature": offer_signature,
         "first_strict": first_strict,
         "first_presentation": first_presentation,
         "error": error,
@@ -633,12 +659,16 @@ def _ratio_comparison(
     ratio: float,
     *,
     additive_ns: int = 0,
+    allow_base_spread: bool = True,
 ) -> dict:
     limit = max(base["median"] * ratio, base["median"] + additive_ns)
     budget = f"{ratio:.3f}x"
     if additive_ns:
         budget += f" or +{additive_ns / 1_000_000:.3f} ms"
-    return _comparison(metric, base, head, limit, budget)
+    result = _comparison(metric, base, head, limit, budget)
+    if not allow_base_spread:
+        result["passed"] = not result["breached"]
+    return result
 
 
 def _delta_comparison(
@@ -646,15 +676,20 @@ def _delta_comparison(
     base: Mapping[str, int],
     head: Mapping[str, int],
     delta_mib: float,
+    *,
+    allow_base_spread: bool = True,
 ) -> dict:
     delta_bytes = delta_mib * 2**20
-    return _comparison(
+    result = _comparison(
         metric,
         base,
         head,
         base["median"] + delta_bytes,
         f"+{delta_mib:g} MiB",
     )
+    if not allow_base_spread:
+        result["passed"] = not result["breached"]
+    return result
 
 
 def _absolute_comparison(
@@ -666,7 +701,13 @@ def _absolute_comparison(
     return _comparison(metric, base, head, limit_mib * 2**20, f"{limit_mib:g} MiB")
 
 
-def _runtime_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
+def _runtime_comparisons(
+    base: dict,
+    head: dict,
+    budget: GateBudget,
+    *,
+    pr4_improvement: bool = False,
+) -> list[dict]:
     base_summary = base["summary"]
     head_summary = head["summary"]
     checks = []
@@ -677,7 +718,8 @@ def _runtime_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dic
                 base_summary["first_hit_ns"][locale],
                 head_summary["first_hit_ns"][locale],
                 budget.first_hit_ratio,
-                additive_ns=100_000,
+                additive_ns=0 if pr4_improvement else 100_000,
+                allow_base_spread=not pr4_improvement,
             )
         )
     checks.append(
@@ -688,12 +730,26 @@ def _runtime_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dic
             budget.sequential_first_hit_total_ratio,
         )
     )
+    if "prewarm_total_ns" in head_summary:
+        base_prewarm = base_summary.get(
+            "prewarm_total_ns", base_summary["sequential_first_hit_total_ns"]
+        )
+        comparison = "base_prewarm" if "prewarm_total_ns" in base_summary else "base_sequential"
+        checks.append(
+            _ratio_comparison(
+                f"runtime.prewarm_total_ns_vs_{comparison}",
+                base_prewarm,
+                head_summary["prewarm_total_ns"],
+                budget.sequential_first_hit_total_ratio,
+            )
+        )
     checks.append(
         _delta_comparison(
             "runtime.rss_loaded_bytes",
             base_summary["rss_loaded_bytes"],
             head_summary["rss_loaded_bytes"],
             budget.rss_loaded_delta_mib,
+            allow_base_spread=not pr4_improvement,
         )
     )
     for name in ("rss_workload_pass1_bytes", "rss_workload_pass2_bytes"):
@@ -703,6 +759,7 @@ def _runtime_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dic
                 base_summary[name],
                 head_summary[name],
                 budget.rss_workload_delta_mib,
+                allow_base_spread=not pr4_improvement,
             )
         )
     plateau = {}
@@ -754,50 +811,82 @@ def _fold_key(row: Mapping) -> tuple[str, str, str]:
     return str(row["id"]), str(row["locale"]), str(row["mode"])
 
 
-def _fold_comparisons(base: dict, head: dict, budget: GateBudget, index: int) -> list[dict]:
-    base_rows = {
+def _fold_run_rows(document: dict) -> dict[tuple[str, str, str], int]:
+    return {
         _fold_key(row): row["timings_ns"]["resolve_k64"]
-        for row in base["rows"]
+        for row in document["rows"]
         if "resolve_k64" in row.get("timings_ns", {})
     }
-    head_rows = {
-        _fold_key(row): row["timings_ns"]["resolve_k64"]
-        for row in head["rows"]
-        if "resolve_k64" in row.get("timings_ns", {})
-    }
-    common = sorted(set(base_rows) & set(head_rows))
+
+
+def _fold_comparisons(
+    base_runs: Sequence[dict],
+    head_runs: Sequence[dict],
+    budget: GateBudget,
+    label: str,
+    *,
+    pr4_improvement: bool = False,
+) -> list[dict]:
+    base_run_rows = [_fold_run_rows(document) for document in base_runs]
+    head_run_rows = [_fold_run_rows(document) for document in head_runs]
+    base_keys = set.intersection(*(set(rows) for rows in base_run_rows)) if base_run_rows else set()
+    head_keys = set.intersection(*(set(rows) for rows in head_run_rows)) if head_run_rows else set()
+    common = sorted(base_keys & head_keys)
     checks = []
     if common:
-        base_median = statistics.median(base_rows[key] for key in common)
-        head_median = statistics.median(head_rows[key] for key in common)
-        limit = base_median * budget.fold_median_ratio
-        checks.append(
-            {
-                "metric": f"fold[{index}].resolve_k64.median_ns",
-                "base": base_median,
-                "head": head_median,
-                "limit": limit,
-                "budget": f"{budget.fold_median_ratio:.3f}x",
-                "breached": head_median > limit,
-                "passed": head_median <= limit,
-            }
+        base_corpus = _median_range(
+            [int(statistics.median(rows[key] for key in common)) for rows in base_run_rows]
         )
-    for key in sorted(base_rows):
-        head_value = head_rows.get(key)
-        limit = base_rows[key] * budget.fold_row_ratio
+        head_corpus = _median_range(
+            [int(statistics.median(rows[key] for key in common)) for rows in head_run_rows]
+        )
+        corpus = _comparison(
+            f"fold[{label}].resolve_k64.corpus_median_ns",
+            base_corpus,
+            head_corpus,
+            base_corpus["median"] * budget.fold_median_ratio,
+            f"{budget.fold_median_ratio:.3f}x and outside base run spread",
+        )
+        if pr4_improvement:
+            corpus["passed"] = not corpus["breached"]
+        corpus["runs"] = {"base": len(base_runs), "head": len(head_runs)}
+        checks.append(corpus)
+    for key in sorted(base_keys):
+        base_value = _median_range([rows[key] for rows in base_run_rows])
+        head_values = [rows[key] for rows in head_run_rows if key in rows]
+        head_value = _median_range(head_values) if len(head_values) == len(head_run_rows) else None
+        ratio_limit = base_value["median"] * budget.fold_row_ratio
+        absolute_floor = max(
+            budget.fold_row_absolute_floor_ns,
+            base_value["max"] - base_value["min"],
+        )
+        breached = (
+            head_value is None
+            or head_value["median"] > ratio_limit
+            and head_value["median"] - base_value["median"] > absolute_floor
+        )
         checks.append(
             {
-                "metric": f"fold[{index}].resolve_k64.row",
+                "metric": f"fold[{label}].resolve_k64.row",
                 "row": {"id": key[0], "locale": key[1], "mode": key[2]},
-                "base": base_rows[key],
+                "base": base_value,
                 "head": head_value,
-                "limit": limit,
-                "budget": f"{budget.fold_row_ratio:.3f}x",
-                "breached": head_value is None or head_value > limit,
-                "passed": head_value is not None and head_value <= limit,
+                "ratio_limit": ratio_limit,
+                "absolute_floor_ns": absolute_floor,
+                "budget": (
+                    f">{budget.fold_row_ratio:.3f}x AND "
+                    f">+max({budget.fold_row_absolute_floor_ns} ns, base run spread)"
+                ),
+                "breached": breached,
+                "passed": not breached,
             }
         )
     return checks
+
+
+def _fold_group(document: dict, index: int) -> str:
+    data_dir = document.get("data_dir")
+    return Path(data_dir).name if data_dir else f"input-{index}"
 
 
 def _max_alternative_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
@@ -830,6 +919,8 @@ def compare(
     head_soak: dict | None = None,
     base_folds: Sequence[dict] = (),
     head_folds: Sequence[dict] = (),
+    require_identical: bool = False,
+    pr4_improvement: bool = False,
 ) -> dict:
     base_rows = {row["id"]: row for row in base.get("cases", ())}
     head_rows = {row["id"]: row for row in head.get("cases", ())}
@@ -853,21 +944,82 @@ def compare(
                     ),
                 }
             )
+    identity_mismatches = []
+    if require_identical:
+        for identifier in sorted(set(base_rows) & set(head_rows)):
+            before, after = base_rows[identifier], head_rows[identifier]
+            changed = {
+                field: {"base": before.get(field), "head": after.get(field)}
+                for field in ("first", "offer_signature", "error")
+                if before.get(field) != after.get(field)
+            }
+            for field in ("first", "offer_signature"):
+                missing = [
+                    side for side, row in (("base", before), ("head", after)) if field not in row
+                ]
+                if missing:
+                    changed[field] = {"missing_on": missing}
+            if changed:
+                identity_mismatches.append(
+                    {"id": identifier, "written": after["written"], "changes": changed}
+                )
     budget = GateBudget()
+    if pr4_improvement:
+        budget = replace(
+            budget,
+            first_hit_ratio=1.0,
+            rss_loaded_delta_mib=0.0,
+            rss_workload_delta_mib=0.0,
+            fold_median_ratio=0.5,
+        )
     resource_checks = _max_alternative_comparisons(base, head, budget)
     if base_runtime is not None and head_runtime is not None:
-        resource_checks.extend(_runtime_comparisons(base_runtime, head_runtime, budget))
+        resource_checks.extend(
+            _runtime_comparisons(
+                base_runtime,
+                head_runtime,
+                budget,
+                pr4_improvement=pr4_improvement,
+            )
+        )
     if base_soak is not None and head_soak is not None:
         resource_checks.extend(_soak_comparisons(base_soak, head_soak, budget))
-    for index, (base_fold, head_fold) in enumerate(zip(base_folds, head_folds, strict=True), 1):
-        resource_checks.extend(_fold_comparisons(base_fold, head_fold, budget, index))
+    base_fold_groups: dict[str, list[dict]] = defaultdict(list)
+    head_fold_groups: dict[str, list[dict]] = defaultdict(list)
+    for index, document in enumerate(base_folds, 1):
+        base_fold_groups[_fold_group(document, index)].append(document)
+    for index, document in enumerate(head_folds, 1):
+        head_fold_groups[_fold_group(document, index)].append(document)
+    for label in sorted(set(base_fold_groups) | set(head_fold_groups)):
+        resource_checks.extend(
+            _fold_comparisons(
+                base_fold_groups.get(label, ()),
+                head_fold_groups.get(label, ()),
+                budget,
+                label,
+                pr4_improvement=pr4_improvement,
+            )
+        )
     return {
         "schema": 2,
         "base_only": sorted(set(base_rows) - set(head_rows)),
         "head_only": sorted(set(head_rows) - set(base_rows)),
         "flips": flips,
         "negative_flips": [row for row in flips if row["negative"]],
+        "identity": {
+            "required": require_identical,
+            "base_only": sorted(set(base_rows) - set(head_rows)),
+            "head_only": sorted(set(head_rows) - set(base_rows)),
+            "mismatches": identity_mismatches,
+            "passed": not require_identical
+            or not (
+                set(base_rows) - set(head_rows)
+                or set(head_rows) - set(base_rows)
+                or identity_mismatches
+            ),
+        },
         "resources": {
+            "profile": "pr4-improvement" if pr4_improvement else "common",
             "budget": asdict(budget),
             "checks": resource_checks,
             "failures": [check for check in resource_checks if not check["passed"]],
@@ -909,6 +1061,19 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
         started = time.perf_counter_ns()
         normalize("123", locale=locale)
         return {"locale": locale, "first_hit_ns": time.perf_counter_ns() - started}
+    if kind == "prewarm":
+        try:
+            from frend import prewarm
+        except ImportError:
+            return {"prewarm_available": False}
+
+        started = time.perf_counter_ns()
+        order = prewarm(GATE_LOCALES)
+        return {
+            "prewarm_available": True,
+            "prewarm_total_ns": time.perf_counter_ns() - started,
+            "order": list(order),
+        }
     workloads = _workloads(nemo_root, checked_path)
     sequential: dict[str, int] = {}
     started_total = time.perf_counter_ns()
@@ -953,14 +1118,14 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
     }
 
 
-def _child_command(*arguments: str) -> dict:
+def _child_command(*arguments: str, repo: Path = REPO) -> dict:
     environment = dict(os.environ)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
-    environment["PYTHONPATH"] = str(REPO)
+    environment["PYTHONPATH"] = str(repo)
     command = [sys.executable, "-B", str(Path(__file__).resolve()), *arguments]
     result = subprocess.run(
         command,
-        cwd=REPO,
+        cwd=repo,
         env=environment,
         check=True,
         capture_output=True,
@@ -973,37 +1138,56 @@ def _median_range(values: Sequence[int]) -> dict[str, int]:
     return {"median": int(statistics.median(values)), "min": min(values), "max": max(values)}
 
 
-def runtime(nemo_root: Path, out_dir: Path, checked_path: Path, repeat: int) -> dict:
-    _refuse_tracemalloc()
-    runs = []
-    for run_number in range(1, repeat + 1):
-        first_hits = {}
-        for locale in GATE_LOCALES:
-            payload = _child_command(
-                "_runtime-child",
-                "--kind",
-                "first",
-                "--locale",
-                locale,
-                "--nemo-root",
-                str(nemo_root),
-                "--checked",
-                str(checked_path),
-            )
-            first_hits[locale] = payload["first_hit_ns"]
-        combined = _child_command(
+def _runtime_once(
+    repo: Path,
+    nemo_root: Path,
+    checked_path: Path,
+    *,
+    include_prewarm: bool,
+) -> dict:
+    first_hits = {}
+    for locale in GATE_LOCALES:
+        payload = _child_command(
             "_runtime-child",
             "--kind",
-            "combined",
+            "first",
+            "--locale",
+            locale,
             "--nemo-root",
             str(nemo_root),
             "--checked",
             str(checked_path),
+            repo=repo,
         )
-        combined["run"] = run_number
-        combined["first_hit_ns"] = first_hits
-        runs.append(combined)
-        print(f"runtime {run_number}/{repeat}", file=sys.stderr, flush=True)
+        first_hits[locale] = payload["first_hit_ns"]
+    combined = _child_command(
+        "_runtime-child",
+        "--kind",
+        "combined",
+        "--nemo-root",
+        str(nemo_root),
+        "--checked",
+        str(checked_path),
+        repo=repo,
+    )
+    combined["first_hit_ns"] = first_hits
+    if include_prewarm:
+        prewarm_result = _child_command(
+            "_runtime-child",
+            "--kind",
+            "prewarm",
+            "--nemo-root",
+            str(nemo_root),
+            "--checked",
+            str(checked_path),
+            repo=repo,
+        )
+        if prewarm_result.get("prewarm_available"):
+            combined.update(prewarm_result)
+    return combined
+
+
+def _runtime_report(runs: Sequence[dict]) -> dict:
     summary = {
         "first_hit_ns": {
             locale: _median_range([run["first_hit_ns"][locale] for run in runs])
@@ -1033,20 +1217,65 @@ def runtime(nemo_root: Path, out_dir: Path, checked_path: Path, repeat: int) -> 
             for locale in GATE_LOCALES
         },
     }
-    report = {
+    if all("prewarm_total_ns" in run for run in runs):
+        summary["prewarm_total_ns"] = _median_range([run["prewarm_total_ns"] for run in runs])
+    return {
         "schema": 2,
-        "repeat": repeat,
+        "repeat": len(runs),
         "locale_order": list(GATE_LOCALES),
         "tracemalloc": False,
         "budget": asdict(GateBudget()),
-        "runs": runs,
+        "runs": list(runs),
         "summary": summary,
     }
+
+
+def runtime(nemo_root: Path, out_dir: Path, checked_path: Path, repeat: int) -> dict:
+    _refuse_tracemalloc()
+    runs = []
+    for run_number in range(1, repeat + 1):
+        combined = _runtime_once(REPO, nemo_root, checked_path, include_prewarm=True)
+        combined["run"] = run_number
+        runs.append(combined)
+        print(f"runtime {run_number}/{repeat}", file=sys.stderr, flush=True)
+    report = _runtime_report(runs)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "runtime.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     return report
+
+
+def runtime_pair(
+    base_repo: Path,
+    head_repo: Path,
+    nemo_root: Path,
+    out_dir: Path,
+    checked_path: Path,
+    repeat: int,
+) -> tuple[dict, dict]:
+    """Measure fresh base/head processes in alternating order."""
+    _refuse_tracemalloc()
+    runs = {"base": [], "head": []}
+    for run_number in range(1, repeat + 1):
+        for side, repo in (("base", base_repo), ("head", head_repo)):
+            run = _runtime_once(
+                repo,
+                nemo_root,
+                checked_path,
+                include_prewarm=True,
+            )
+            run["run"] = run_number
+            runs[side].append(run)
+            print(f"runtime {run_number}/{repeat} {side}", file=sys.stderr, flush=True)
+    reports = (_runtime_report(runs["base"]), _runtime_report(runs["head"]))
+    for side, report in zip(("base", "head"), reports, strict=True):
+        destination = out_dir / side
+        destination.mkdir(parents=True, exist_ok=True)
+        (destination / "runtime.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+    return reports
 
 
 def _unseen_inputs(locale: str, pass_index: int, count: int = 2000) -> list[str]:
@@ -1105,6 +1334,51 @@ def soak(out_dir: Path, repeat: int, unseen: bool) -> dict:
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     return report
+
+
+def soak_pair(
+    base_repo: Path,
+    head_repo: Path,
+    out_dir: Path,
+    repeat: int,
+    unseen: bool,
+) -> tuple[dict, dict]:
+    """Measure unseen-input RSS in alternating fresh base/head processes."""
+    _refuse_tracemalloc()
+    if not unseen:
+        raise ValueError("soak-pair requires --unseen so the workload contract is explicit")
+    runs = {"base": [], "head": []}
+    for run_number in range(1, repeat + 1):
+        for side, repo in (("base", base_repo), ("head", head_repo)):
+            run = _child_command("_soak-child", repo=repo)
+            run["run"] = run_number
+            runs[side].append(run)
+            print(f"soak {run_number}/{repeat} {side}", file=sys.stderr, flush=True)
+    reports = []
+    for side in ("base", "head"):
+        report = {
+            "schema": 1,
+            "repeat": repeat,
+            "unseen_inputs_per_locale": 2000,
+            "passes": 3,
+            "runs": runs[side],
+            "summary": {
+                key: _median_range([run[key] for run in runs[side]])
+                for key in (
+                    "rss_pass1_bytes",
+                    "rss_pass2_bytes",
+                    "rss_pass3_bytes",
+                    "pass3_minus_pass1_bytes",
+                )
+            },
+        }
+        destination = out_dir / side
+        destination.mkdir(parents=True, exist_ok=True)
+        (destination / "soak.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        reports.append(report)
+    return reports[0], reports[1]
 
 
 _ALLOWED_UNBOUNDED_PARAMETERS = {
@@ -1170,10 +1444,23 @@ def _parser() -> argparse.ArgumentParser:
     runtime_parser.add_argument("--out-dir", type=Path, required=True)
     runtime_parser.add_argument("--checked", type=Path, default=CHECKED_PT_PT)
     runtime_parser.add_argument("--repeat", type=int, default=5)
+    runtime_pair_parser = subparsers.add_parser("runtime-pair")
+    runtime_pair_parser.add_argument("--base-repo", type=Path, required=True)
+    runtime_pair_parser.add_argument("--head-repo", type=Path, required=True)
+    runtime_pair_parser.add_argument("--nemo-root", type=Path, required=True)
+    runtime_pair_parser.add_argument("--out-dir", type=Path, required=True)
+    runtime_pair_parser.add_argument("--checked", type=Path, default=CHECKED_PT_PT)
+    runtime_pair_parser.add_argument("--repeat", type=int, default=5)
     soak_parser = subparsers.add_parser("soak")
     soak_parser.add_argument("--out-dir", type=Path, required=True)
     soak_parser.add_argument("--repeat", type=int, default=5)
     soak_parser.add_argument("--unseen", action="store_true")
+    soak_pair_parser = subparsers.add_parser("soak-pair")
+    soak_pair_parser.add_argument("--base-repo", type=Path, required=True)
+    soak_pair_parser.add_argument("--head-repo", type=Path, required=True)
+    soak_pair_parser.add_argument("--out-dir", type=Path, required=True)
+    soak_pair_parser.add_argument("--repeat", type=int, default=5)
+    soak_pair_parser.add_argument("--unseen", action="store_true")
     compare_parser = subparsers.add_parser("compare")
     compare_parser.add_argument("--base", type=Path, required=True)
     compare_parser.add_argument("--head", type=Path, required=True)
@@ -1184,11 +1471,13 @@ def _parser() -> argparse.ArgumentParser:
     compare_parser.add_argument("--base-fold", type=Path, action="append", default=[])
     compare_parser.add_argument("--head-fold", type=Path, action="append", default=[])
     compare_parser.add_argument("--out", type=Path)
+    compare_parser.add_argument("--require-identical", action="store_true")
+    compare_parser.add_argument("--pr4-improvement", action="store_true")
     grep_parser = subparsers.add_parser("fixture-grep")
     grep_parser.add_argument("--nemo-root", type=Path, required=True)
     grep_parser.add_argument("values", nargs="+")
     child = subparsers.add_parser("_runtime-child")
-    child.add_argument("--kind", choices=("first", "combined"), required=True)
+    child.add_argument("--kind", choices=("first", "combined", "prewarm"), required=True)
     child.add_argument("--locale")
     child.add_argument("--nemo-root", type=Path, required=True)
     child.add_argument("--checked", type=Path, required=True)
@@ -1202,8 +1491,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         coverage(args.nemo_root, args.out_dir, args.checked)
     elif args.command == "runtime":
         runtime(args.nemo_root, args.out_dir, args.checked, args.repeat)
+    elif args.command == "runtime-pair":
+        runtime_pair(
+            args.base_repo,
+            args.head_repo,
+            args.nemo_root,
+            args.out_dir,
+            args.checked,
+            args.repeat,
+        )
     elif args.command == "soak":
         soak(args.out_dir, args.repeat, args.unseen)
+    elif args.command == "soak-pair":
+        soak_pair(args.base_repo, args.head_repo, args.out_dir, args.repeat, args.unseen)
     elif args.command == "compare":
         for label, left, right in (
             ("runtime", args.base_runtime, args.head_runtime),
@@ -1228,6 +1528,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             head_soak=read_optional(args.head_soak),
             base_folds=[read_optional(path) for path in args.base_fold],
             head_folds=[read_optional(path) for path in args.head_fold],
+            require_identical=args.require_identical,
+            pr4_improvement=args.pr4_improvement,
         )
         text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
         if args.out:
@@ -1235,6 +1537,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             print(text, end="")
         if payload["resources"]["failures"]:
+            return 1
+        if not payload["identity"]["passed"]:
             return 1
     elif args.command == "fixture-grep":
         payload = {

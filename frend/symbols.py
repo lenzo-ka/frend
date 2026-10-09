@@ -312,12 +312,20 @@ def _property_name(text: str) -> tuple[tuple[str, str], ...]:
 
 
 def _speakable(char: str, locale: str) -> bool:
-    if char.isspace() or char.isdigit():
+    if char.isspace():
         return False
     if char in _cldr_names(locale) or _without_variation_selectors(char) in _cldr_names(locale):
         return True
+    if char.isdigit():
+        return False
     base = _without_variation_selectors(char)
     return (len(base) == 1 and _lone_foreign(base, locale)) or _symbol_grapheme(char)
+
+
+def _digit_like_cldr_symbol(char: str, locale: str) -> bool:
+    """Whether a digit-like grapheme has an explicit spoken CLDR symbol name."""
+    base = _without_variation_selectors(char)
+    return char.isdigit() and (char in _cldr_names(locale) or base in _cldr_names(locale))
 
 
 def _standalone(text: str, start: int, end: int) -> bool:
@@ -689,7 +697,14 @@ class SymbolDetector:
                 continue
             if any(_VARIATION_SELECTORS.contains(unit) for unit in char):
                 base = _without_variation_selectors(char)
-                if base and _speakable(char, self.locale) and _standalone_symbol(text, index, end):
+                if (
+                    base
+                    and _speakable(char, self.locale)
+                    and (
+                        _digit_like_cldr_symbol(char, self.locale)
+                        or _standalone_symbol(text, index, end)
+                    )
+                ):
                     script = _script(base[0])
                     detections.append(
                         {
@@ -715,7 +730,9 @@ class SymbolDetector:
                         }
                     )
                 continue
-            if not _speakable(char, self.locale) or not _standalone_symbol(text, index, end):
+            if not _speakable(char, self.locale) or not (
+                _digit_like_cldr_symbol(char, self.locale) or _standalone_symbol(text, index, end)
+            ):
                 continue
             base = _without_variation_selectors(char).replace("\u200d", "")
             script = _script(base[0])

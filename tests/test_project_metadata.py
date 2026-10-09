@@ -8,6 +8,36 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
 _PYPROJECT = _REPO / "pyproject.toml"
+_CHANGELOG = _REPO / "CHANGELOG.md"
+
+
+def test_unreleased_changelog_names_public_features_since_pr_57():
+    text = _CHANGELOG.read_text(encoding="utf-8")
+    unreleased = text.partition("## Unreleased")[2].partition("\n## ")[0]
+
+    public_features = (
+        "`normalize`",
+        "external `google-tn` profile",
+        "behavior schemas",
+        "input limits",
+        "telephone numbers",
+        "ISBNs and grouped IDs",
+        "fractional durations",
+        "symbol runs",
+        "electronic spans",
+        "spell-out dictionary",
+    )
+    missing = [feature for feature in public_features if feature not in unreleased]
+
+    assert not missing, f"Unreleased changelog is missing: {', '.join(missing)}"
+    assert "every limit and the fold are configurable" not in unreleased
+    assert (
+        "The document and\n"
+        "  graph-building unit limits and the fold are configurable through `normalize`"
+    ) in unreleased
+    assert "Standalone `ElectronicDetector` exposes separate URL, email, and input caps" in (
+        unreleased
+    )
 
 
 def test_cartlet_floor_comment_matches_dependency_specifier():

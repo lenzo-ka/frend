@@ -354,6 +354,26 @@ def _rank_final(
     return tuple(item[3] for item in ranked)
 
 
+def _digit_like_cldr_name_first(
+    alternatives: Sequence[SpokenAlternative], value: object
+) -> tuple[SpokenAlternative, ...]:
+    """Keep a CLDR-named digit-like symbol audible while retaining measured name order."""
+    alternatives = tuple(alternatives)
+    if not isinstance(value, SymbolValue) or not value.char.isdigit():
+        return alternatives
+    chosen = next(
+        (
+            index
+            for index, alternative in enumerate(alternatives)
+            if alternative.text and alternative.provenance.startswith("cldr-symbol:")
+        ),
+        None,
+    )
+    if chosen in (None, 0):
+        return alternatives
+    return (alternatives[chosen], *alternatives[:chosen], *alternatives[chosen + 1 :])
+
+
 def _zero_priors(*, locale: str = "en_US") -> dict[str, dict[str, int]]:
     """The locale's measured zero words by kind (``data/<locale>/zero_priors.json``);
     empty when the locale has no table. Cached on the canonical locale."""
@@ -3804,6 +3824,8 @@ def _verbalize_edge(
             eos=context.eos,
             threshold=context_threshold,
         )
+    if path == "symbol":
+        alternatives = _digit_like_cldr_name_first(alternatives, value)
     if path == "date":
         alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text, locale)
     return VerbalizedUnit(
