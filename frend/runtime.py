@@ -27,10 +27,12 @@ _DATE_PROBES = {
 
 
 def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ...]:
-    """Load the production path once per unique canonical locale, in input order.
+    """Load and compile the production path once per canonical locale, in input order.
 
     This is an optional startup operation.  Normalization remains lazy by default,
-    and prewarming never freezes the garbage collector.
+    and prewarming never freezes the garbage collector.  The first normalization
+    leaves that locale's retained icukit detector gang and its shared scan tables
+    resident for later requests.
     """
     from frend.normalize import normalize
 
