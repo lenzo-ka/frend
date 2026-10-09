@@ -16,25 +16,17 @@ from functools import cached_property
 from types import MappingProxyType
 
 from tiergraph import (
-    AttributeDeclaration,
-    AttributeDomain,
     AttributeValuation,
-    AttributeValue,
-    BipartiteRelationDeclaration,
     ChildCombination,
     FoldDeclaration,
     FoldTransition,
     Graph,
-    Item,
     ItemRef,
-    NamespaceDeclaration,
     QualifiedName,
-    RelationInstance,
-    SimpleRelationDeclaration,
-    Tier,
-    TierDeclaration,
     XsdType,
 )
+from tiergraph.build import document as build_document
+from tiergraph.build import item as build_item
 from tiergraph.pathplan import PathPlan
 from tiergraph.semiring import COUNTING, LOG_PROBABILITY
 
@@ -398,25 +390,6 @@ def build_align_graph(
     reachable = _check_sinks(items, links, root, sink)
     items = {id: item for id, item in items.items() if id in reachable}
     links = [(left, right) for left, right in links if left in reachable]
-    refs = {id: ItemRef(_TIER, index) for index, id in enumerate(items)}
-    graph_items = []
-    for item in items.values():
-        weight = item.weight
-        attributes = [
-            AttributeValue(_LOG_WEIGHT, XsdType.DOUBLE, repr(weight.log_weight)),
-            AttributeValue(_COUNT, XsdType.INTEGER, "1"),
-            AttributeValue(_SCORED, XsdType.BOOLEAN, "true" if weight.scored else "false"),
-            AttributeValue(_PRIOR_KIND, XsdType.STRING, "scored" if weight.scored else "unscored"),
-            AttributeValue(_REASON, XsdType.STRING, weight.reason),
-            AttributeValue(_ROLE, XsdType.STRING, item.role),
-        ]
-        if item.tokens:
-            attributes.append(AttributeValue(_TOKEN, XsdType.STRING, item.tokens[0]))
-        if weight.scored:
-            attributes.append(AttributeValue(_P, XsdType.DECIMAL, format(weight.p, "f")))
-            if weight.n is not None:
-                attributes.append(AttributeValue(_N, XsdType.INTEGER, str(weight.n)))
-        graph_items.append(Item(item.id, tuple(attributes)))
     declarations = (
         (_LOG_WEIGHT, XsdType.DOUBLE),
         (_COUNT, XsdType.INTEGER),
@@ -428,18 +401,42 @@ def build_align_graph(
         (_ROLE, XsdType.STRING),
         (_TOKEN, XsdType.STRING),
     )
-    graph = Graph(
-        (NamespaceDeclaration("frend", NS),),
-        (Tier(TierDeclaration(_TIER, "Alignment"), tuple(graph_items)),),
-        (
-            SimpleRelationDeclaration(QualifiedName(NS, "membership"), _TIER, _TYPE),
-            BipartiteRelationDeclaration(_NEXT, _TYPE, _TYPE, acyclic=True),
-        ),
-        tuple(RelationInstance(_NEXT, refs[left], refs[right]) for left, right in links),
-        tuple(
-            AttributeDeclaration(name, AttributeDomain.ITEM, kind) for name, kind in declarations
-        ),
+    graph_document = build_document(NS, prefix="frend")
+    graph_document.attributes(dict(declarations))
+    graph_items = []
+    for alignment_item in items.values():
+        weight = alignment_item.weight
+        attributes = {
+            _LOG_WEIGHT: repr(weight.log_weight),
+            _COUNT: "1",
+            _SCORED: "true" if weight.scored else "false",
+            _PRIOR_KIND: "scored" if weight.scored else "unscored",
+            _REASON: weight.reason,
+            _ROLE: alignment_item.role,
+        }
+        if alignment_item.tokens:
+            attributes[_TOKEN] = alignment_item.tokens[0]
+        if weight.scored:
+            attributes[_P] = format(weight.p, "f")
+            if weight.n is not None:
+                attributes[_N] = str(weight.n)
+        graph_items.append(build_item(alignment_item.id, attrs=attributes))
+    alignment = graph_document.tier(
+        _TIER,
+        graph_items,
+        item_type=_TYPE,
+        membership=QualifiedName(NS, "membership"),
+        long_name="Alignment",
     )
+    refs = {id: alignment.ref(index) for index, id in enumerate(items)}
+    graph_document.link(
+        _NEXT,
+        alignment,
+        alignment,
+        ((refs[left], refs[right]) for left, right in links),
+        acyclic=True,
+    )
+    graph = graph_document.build()
     return AlignGraph(
         graph, MappingProxyType(items), refs[root], refs[sink], frozenset(kept), tuple(unalignable)
     )

@@ -194,16 +194,23 @@ MUTATIONS = [
     graph(
         "Move reading factor to exclusive exits",
         "test_factor_is_on_reading_item",
-        "AttributeValue(_LOG_WEIGHT, XsdType.DOUBLE, repr(weight.log_weight)),",
-        "AttributeValue(_LOG_WEIGHT, XsdType.DOUBLE, repr("
-        '0.0 if item.role == "reading" else items[item.reading_id].weight.log_weight '
-        'if item.role == "form-exit" else weight.log_weight)), ',
+        "_LOG_WEIGHT: repr(weight.log_weight),",
+        "_LOG_WEIGHT: repr("
+        '0.0 if alignment_item.role == "reading" '
+        "else items[alignment_item.reading_id].weight.log_weight "
+        'if alignment_item.role == "form-exit" else weight.log_weight),',
     ),
     graph(
         "Drop graph evidence marker",
         "test_factor_is_on_reading_item",
-        'AttributeValue(_PRIOR_KIND, XsdType.STRING, "scored" if weight.scored else "unscored"),',
+        '_PRIOR_KIND: "scored" if weight.scored else "unscored",',
         "",
+    ),
+    graph(
+        "Reverse graph item order",
+        "test_builder_graph_has_exact_legacy_shape_and_round_trips",
+        "for alignment_item in items.values():",
+        "for alignment_item in reversed(tuple(items.values())):",
     ),
     graph(
         "Underflow via float before log",
