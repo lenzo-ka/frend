@@ -34,6 +34,7 @@ from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
     _decimal_separator_rules,
+    _quarter_names,
     _spellout_rule_sets,
     _weekday_name,
     register_curated_alternative,
@@ -81,7 +82,7 @@ def _first_forms(rule_sets):
     forms = {}
     rbnf = _rbnf()
     for name in rule_sets:
-        forms.setdefault(rbnf.format(2026, name), f"icu-rbnf:{name}")
+        forms.setdefault(rbnf.format(2026, name), f"icu-rbnf:{name}+icu-rbnf-fallback:en")
     return set(forms.items())
 
 
@@ -91,8 +92,11 @@ def test_real_year_harvests_year_and_cardinal_rule_sets_reflectively():
     actual = {(item.text, item.provenance) for item in alternatives}
     applicable = [name for name in _rule_sets() if "ordinal" not in name]
     expected = _first_forms(applicable) | {
-        ("two zero two six", "icu-rbnf:%spellout-cardinal"),
-        ("two o two six", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
+        ("two zero two six", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
+        (
+            "two o two six",
+            "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US",
+        ),
     }
 
     assert actual == expected
@@ -258,9 +262,10 @@ def test_era_also_reads_as_the_icu_wide_name_and_a_year_without_oh_gains_no_o():
         if item["start"] == 0 and item["end"] == len("500 BC")
     )
     unit = verbalize_lattice(resolve_lattice([detection], source_text="500 BC")).best_path.units[0]
-    assert ("five hundred Before Christ", "icu-rbnf:%spellout-numbering+icu-datetime:GGGG") in {
-        (item.text, item.provenance) for item in unit.alternatives
-    }
+    assert (
+        "five hundred Before Christ",
+        "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-datetime:GGGG",
+    ) in {(item.text, item.provenance) for item in unit.alternatives}
     plain = _full_span_forms(
         "March 2, 2014", [FlexibleTextDateDetector("en_US")], "date:text-flexible"
     )
@@ -281,7 +286,9 @@ def _assert_corpus_date_form(written, spoken):
 
     assert _by_text(alternatives, spoken).weight is not None
     cardinal_year = next(
-        item for item in alternatives if item.provenance.endswith("icu-rbnf:%spellout-numbering")
+        item
+        for item in alternatives
+        if item.provenance.endswith("icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en")
     )
     assert cardinal_year.weight is None
 
@@ -581,7 +588,6 @@ def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(mon
 
     ordinal = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"
     measured_over = "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering"
-    over = "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering"
     table = SpokenPriorTable(
         {
             "fraction": {
@@ -616,8 +622,16 @@ def test_unattested_denominator_uses_kind_level_shares_for_every_alternative(mon
     )
 
     assert [(item.provenance, item.weight) for item in alternatives[:2]] == [
-        (ordinal, Decimal("0.75")),
-        (over, Decimal("0.25")),
+        (
+            "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+"
+            "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en",
+            Decimal("0.75"),
+        ),
+        (
+            "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+"
+            "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
+            Decimal("0.25"),
+        ),
     ]
     assert all(item.weight is None for item in alternatives[2:])
 
@@ -649,7 +663,10 @@ def test_sparse_denominator_blends_its_one_row_toward_the_kind_share():
         1 + SUB_KEY_PRIOR_STRENGTH
     )
     assert kind_share < measurement.share < 1
-    assert alternatives[0].provenance == ordinal
+    assert alternatives[0].provenance == (
+        "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+"
+        "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en"
+    )
     assert alternatives[0].weight == measurement.share
     # Sources the one row never saw are no longer unmeasured: they keep a kind-derived share.
     later = [item.weight for item in alternatives[1:] if item.weight is not None]
@@ -1231,7 +1248,10 @@ def test_md_competes_as_spelled_letters_a_state_and_a_roman_numeral(text):
 
     assert ("M D", "icukit-spell-out:title/follows-name") in forms
     assert ("Maryland", "icukit-abbreviation:region/address") in forms
-    assert ("one thousand five hundred", "icu-rbnf:%spellout-numbering") in forms
+    assert (
+        "one thousand five hundred",
+        "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
+    ) in forms
     assert all(u.unspoken == () for u in units)
 
 
@@ -1754,6 +1774,15 @@ def test_quarter_also_reads_as_its_short_name_spelled():
     assert "q one twenty twenty four" in [normalize_spoken(a.text) for a in unit.alternatives]
 
 
+def test_quarter_number_words_retain_cross_language_rbnf_provenance():
+    alternatives = _quarter_names(1, "gregorian", "rw_RW")
+
+    short = next(item for item in alternatives if item.text == "i one")
+    assert short.provenance == (
+        "icu-datetime:QQQ+surface:letters+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"
+    )
+
+
 def _relative_unit(written, offset, unit, direction, captures):
     from icukit.detectors import Capture, RelativeDateValue
 
@@ -2024,6 +2053,9 @@ def test_bare_four_digit_year_offers_digits_only_with_a_measured_prior(
     ).alternatives
 
     assert (
-        any(item.provenance == "icu-rbnf:%spellout-cardinal" for item in alternatives)
+        any(
+            item.provenance == "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"
+            for item in alternatives
+        )
         is has_digit_alternative
     )

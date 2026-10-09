@@ -244,7 +244,12 @@ def _alternatives(
             unit = verbalize_edge(edge, source_text=written, apply_source_priors=False)
             if unit.verbalized:
                 alternatives.extend(
-                    (item.text, item.provenance, sub_key) for item in unit.alternatives
+                    (
+                        item.text,
+                        getattr(item, "prior_provenance", None) or item.provenance,
+                        sub_key,
+                    )
+                    for item in unit.alternatives
                 )
     return recognized, alternatives
 

@@ -34,6 +34,7 @@ from icukit.detectors import detect
 
 from frend import apply_input_fold, compose_choices, normalize, resolve_choices
 from frend.lattice import ChoiceGraph
+from frend.locale_data import canonical_locale
 from frend.normalize import _append_alternative_part, _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
@@ -465,6 +466,27 @@ def _offer_signature(graph: ChoiceGraph) -> list[dict]:
     return signature
 
 
+def _rbnf_language_counts(graph: ChoiceGraph, locale: str) -> tuple[int, int]:
+    """Count RBNF-backed alternatives by whether their rules match the language."""
+    own_language = not_own_language = 0
+    requested_language = canonical_locale(locale).split("_", 1)[0]
+    for unit in graph.units:
+        for alternative in unit.alternatives:
+            sources = alternative.provenance.split("+")
+            if not any(source.startswith("icu-rbnf:") for source in sources):
+                continue
+            fallback_languages = {
+                canonical_locale(source.split(":", 1)[1]).split("_", 1)[0]
+                for source in sources
+                if source.startswith("icu-rbnf-fallback:")
+            }
+            if fallback_languages - {requested_language}:
+                not_own_language += 1
+            else:
+                own_language += 1
+    return own_language, not_own_language
+
+
 def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str]) -> dict:
     targets = admissible_targets(case, exclusions)
     try:
@@ -507,6 +529,7 @@ def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str])
         error = None
         junk = sorted(junk_audit(first, case.locale))
         offer_signature = _offer_signature(graph)
+        rbnf_own_language, rbnf_not_own_language = _rbnf_language_counts(graph, case.locale)
     except Exception as exc:  # A crash is a measured miss, never a hidden omission.
         hits = {name: [False] * len(targets) for name in ("strict", "presentation", "insensitive")}
         first = ""
@@ -516,6 +539,7 @@ def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str])
         error = f"{type(exc).__name__}: {exc}"
         junk = []
         offer_signature = []
+        rbnf_own_language = rbnf_not_own_language = 0
     return {
         "id": f"{case.locale}:{case.case_id}",
         "locale": case.locale,
@@ -538,6 +562,8 @@ def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str])
         "detections": detection_count,
         "max_alternatives": max_alternatives,
         "edges": edge_count,
+        "rbnf_own_language": rbnf_own_language,
+        "rbnf_not_own_language": rbnf_not_own_language,
     }
 
 
@@ -560,6 +586,8 @@ def _summarize(rows: Sequence[dict]) -> dict:
             "detections": sum(row["detections"] for row in items),
             "max_alternatives": max((row["max_alternatives"] for row in items), default=0),
             "edges": sum(row["edges"] for row in items),
+            "rbnf_own_language": sum(row["rbnf_own_language"] for row in items),
+            "rbnf_not_own_language": sum(row["rbnf_not_own_language"] for row in items),
         }
 
     return {

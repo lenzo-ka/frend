@@ -53,7 +53,7 @@ def test_integer_beyond_int64_reads_digits():
         alternative for unit in _graph(written, "en_US").units for alternative in unit.alternatives
     ]
     selected = next(alternative for alternative in alternatives if alternative.text == result)
-    assert selected.provenance == "icu-rbnf:digits-beyond-int64"
+    assert selected.provenance == "icu-rbnf:digits-beyond-int64+icu-rbnf-fallback:en"
     assert selected.provenance != "surface:unsupported"
 
 
@@ -62,7 +62,7 @@ def test_integer_beyond_int64_reads_digits():
 def test_signed_int64_minimum_is_exact_and_negative():
     result = normalize("-9223372036854775808", locale="en_US").strip()
     assert result.startswith("minus nine two two")
-    assert "icu-rbnf:digits-beyond-int64" in {
+    assert "icu-rbnf:digits-beyond-int64+icu-rbnf-fallback:en" in {
         alternative.provenance
         for unit in _graph("-9223372036854775808", "en_US").units
         for alternative in unit.alternatives
