@@ -26,9 +26,9 @@ classifiers = [
 # Floors only, deliberately uncapped: a sibling release that breaks frend should break
 # frend's tests where it can be seen, not be held back silently by a cap.
 # icukit 0.8.0 is the floor: the first release with CLDR symbol names (icukit #136).
-# OutputPlan first appears in tiergraph 0.2.3.
+# Date generation uses GrammarInput, Realization, and generate from tiergraph 0.8.
 # cartlet 0.7 is the floor: it is the first release with context-tree format 3.
-dependencies = ["cartlet>=0.7", "icukit>=0.8", "tiergraph>=0.4.2"]
+dependencies = ["cartlet>=0.7", "icukit>=0.8", "tiergraph>=0.8"]
 
 [project.urls]
 Homepage = "https://github.com/lenzo-ka/frend"
