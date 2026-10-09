@@ -618,11 +618,13 @@ def _rule_leaf(value: Decimal, ruleset: str, locale: str) -> SpokenAlternative:
 
 
 def _decimal_digit(digit: str, ruleset: str, locale: str) -> tuple[SpokenAlternative, ...]:
-    words = [
-        _rule_leaf(Decimal(digit), ruleset, locale)
-        if _lexical("decimal.separator", locale) is not None
-        else _number_leaf(Decimal(digit), "cardinal", locale)[0]
-    ]
+    if _lexical("decimal.separator", locale) is not None:
+        words = [_rule_leaf(Decimal(digit), ruleset, locale)]
+    else:
+        cardinal = _number_leaf(Decimal(digit), "cardinal", locale)
+        if not cardinal:
+            return ()
+        words = [cardinal[0]]
     zero = _lexical("zero.digit", locale)
     if digit == "0" and zero is not None:
         words.append(SpokenAlternative(zero, lexical_source(locale)))
@@ -716,10 +718,14 @@ def _signed_integer_leaf(
     absolute: Decimal, negative: bool, locale: str
 ) -> tuple[SpokenAlternative, ...]:
     alternatives = _number_leaf(-absolute if negative else absolute, "cardinal", locale)
-    if not negative or absolute:
+    if not alternatives or not negative or absolute:
         return alternatives
-    positive = _number_leaf(Decimal(1), "cardinal", locale)[0].text
-    negative_one = _number_leaf(Decimal(-1), "cardinal", locale)[0]
+    positive_ones = _number_leaf(Decimal(1), "cardinal", locale)
+    negative_ones = _number_leaf(Decimal(-1), "cardinal", locale)
+    if not positive_ones or not negative_ones:
+        return ()
+    positive = positive_ones[0].text
+    negative_one = negative_ones[0]
     prefix = negative_one.text.removesuffix(positive).strip()
     return tuple(
         SpokenAlternative(f"{prefix} {item.text}", item.provenance) for item in alternatives
@@ -1255,10 +1261,10 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
     for kind, text in getattr(value, "runs", ()):
         if kind == "digits" and len(text) > 1 and text.startswith("0"):
             # A zero-led run ("007", the "000" of "1,000th") is read digit by digit.
-            digits = [_number_leaf(Decimal(digit), "cardinal", locale)[0] for digit in text]
-            parts.append(
-                (SpokenAlternative(" ".join(d.text for d in digits), digits[0].provenance),)
-            )
+            digits = _spoken_digits(DigitsValue(text), locale)
+            if not digits:
+                return ()
+            parts.append(digits)
         elif kind == "digits":
             number = Decimal(text)
             parts.append(
@@ -1923,13 +1929,17 @@ def _quarter_names(quarter: int, calendar: str, locale: str) -> tuple[SpokenAlte
     day = date(2000, 3 * quarter - 2, 1)
     wide = formatter.format(day, pattern="QQQQ")
     short = formatter.format(day, pattern="QQQ")
-    ordinal = _number_leaf(Decimal(quarter), "ordinal", locale)[0]
+    ordinals = _number_leaf(Decimal(quarter), "ordinal", locale)
+    cardinals = _number_leaf(Decimal(quarter), "cardinal", locale)
+    if not ordinals or not cardinals:
+        return ()
+    ordinal = ordinals[0]
     wide_spoken, substitutions = re.subn(r"^\d+\S*", ordinal.text, wide)
     wide_source = "icu-datetime:QQQQ"
     if substitutions:
         wide_source = f"{wide_source}+{ordinal.provenance}"
     letters = " ".join(ch.lower() for ch in short if ch.isalpha())
-    cardinal = _number_leaf(Decimal(quarter), "cardinal", locale)[0]
+    cardinal = cardinals[0]
     return (
         SpokenAlternative(wide_spoken, wide_source),
         SpokenAlternative(
@@ -2515,6 +2525,8 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
         elif kind == "digits":
             probabilities = digit_probabilities(text, locale=locale)
             for form, readings in digit_forms(text, locale).items():
+                if not readings:
+                    continue
                 spoken = readings[0][0]
                 options[spoken] = options.get(spoken, Decimal(0)) + probabilities.get(
                     form, Decimal(0)
@@ -2550,7 +2562,10 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
 def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, ...]:
     """Say spaced digits one by one by ICU's cardinal ("6 3" -> "six three"); a zero is
     also "o", which ICU has no rule for, so that form is lexical."""
-    words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in value.digits]
+    leaves = [_number_leaf(Decimal(digit), "cardinal", locale) for digit in value.digits]
+    if any(not leaf for leaf in leaves):
+        return ()
+    words = [leaf[0].text for leaf in leaves]
     cardinal_source = _rbnf_provenance("%spellout-cardinal", locale)
     forms = [SpokenAlternative(" ".join(words), cardinal_source)]
     zero = _lexical("zero.digit", locale)
@@ -2583,22 +2598,27 @@ def _spoken_big_integer(
     if grouping and grouping in written_raw:
         groups = written_raw.split(grouping)
         if all(group.isdecimal() for group in groups):
-            words = [(_number_leaf(Decimal(group), "cardinal", locale)[0],) for group in groups]
-            alternatives.extend(
-                SpokenAlternative(
-                    item.text,
-                    _rbnf_provenance("groups-beyond-int64", locale),
-                    item.weight,
-                    item.group,
-                    item.role,
+            group_words = [_number_leaf(Decimal(group), "cardinal", locale) for group in groups]
+            if all(group_words):
+                alternatives.extend(
+                    SpokenAlternative(
+                        item.text,
+                        _rbnf_provenance("groups-beyond-int64", locale),
+                        item.weight,
+                        item.group,
+                        item.role,
+                    )
+                    for item in _compose(group_words, " ".join("{}" for _ in group_words))
                 )
-                for item in _compose(words, " ".join("{}" for _ in words))
-            )
     ranked = _ranked(alternatives)
-    if not negative:
+    if not ranked or not negative:
         return ranked
-    positive_one = _number_leaf(Decimal(1), "cardinal", locale)[0].text
-    negative_one = _number_leaf(Decimal(-1), "cardinal", locale)[0].text
+    positive_ones = _number_leaf(Decimal(1), "cardinal", locale)
+    negative_ones = _number_leaf(Decimal(-1), "cardinal", locale)
+    if not positive_ones or not negative_ones:
+        return ()
+    positive_one = positive_ones[0].text
+    negative_one = negative_ones[0].text
     prefix = negative_one.removesuffix(positive_one).strip()
     return tuple(
         SpokenAlternative(
@@ -3286,15 +3306,21 @@ def _char_detail(
                     and len(stretch) <= _CHAR_DETAIL_NUMBER_MAX_DIGITS
                 ):
                     value = Decimal(int("".join(grapheme[0] for grapheme in stretch)))
-                    leaf = _number_leaf(value, "cardinal", locale)[0]
+                    leaves = _number_leaf(value, "cardinal", locale)
+                    if not leaves:
+                        return None
+                    leaf = leaves[0]
                     spoken.append(leaf.text)
                     sources.append(leaf.provenance)
                 else:
-                    leaves = (
-                        _number_leaf(Decimal(int(grapheme[0])), "cardinal", locale)[0]
+                    digit_leaves = [
+                        _number_leaf(Decimal(int(grapheme[0])), "cardinal", locale)
                         for grapheme in stretch
-                    )
-                    for leaf in leaves:
+                    ]
+                    if any(not leaves for leaves in digit_leaves):
+                        return None
+                    for leaves in digit_leaves:
+                        leaf = leaves[0]
                         spoken.append(leaf.text)
                         sources.append(leaf.provenance)
             else:
@@ -3870,6 +3896,9 @@ def _verbalize_edge(
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
         return VerbalizedUnit(edge.id, _finish((fallback,)), tier, provenance, False)
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
+    if not alternatives:
+        fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
+        return VerbalizedUnit(edge.id, _finish((fallback,)), tier, provenance, False)
     if apply_source_priors and path not in ("range", "symbol-run"):
         # A range's readings are ranked within it (``_spoken_range``): each end by its
         # own kind's measured shares.

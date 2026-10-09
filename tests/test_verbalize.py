@@ -116,6 +116,54 @@ def test_real_plain_cardinal_excludes_year_and_ordinal_rules_reflectively():
     assert all("numbering-year" not in item.provenance for item in alternatives)
 
 
+def test_root_number_families_fall_back_without_empty_alternatives():
+    cases = (
+        ("1", lambda locale: FlexibleNumberDetector(locale)),
+        ("1st", lambda locale: FlexibleOrdinalDetector(locale)),
+        ("1 km", lambda locale: FlexibleMeasureDetector(locale, "kilometer")),
+    )
+    observed = {}
+    for locale in ("root", "und"):
+        units = []
+        for written, detector_factory in cases:
+            detection = next(
+                detection
+                for detection in detector_factory(locale).detect(written)
+                if (detection["start"], detection["end"]) == (0, len(written))
+            )
+            result = verbalize_lattice(
+                resolve_lattice([detection], source_text=written, locale=locale),
+                locale=locale,
+            )
+            unit = result.best_path.units[0]
+
+            assert unit.alternatives == (SpokenAlternative(written, "surface:unsupported"),)
+            assert unit.verbalized is False
+            units.append(unit)
+        observed[locale] = units
+
+    assert observed["root"] == observed["und"]
+
+
+def test_root_number_uses_curated_alternative_before_surface_fallback():
+    written = "1"
+    detection = next(
+        detection
+        for detection in FlexibleNumberDetector("root").detect(written)
+        if (detection["start"], detection["end"]) == (0, len(written))
+    )
+    curated = SpokenAlternative("one", "curated:demo")
+
+    result = verbalize_lattice(
+        resolve_lattice([detection], source_text=written, locale="root"),
+        locale="root",
+        supplements={("number:decimal", written): (curated,)},
+    )
+
+    assert result.best_path.units[0].alternatives == (curated,)
+    assert result.best_path.units[0].verbalized is True
+
+
 def test_real_full_date_composes_bounded_field_cross_product():
     result = _result("2/29/2024", "date:yMd")
     alternatives = result.best_path.units[0].alternatives
