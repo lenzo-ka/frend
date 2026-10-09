@@ -29,7 +29,7 @@ from functools import cache
 
 import icu
 from icukit import break_grapheme_spans
-from icukit.detectors import Capture
+from icukit.detectors import Capture, NumberValue
 
 __all__ = [
     "ScriptRunValue",
@@ -266,6 +266,14 @@ def _cldr_names(locale: str) -> dict[str, tuple[str, ...]]:
 
 def _without_variation_selectors(text: str) -> str:
     return "".join(char for char in text if not _VARIATION_SELECTORS.contains(char))
+
+
+def _keycap_base(text: str) -> str | None:
+    """Return a keycap grapheme's base, excluding its presentation marks."""
+    base = _without_variation_selectors(text)
+    if len(base) == 2 and (base[0].isdecimal() or base[0] in "#*") and base[1] == "\u20e3":
+        return base[0]
+    return None
 
 
 def _symbol_grapheme(text: str) -> bool:
@@ -668,6 +676,36 @@ class SymbolDetector:
         for span in break_grapheme_spans(text, "root"):
             index, end, char = span["start"], span["end"], span["text"]
             if any(position in in_runs for position in range(index, end)):
+                continue
+            if (keycap_base := _keycap_base(char)) is not None:
+                if keycap_base.isdecimal():
+                    detections.append(
+                        {
+                            "text": char,
+                            "start": index,
+                            "end": end,
+                            "type": "number:decimal:keycap",
+                            "value": NumberValue(keycap_base),
+                            "captures": (
+                                Capture("integer", index, end, char, keycap_base, "numeric"),
+                            ),
+                        }
+                    )
+                else:
+                    detections.append(
+                        {
+                            "text": char,
+                            "start": index,
+                            "end": end,
+                            "type": "symbol:keycap",
+                            "value": SymbolValue(
+                                keycap_base,
+                                _script(keycap_base),
+                                symbol_names(keycap_base, self.locale),
+                            ),
+                            "captures": (Capture("symbol", index, end, char, keycap_base, None),),
+                        }
+                    )
                 continue
             if index in in_silent_property_tokens:
                 token = silent_property_tokens.get(index)

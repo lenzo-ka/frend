@@ -31,6 +31,32 @@ def test_normalize_returns_a_string_by_default():
     assert "twelve" in result
 
 
+@pytest.mark.parametrize(
+    ("locale", "digit", "day", "year"),
+    [
+        ("en_US", "one", "fifth", "twenty-four"),
+        ("de_DE", "eins", "fünf", "zweitausendvierundzwanzigste"),
+    ],
+)
+def test_keycap_digit_is_spoken_without_hiding_a_following_date(locale, digit, day, year):
+    assert frend.normalize("1️⃣", locale=locale).strip() == digit
+
+    sentence = frend.normalize("Call 1️⃣ on March 5, 2024.", locale=locale)
+    assert {"call", "on", "march"} <= set(sentence.casefold().split())
+    assert digit in sentence.split()
+    assert day in sentence
+    assert year in sentence
+
+
+@pytest.mark.parametrize("locale", ["en_US", "de_DE", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize("base", [*"0123456789", "#", "*"])
+@pytest.mark.parametrize("variation_selector", ["", "\ufe0f"])
+def test_every_keycap_reads_exactly_as_its_base(locale, base, variation_selector):
+    keycap = f"{base}{variation_selector}\u20e3"
+
+    assert frend.normalize(keycap, locale=locale) == frend.normalize(base, locale=locale)
+
+
 def test_normalize_shares_one_work_meter_across_sentences(monkeypatch):
     normalize_module = importlib.import_module("frend.normalize")
 
