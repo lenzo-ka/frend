@@ -15,9 +15,11 @@ from pathlib import Path
 import pytest
 from tiergraph import (
     AttributeValuation,
+    BudgetExhausted,
     ChildCombination,
     FoldDeclaration,
     FoldTransition,
+    WorkBudget,
     dumps,
     loads,
 )
@@ -25,6 +27,7 @@ from tiergraph.pathplan import PathPlan
 from tiergraph.semiring import COUNTING
 
 import frend.align_graph as module
+import frend.work_budgets as work_budgets
 from frend.align_graph import arc_weight, build_align_graph
 from frend.fold_resolve import CoverScore, resolve, resolve_cover
 from frend.lattice import (
@@ -246,6 +249,30 @@ def test_posteriors_match_enumeration():
         result = plan.marginals(values).posteriors(readout="normalize")
         assert result.values == pytest.approx(expected, rel=1e-9, abs=1e-12)
         assert plan.marginals(values).total == pytest.approx(math.log(total), rel=1e-9)
+
+
+def test_path_plan_work_budget_is_typed_and_output_preserving():
+    alignment = build_align_graph(choices("x", [(0, 1, ["one", "two"], prior(".5"))]))
+    assert alignment.count_paths() == alignment.count_plan().evaluate().value
+    assert alignment.log_marginals() == alignment.log_plan().marginals()
+
+    with pytest.raises(BudgetExhausted) as caught:
+        alignment.count_paths(work_budget=WorkBudget(steps=1))
+    assert caught.value.operation == "pathplan.evaluate"
+    assert caught.value.spent > caught.value.budget.steps
+
+
+def test_existing_path_plan_entry_points_apply_frend_default(monkeypatch):
+    alignment = build_align_graph(choices("x", [(0, 1, ["one", "two"], prior(".5"))]))
+    monkeypatch.setattr(work_budgets, "DEFAULT_TIERGRAPH_WORK_BUDGET", WorkBudget(steps=1))
+
+    with pytest.raises(BudgetExhausted) as count_caught:
+        alignment.count_plan().evaluate()
+    assert count_caught.value.operation == "pathplan.evaluate"
+
+    with pytest.raises(BudgetExhausted) as marginal_caught:
+        alignment.log_plan().marginals()
+    assert marginal_caught.value.operation == "pathplan.marginals"
 
 
 _WEIGHT_RULES = [

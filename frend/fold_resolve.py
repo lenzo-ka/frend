@@ -74,6 +74,11 @@ from frend.type_priors import (
     ReadingPrior,
     ResolveContext,
 )
+from frend.work_budgets import (
+    DEFAULT_TIERGRAPH_WORK_BUDGET,
+    TiergraphWorkBudget,
+    work_meter,
+)
 
 __all__ = [
     "Candidate",
@@ -500,7 +505,11 @@ def _exact(graph: Graph) -> AbstractContextManager[Context]:
     return localcontext(context)
 
 
-def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
+def _count_covers(
+    graph: Graph,
+    roots: tuple[ItemRef, ...],
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
+) -> int:
     """Count the covers the lattice admits, exactly, without ranking any of them.
 
     The same lattice and transitions as the ranked fold, over ``COUNTING``: every
@@ -519,7 +528,7 @@ def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
         roots=roots,
     )
     with _exact(graph):
-        return cast(int, fold.run().value)
+        return cast(int, fold.run(budget=work_budget).value)
 
 
 # The ranked fold's geometry, with every cover at the best geometry counted: the
@@ -528,7 +537,11 @@ def _count_covers(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
 _TOP_LEVEL = LexicographicSemiring(DECIMAL_TROPICAL, COUNTING)
 
 
-def _count_top_level(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
+def _count_top_level(
+    graph: Graph,
+    roots: tuple[ItemRef, ...],
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
+) -> int:
     """Count the covers of the best geometry level, exactly, without ranking any.
 
     The ranked fold's lattice and transitions over ``(cost, count)``: an item lifts
@@ -546,7 +559,7 @@ def _count_top_level(graph: Graph, roots: tuple[ItemRef, ...]) -> int:
         roots=roots,
     )
     with _exact(graph):
-        return cast(tuple[Decimal, int], fold.run().value)[1]
+        return cast(tuple[Decimal, int], fold.run(budget=work_budget).value)[1]
 
 
 def _fold_covers(
@@ -555,6 +568,7 @@ def _fold_covers(
     roots: tuple[ItemRef, ...],
     id_to_index: Mapping[str, int],
     output_cap: int,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> tuple[list[tuple[Decimal, tuple[Detection, ...]]], bool]:
     """Run the geometry PATH fold and decode its ranked witnesses into covers.
 
@@ -577,7 +591,7 @@ def _fold_covers(
         ranked_output=True,
     )
     with _exact(graph):
-        result = fold.run()
+        result = fold.run(budget=work_budget)
     scored: list[tuple[Decimal, tuple[Detection, ...]]] = []
     for value, labels in result.ranked_witnesses or ():
         indices = [id_to_index[label] for label in labels if label in id_to_index]
@@ -627,12 +641,13 @@ _FIRST_RANKED_REQUEST = 16
 def _gather_top_geometry(
     detections: Sequence[Detection],
     needed: int,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> tuple[list[tuple[Decimal, tuple[Detection, ...]]], int]:
     """Return every cover of the best geometry levels, in the fold's ranked order,
     each paired with the fold's own witness value, and the count of all covers.
 
     See :func:`_gather_levels`, which also returns the first cover past them."""
-    scored, count, _beyond = _gather_levels(detections, needed)
+    scored, count, _beyond = _gather_levels(detections, needed, work_budget=work_budget)
     return scored, count
 
 
@@ -641,6 +656,7 @@ def _gather_levels(
     needed: int,
     *,
     boundaries_only: bool = False,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> tuple[list[tuple[Decimal, tuple[Detection, ...]]], int, tuple[Detection, ...] | None]:
     """Return the whole best geometry levels in the fold's ranked order, the count of
     all covers, and the first cover past the returned levels (``None`` when they are
@@ -662,8 +678,9 @@ def _gather_levels(
     graph, roots, id_to_index = build_lattice(detections, boundaries_only=boundaries_only)
     if not id_to_index:
         return [], 1, None
-    count = _count_covers(graph, roots)
-    top = _count_top_level(graph, roots)
+    meter = work_meter(work_budget)
+    count = _count_covers(graph, roots, meter)
+    top = _count_top_level(graph, roots, meter)
     if top > _RANKED_LEVEL_BOUND:
         raise ValueError(
             f"the top geometry level holds {top} covers (of {count} in all) over "
@@ -678,7 +695,7 @@ def _gather_levels(
     ceiling = needed + _RANKED_LEVEL_BOUND + 1
     request = min(count, max(needed + 1, _FIRST_RANKED_REQUEST))
     while True:
-        scored, truncated = _fold_covers(detections, graph, roots, id_to_index, request)
+        scored, truncated = _fold_covers(detections, graph, roots, id_to_index, request, meter)
         if not truncated:
             return scored, count, None
         # A PATH witness value is (cost, paths); the cost alone is the geometry.
@@ -767,6 +784,7 @@ def _resolve_component(
     candidates: Sequence[Candidate],
     needed: int,
     cover_key: Callable[[tuple[Detection, ...]], tuple],
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> _Local:
     count = _count_local(candidates)
     if count <= _DIRECT_ENUMERATION_MAX:
@@ -784,7 +802,12 @@ def _resolve_component(
             for d in originals
         ]
         back = {id(proxy): original for proxy, original in zip(proxies, originals, strict=True)}
-        scored, _count, beyond_proxy = _gather_levels(proxies, needed, boundaries_only=True)
+        scored, _count, beyond_proxy = _gather_levels(
+            proxies,
+            needed,
+            boundaries_only=True,
+            work_budget=work_budget,
+        )
         covers = sorted(
             (tuple(back[id(d)] for d in cover) for _value, cover in scored), key=cover_key
         )
@@ -1052,6 +1075,7 @@ def _select(
     *,
     projection_probe: bool = False,
     collect_edge_priors: bool = False,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> _Selection:
     """Resolve the candidate universe by per-span selection.
 
@@ -1136,7 +1160,10 @@ def _select(
     # cover is one local cover of each. The top geometry level is the product of the
     # components' top levels (geometry adds, and a sum is least only where every
     # part is), so it is read per component and never formed.
-    locals_ = [_resolve_component(component, n, cover_key) for component in _components(candidates)]
+    meter = work_meter(work_budget)
+    locals_ = [
+        _resolve_component(component, n, cover_key, meter) for component in _components(candidates)
+    ]
 
     # Within a component's top level every cover has the same span count, so the
     # signatures there have one length and the least sentence signature is the
@@ -1249,6 +1276,7 @@ def resolve_cover(
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> Cover:
     """Resolve ``detections`` to a maximum-weight non-overlapping cover via a
     tiergraph ``PATH`` fold over negated weights, then per-span type selection within the canonical
@@ -1262,7 +1290,7 @@ def resolve_cover(
         return Cover(best=(), score=CoverScore(0, 0, 0))
     unique = _dedupe(detections)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
-    selection = _select(unique, sources, context, n=1)
+    selection = _select(unique, sources, context, n=1, work_budget=work_budget)
     return Cover(
         best=selection.best,
         score=_cover_score(selection.best),
@@ -1281,6 +1309,7 @@ def resolve(
     class_prior: Mapping[str, Decimal | int] | None = None,
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> Resolution:
     """Resolve detections into a per-span reading of the candidate universe.
 
@@ -1311,7 +1340,7 @@ def resolve(
         return Resolution(best=(), covers=((),), margin=CoverMargin(0, 0, 0), ambiguous=False)
     unique = _dedupe(detections)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
-    selection = _select(unique, sources, context, n=n)
+    selection = _select(unique, sources, context, n=n, work_budget=work_budget)
     return Resolution(
         best=selection.best,
         covers=selection.covers,

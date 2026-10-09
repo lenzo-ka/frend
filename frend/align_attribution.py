@@ -18,6 +18,11 @@ from tiergraph import Emissions, OutputPlan
 
 from frend.align_graph import AlignGraph, AlignItem
 from frend.spoken_priors import spoken_tokens
+from frend.work_budgets import (
+    DEFAULT_TIERGRAPH_WORK_BUDGET,
+    TiergraphWorkBudget,
+    work_meter,
+)
 
 __all__ = [
     "Attribution",
@@ -237,6 +242,7 @@ def attribute(
     *,
     prior_scale: float = 1.0,
     prior: bool = True,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> Attribution:
     """Attribute a complete decoder token sequence to readings and output classes.
 
@@ -258,12 +264,13 @@ def attribute(
     if not math.isfinite(scale):
         raise ValueError("prior_scale must be a finite real number")
     tokens = _tokens(aligned)
+    meter = work_meter(work_budget)
     plan = graph.log_plan()
     emissions = Emissions.bind(
         plan,
         {label: graph.items[label].tokens for label in plan.labels if graph.items[label].tokens},
     )
-    output = OutputPlan.prepare(plan, emissions, (tokens,))
+    output = OutputPlan.prepare(plan, emissions, (tokens,), budget=meter)
     if not output.accepted[0]:
         divergent = _first_divergence(graph, tokens)
         raise ValueError(
@@ -271,7 +278,7 @@ def attribute(
             f"first divergent token: {divergent}"
         )
     values = _values(graph, prior=prior, prior_scale=scale)
-    marginals = output.item_marginals(0, values)
+    marginals = output.item_marginals(0, values, budget=meter)
     marginal_values = marginals.values
     if marginal_values is None:
         if not marginals.zero_mass:

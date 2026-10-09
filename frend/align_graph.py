@@ -41,6 +41,11 @@ from tiergraph.semiring import COUNTING, LOG_PROBABILITY
 from frend.lattice import ChoiceGraph, ReadingEdge
 from frend.spoken_priors import spoken_tokens
 from frend.verbalize import SpokenAlternative
+from frend.work_budgets import (
+    DEFAULT_TIERGRAPH_WORK_BUDGET,
+    TiergraphWorkBudget,
+    work_meter,
+)
 
 __all__ = ["AlignGraph", "AlignItem", "ArcWeight", "arc_weight", "build_align_graph"]
 
@@ -58,6 +63,26 @@ _N = QualifiedName(NS, "measured-n")
 _ROLE = QualifiedName(NS, "role")
 _TOKEN = QualifiedName(NS, "token")
 _ALIGN_ITEM_CAP = 1 << 20
+
+
+class _BudgetedPathPlan[Value](PathPlan[Value]):
+    """A path plan whose established aggregate entry points enforce frend policy."""
+
+    def evaluate(
+        self,
+        values: Sequence[Value] | None = None,
+        *,
+        budget: TiergraphWorkBudget | None = None,
+    ):
+        return super().evaluate(values, budget=work_meter(budget))
+
+    def marginals(
+        self,
+        values: Sequence[Value] | None = None,
+        *,
+        budget: TiergraphWorkBudget | None = None,
+    ):
+        return super().marginals(values, budget=work_meter(budget))
 
 
 @dataclass(frozen=True)
@@ -154,7 +179,7 @@ class AlignGraph:
         return self._prepare(COUNTING, _COUNT)
 
     def _prepare(self, algebra, attribute):
-        return PathPlan.prepare(
+        return _BudgetedPathPlan.prepare(
             FoldDeclaration(
                 "alignment",
                 self.graph,
@@ -173,6 +198,23 @@ class AlignGraph:
     def count_plan(self) -> PathPlan[int]:
         """Return the cached COUNTING plan, valued by an integer attribute."""
         return self._count_plan
+
+    def count_paths(
+        self,
+        *,
+        work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
+    ) -> int:
+        """Count complete paths under frend's declared tiergraph work policy."""
+        return self._count_plan.evaluate(budget=work_meter(work_budget)).value
+
+    def log_marginals(
+        self,
+        values: Sequence[float] | None = None,
+        *,
+        work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
+    ):
+        """Compute log-path marginals under frend's declared work policy."""
+        return self._log_plan.marginals(values, budget=work_meter(work_budget))
 
 
 def _separator(character: str) -> bool:

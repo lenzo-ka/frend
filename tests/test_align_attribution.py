@@ -12,6 +12,7 @@ from fractions import Fraction
 from pathlib import Path
 
 import pytest
+from tiergraph import BudgetExhausted, WorkBudget, WorkMeter
 
 from frend.align_attribution import attribute
 from frend.align_export import to_fsg_text
@@ -367,6 +368,21 @@ def test_foreign_output_refuses_at_first_divergent_token():
     multi = build_align_graph(choices("x", [(0, 1, ["one two"], prior("1"))]))
     with pytest.raises(ValueError, match="first divergent token: 'foreign'"):
         attribute(multi, ("one", "foreign"))
+
+
+def test_attribution_work_budget_is_shared_typed_and_output_preserving():
+    alignment = build_align_graph(choices("x", [(0, 1, ["said", "spoken"], prior("1"))]))
+    default = repr(attribute(alignment, ("said",))).encode()
+    meter = WorkMeter(WorkBudget(steps=1 << 30))
+    ample = repr(attribute(alignment, ("said",), work_budget=meter)).encode()
+    assert default == ample
+    assert meter.spent > 1
+
+    with pytest.raises(BudgetExhausted) as caught:
+        attribute(alignment, ("said",), work_budget=WorkBudget(steps=meter.spent - 1))
+    assert caught.value.operation == "outputplan.item_marginals"
+    assert caught.value.spent > caught.value.budget.steps
+    assert "exhausted its work budget" in str(caught.value)
 
 
 def test_all_negative_infinity_returns_zero_mass_without_values():
