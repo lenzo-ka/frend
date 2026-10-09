@@ -565,6 +565,24 @@ def test_real_flexible_fraction_composes_captured_numeric_leaves():
     assert result.best_path.units[0].verbalized is True
 
 
+def test_written_ordinal_plurality_does_not_reorder_fraction_rulesets():
+    text = "17/18"
+    locale = "fr_FR"
+    detection = next(iter(FlexibleFractionDetector(locale).detect(text)))
+    alternatives = (
+        verbalize_lattice(
+            resolve_lattice([detection], source_text=text, locale=locale), locale=locale
+        )
+        .best_path.units[0]
+        .alternatives
+    )
+
+    assert [item.text for item in alternatives[:2]] == [
+        "dix sept dix huitièmess",
+        "dix sept dix huitièmes",
+    ]
+
+
 def test_fraction_denominator_measurement_ranks_half_above_second():
     detection = next(
         item
@@ -1257,6 +1275,23 @@ def test_written_ordinal_is_spoken_as_an_ordinal():
     assert [a.text for a in unit.alternatives] == ["twenty-ninth"]
     assert all("spellout-ordinal" in a.provenance for a in unit.alternatives)
     assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [("2e", ["deuxième", "deuxièmes"]), ("2es", ["deuxièmes", "deuxième"])],
+)
+def test_written_ordinal_prefers_icu_ruleset_matching_surface_plurality(text, expected):
+    locale = "fr_FR"
+    detections = list(FlexibleOrdinalDetector(locale).detect(text))
+    unit = verbalize_lattice(
+        resolve_lattice(detections, source_text=text, locale=locale), locale=locale
+    ).best_path.units[0]
+
+    assert [alternative.text for alternative in unit.alternatives] == expected
+    assert ("plural" in unit.alternatives[0].provenance) == text.endswith("s")
+    assert normalize(text, locale=locale) == f" {expected[0]} "
+    assert normalize("2nd", locale="en_US") == " second "
 
 
 @pytest.mark.parametrize(
