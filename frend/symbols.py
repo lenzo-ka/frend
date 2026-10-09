@@ -695,6 +695,28 @@ class SymbolDetector:
                     }
                 )
                 continue
+            canonical = _NFC.normalize(char)
+            if (
+                canonical != char
+                and len(canonical) == 1
+                and _lone_foreign(canonical, self.locale)
+                and _standalone_symbol(text, index, end)
+            ):
+                detections.append(
+                    {
+                        "text": char,
+                        "start": index,
+                        "end": end,
+                        "type": "symbol:letter",
+                        "value": SymbolValue(
+                            char,
+                            _script(canonical),
+                            symbol_names(canonical, self.locale),
+                        ),
+                        "captures": (Capture("symbol", index, end, char, char, None),),
+                    }
+                )
+                continue
             if any(_VARIATION_SELECTORS.contains(unit) for unit in char):
                 base = _without_variation_selectors(char)
                 if (

@@ -94,7 +94,7 @@ _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
 _RUN = re.compile(
     rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)"
 )
-_INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(['’][sS])?(?![\w{_MARK_RANGES}])")
+_INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(s['’]?|['’][sS])?(?![\w'’{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
 _DOTTED_RUN = re.compile(rf"(?:{_CAPITAL}\.){{2,}}")
 _SHORT_TOKEN = re.compile(rf"{_BEFORE}((?:{_L}{_M}*){{2,6}})(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
@@ -177,7 +177,7 @@ def split_acronym_surface(token: str) -> tuple[str, str] | None:
     ``s`` or ``S`` is singular possessive. Plural possessives share the plural evidence
     because they have the same pronunciation. An upper-case final ``S`` without an
     apostrophe remains part of the case-preserved base (``AIDS`` is bare, while
-    ``AIDS'S`` is possessive). A possessive dotted chain has its periods removed; bare
+    ``AIDS'S`` is possessive). A suffixed dotted chain has its periods removed; bare
     dotted chains remain initials.
     """
     token = _NFC.normalize(token)
@@ -189,7 +189,7 @@ def split_acronym_surface(token: str) -> tuple[str, str] | None:
         letters, subkey = token[:-1], "plural"
     else:
         letters, subkey = token, "bare"
-    if subkey == "possessive" and _DOTTED_RUN.fullmatch(letters):
+    if subkey != "bare" and _DOTTED_RUN.fullmatch(letters):
         letters = letters.replace(".", "")
     return (letters, subkey) if is_letter_run(letters) else None
 
@@ -237,11 +237,17 @@ def _spellout_dictionary(
     table = measured_table("spellout_dictionary", locale)
     if table is None:
         return None
-    rows = {
-        surface: (decision, say_count, spell_count)
-        for surface, decision, say_count, spell_count in table["tokens"]
-    }
-    return rows, dict(table.get("casefold", ())), table["provenance"]["source"]
+    rows = {}
+    for surface, decision, say_count, spell_count in table["tokens"]:
+        if surface in rows:
+            raise ValueError(f"duplicate spell-out dictionary surface: {surface!r}")
+        rows[surface] = decision, say_count, spell_count
+    aliases = {}
+    for folded, target in table.get("casefold", ()):
+        if folded in aliases:
+            raise ValueError(f"duplicate spell-out dictionary casefold alias: {folded!r}")
+        aliases[folded] = target
+    return rows, aliases, table["provenance"]["source"]
 
 
 def spellout_dictionary_entry(
@@ -355,8 +361,8 @@ def _vowels_for(locale: str) -> frozenset[str] | None:
 
 @dataclass(frozen=True)
 class LettersValue:
-    """A run of capitals and what follows it: "", a plural or possessive suffix, or
-    an initial's period."""
+    """A run of capitals and what follows it: "", a plural or possessive suffix, an
+    initial's period, or that period followed by a possessive suffix."""
 
     surface: str
     letters: str
@@ -411,6 +417,28 @@ def _captures(start: int, letters: str, suffix: str) -> tuple[Capture, ...]:
     return tuple(captures)
 
 
+def _initial_chains(text: str):
+    """Yield valid dotted chains with their component initials and joined letters."""
+    for chain in _INITIALS.finditer(text):
+        initials = tuple(_INITIAL.finditer(text, chain.start(1), chain.end(1)))
+        suffix = chain.group(2)
+        if suffix and suffix.startswith("s") and len(initials) < 2:
+            # A plural suffix belongs only to a dotted acronym, not a single initial.
+            continue
+        letters = "".join(initial.group(1) for initial in initials)
+        if capital_script(letters) is not None:
+            yield chain, initials, letters
+
+
+def _dotted_acronym_suffix_spans(text: str) -> tuple[tuple[int, int], ...]:
+    """Spans sentence breaking must not split inside a suffixed dotted acronym."""
+    return tuple(
+        chain.span()
+        for chain, initials, _letters in _initial_chains(text)
+        if chain.group(2) and len(initials) >= 2
+    )
+
+
 class LettersDetector:
     """Detect capital runs, initials, and bounded spell-or-say tokens."""
 
@@ -420,14 +448,10 @@ class LettersDetector:
     def detect(self, text: str) -> list[dict]:
         detections = []
         occupied: list[tuple[int, int]] = []
-        for chain in _INITIALS.finditer(text):
+        for chain, initials, letters in _initial_chains(text):
             # "S." or a chain of initials ("J.R.R."): each letter, with its marks, and its
-            # period, the chain's letters in one script. A possessive makes a dotted
-            # chain one run so its suffix rides on the final letter.
-            initials = list(_INITIAL.finditer(text, chain.start(1), chain.end(1)))
-            letters = "".join(initial.group(1) for initial in initials)
-            if capital_script(letters) is None:
-                continue
+            # period, the chain's letters in one script. A suffix makes a dotted chain
+            # one run so it rides on the final letter.
             if chain.group(2) and len(initials) >= 2:
                 start, middle, end = chain.start(), chain.end(1), chain.end()
                 suffix = chain.group(2)
@@ -441,6 +465,32 @@ class LettersDetector:
                         "captures": (
                             Capture("letters", start, middle, text[start:middle], letters, None),
                             Capture("suffix", middle, end, suffix, suffix, None),
+                        ),
+                    }
+                )
+                occupied.append((start, end))
+                continue
+            if chain.group(2):
+                initial = initials[0]
+                start, letter_end, period_end, end = (
+                    initial.start(),
+                    initial.end(1),
+                    initial.end(),
+                    chain.end(),
+                )
+                letter = initial.group(1)
+                suffix = chain.group(2)
+                detections.append(
+                    {
+                        "text": text[start:end],
+                        "start": start,
+                        "end": end,
+                        "type": "letters:initial",
+                        "value": LettersValue(text[start:end], letter, f".{suffix}"),
+                        "captures": (
+                            Capture("letters", start, letter_end, letter, letter, None),
+                            Capture("period", letter_end, period_end, ".", ".", None),
+                            Capture("suffix", period_end, end, suffix, suffix, None),
                         ),
                     }
                 )

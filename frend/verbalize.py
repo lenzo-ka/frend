@@ -1328,14 +1328,15 @@ def _spoken_letters(
     is its letter.
     """
     letters = _NFC.normalize(value.letters)
-    if value.suffix == ".":
+    if value.suffix.startswith("."):
         letter_form = spelled(letters, locale)
         if letter_form is None:
             raise NotImplementedError(f"no authoritative letter names for {locale}")
+        suffix = "'s" if len(value.suffix) > 1 else ""
         return (
-            SpokenAlternative(letter_form.text, "surface:letter")
+            SpokenAlternative(f"{letter_form.text}{suffix}", "surface:letter")
             if locale == "en_US"
-            else letter_form,
+            else SpokenAlternative(f"{letter_form.text}{suffix}", letter_form.provenance),
         )
     if not is_letter_run(letters):
         spelling = spelled(letters, locale)
@@ -1377,11 +1378,13 @@ def _spoken_letters(
         )
     suffix = "'s" if value.suffix else ""
     plural_surface = value.surface[:-1] if value.suffix.endswith(("'", "’")) else value.surface
-    word = _NFC.normalize(plural_surface).lower()
     parsed_surface = split_acronym_surface(value.surface)
     written_base = _NFC.normalize(
         value.surface[: -len(value.suffix)] if value.suffix else value.surface
     )
+    dictionary_surface = plural_surface.replace(".", "") if "." in written_base else plural_surface
+    word = _NFC.normalize(dictionary_surface).lower()
+    reading_surface = parsed_surface[0] if parsed_surface[1] == "plural" else written_base
     readings = tuple(
         SpokenAlternative(
             f"{form.text}{suffix}" if form.provenance.endswith("spelled") else word,
@@ -1389,13 +1392,13 @@ def _spoken_letters(
             form.weight,
         )
         for form in _with_acronym_readings(
-            written_base,
+            reading_surface,
             (),
             locale,
             profile=profile,
             profile_surface=parsed_surface[0],
             surface_subkey=parsed_surface[1],
-            dictionary_surface=plural_surface,
+            dictionary_surface=dictionary_surface,
             case_variant_lookup=case_variant_lookup,
         )
     )

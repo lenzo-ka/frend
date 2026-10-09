@@ -25,10 +25,10 @@ classifiers = [
 ]
 # Floors only, deliberately uncapped: a sibling release that breaks frend should break
 # frend's tests where it can be seen, not be held back silently by a cap.
-# icukit 0.8.0 is the floor: the first release with CLDR symbol names (icukit #136).
-# Date generation uses GrammarInput, Realization, and generate from tiergraph 0.8.
-# cartlet 0.7 is the floor: it is the first release with context-tree format 3.
-dependencies = ["cartlet>=0.7", "icukit>=0.8", "tiergraph>=0.8"]
+# icukit 0.9.0 is the floor: plain detection includes ranges and detector keys have five parts.
+# tiergraph 0.8 is the floor: date generation uses GrammarInput, Realization, and generate.
+# cartlet 0.8 is the floor: it is required by icukit 0.9.0.
+dependencies = ["cartlet>=0.8", "icukit>=0.9.0", "tiergraph>=0.8"]
 
 [project.urls]
 Homepage = "https://github.com/lenzo-ka/frend"

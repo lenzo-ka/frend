@@ -231,6 +231,46 @@ def test_document_input_is_validated_once(monkeypatch):
     assert len(calls) == 1
 
 
+def test_sentence_range_protection_advances_through_acronym_spans_once(monkeypatch):
+    import importlib
+
+    normalize_module = importlib.import_module("frend.normalize")
+    sentence_count = 100
+    sentence_length = 10
+    text = "x" * (sentence_count * sentence_length)
+    spans = [
+        {
+            "text": text[start : start + sentence_length],
+            "start": start,
+            "end": start + sentence_length,
+        }
+        for start in range(0, len(text), sentence_length)
+    ]
+    protected = tuple(
+        (start - 2, start + 2) for start in range(sentence_length, len(text), sentence_length)
+    )
+
+    class CountingSpans:
+        def __init__(self, values):
+            self.values = values
+            self.accesses = 0
+
+        def __len__(self):
+            return len(self.values)
+
+        def __getitem__(self, index):
+            self.accesses += 1
+            return self.values[index]
+
+    counting = CountingSpans(protected)
+
+    monkeypatch.setattr(normalize_module, "break_sentence_spans", lambda *_args: spans)
+    monkeypatch.setattr(normalize_module, "_dotted_acronym_suffix_spans", lambda _text: counting)
+
+    assert normalize_module._sentence_ranges(text, "en_US") == [(0, len(text))]
+    assert counting.accesses <= 5 * sentence_count
+
+
 def test_text_mode_skips_offset_record_construction(monkeypatch):
     import importlib
 
