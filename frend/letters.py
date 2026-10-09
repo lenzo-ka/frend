@@ -92,7 +92,7 @@ _MARK_RANGES = _character_class(_MARKS, bracket=False)
 _CAPITAL = f"{_LU}{_M}*"
 _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
 _RUN = re.compile(
-    rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s|['’][sS])?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)"
+    rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)"
 )
 _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(?![\w{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
@@ -171,13 +171,17 @@ def is_letter_run(token: str) -> bool:
 def split_acronym_surface(token: str) -> tuple[str, str] | None:
     """Return an acronym's NFC base and suffix subkey, or ``None``.
 
-    The suffix grammar is the detector's: a lower-case ``s`` is plural and either
-    apostrophe followed by ``s`` or ``S`` is possessive. An upper-case final ``S``
-    without an apostrophe remains part of the case-preserved base (``AIDS`` is bare,
-    while ``AIDS'S`` is possessive).
+    The suffix grammar is the detector's: a lower-case ``s`` is plural, that ``s`` plus
+    either trailing apostrophe is plural possessive, and either apostrophe followed by
+    ``s`` or ``S`` is singular possessive. Plural possessives share the plural evidence
+    because they have the same pronunciation. An upper-case final ``S`` without an
+    apostrophe remains part of the case-preserved base (``AIDS`` is bare, while
+    ``AIDS'S`` is possessive).
     """
     token = _NFC.normalize(token)
-    if len(token) >= 2 and token[-2] in "'’" and token[-1] in "sS":
+    if token.endswith(("s'", "s’")):
+        letters, subkey = token[:-2], "plural"
+    elif len(token) >= 2 and token[-2] in "'’" and token[-1] in "sS":
         letters, subkey = token[:-2], "possessive"
     elif token.endswith("s"):
         letters, subkey = token[:-1], "plural"
@@ -347,8 +351,8 @@ def _vowels_for(locale: str) -> frozenset[str] | None:
 
 @dataclass(frozen=True)
 class LettersValue:
-    """A run of capitals and what follows it: "", a plural or possessive "s", or an
-    initial's period."""
+    """A run of capitals and what follows it: "", a plural or possessive suffix, or
+    an initial's period."""
 
     surface: str
     letters: str

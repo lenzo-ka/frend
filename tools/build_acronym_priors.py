@@ -143,8 +143,11 @@ def build_documents(
                 written = _NFC.normalize(parts[1])
                 # PLAIN dominates the corpus. The cheap Unicode casing guard avoids
                 # running the script-aware parser on ordinary words.
-                maybe_run = written[:-2] if written.endswith(("'s", "’s")) else written
-                maybe_run = maybe_run[:-1] if maybe_run.endswith("s") else maybe_run
+                maybe_run = written
+                if maybe_run.endswith(("'s", "’s", "s'", "s’")):
+                    maybe_run = maybe_run[:-2]
+                elif maybe_run.endswith("s"):
+                    maybe_run = maybe_run[:-1]
                 if (
                     parts[0] in _LABELS
                     and len(maybe_run) >= 2

@@ -258,6 +258,13 @@ def test_a_plural_rides_on_the_last_letter():
     assert _read("UFOs")[0] == ["u f o's", "ufos"]
 
 
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+def test_a_plural_possessive_keeps_the_plural_acronym_readings(apostrophe):
+    text = f"UFOs{apostrophe}"
+    assert _spans(text) == [("letters:run", text)]
+    assert _read(text)[0] == _read("UFOs")[0]
+
+
 def test_a_word_shaped_run_is_said_first():
     # "cvc" is said more than spelled in the corpus; "GUS" reads as written.
     assert cv_pattern("GUS") == "cvc"
@@ -578,7 +585,11 @@ def test_the_builder_counts_the_numerals_the_reader_defers(tmp_path):
 def test_the_builder_strips_and_separates_acronym_suffixes(tmp_path):
     shard = tmp_path / "output-00000-of-00001"
     shard.write_text(
-        "PLAIN\tABC\tabc\nLETTERS\tABCs\ta b c s\nPLAIN\tABC's\tabc s\n",
+        "PLAIN\tABC\tabc\n"
+        "LETTERS\tABCs\ta b c s\n"
+        "LETTERS\tABCs'\ta b c s\n"
+        "LETTERS\tABCs’\ta b c s\n"
+        "PLAIN\tABC's\tabc s\n",
         encoding="utf-8",
     )
     builder = _acronym_builder()
@@ -586,7 +597,7 @@ def test_the_builder_strips_and_separates_acronym_suffixes(tmp_path):
     assert builder.build_profile_document(tmp_path)["surfaces"] == {
         "ABC": {
             "bare": {"word": 1},
-            "plural": {"spelled": 1},
+            "plural": {"spelled": 3},
             "possessive": {"word": 1},
         }
     }
