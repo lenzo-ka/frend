@@ -11,6 +11,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from tiergraph import WorkBudget
 
 import frend
 import frend.behavior as behavior_module
@@ -95,6 +96,12 @@ def test_g4_no_schema_normalization_matches_the_baseline_byte_for_byte():
     generator = _golden_generator()
     assert len(generator.input_rows()) == 58
     assert generator.encoded_document() == GOLDEN.read_bytes()
+
+
+def test_work_budget_policy_preserves_all_golden_input_readings():
+    ample = WorkBudget(steps=1 << 30)
+    for text in _golden_texts():
+        assert frend.normalize(text) == frend.normalize(text, work_budget=ample)
 
 
 def test_c1_empty_resolution_is_neutral_for_every_golden_input():

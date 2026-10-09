@@ -37,6 +37,7 @@ from frend.input_limits import (
 from frend.locale_data import canonical_locale
 from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD, SymbolDetector
 from frend.type_priors import FeatureSource, ReadingPrior, ResolveContext
+from frend.work_budgets import DEFAULT_TIERGRAPH_WORK_BUDGET, TiergraphWorkBudget, work_meter
 
 __all__ = [
     "LatticeNode",
@@ -630,6 +631,7 @@ def resolve_lattice(
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> ReadingLattice:
     """Resolve detections into an immutable, distilled reading lattice.
 
@@ -685,6 +687,7 @@ def resolve_lattice(
         class_prior_source=class_prior_source,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
+        work_budget=work_budget,
     )
 
 
@@ -701,8 +704,10 @@ def _resolve_lattice_validated(
     class_prior_source: str | None = None,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> ReadingLattice:
     """Resolve text whose enclosing document API has already validated it."""
+    meter = work_meter(work_budget)
     if source_text is not None:
         validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
     if raw_source_text is None:
@@ -776,6 +781,7 @@ def _resolve_lattice_validated(
             output_cap,
             projection_probe=True,
             collect_edge_priors=True,
+            work_budget=meter,
         )
         if selected_unique
         else None

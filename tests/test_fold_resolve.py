@@ -16,8 +16,9 @@ from icukit.recognize import (
     FlexibleDateDetector,
     FlexibleNumberDetector,
 )
+from tiergraph import WorkBudget, WorkMeter
 
-from frend import fold_resolve
+from frend import DEFAULT_TIERGRAPH_WORK_BUDGET, BudgetExhausted, fold_resolve
 from frend.fold_resolve import CoverMargin, CoverScore, resolve, resolve_cover
 
 
@@ -295,9 +296,9 @@ def test_level_prefix_widens_until_the_needed_level_is_whole(monkeypatch):
     requests = []
     ranked = fold_resolve._fold_covers
 
-    def recording(detections, graph, roots, id_to_index, output_cap):
+    def recording(detections, graph, roots, id_to_index, output_cap, work_budget):
         requests.append(output_cap)
-        return ranked(detections, graph, roots, id_to_index, output_cap)
+        return ranked(detections, graph, roots, id_to_index, output_cap, work_budget)
 
     monkeypatch.setattr(fold_resolve, "_fold_covers", recording)
     scored, count = fold_resolve._gather_top_geometry(_tied_universe(), 2)
@@ -392,9 +393,9 @@ def test_an_astronomical_lattice_resolves_by_whole_levels(monkeypatch):
     requests = []
     ranked = fold_resolve._fold_covers
 
-    def recording(detections, graph, roots, id_to_index, output_cap):
+    def recording(detections, graph, roots, id_to_index, output_cap, work_budget):
         requests.append(output_cap)
-        return ranked(detections, graph, roots, id_to_index, output_cap)
+        return ranked(detections, graph, roots, id_to_index, output_cap, work_budget)
 
     monkeypatch.setattr(fold_resolve, "_fold_covers", recording)
     assert fold_resolve._gather_top_geometry(detections, 2)[1] == 2**96
@@ -725,6 +726,22 @@ def _chain(k: int, offset: int = 0) -> list[dict]:
     # k two-code-point spans, each overlapping the next: one component whose covers
     # (Fibonacci in k) pass the direct-enumeration limit well before k = 14.
     return [_det(offset + i, offset + i + 2, "number") for i in range(k)]
+
+
+def test_resolver_work_budget_is_shared_typed_and_output_preserving():
+    assert DEFAULT_TIERGRAPH_WORK_BUDGET.steps == 1 << 24
+    detections = _chain(14)
+    default = repr(resolve(detections, n=8)).encode()
+    meter = WorkMeter(WorkBudget(steps=1 << 30))
+    ample = repr(resolve(detections, n=8, work_budget=meter)).encode()
+    assert default == ample
+    assert meter.spent > 0
+
+    with pytest.raises(BudgetExhausted) as caught:
+        resolve(detections, n=8, work_budget=WorkBudget(steps=1))
+    assert caught.value.operation == "fold.run"
+    assert caught.value.spent > caught.value.budget.steps
+    assert "exhausted its work budget" in str(caught.value)
 
 
 def test_a_cover_list_past_the_bound_is_answered_on_a_folded_component():

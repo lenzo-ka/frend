@@ -49,14 +49,17 @@ from frend.verbalize import (
     verbalize_edge,
     verbalize_lattice,
 )
+from frend.work_budgets import DEFAULT_TIERGRAPH_WORK_BUDGET, BudgetExhausted
 
 __all__ = [
     "BehaviorLoadError",
+    "BudgetExhausted",
     "ChoiceGraph",
     "ChoiceLattice",
     "DEFAULT_MAX_INPUT_CHARS",
     "DEFAULT_MAX_UNIT_CHARS",
     "DEFAULT_SYMBOL_RUN_THRESHOLD",
+    "DEFAULT_TIERGRAPH_WORK_BUDGET",
     "InputValidationError",
     "InputFold",
     "LatticeNode",
