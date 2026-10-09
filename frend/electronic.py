@@ -544,16 +544,17 @@ def digit_forms(run: str, locale: str = "en_US") -> dict[str, tuple[tuple[str, s
     no digit rule that calls zero "o"; ``lexical.json`` ``zero.digit``, so a locale with
     none has no ``digits_o``).
     """
-    from frend.verbalize import _lexical, _number_leaf, lexical_source
+    from frend.verbalize import _lexical, _number_leaf, _rbnf_provenance, lexical_source
 
     value = Decimal(run)
-    words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in run]
+    digit_leaves = [_number_leaf(Decimal(digit), "cardinal", locale)[0] for digit in run]
+    words = [item.text for item in digit_leaves]
     forms = {
         "cardinal": tuple(
             (item.text, item.provenance) for item in _number_leaf(value, "cardinal", locale)
         ),
         "year": tuple((item.text, item.provenance) for item in _number_leaf(value, "year", locale)),
-        "digits": ((" ".join(words), "icu-rbnf:%spellout-cardinal"),),
+        "digits": ((" ".join(words), _rbnf_provenance("%spellout-cardinal", locale)),),
     }
     zero = _lexical("zero.digit", locale)
     if "0" in run and zero is not None:

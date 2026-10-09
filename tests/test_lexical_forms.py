@@ -654,11 +654,10 @@ _CONSUMERS = [
 
 
 # What each consumer above emits, in order: every alternative's text and provenance,
-# unit by unit. Taken from this tree and identical on origin/main (b1de4e2), where
-# every one of these forms was written in the code, so the move to the table changed
-# no reading, no provenance and no order. The order also pins ``zero.words``, which
-# only reweights: without it "three point zero five", "nineteen oh-eight" and "ten oh
-# five" lead.
+# unit by unit. The readings and order remain those on origin/main; RBNF components
+# additionally name ``en`` because ICU supplies en_US spellout rules from that parent.
+# The order also pins ``zero.words``, which only reweights: without it "three point
+# zero five", "nineteen oh-eight" and "ten oh five" lead.
 _SYMBOL_EMOJI_GOLDEN = [
     [
         ("line of emoji", "lexical:en_US+icu-name:symbol"),
@@ -714,35 +713,35 @@ _GOLDEN = {
         [
             (
                 "September thirtieth, nineteen o eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-year+lexical:en_US",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US",
             ),
             (
                 "the thirtieth of September nineteen o eight",
-                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+lexical:en_US",
+                "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US",
             ),
             (
                 "September thirtieth, nineteen oh-eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-year",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en",
             ),
             (
                 "the thirtieth of September nineteen oh-eight",
-                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year",
+                "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en",
             ),
             (
                 "September thirtieth, one thousand nine hundred eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
             (
                 "September thirtieth, one thousand nine hundred and eight",
-                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-verbose",
+                "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en",
             ),
             (
                 "the thirtieth of September one thousand nine hundred eight",
-                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+icu-datetime:LLLL+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
             (
                 "the thirtieth of September one thousand nine hundred and eight",
-                "icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose",
+                "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en",
             ),
         ],
     ],
@@ -750,11 +749,11 @@ _GOLDEN = {
         [
             (
                 "three point o five",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
             (
                 "three point zero five",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
         ],
     ],
@@ -762,42 +761,57 @@ _GOLDEN = {
         [
             (
                 "ten o five",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
             (
                 "ten oh five",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
         ],
     ],
     ("zero.year", "1908"): [
         [
-            ("nineteen o eight", "icu-rbnf:%spellout-numbering-year+lexical:en_US"),
-            ("nineteen oh-eight", "icu-rbnf:%spellout-numbering-year"),
-            ("one thousand nine hundred eight", "icu-rbnf:%spellout-numbering"),
-            ("one thousand nine hundred and eight", "icu-rbnf:%spellout-numbering-verbose"),
-            ("one nine o eight", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
-            ("one nine zero eight", "icu-rbnf:%spellout-cardinal"),
+            (
+                "nineteen o eight",
+                "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US",
+            ),
+            ("nineteen oh-eight", "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en"),
+            (
+                "one thousand nine hundred eight",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
+            ),
+            (
+                "one thousand nine hundred and eight",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en",
+            ),
+            ("one nine o eight", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US"),
+            ("one nine zero eight", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
         ],
     ],
     ("clock.oclock", "5pm"): [
         [
-            ("five p m", "icu-rbnf:%spellout-numbering+surface:letters"),
-            ("five o'clock p m", "icu-rbnf:%spellout-numbering+lexical:en_US+surface:letters"),
+            ("five p m", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+surface:letters"),
+            (
+                "five o'clock p m",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+surface:letters",
+            ),
         ],
     ],
     ("clock.hundred", "20:00"): [
         [
-            ("twenty o'clock", "icu-rbnf:%spellout-numbering+lexical:en_US"),
-            ("twenty hundred", "icu-rbnf:%spellout-numbering+lexical:en_US"),
-            ("twenty", "icu-rbnf:%spellout-numbering"),
+            ("twenty o'clock", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
+            ("twenty hundred", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
+            ("twenty", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
         ],
     ],
     ("possessive.suffix", "II's"): [
         [
-            ("two's", "icu-rbnf:%spellout-numbering+lexical:en_US"),
-            ("second's", "icu-rbnf:%spellout-ordinal+lexical:en_US"),
-            ("the second's", "lexical:en_US+icu-rbnf:%spellout-ordinal+lexical:en_US"),
+            ("two's", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
+            ("second's", "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "the second's",
+                "lexical:en_US+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US",
+            ),
         ],
     ],
     ("separator.words", "jane@example.org"): [
@@ -816,32 +830,41 @@ _GOLDEN = {
         [
             (
                 "one dollar and fifty cents",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
             ),
             (
                 "one united states dollars and fifty cents",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
             ),
             (
                 "one US dollars and fifty cents",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
             ),
         ],
     ],
     ("currency.region_names", "$2"): [
         [
-            ("two dollars", "icu-rbnf:%spellout-numbering+lexical:en_US"),
-            ("two united states dollars", "icu-rbnf:%spellout-numbering+lexical:en_US"),
-            ("two US dollars", "icu-rbnf:%spellout-numbering+icu-measure:wide"),
+            ("two dollars", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "two united states dollars",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
+            ),
+            (
+                "two US dollars",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide",
+            ),
         ],
     ],
     ("fraction.denominators", "1/2"): [
         [
-            ("one half", "icu-rbnf:%spellout-numbering+lexical:en_US"),
-            ("one second", "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal"),
+            ("one half", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "one second",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en",
+            ),
             (
                 "one over two",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
         ],
     ],
@@ -849,19 +872,19 @@ _GOLDEN = {
         [
             (
                 "three and a half",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+lexical:en_US",
             ),
             (
                 "three and one second",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en",
             ),
             (
                 "three and one half",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
             ),
             (
                 "three and one over two",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
         ],
     ],
@@ -869,33 +892,39 @@ _GOLDEN = {
         [
             (
                 "two thirds",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-ordinal+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US",
             ),
             (
                 "two over three",
-                "icu-rbnf:%spellout-numbering+lexical:en_US+icu-rbnf:%spellout-numbering",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
             ),
         ],
     ],
     ("ordinal.article", "V."): [
         [
-            ("fifth", "icu-rbnf:%spellout-ordinal"),
-            ("the fifth", "lexical:en_US+icu-rbnf:%spellout-ordinal"),
+            ("fifth", "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en"),
+            ("the fifth", "lexical:en_US+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en"),
         ],
     ],
     ("sign.plus", "+5"): [
         [
-            ("plus five", "lexical:en_US+icu-rbnf:%spellout-numbering"),
-            ("five", "icu-rbnf:%spellout-numbering"),
+            ("plus five", "lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
+            ("five", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
         ],
     ],
     ("numeral.plural", "1990s"): [
         [
-            ("nineteen nineties", "icu-rbnf:%spellout-numbering-year+lexical:en_US"),
-            ("one thousand nine hundred nineties", "icu-rbnf:%spellout-numbering+lexical:en_US"),
+            (
+                "nineteen nineties",
+                "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US",
+            ),
+            (
+                "one thousand nine hundred nineties",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
+            ),
             (
                 "one thousand nine hundred and nineties",
-                "icu-rbnf:%spellout-numbering-verbose+lexical:en_US",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en+lexical:en_US",
             ),
         ],
     ],
@@ -903,25 +932,25 @@ _GOLDEN = {
         [
             (
                 "one hour forty-seven point two two minutes",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-list:units",
             ),
             (
                 "one hour and forty-seven point two two minutes",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-list:units",
             ),
         ],
         [
             (
                 "one minute forty-seven seconds and twenty-two milliseconds",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-list:units+lexical:en_US",
             ),
             (
                 "one minute forty-seven point two two seconds",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-list:units",
             ),
             (
                 "one minute and forty-seven point two two seconds",
-                "icu-rbnf:%spellout-numbering+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-measure:wide+icu-list:units",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+icu-list:units",
             ),
         ],
     ],
@@ -929,33 +958,36 @@ _GOLDEN = {
         [
             (
                 "five hundred seventy-eight point three per square kilometers",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+lexical:en_US",
             ),
             (
                 "five hundred seventy-eight point three per square kilometer",
-                "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide",
             ),
             (
                 "five hundred and seventy-eight point three per square kilometers",
-                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide+lexical:en_US",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide+lexical:en_US",
             ),
             (
                 "five hundred and seventy-eight point three per square kilometer",
-                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-measure:wide",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide",
             ),
         ],
     ],
     ("range.connector", "5-10"): [
-        [("five", "icu-rbnf:%spellout-numbering")],
+        [("five", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en")],
         [
-            ("minus ten", "icu-rbnf:%spellout-numbering"),
-            ("to ten", "lexical:en_US+icu-rbnf:%spellout-numbering"),
-            ("to one o", "lexical:en_US+icu-rbnf:%spellout-cardinal+lexical:en_US"),
-            ("to one zero", "lexical:en_US+icu-rbnf:%spellout-cardinal"),
+            ("minus ten", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
+            ("to ten", "lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
+            (
+                "to one o",
+                "lexical:en_US+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US",
+            ),
+            ("to one zero", "lexical:en_US+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
         ],
     ],
     ("range.separator", "5 - 10"): [
-        [("five", "icu-rbnf:%spellout-numbering")],
+        [("five", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en")],
         [
             ("", "surface:silence"),
             ("to", "lexical:en_US"),
@@ -965,28 +997,28 @@ _GOLDEN = {
             ("minus", "cldr-symbol:minus"),
         ],
         [
-            ("ten", "icu-rbnf:%spellout-numbering"),
-            ("one o", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
-            ("one zero", "icu-rbnf:%spellout-cardinal"),
+            ("ten", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
+            ("one o", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US"),
+            ("one zero", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
         ],
     ],
     ("zero.digit", "6 0"): [
         [
-            ("six o", "icu-rbnf:%spellout-cardinal+lexical:en_US"),
-            ("six zero", "icu-rbnf:%spellout-cardinal"),
+            ("six o", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US"),
+            ("six zero", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
         ],
     ],
 }
 _GOLDEN_DIGIT_FORMS = {
     "cardinal": (
-        ("one hundred five", "icu-rbnf:%spellout-numbering"),
-        ("one hundred and five", "icu-rbnf:%spellout-numbering-verbose"),
+        ("one hundred five", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
+        ("one hundred and five", "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en"),
     ),
     "year": (
-        ("one hundred five", "icu-rbnf:%spellout-numbering-year"),
-        ("one hundred and five", "icu-rbnf:%spellout-numbering-verbose"),
+        ("one hundred five", "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en"),
+        ("one hundred and five", "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en"),
     ),
-    "digits": (("one zero five", "icu-rbnf:%spellout-cardinal"),),
+    "digits": (("one zero five", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),),
     "digits_o": (("one o five", "lexical:en_US"),),
 }
 

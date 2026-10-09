@@ -330,7 +330,7 @@ def _rank_final(
         measurement = (
             source_prior(
                 kind,
-                alternative.prior_provenance or alternative.provenance,
+                _measured_provenance(alternative.prior_provenance or alternative.provenance),
                 sub_key,
                 locale=locale,
             )
@@ -352,6 +352,28 @@ def _rank_final(
     ranked = _zero_shares(ranked, kind, locale)
     ranked.sort(key=lambda item: item[:3])
     return tuple(item[3] for item in ranked)
+
+
+def _measured_provenance(provenance: str) -> str:
+    """The source-table key predating explicit RBNF fallback provenance."""
+    return "+".join(
+        source for source in provenance.split("+") if not source.startswith("icu-rbnf-fallback:")
+    )
+
+
+def _with_measured_provenance(
+    alternatives: Sequence[SpokenAlternative],
+) -> tuple[SpokenAlternative, ...]:
+    """Carry the pre-fallback source label for existing priors and context trees."""
+    migrated = []
+    for alternative in alternatives:
+        old = _measured_provenance(alternative.prior_provenance or alternative.provenance)
+        migrated.append(
+            alternative
+            if old == alternative.provenance
+            else dataclasses.replace(alternative, prior_provenance=old)
+        )
+    return tuple(migrated)
 
 
 def _digit_like_cldr_name_first(
@@ -486,6 +508,23 @@ def _spellout_rule_sets(locale: str) -> tuple[str, ...]:
     )
 
 
+@cache
+def _rbnf_fallback_source(locale: str) -> str | None:
+    """The parent locale supplying RBNF, or ``None`` when the request supplies it."""
+    requested = canonical_locale(locale)
+    actual = (
+        _spellout_formatter(requested).getLocale(icu.ULocDataLocaleType.ACTUAL_LOCALE).getName()
+    )
+    actual = canonical_locale(actual or "root")
+    return None if requested == actual else actual
+
+
+def _rbnf_provenance(ruleset: str, locale: str) -> str:
+    provenance = f"icu-rbnf:{ruleset}"
+    fallback = _rbnf_fallback_source(locale)
+    return provenance if fallback is None else f"{provenance}+icu-rbnf-fallback:{fallback}"
+
+
 def _applicable_rule_sets(kind: str, locale: str) -> tuple[str, ...]:
     names = _spellout_rule_sets(locale)
     if kind == "ordinal":
@@ -528,7 +567,7 @@ def _number_leaf(value: Decimal, kind: str, locale: str) -> tuple[SpokenAlternat
         text = strip_soft_hyphens(_format_exact(locale, value, ruleset))
         if any(unicodedata.category(character) == "Nd" for character in text):
             continue
-        alternatives.append(SpokenAlternative(text, f"icu-rbnf:{ruleset}"))
+        alternatives.append(SpokenAlternative(text, _rbnf_provenance(ruleset, locale)))
     return _ranked(alternatives)
 
 
@@ -573,7 +612,8 @@ def _decimal_separator_rules(locale: str) -> tuple[DecimalRule, ...]:
 
 def _rule_leaf(value: Decimal, ruleset: str, locale: str) -> SpokenAlternative:
     return SpokenAlternative(
-        strip_soft_hyphens(_format_exact(locale, value, ruleset)), f"icu-rbnf:{ruleset}"
+        strip_soft_hyphens(_format_exact(locale, value, ruleset)),
+        _rbnf_provenance(ruleset, locale),
     )
 
 
@@ -629,9 +669,9 @@ def _spoken_decimal(
                 sources = [
                     *(item.provenance for item in (integer_spoken,) if item is not None),
                     (
-                        f"{lexical_source(locale)}+icu-rbnf:{rule.ruleset}"
+                        f"{lexical_source(locale)}+{_rbnf_provenance(rule.ruleset, locale)}"
                         if lexical_separator == rule.separator
-                        else f"icu-rbnf:{rule.ruleset}"
+                        else _rbnf_provenance(rule.ruleset, locale)
                     ),
                     digits_spoken.provenance,
                 ]
@@ -649,7 +689,7 @@ def _spoken_decimal(
                 provenance = "+".join(
                     [
                         *(item.provenance for item in (integer_spoken,) if item is not None),
-                        f"icu-rbnf:{rule.ruleset}",
+                        _rbnf_provenance(rule.ruleset, locale),
                     ]
                 )
                 alternatives.append(SpokenAlternative(text, provenance))
@@ -664,7 +704,9 @@ def _spoken_decimal(
             direct = strip_soft_hyphens(
                 _spellout_formatter_for(locale, rule.ruleset).format(float(value))
             )
-            alternatives.append(SpokenAlternative(direct, f"icu-rbnf:{rule.ruleset}:direct"))
+            alternatives.append(
+                SpokenAlternative(direct, _rbnf_provenance(f"{rule.ruleset}:direct", locale))
+            )
     if set(fractional_digits) <= {"0"} and value == value.to_integral_value():
         alternatives.extend(_number_leaf(value, "cardinal", locale))
     return _ranked(alternatives)
@@ -1868,13 +1910,19 @@ def _quarter_names(quarter: int, calendar: str, locale: str) -> tuple[SpokenAlte
     day = date(2000, 3 * quarter - 2, 1)
     wide = formatter.format(day, pattern="QQQQ")
     short = formatter.format(day, pattern="QQQ")
-    number = _number_leaf(Decimal(quarter), "ordinal", locale)[0].text
-    wide_spoken = re.sub(r"^\d+\S*", number, wide)
+    ordinal = _number_leaf(Decimal(quarter), "ordinal", locale)[0]
+    wide_spoken, substitutions = re.subn(r"^\d+\S*", ordinal.text, wide)
+    wide_source = "icu-datetime:QQQQ"
+    if substitutions:
+        wide_source = f"{wide_source}+{ordinal.provenance}"
     letters = " ".join(ch.lower() for ch in short if ch.isalpha())
-    digit = _number_leaf(Decimal(quarter), "cardinal", locale)[0].text
+    cardinal = _number_leaf(Decimal(quarter), "cardinal", locale)[0]
     return (
-        SpokenAlternative(wide_spoken, "icu-datetime:QQQQ+icu-rbnf:%spellout-ordinal"),
-        SpokenAlternative(f"{letters} {digit}", "icu-datetime:QQQ+surface:letters"),
+        SpokenAlternative(wide_spoken, wide_source),
+        SpokenAlternative(
+            f"{letters} {cardinal.text}",
+            f"icu-datetime:QQQ+surface:letters+{cardinal.provenance}",
+        ),
     )
 
 
@@ -2097,7 +2145,7 @@ def _bare_number_classes(written: str, value: Decimal, locale: str) -> dict[str,
         for item in items:
             by_text.setdefault(item.text, set()).add(class_)
 
-    year_source = "icu-rbnf:%spellout-numbering-year"
+    year_source = _rbnf_provenance("%spellout-numbering-year", locale)
     year_o_source = f"{year_source}+{lexical_source(locale)}"
     add(
         tuple(
@@ -2456,13 +2504,12 @@ def _spoken_digits(value: DigitsValue, locale: str) -> tuple[SpokenAlternative, 
     """Say spaced digits one by one by ICU's cardinal ("6 3" -> "six three"); a zero is
     also "o", which ICU has no rule for, so that form is lexical."""
     words = [_number_leaf(Decimal(digit), "cardinal", locale)[0].text for digit in value.digits]
-    forms = [SpokenAlternative(" ".join(words), "icu-rbnf:%spellout-cardinal")]
+    cardinal_source = _rbnf_provenance("%spellout-cardinal", locale)
+    forms = [SpokenAlternative(" ".join(words), cardinal_source)]
     zero = _lexical("zero.digit", locale)
     if "0" in value.digits and zero is not None:
         spoken = " ".join(zero if d == "0" else w for d, w in zip(value.digits, words, strict=True))
-        forms.append(
-            SpokenAlternative(spoken, f"icu-rbnf:%spellout-cardinal+{lexical_source(locale)}")
-        )
+        forms.append(SpokenAlternative(spoken, f"{cardinal_source}+{lexical_source(locale)}"))
     return _ranked(forms)
 
 
@@ -2479,7 +2526,7 @@ def _spoken_big_integer(
     alternatives = [
         SpokenAlternative(
             item.text,
-            "icu-rbnf:digits-beyond-int64",
+            _rbnf_provenance("digits-beyond-int64", locale),
             item.weight,
             item.group,
             item.role,
@@ -2493,7 +2540,7 @@ def _spoken_big_integer(
             alternatives.extend(
                 SpokenAlternative(
                     item.text,
-                    "icu-rbnf:groups-beyond-int64",
+                    _rbnf_provenance("groups-beyond-int64", locale),
                     item.weight,
                     item.group,
                     item.role,
@@ -2933,7 +2980,7 @@ def _fill_slot(detection: Mapping, slot: Mapping, locale: str) -> SpokenAlternat
     if ruleset not in _spellout_rule_sets(locale):
         return None
     text = _format_exact(locale, amount, ruleset)
-    return SpokenAlternative(text, f"icu-rbnf:{ruleset}")
+    return SpokenAlternative(text, _rbnf_provenance(ruleset, locale))
 
 
 def _written_digits(detection: Mapping) -> int:
@@ -3795,6 +3842,7 @@ def _verbalize_edge(
             ),
             *alternatives,
         )
+    alternatives = _with_measured_provenance(alternatives)
     choice = None
     sign = _capture(detection, "sign") if path == "number" else None
     connector = (

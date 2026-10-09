@@ -448,6 +448,59 @@ def test_offer_signature_records_every_public_alternative_field():
     ]
 
 
+def test_rwandan_number_rbnf_is_counted_as_not_own_language():
+    case = gate.FixtureCase("rw", "rw_RW", "cardinal", "tiny.txt", 1, "42", ("forty-two",), False)
+    row = gate._evaluate(case, {})
+    summary = gate._summarize([row])["total"]
+    number_alternatives = [
+        alternative
+        for edge in row["offer_signature"]
+        if str(edge["type"]).startswith("number:")
+        for alternative in edge["alternatives"]
+        if "icu-rbnf:" in alternative["provenance"]
+    ]
+
+    assert number_alternatives
+    assert all(
+        "icu-rbnf-fallback:en" in alternative["provenance"] for alternative in number_alternatives
+    )
+    assert summary["rbnf_own_language"] == 0
+    assert summary["rbnf_not_own_language"] == len(number_alternatives)
+
+
+def test_same_language_parent_rbnf_is_retained_and_counted_as_own_language():
+    case = gate.FixtureCase("en", "en_US", "cardinal", "tiny.txt", 1, "42", ("forty-two",), False)
+    row = gate._evaluate(case, {})
+    summary = gate._summarize([row])["total"]
+    rbnf_alternatives = [
+        alternative
+        for edge in row["offer_signature"]
+        for alternative in edge["alternatives"]
+        if "icu-rbnf:" in alternative["provenance"]
+    ]
+
+    assert rbnf_alternatives
+    assert all(
+        "icu-rbnf-fallback:en" in alternative["provenance"] for alternative in rbnf_alternatives
+    )
+    assert summary["rbnf_own_language"] == len(rbnf_alternatives)
+    assert summary["rbnf_not_own_language"] == 0
+
+
+def test_rbnf_counts_include_number_words_composed_into_other_reading_types():
+    edge = SimpleNamespace(start=0, end=4, kind="reading", detection={"type": "measure:meter"})
+    alternative = SpokenAlternative(
+        "one meter",
+        "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide",
+    )
+    graph = SimpleNamespace(
+        lattice=SimpleNamespace(edges=(edge,)),
+        units=(SimpleNamespace(alternatives=(alternative,)),),
+    )
+
+    assert gate._rbnf_language_counts(graph, "rw_RW") == (0, 1)
+
+
 def test_warm_p95_has_no_additive_or_base_spread_allowance():
     base_runtime, head_runtime, _soak, _fold = _resource_documents(100, 100)
     base_runtime["summary"]["locales"]["en_US"]["warm_p50_ns"] = {
