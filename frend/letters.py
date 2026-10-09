@@ -94,8 +94,9 @@ _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
 _RUN = re.compile(
     rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)"
 )
-_INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(?![\w{_MARK_RANGES}])")
+_INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(['’][sS])?(?![\w{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
+_DOTTED_RUN = re.compile(rf"(?:{_CAPITAL}\.){{2,}}")
 _SHORT_TOKEN = re.compile(rf"{_BEFORE}((?:{_L}{_M}*){{2,6}})(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
 # Uppercase apostrophe-S is ambiguous with an uppercase English contraction. Preserve
 # the ordinary closed-class contractions that the previous suffix grammar left alone.
@@ -176,7 +177,8 @@ def split_acronym_surface(token: str) -> tuple[str, str] | None:
     ``s`` or ``S`` is singular possessive. Plural possessives share the plural evidence
     because they have the same pronunciation. An upper-case final ``S`` without an
     apostrophe remains part of the case-preserved base (``AIDS`` is bare, while
-    ``AIDS'S`` is possessive).
+    ``AIDS'S`` is possessive). A possessive dotted chain has its periods removed; bare
+    dotted chains remain initials.
     """
     token = _NFC.normalize(token)
     if token.endswith(("s'", "s’")):
@@ -187,6 +189,8 @@ def split_acronym_surface(token: str) -> tuple[str, str] | None:
         letters, subkey = token[:-1], "plural"
     else:
         letters, subkey = token, "bare"
+    if subkey == "possessive" and _DOTTED_RUN.fullmatch(letters):
+        letters = letters.replace(".", "")
     return (letters, subkey) if is_letter_run(letters) else None
 
 
@@ -418,9 +422,29 @@ class LettersDetector:
         occupied: list[tuple[int, int]] = []
         for chain in _INITIALS.finditer(text):
             # "S." or a chain of initials ("J.R.R."): each letter, with its marks, and its
-            # period, the chain's letters in one script.
-            initials = list(_INITIAL.finditer(text, chain.start(), chain.end()))
-            if capital_script("".join(initial.group(1) for initial in initials)) is None:
+            # period, the chain's letters in one script. A possessive makes a dotted
+            # chain one run so its suffix rides on the final letter.
+            initials = list(_INITIAL.finditer(text, chain.start(1), chain.end(1)))
+            letters = "".join(initial.group(1) for initial in initials)
+            if capital_script(letters) is None:
+                continue
+            if chain.group(2) and len(initials) >= 2:
+                start, middle, end = chain.start(), chain.end(1), chain.end()
+                suffix = chain.group(2)
+                detections.append(
+                    {
+                        "text": text[start:end],
+                        "start": start,
+                        "end": end,
+                        "type": "letters:run",
+                        "value": LettersValue(text[start:end], letters, suffix),
+                        "captures": (
+                            Capture("letters", start, middle, text[start:middle], letters, None),
+                            Capture("suffix", middle, end, suffix, suffix, None),
+                        ),
+                    }
+                )
+                occupied.append((start, end))
                 continue
             for initial in initials:
                 at, end, letter = initial.start(), initial.end(), initial.group(1)
