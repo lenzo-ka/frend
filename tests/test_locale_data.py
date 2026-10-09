@@ -3,6 +3,7 @@ with no table gets."""
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import re
@@ -659,8 +660,140 @@ def test_every_declared_source_has_a_license_and_a_class():
         assert entry["class"] in data_sources.LICENSE_CLASSES, source
         assert entry["class"] != data_sources.INTERNAL_ONLY, source
         assert entry["license"], source
+        assert entry["notice"], source
+        assert entry["allowed_use"], source
         for file in entry["vendored"]:
             assert (_DATA / file).is_file(), (source, file)
+
+
+def _acquisition_receipt(**changes):
+    receipt = {
+        "source": "cldr/48",
+        "locator": "https://example.invalid/cldr-48.zip",
+        "revision": "release-48",
+        "fetched_at": "2026-10-09T12:00:00Z",
+        "sha256": "a" * 64,
+        "license_sha256": "b" * 64,
+        "transform_command": ["python", "tools/build_normalization.py"],
+        "use": "locale data generation",
+    }
+    receipt.update(changes)
+    return receipt
+
+
+def test_recipe_sources_are_registered_with_required_policy_metadata():
+    expected = {
+        "cldr/": "Unicode-3.0",
+        "icu/": "Unicode-3.0",
+        "unicode/": "Unicode-3.0",
+        "libphonenumber": "Apache-2.0",
+        "nemo": "Apache-2.0",
+        "wikidata": "CC0-1.0",
+    }
+    for source, license_id in expected.items():
+        entry = data_sources.SHIPPABLE_SOURCES[source]
+        assert entry["license"] == license_id
+        assert entry["notice"]
+        assert entry["allowed_use"]
+    assert "never ranking evidence" in data_sources.SHIPPABLE_SOURCES["nemo"]["allowed_use"]
+
+
+@pytest.mark.parametrize(
+    ("field", "match"),
+    [
+        ("locator", "locator or repository"),
+        ("revision", "revision"),
+        ("fetched_at", "fetched_at"),
+        ("sha256", "sha256"),
+        ("license_sha256", "license_sha256"),
+        ("transform_command", "transform_command"),
+    ],
+)
+def test_acquisition_receipt_refuses_each_missing_required_field(field, match):
+    receipt = _acquisition_receipt()
+    del receipt[field]
+
+    with pytest.raises(ValueError, match=match):
+        data_sources.validate_receipt(receipt)
+
+
+@pytest.mark.parametrize("marker", ["consulted LDC93S6A", "LDC"])
+def test_acquisition_receipt_refuses_an_unregistered_or_ldc_marked_leaf(marker):
+    unregistered = _acquisition_receipt(source="example/unregistered")
+    marked = _acquisition_receipt(note=marker)
+
+    with pytest.raises(ValueError, match="not registered"):
+        data_sources.validate_receipt(unregistered)
+    with pytest.raises(ValueError, match="LDC corpus"):
+        data_sources.validate_receipt(marked)
+
+
+@pytest.mark.parametrize(
+    "use",
+    [None, "ranking evidence", "compatibility evidence; select preferred candidates"],
+)
+def test_nemo_receipt_refuses_noncompatibility_use(use):
+    receipt = _acquisition_receipt(source="nemo", use=use)
+
+    with pytest.raises(ValueError, match="only as compatibility evidence"):
+        data_sources.validate_receipt(receipt)
+
+
+@pytest.mark.parametrize("use", ["compatibility evidence", "Compatibility Evidence Only"])
+def test_nemo_receipt_accepts_only_explicit_compatibility_use(use):
+    data_sources.validate_receipt(_acquisition_receipt(source="nemo", use=use))
+
+
+def test_shipping_boundary_refuses_nemo_ranking_or_ambiguous_selection_use():
+    for use in ("ranking evidence", "compatibility evidence; select preferred candidates"):
+        assert _refusals("en/planted.json", {"source": "nemo", "use": use}) == [
+            "en/planted.json: nemo may be used only as compatibility evidence, never for ranking"
+        ]
+
+
+def test_ancestry_refuses_an_unregistered_receipt_and_accepts_a_registered_one():
+    missing = "f" * 64
+    assert data_sources.shipping_refusals({"ancestors": [missing]}) == (
+        f"ancestry does not close at a registered receipt: {missing!r}",
+    )
+
+    fingerprint = data_sources.register_receipt(_acquisition_receipt(repository="cldr.git"))
+    assert data_sources.shipping_refusals({"ancestors": [fingerprint]}) == ()
+
+
+def test_ancestry_refuses_unvalidated_or_miskeyed_caller_catalog_entries():
+    fingerprint = "f" * 64
+    assert data_sources.shipping_refusals(
+        {"ancestors": [fingerprint]}, receipt_index={fingerprint: {}}
+    ) == (f"ancestry does not close at a registered receipt: {fingerprint!r}",)
+
+    receipt = _acquisition_receipt()
+    assert data_sources.shipping_refusals(
+        {"ancestors": [fingerprint]}, receipt_index={fingerprint: receipt}
+    ) == (f"ancestry does not close at a registered receipt: {fingerprint!r}",)
+
+    tainted = _acquisition_receipt(note="consulted LDC93S6A")
+    tainted_fingerprint = hashlib.sha256(
+        json.dumps(tainted, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    ).hexdigest()
+    assert data_sources.shipping_refusals(
+        {"ancestors": [tainted_fingerprint]},
+        receipt_index={tainted_fingerprint: tainted},
+    ) == (f"ancestry does not close at a registered receipt: {tainted_fingerprint!r}",)
+
+
+def test_ancestry_accepts_a_validated_hash_matching_caller_catalog_entry():
+    receipt = _acquisition_receipt()
+    fingerprint = hashlib.sha256(
+        json.dumps(receipt, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    ).hexdigest()
+
+    assert (
+        data_sources.shipping_refusals(
+            {"ancestors": [fingerprint]}, receipt_index={fingerprint: receipt}
+        )
+        == ()
+    )
 
 
 def test_a_text_file_ships_only_as_a_vendored_source():
