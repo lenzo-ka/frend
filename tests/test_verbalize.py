@@ -1081,6 +1081,83 @@ def test_written_plus_sign_leads_with_plus_and_keeps_the_unsigned_form():
     assert minus.unspoken == ()
 
 
+@pytest.mark.parametrize(
+    ("locale", "negative_zero", "negative_one", "positive_one", "unsigned_zero"),
+    [
+        (locale, negative_zero, negative_one, positive_one, unsigned_zero)
+        for locale in ("en_US", "de_DE", "fr_FR")
+        for negative_zero, negative_one, positive_one, unsigned_zero in (
+            ("-0", "-1", "1", "0"),
+            ("-0%", "-1%", "1%", "0%"),
+            ("-0°C", "-1°C", "1°C", "0°C"),
+        )
+    ],
+)
+def test_explicit_negative_zero_keeps_the_readers_locale_minus_prefix(
+    locale, negative_zero, negative_one, positive_one, unsigned_zero
+):
+    negative_one_spoken = normalize(negative_one, locale=locale).strip()
+    positive_one_spoken = normalize(positive_one, locale=locale).strip()
+    unsigned_zero_spoken = normalize(unsigned_zero, locale=locale).strip()
+
+    assert negative_one_spoken.endswith(positive_one_spoken)
+    minus_prefix = negative_one_spoken.removesuffix(positive_one_spoken)
+    assert normalize(negative_zero, locale=locale).strip() == (
+        f"{minus_prefix}{unsigned_zero_spoken}"
+    )
+
+
+def test_fractional_percent_negative_zero_keeps_the_minus_prefix():
+    negative_one_spoken = normalize("-1.0%").strip()
+    positive_one_spoken = normalize("1.0%").strip()
+    unsigned_zero_spoken = normalize("0.0%").strip()
+
+    assert negative_one_spoken.endswith(positive_one_spoken)
+    minus_prefix = negative_one_spoken.removesuffix(positive_one_spoken)
+    assert normalize("-0.0%").strip() == f"{minus_prefix}{unsigned_zero_spoken}"
+
+
+@pytest.mark.parametrize(
+    "written",
+    ["-0", " -0", "(-0", "/-0"],
+)
+def test_negative_zero_after_leading_sign_context_keeps_minus(written):
+    (unit,) = [
+        unit for unit in _units(written, [FlexibleNumberDetector("en_US")]) if unit.verbalized
+    ]
+
+    assert unit.alternatives[0].text == "minus zero"
+
+
+@pytest.mark.parametrize("written", ["1-0", "x-0"])
+def test_zero_after_alphanumeric_hyphen_does_not_gain_minus(written):
+    units = [unit for unit in _units(written, [FlexibleNumberDetector("en_US")]) if unit.verbalized]
+
+    assert units[-1].alternatives[0].text == "zero"
+
+
+@pytest.mark.parametrize(
+    ("written", "main_reading"),
+    [
+        (
+            "9957-8513-1-0",
+            " nine thousand nine hundred fifty-seven  minus eight thousand five hundred "
+            "thirteen  minus one  zero ",
+        ),
+        ("0-6-0", " zero  minus six  zero "),
+        ("3-2-0", " three  minus two  zero "),
+        ("8-7-00", " eight  minus seven  zero "),
+        ("2-0-2", " two  zero  minus two "),
+        ("1-2-0", " one  minus two  zero "),
+        ("0-2-0", " zero  minus two  zero "),
+        ("1-0-0", " one  zero  zero "),
+        ("6-2-0", " six  minus two  zero "),
+    ],
+)
+def test_s0_hyphen_runs_remain_byte_identical_to_main(written, main_reading):
+    assert normalize(written) == main_reading
+
+
 def test_a_capture_no_verbalizer_speaks_is_recorded_not_dropped():
     (detection,) = FlexibleNumberDetector("en_US").detect("5")
     extra = replace(detection["captures"][0], name="era", text="5")
