@@ -164,7 +164,7 @@ def date_field_realizations(
         forms = tuple(
             item
             for item in _number_leaf(Decimal(value), "ordinal", locale)
-            if item.provenance.endswith(":%spellout-ordinal-r")
+            if "icu-rbnf:%spellout-ordinal-r" in item.provenance.split("+")
         )
     else:
         forms = _number_leaf(Decimal(value), "cardinal", locale)[:1]

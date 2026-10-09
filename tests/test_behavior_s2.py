@@ -700,7 +700,10 @@ def test_c21_marks_scripts_and_nfc_named_stretches():
 def test_c22_character_detail_provenance_lists_only_sources_used():
     expected = {
         ",": "cldr-symbol:comma",
-        "$43.50": ("cldr-symbol:dollar+icu-rbnf:%spellout-numbering+cldr-symbol:period"),
+        "$43.50": (
+            "cldr-symbol:dollar+icu-rbnf:%spellout-numbering+"
+            "icu-rbnf-fallback:en+cldr-symbol:period"
+        ),
         "user@x.co": "surface:passthrough+cldr-symbol:at-sign+cldr-symbol:period",
     }
     for text, provenance in expected.items():

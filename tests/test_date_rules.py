@@ -130,6 +130,7 @@ def test_german_month_keeps_icu_format_context_case():
     result = normalize("02.03.2003", locale="de_DE", offsets=True)
     assert result.text == " zweiter März zweitausenddrei "
     assert "icu-datetime:LLLL" in result.units[0].provenance.split("+")
+    assert "icu-rbnf-fallback:de" in result.units[0].provenance.split("+")
     assert "zwei tausend drei" not in result.text
 
 
