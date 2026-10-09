@@ -38,7 +38,7 @@ from frend.lattice import (
     route_geometry,
 )
 from frend.normalize import NormalizedText, NormalizedUnit, normalize
-from frend.runtime import freeze_after_setup
+from frend.runtime import freeze_after_setup, prewarm
 from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD
 from frend.verbalize import (
     SpokenAlternative,
@@ -80,6 +80,7 @@ __all__ = [
     "apply_input_fold",
     "freeze_after_setup",
     "normalize",
+    "prewarm",
     "resolve",
     "resolve_behavior",
     "resolve_lattice",

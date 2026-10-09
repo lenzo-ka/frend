@@ -148,8 +148,9 @@ def _reading_detectors(
         PluralNumeralDetector(locale),
         runs,
     )
+    number = FlexibleNumberDetector(locale)
     numbers = (
-        FlexibleNumberDetector(locale),
+        number,
         FlexibleCompactDetector(locale, "long"),
         FlexibleCompactDetector(locale, "short"),
     )
@@ -169,12 +170,12 @@ def _reading_detectors(
     )
     by_kind = (
         (*cardinals, written, *icu_range_readers(locale, cardinals)),
-        (FlexibleNumberDetector(locale), written),
+        (number, written),
         (SymbolDetector(locale, run_threshold=symbol_run_threshold),),
         numbers,
         (*dates.detectors, *date_interval_readers(locale), written),
         (FlexibleFractionDetector(locale),),
-        (FlexibleOrdinalDetector(locale), FlexibleNumberDetector(locale), runs),
+        (FlexibleOrdinalDetector(locale), number, runs),
         (FlexibleTimeDetector(locale), NumericDurationDetector(locale), runs, written),
         (_ValidatedElectronicDetector(locale),),
         (*measures, *icu_range_readers(locale, measures)),
