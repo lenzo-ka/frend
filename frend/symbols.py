@@ -57,6 +57,12 @@ _VARIATION_SELECTORS = icu.UnicodeSet("[:Variation_Selector:]")
 _VARIATION_SELECTORS.freeze()
 _SENTENCE_TERMINAL = icu.UnicodeSet("[:Sentence_Terminal:]")
 _SENTENCE_TERMINAL.freeze()
+_OPENING_BRACKETS = icu.UnicodeSet("[:Ps:]")
+_OPENING_BRACKETS.freeze()
+_CLOSING_BRACKETS = icu.UnicodeSet("[:Pe:]")
+_CLOSING_BRACKETS.freeze()
+_CURRENCY_SYMBOLS = icu.UnicodeSet("[:Sc:]")
+_CURRENCY_SYMBOLS.freeze()
 _MIXED_RUN_SYMBOL = icu.UnicodeSet("[[:So:][:Sm:][:Sk:][:Extended_Pictographic:]]")
 _MIXED_RUN_SYMBOL.freeze()
 _EXTENDED_PICTOGRAPHIC = icu.UnicodeSet("[:Extended_Pictographic:]")
@@ -336,9 +342,55 @@ def _digit_like_cldr_symbol(char: str, locale: str) -> bool:
     return char.isdigit() and (char in _cldr_names(locale) or base in _cldr_names(locale))
 
 
+_SIGNS = frozenset({"+", "-", "−"})
+# Non-alphanumeric suffixes accepted by the configured percent and measure readers.
+# Currency symbols are handled by their Unicode property below.
+_NUMBER_READING_SUFFIXES = frozenset({"%", "٪", "﹪", "％", "°", "'", '"', "′", "″"})
+
+
+def _opens_signed_number(text: str, start: int, end: int) -> bool:
+    """Whether one opening bracket is immediately before a signed numeric reading."""
+    if end - start != 1 or not _OPENING_BRACKETS.contains(text[start:end]):
+        return False
+    at = end
+    if at >= len(text) or text[at] not in _SIGNS:
+        return False
+    at += 1
+    # ICU currency readers accept both ``-$3`` and the ordinary ``-3`` shape.
+    while at < len(text) and _CURRENCY_SYMBOLS.contains(text[at]):
+        at += 1
+    return at < len(text) and text[at].isdecimal()
+
+
+def _closes_number_reading(text: str, start: int, end: int) -> bool:
+    """Whether one closing bracket follows a numeric reader's symbolic suffix.
+
+    A reading ending in a digit or letter already fails the ordinary standalone test.
+    This covers the suffixes which otherwise make the closing bracket appear standalone:
+    percent, currency, degree, foot, and inch symbols.
+    """
+    if end - start != 1 or not _CLOSING_BRACKETS.contains(text[start:end]):
+        return False
+    at = start - 1
+    saw_suffix = False
+    while at >= 0 and (
+        text[at].isspace()
+        or _CURRENCY_SYMBOLS.contains(text[at])
+        or text[at] in _NUMBER_READING_SUFFIXES
+    ):
+        saw_suffix = True
+        at -= 1
+    return saw_suffix and at >= 0 and text[at].isdecimal()
+
+
 def _standalone(text: str, start: int, end: int) -> bool:
     before = text[start - 1] if start > 0 else " "
     after = text[end] if end < len(text) else " "
+    # Brackets bordering a numeric reading are surface punctuation, just as in ``(0)``.
+    # Do not turn them into optional spoken-symbol detections merely because a sign or
+    # a symbolic percent/measure/money affix separates them from the nearest digit.
+    if _opens_signed_number(text, start, end) or _closes_number_reading(text, start, end):
+        return False
     return not (before.isalnum() or after.isalnum())
 
 

@@ -1147,6 +1147,53 @@ def test_written_plus_sign_leads_with_plus_and_keeps_the_unsigned_form():
     assert minus.unspoken == ()
 
 
+@pytest.mark.parametrize(("opening", "closing"), [("(", ")"), ("[", "]"), ("{", "}")])
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("-1", "minus one"),
+        ("-0", "minus zero"),
+        ("+3", "plus three"),
+        ("-1.5%", "minus one point five percent"),
+        ("-5 °C", "minus five degrees Celsius"),
+        ("-$3", "minus three dollars"),
+    ],
+)
+def test_brackets_around_signed_readings_are_both_preserved(opening, closing, written, spoken):
+    assert normalize(f"{opening}{written}{closing}") == f"{opening} {spoken} {closing}"
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("[-2]", "[ minus two ]"),
+        ("(-1.5%)", "( minus one point five percent )"),
+    ],
+)
+def test_signed_bracket_regression_witnesses(written, spoken):
+    assert normalize(written) == spoken
+
+
+@pytest.mark.parametrize(
+    ("opening", "closing"),
+    [
+        ("（", "）"),
+        ("［", "］"),
+        ("｛", "｝"),
+        ("⟨", "⟩"),
+        ("〈", "〉"),
+        ("《", "》"),
+        ("「", "」"),
+        ("『", "』"),
+        ("【", "】"),
+    ],
+)
+def test_common_unicode_brackets_around_signed_percent_are_preserved(opening, closing):
+    assert normalize(f"{opening}-1.5%{closing}") == (
+        f"{opening} minus one point five percent {closing}"
+    )
+
+
 @pytest.mark.parametrize(
     ("locale", "negative_zero", "negative_one", "positive_one", "unsigned_zero"),
     [

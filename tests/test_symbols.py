@@ -375,6 +375,16 @@ def test_a_standalone_symbol_in_running_text_is_read():
     assert [(d["type"], d["text"]) for d in detections] == [("symbol:cldr", "&")]
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [(f"&{sign}1", ("symbol:cldr", "&")) for sign in ("+", "-", "−")]
+    + [(f"α{sign}1", ("symbol:letter", "α")) for sign in ("+", "-", "−")],
+)
+def test_symbol_before_a_signed_number_keeps_its_reading(text, expected):
+    detections = SymbolDetector().detect(text)
+    assert [(d["type"], d["text"]) for d in detections] == [expected]
+
+
 def test_the_locale_scripts_come_from_icu():
     """Likely subtags' script first, the exemplars' scripts, then Common and Inherited."""
     from frend.symbols import locale_scripts
