@@ -39,7 +39,7 @@ from frend.input_limits import (
     validate_unit_length,
 )
 from frend.lattice import ReadingEdge, _resolve_lattice_validated
-from frend.letters import LettersDetector
+from frend.letters import LettersDetector, _dotted_acronym_suffix_spans
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
 from frend.ranges import RangeDetector, date_interval_readers, icu_range_readers
@@ -203,6 +203,8 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     """Return nonempty sentence ranges with boundary whitespace excluded."""
     spans = break_sentence_spans(text, locale)
     nonempty = [span for span in spans if span["text"].strip()]
+    protected = _dotted_acronym_suffix_spans(text)
+    protected_index = 0
     ranges: list[tuple[int, int]] = []
     for span in nonempty:
         surface = span["text"]
@@ -210,7 +212,15 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
         right = len(surface.rstrip())
         start = int(span["start"]) + left
         end = int(span["start"]) + right
-        ranges.append((start, end))
+        while protected_index < len(protected) and protected[protected_index][1] <= start:
+            protected_index += 1
+        crosses_protected = protected_index < len(protected) and (
+            protected[protected_index][0] < start < protected[protected_index][1]
+        )
+        if ranges and crosses_protected:
+            ranges[-1] = (ranges[-1][0], end)
+        else:
+            ranges.append((start, end))
     return ranges
 
 

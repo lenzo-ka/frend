@@ -516,6 +516,34 @@ def test_a_dotted_acronym_keeps_its_possessive_suffix(suffix):
     assert normalize(text, fold=None) == " f b i's "
 
 
+@pytest.mark.parametrize("suffix", ["s", "s'", "s’"])
+def test_a_dotted_plural_matches_its_undotted_acronym(suffix):
+    dotted = f"F.B.I.{suffix}"
+    undotted = f"FBI{suffix}"
+
+    assert _spans(dotted) == [("letters:run", dotted)]
+    assert normalize(dotted, fold=None) == normalize(undotted, fold=None) == " f b i's "
+
+
+@pytest.mark.parametrize("suffix", ["s", "s'", "s’"])
+def test_a_dotted_plural_uses_the_same_exact_dictionary_row_as_its_undotted_twin(suffix):
+    assert normalize(f"P.C.{suffix}", fold=None) == normalize(f"PC{suffix}", fold=None) == " pcs "
+
+
+@pytest.mark.parametrize("suffix", ["s", "s'", "s’"])
+def test_a_plural_suffix_does_not_turn_a_single_initial_into_a_detection(suffix):
+    assert _spans(f"A.{suffix}") == []
+
+
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+def test_a_dotted_uppercase_possessive_matches_lowercase(apostrophe):
+    uppercase = f"F.B.I.{apostrophe}S"
+    lowercase = f"F.B.I.{apostrophe}s"
+
+    assert _spans(uppercase) == [("letters:run", uppercase)]
+    assert normalize(uppercase, fold=None) == normalize(lowercase, fold=None) == " f b i's "
+
+
 @pytest.mark.parametrize("suffix", ["'s", "’s"])
 def test_a_word_favored_dotted_acronym_is_still_spelled(suffix):
     assert normalize(f"N.A.S.A.{suffix}", fold=None) == " n a s a's "

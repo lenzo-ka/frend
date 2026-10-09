@@ -1377,11 +1377,13 @@ def _spoken_letters(
         )
     suffix = "'s" if value.suffix else ""
     plural_surface = value.surface[:-1] if value.suffix.endswith(("'", "’")) else value.surface
-    word = _NFC.normalize(plural_surface).lower()
     parsed_surface = split_acronym_surface(value.surface)
     written_base = _NFC.normalize(
         value.surface[: -len(value.suffix)] if value.suffix else value.surface
     )
+    dictionary_surface = plural_surface.replace(".", "") if "." in written_base else plural_surface
+    word = _NFC.normalize(dictionary_surface).lower()
+    reading_surface = parsed_surface[0] if parsed_surface[1] == "plural" else written_base
     readings = tuple(
         SpokenAlternative(
             f"{form.text}{suffix}" if form.provenance.endswith("spelled") else word,
@@ -1389,13 +1391,13 @@ def _spoken_letters(
             form.weight,
         )
         for form in _with_acronym_readings(
-            written_base,
+            reading_surface,
             (),
             locale,
             profile=profile,
             profile_surface=parsed_surface[0],
             surface_subkey=parsed_surface[1],
-            dictionary_surface=plural_surface,
+            dictionary_surface=dictionary_surface,
             case_variant_lookup=case_variant_lookup,
         )
     )
