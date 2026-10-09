@@ -181,6 +181,60 @@ def test_dictionary_case_variant_lookup_is_opt_in(monkeypatch):
     assert letters.spellout_dictionary_entry("Fbi", case_variant_lookup=True)["decision"] == "spell"
 
 
+@pytest.fixture
+def load_spellout_table(monkeypatch):
+    from frend import letters, locale_data
+
+    measured_table = locale_data.measured_table
+
+    def load(tokens, casefold=()):
+        letters._spellout_dictionary.cache_clear()
+        monkeypatch.setattr(
+            locale_data,
+            "measured_table",
+            lambda name, locale: (
+                {
+                    "tokens": tokens,
+                    "casefold": casefold,
+                    "provenance": {"source": "probe"},
+                }
+                if name == "spellout_dictionary"
+                else measured_table(name, locale)
+            ),
+        )
+        return letters._spellout_dictionary("en_US")
+
+    yield load
+    letters._spellout_dictionary.cache_clear()
+
+
+def test_spellout_dictionary_refuses_duplicate_exact_surfaces(load_spellout_table):
+    with pytest.raises(ValueError, match="duplicate spell-out dictionary surface.*ABC"):
+        load_spellout_table(
+            [["ABC", "say", 9, 1], ["ABC", "spell", 1, 9]],
+        )
+
+
+def test_spellout_dictionary_refuses_duplicate_casefold_aliases(load_spellout_table):
+    with pytest.raises(ValueError, match="duplicate spell-out dictionary casefold alias.*abc"):
+        load_spellout_table(
+            [["ABC", "spell", 0, 5], ["Abc", "spell", 0, 6]],
+            [["abc", "ABC"], ["abc", "Abc"]],
+        )
+
+
+def test_spellout_dictionary_retains_unique_builder_rows(load_spellout_table):
+    from frend.letters import spelled_token_rule
+
+    tokens = [["ABC", "spell", 0, 5], ["scrypt", "say", 13, 0]]
+    assert all(decision != spelled_token_rule(surface) for surface, decision, *_ in tokens)
+    assert load_spellout_table(tokens, [["abc", "ABC"]]) == (
+        {"ABC": ("spell", 0, 5), "scrypt": ("say", 13, 0)},
+        {"abc": "ABC"},
+        "probe",
+    )
+
+
 @pytest.mark.parametrize(
     "row",
     [
@@ -525,6 +579,34 @@ def test_a_dotted_acronym_keeps_its_possessive_suffix(suffix):
         ("letters:run", text)
     ]
     assert normalize(text, fold=None) == " f b i's "
+
+
+@pytest.mark.parametrize("suffix", ["s", "s'", "s’"])
+def test_a_dotted_plural_matches_its_undotted_acronym(suffix):
+    dotted = f"F.B.I.{suffix}"
+    undotted = f"FBI{suffix}"
+
+    assert _spans(dotted) == [("letters:run", dotted)]
+    assert normalize(dotted, fold=None) == normalize(undotted, fold=None) == " f b i's "
+
+
+@pytest.mark.parametrize("suffix", ["s", "s'", "s’"])
+def test_a_dotted_plural_uses_the_same_exact_dictionary_row_as_its_undotted_twin(suffix):
+    assert normalize(f"P.C.{suffix}", fold=None) == normalize(f"PC{suffix}", fold=None) == " pcs "
+
+
+@pytest.mark.parametrize("suffix", ["s", "s'", "s’"])
+def test_a_plural_suffix_does_not_turn_a_single_initial_into_a_detection(suffix):
+    assert _spans(f"A.{suffix}") == []
+
+
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+def test_a_dotted_uppercase_possessive_matches_lowercase(apostrophe):
+    uppercase = f"F.B.I.{apostrophe}S"
+    lowercase = f"F.B.I.{apostrophe}s"
+
+    assert _spans(uppercase) == [("letters:run", uppercase)]
+    assert normalize(uppercase, fold=None) == normalize(lowercase, fold=None) == " f b i's "
 
 
 @pytest.mark.parametrize("suffix", ["'s", "’s"])
