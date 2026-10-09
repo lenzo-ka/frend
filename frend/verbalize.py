@@ -1340,6 +1340,15 @@ def _spoken_ordinal(
     if number != number.to_integral_value() or number < 0:
         raise NotImplementedError("ordinal spellout covers non-negative integers only")
     ordinals = _number_leaf(number, "ordinal", locale)
+    affix = _capture(detection, "ordinal-affix")
+    if canonical_locale(locale).split("_", 1)[0] == "fr" and affix is not None:
+        surface_is_plural = str(getattr(affix, "text", "")).casefold().endswith("s")
+        ordinals = tuple(
+            sorted(
+                ordinals,
+                key=lambda item: ("plural" in item.provenance) != surface_is_plural,
+            )
+        )
     if getattr(_capture(detection, "integer"), "form", None) != "roman":
         return ordinals
     return _ranked([*ordinals, *_with_article(ordinals, locale)])
