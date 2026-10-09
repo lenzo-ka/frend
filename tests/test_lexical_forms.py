@@ -771,10 +771,19 @@ _GOLDEN = {
     ],
     ("zero.year", "1908"): [
         [
-            ("nineteen o eight", "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "nineteen o eight",
+                "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US",
+            ),
             ("nineteen oh-eight", "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en"),
-            ("one thousand nine hundred eight", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
-            ("one thousand nine hundred and eight", "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en"),
+            (
+                "one thousand nine hundred eight",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
+            ),
+            (
+                "one thousand nine hundred and eight",
+                "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en",
+            ),
             ("one nine o eight", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US"),
             ("one nine zero eight", "icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
         ],
@@ -782,7 +791,10 @@ _GOLDEN = {
     ("clock.oclock", "5pm"): [
         [
             ("five p m", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+surface:letters"),
-            ("five o'clock p m", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+surface:letters"),
+            (
+                "five o'clock p m",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+surface:letters",
+            ),
         ],
     ],
     ("clock.hundred", "20:00"): [
@@ -796,7 +808,10 @@ _GOLDEN = {
         [
             ("two's", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
             ("second's", "icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US"),
-            ("the second's", "lexical:en_US+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "the second's",
+                "lexical:en_US+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en+lexical:en_US",
+            ),
         ],
     ],
     ("separator.words", "jane@example.org"): [
@@ -830,14 +845,23 @@ _GOLDEN = {
     ("currency.region_names", "$2"): [
         [
             ("two dollars", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
-            ("two united states dollars", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
-            ("two US dollars", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide"),
+            (
+                "two united states dollars",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
+            ),
+            (
+                "two US dollars",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-measure:wide",
+            ),
         ],
     ],
     ("fraction.denominators", "1/2"): [
         [
             ("one half", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
-            ("one second", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en"),
+            (
+                "one second",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+icu-rbnf:%spellout-ordinal+icu-rbnf-fallback:en",
+            ),
             (
                 "one over two",
                 "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en",
@@ -890,8 +914,14 @@ _GOLDEN = {
     ],
     ("numeral.plural", "1990s"): [
         [
-            ("nineteen nineties", "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US"),
-            ("one thousand nine hundred nineties", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "nineteen nineties",
+                "icu-rbnf:%spellout-numbering-year+icu-rbnf-fallback:en+lexical:en_US",
+            ),
+            (
+                "one thousand nine hundred nineties",
+                "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en+lexical:en_US",
+            ),
             (
                 "one thousand nine hundred and nineties",
                 "icu-rbnf:%spellout-numbering-verbose+icu-rbnf-fallback:en+lexical:en_US",
@@ -949,7 +979,10 @@ _GOLDEN = {
         [
             ("minus ten", "icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
             ("to ten", "lexical:en_US+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:en"),
-            ("to one o", "lexical:en_US+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US"),
+            (
+                "to one o",
+                "lexical:en_US+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en+lexical:en_US",
+            ),
             ("to one zero", "lexical:en_US+icu-rbnf:%spellout-cardinal+icu-rbnf-fallback:en"),
         ],
     ],
