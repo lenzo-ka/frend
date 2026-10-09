@@ -501,6 +501,35 @@ def test_a_chain_of_initials_reads_one_initial_at_a_time():
     assert spoken == ["x", "q", "z"]
 
 
+@pytest.mark.parametrize("suffix", ["'s", "’s"])
+def test_a_dotted_acronym_keeps_its_possessive_suffix(suffix):
+    text = f"F.B.I.{suffix}"
+    detections = [
+        detection
+        for detection in LettersDetector().detect(text)
+        if detection["type"] != "letters:token"
+    ]
+
+    assert [(detection["type"], detection["text"]) for detection in detections] == [
+        ("letters:run", text)
+    ]
+    assert normalize(text, fold=None) == " f b i's "
+
+
+@pytest.mark.parametrize("suffix", ["'s", "’s"])
+def test_a_word_favored_dotted_acronym_is_still_spelled(suffix):
+    assert normalize(f"N.A.S.A.{suffix}", fold=None) == " n a s a's "
+
+
+def test_a_bare_dotted_acronym_remains_a_chain_of_initials():
+    assert _spans("F.B.I.") == [
+        ("letters:initial", "F."),
+        ("letters:initial", "B."),
+        ("letters:initial", "I."),
+    ]
+    assert normalize("F.B.I.", fold=None) == " f b i "
+
+
 # Capitals by Unicode general category Lu, in one ICU script (dualplan-ranges P3).
 
 
