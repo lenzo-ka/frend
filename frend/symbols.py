@@ -31,6 +31,8 @@ import icu
 from icukit import break_grapheme_spans
 from icukit.detectors import Capture, NumberValue
 
+from frend.locale_data import canonical_locale
+
 __all__ = [
     "ScriptRunValue",
     "SymbolDetector",
@@ -61,6 +63,8 @@ _OPENING_BRACKETS = icu.UnicodeSet("[:Ps:]")
 _OPENING_BRACKETS.freeze()
 _CLOSING_BRACKETS = icu.UnicodeSet("[:Pe:]")
 _CLOSING_BRACKETS.freeze()
+_PUNCTUATION = icu.UnicodeSet("[:P:]")
+_PUNCTUATION.freeze()
 _CURRENCY_SYMBOLS = icu.UnicodeSet("[:Sc:]")
 _CURRENCY_SYMBOLS.freeze()
 _MIXED_RUN_SYMBOL = icu.UnicodeSet("[[:So:][:Sm:][:Sk:][:Extended_Pictographic:]]")
@@ -311,6 +315,10 @@ def symbol_names(char: str, locale: str = "en_US") -> tuple[tuple[str, str], ...
     cldr = _cldr_names(locale).get(char, ()) or _cldr_names(locale).get(base, ())
     if cldr:
         return tuple((name, f"cldr-symbol:{name}") for name in cldr)
+    # ICU's formal character names are English. A language-neutral locale has no
+    # language in which to speak that fallback.
+    if canonical_locale(locale) == "root":
+        return ()
     letter = _letter_name(base) if len(base) == 1 and _lone_foreign(base, locale) else None
     if letter:
         return ((letter, LETTER_NAME_SOURCE),)
@@ -383,13 +391,44 @@ def _closes_number_reading(text: str, start: int, end: int) -> bool:
     return saw_suffix and at >= 0 and text[at].isdecimal()
 
 
+def _follows_number_reading(text: str, start: int, end: int) -> bool:
+    """Whether punctuation follows a numeric reader's symbolic suffix.
+
+    A suffix makes following punctuation look standalone because neither character is
+    alphanumeric. Closing brackets preserved around the reading have the same effect.
+    Keep that punctuation on the surface, as it is after a bare numeric reading.
+    """
+    if end - start != 1 or not _PUNCTUATION.contains(text[start:end]) or start == 0:
+        return False
+    at = start - 1
+    # The punctuation must be adjacent to the suffix or its closing brackets. Spaces
+    # inside the bracketed numeric reading remain accepted, as they are above.
+    if text[at] not in _NUMBER_READING_SUFFIXES and not _CLOSING_BRACKETS.contains(text[at]):
+        return False
+    while at >= 0 and (_CLOSING_BRACKETS.contains(text[at]) or text[at].isspace()):
+        at -= 1
+    saw_suffix = False
+    while at >= 0 and (
+        text[at].isspace()
+        or _CURRENCY_SYMBOLS.contains(text[at])
+        or text[at] in _NUMBER_READING_SUFFIXES
+    ):
+        saw_suffix = True
+        at -= 1
+    return saw_suffix and at >= 0 and text[at].isdecimal()
+
+
 def _standalone(text: str, start: int, end: int) -> bool:
     before = text[start - 1] if start > 0 else " "
     after = text[end] if end < len(text) else " "
     # Brackets bordering a numeric reading are surface punctuation, just as in ``(0)``.
     # Do not turn them into optional spoken-symbol detections merely because a sign or
     # a symbolic percent/measure/money affix separates them from the nearest digit.
-    if _opens_signed_number(text, start, end) or _closes_number_reading(text, start, end):
+    if (
+        _opens_signed_number(text, start, end)
+        or _closes_number_reading(text, start, end)
+        or _follows_number_reading(text, start, end)
+    ):
         return False
     return not (before.isalnum() or after.isalnum())
 
@@ -680,8 +719,10 @@ class SymbolDetector:
         self.run_threshold = run_threshold
 
     def detect(self, text: str) -> list[dict]:
+        language_neutral = canonical_locale(self.locale) == "root"
         detections = []
-        for start, end, symbols in _symbol_runs(text, self.run_threshold):
+        symbol_runs = () if language_neutral else _symbol_runs(text, self.run_threshold)
+        for start, end, symbols in symbol_runs:
             names = tuple(symbol_names(symbol, self.locale)[0] for symbol in symbols)
             bases = tuple(_without_variation_selectors(symbol) for symbol in symbols)
             detections.append(
@@ -707,7 +748,8 @@ class SymbolDetector:
             for start, (end, _property_class) in silent_property_tokens.items()
             for position in range(start, end)
         }
-        for start, end in _runs(text, self.locale):
+        script_runs = () if language_neutral else _runs(text, self.locale)
+        for start, end in script_runs:
             if not _standalone(text, start, end):
                 # A run touching a word is no unit; its letters read one by one, as before.
                 continue
@@ -744,6 +786,8 @@ class SymbolDetector:
                         }
                     )
                 else:
+                    if language_neutral:
+                        continue
                     detections.append(
                         {
                             "text": char,
@@ -775,7 +819,7 @@ class SymbolDetector:
                         "value": SymbolValue(
                             surface[0],
                             script,
-                            _property_name(surface),
+                            () if language_neutral else _property_name(surface),
                             True,
                         ),
                         "captures": tuple(
@@ -784,6 +828,20 @@ class SymbolDetector:
                         ),
                     }
                 )
+                continue
+            if language_neutral:
+                if any(_VARIATION_SELECTORS.contains(unit) for unit in char):
+                    base = _without_variation_selectors(char)
+                    detections.append(
+                        {
+                            "text": char,
+                            "start": index,
+                            "end": end,
+                            "type": "symbol:variation",
+                            "value": VariationValue(char, base),
+                            "captures": (Capture("symbol", index, end, char, base, None),),
+                        }
+                    )
                 continue
             canonical = _NFC.normalize(char)
             if (

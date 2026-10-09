@@ -6,7 +6,7 @@ import unicodedata
 from decimal import Decimal
 
 import pytest
-from icukit.detectors import detect
+from icukit.detectors import NumberValue, detect
 
 import frend
 from frend import compose_choices, resolve_choices, resolve_lattice
@@ -42,6 +42,47 @@ def test_symbol_reads_as_the_corpus_measures_it(text, first):
 def test_every_cldr_name_and_silence_are_offered():
     forms = _forms("&")
     assert {"ampersand", "and", ""} <= set(forms)
+
+
+@pytest.mark.parametrize("locale", ["root", "und"])
+def test_root_punctuation_stays_as_written_without_english_names(locale):
+    assert frend.normalize("42, 50%, 1st", locale=locale) == " 42 ,  50% ,  1st "
+    groups = {"char-detail": ["named", "reading", "spelled"]}
+    assert frend.normalize(",", locale=locale, groups=groups) == ","
+
+
+@pytest.mark.parametrize("locale", ["en_US", "de_DE", "fr_FR", "es_ES", "ja_JP", "root"])
+def test_punctuation_after_percent_is_surface_punctuation_in_every_locale(locale):
+    text = "42, 50%, 1st, (7%), 3% and"
+    punctuation = [item for item in SymbolDetector(locale).detect(text) if item["text"] == ","]
+
+    assert punctuation == []
+    assert frend.normalize(text, locale=locale).count(",") == 4
+
+
+@pytest.mark.parametrize("locale", ["en_US", "de_DE", "fr_FR", "es_ES", "ja_JP", "root"])
+@pytest.mark.parametrize("punctuation", [",", ";", "."])
+def test_sentence_end_punctuation_after_percent_stays_written(locale, punctuation):
+    text = f"3%{punctuation}"
+
+    assert not any(item["text"] == punctuation for item in SymbolDetector(locale).detect(text))
+    assert frend.normalize(text, locale=locale).rstrip().endswith(punctuation)
+
+
+@pytest.mark.parametrize("locale", ["root", "und"])
+def test_root_keeps_language_neutral_symbol_readings(locale):
+    (keycap,) = SymbolDetector(locale).detect("1\ufe0f\u20e3")
+    assert keycap["type"] == "number:decimal:keycap"
+    assert keycap["value"] == NumberValue("1")
+
+    (property_symbol,) = SymbolDetector(locale).detect("ᵋ")
+    assert property_symbol["type"] == "symbol:property"
+    assert property_symbol["value"].names == ()
+    assert property_symbol["value"].silent_first is True
+
+    (variation,) = SymbolDetector(locale).detect("✈️")
+    assert variation["type"] == "symbol:variation"
+    assert variation["value"].base == "✈"
 
 
 @pytest.mark.parametrize(
