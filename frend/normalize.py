@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Literal, overload
 
@@ -114,6 +114,17 @@ _MEASURE_UNITS = (
 _MIXED_MEASURES = ("foot-and-inch", "pound-and-ounce")
 
 
+class _DetectorRegistry(tuple[object, ...]):
+    """Built detectors plus optional families unavailable for this locale."""
+
+    missing_families: tuple[str, ...]
+
+    def __new__(cls, detectors: list[object], missing_families: list[str]) -> _DetectorRegistry:
+        registry = super().__new__(cls, detectors)
+        registry.missing_families = tuple(missing_families)
+        return registry
+
+
 @dataclass(frozen=True)
 class NormalizedUnit:
     """One output unit and the original source span that produced it."""
@@ -126,17 +137,18 @@ class NormalizedUnit:
 
 @dataclass(frozen=True)
 class NormalizedText:
-    """Normalized text with source alignment for each spoken or passthrough unit."""
+    """Normalized text, source alignment, and unavailable optional detector families."""
 
     text: str
     units: list[NormalizedUnit]
     fold: InputFold | None = None
+    missing_detector_families: tuple[str, ...] = field(default=(), repr=False)
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
 def _reading_detectors(
     locale: str, symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD
-) -> tuple[object, ...]:
+) -> _DetectorRegistry:
     """The evaluator's recognition profile, packaged for the public API."""
     from icukit.abbreviation_recognize import AbbreviationDetector
 
@@ -155,10 +167,18 @@ def _reading_detectors(
         FlexibleCompactDetector(locale, "short"),
     )
     cardinals = numbers + (LetterNameDetector(locale), SingleLetterWordDetector(locale))
+    missing_families: list[str] = []
+    mixed_measures: list[object] = []
+    for mixed in _MIXED_MEASURES:
+        family = f"measure:{mixed}"
+        try:
+            mixed_measures.append(FlexibleMixedMeasureDetector(locale, mixed))
+        except ValueError:
+            missing_families.append(family)
     measures = (
         FlexiblePercentDetector(locale),
         *(FlexibleMeasureDetector(locale, unit) for unit in _MEASURE_UNITS),
-        *(FlexibleMixedMeasureDetector(locale, mixed) for mixed in _MIXED_MEASURES),
+        *mixed_measures,
     )
     money = tuple(
         detector
@@ -196,7 +216,7 @@ def _reading_detectors(
         )
     )
     detectors.append(RangeDetector(locale, endpoints=tuple(detectors)))
-    return tuple(detectors)
+    return _DetectorRegistry(detectors, missing_families)
 
 
 def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
@@ -398,8 +418,10 @@ def normalize(
 
     Sentence resolution stays bounded by ``max_unit_chars``. With ``offsets=True``,
     each output unit also records its code-point span and originating source span, and
-    :class:`NormalizedText` records the applied ``fold``. The plain-string form carries
-    no metadata; callers that need fold provenance must request offsets.
+    :class:`NormalizedText` records the applied ``fold`` and any optional detector
+    families that ICU could not build for the locale. The plain-string form carries no
+    metadata; callers that need fold or detector-capability provenance must request
+    offsets.
     """
     if not isinstance(offsets, bool):
         raise TypeError(f"offsets must be a bool, got {type(offsets).__name__}")
@@ -417,6 +439,7 @@ def normalize(
     profile = validate_profile(profile)
     groups = None if groups is None else dict(validate_groups(groups) or ())
     ranges = _sentence_ranges(text, locale)
+    registry = _reading_detectors(locale, symbol_run_threshold) if ranges or offsets else None
     if not ranges:
         if not offsets:
             return ""
@@ -432,7 +455,8 @@ def normalize(
                 )
             ]
         )
-        return NormalizedText("", units, fold)
+        assert registry is not None
+        return NormalizedText("", units, fold, registry.missing_families)
 
     # TODO(icukit): use icukit's reflow(text, mode) -> str once it is released.
     for start, end in ranges:
@@ -510,4 +534,7 @@ def normalize(
             )
         )
     normalized = "".join(parts)
-    return NormalizedText(normalized, aligned, fold) if aligned is not None else normalized
+    if aligned is None:
+        return normalized
+    assert registry is not None
+    return NormalizedText(normalized, aligned, fold, registry.missing_families)
