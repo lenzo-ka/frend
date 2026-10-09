@@ -88,6 +88,28 @@ def test_spell_round_trips_both_forms():
         assert str(profile.spell(binding, profile.graph)) == text
 
 
+def test_direct_spell_requires_an_in_range_integer_reading_index():
+    _detections, profile = _profile()
+    reading = profile.bind(CanonicalPath.parse("/reading/0"), profile.graph)
+    assert isinstance(reading, AlternativeRef)
+
+    for index in range(len(profile.covers)):
+        binding = AlternativeRef(reading.owner, reading.relation, index)
+        path = profile.spell(binding, profile.graph)
+        assert str(path) == f"/reading/{index}"
+        assert profile.bind(path, profile.graph) == binding
+        resolved = resolve_path(profile.graph, profile, str(path))
+        assert isinstance(resolved, ResolvedAlternative)
+        assert resolved.value == profile.covers[index]
+
+    for index in (-1, False, True, 0.5, "0", len(profile.covers)):
+        binding = AlternativeRef(reading.owner, reading.relation, index)  # type: ignore[arg-type]
+        _refuses(
+            PathRefusalCode.UNSPELLABLE,
+            lambda binding=binding: profile.spell(binding, profile.graph),
+        )
+
+
 def test_unknown_form_and_integer_refusals():
     _detections, profile = _profile("1/3/2026")
     _refuses(
