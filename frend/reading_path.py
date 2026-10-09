@@ -115,7 +115,7 @@ class FrendReadingProfile:
                 reason = "unsupported_relation"
             elif binding.owner != ItemRef(_POS, 0):
                 reason = "unsupported_owner"
-            elif binding.index < 0:
+            elif type(binding.index) is not int or not 0 <= binding.index < len(self.covers):
                 reason = "unsupported_index"
             else:
                 return CanonicalPath(("reading", str(binding.index)))
