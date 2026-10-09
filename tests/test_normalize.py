@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from tiergraph import WorkBudget, WorkMeter
 
 import frend
 from frend import InputValidationError, NormalizedText
@@ -28,6 +29,21 @@ def test_normalize_returns_a_string_by_default():
     result = frend.normalize("I paid $12.")
     assert isinstance(result, str)
     assert "twelve" in result
+
+
+def test_normalize_shares_one_work_meter_across_sentences(monkeypatch):
+    normalize_module = importlib.import_module("frend.normalize")
+
+    meters = []
+
+    def sentence(text, **kwargs):
+        meters.append(kwargs["work_budget"])
+        return None, text
+
+    monkeypatch.setattr(normalize_module, "_sentence", sentence)
+    meter = WorkMeter(WorkBudget(steps=100))
+    assert frend.normalize("First. Second.", work_budget=meter) == "First. Second."
+    assert meters == [meter, meter]
 
 
 def test_missing_optional_detector_family_degrades_only_that_family():

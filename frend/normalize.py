@@ -56,6 +56,11 @@ from frend.symbols import (
     _overlaps as _symbol_overlaps,
 )
 from frend.verbalize import SpokenAlternative, VerbalizedUnit, _verbalize_lattice_validated
+from frend.work_budgets import (
+    DEFAULT_TIERGRAPH_WORK_BUDGET,
+    TiergraphWorkBudget,
+    work_meter,
+)
 from frend.written_forms import WrittenFormsDetector
 
 __all__ = ["NormalizedText", "NormalizedUnit", "normalize"]
@@ -328,6 +333,7 @@ def _sentence(
     max_unit_chars: int | None,
     symbol_run_threshold: int,
     groups: GroupOrders | None,
+    work_budget: TiergraphWorkBudget,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
     detections = _reading_detectors(locale, symbol_run_threshold).detect(text)
     detections = [
@@ -348,6 +354,7 @@ def _sentence(
         locale=locale,
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
+        work_budget=work_budget,
     )
     edges = {edge.id: edge for edge in lattice.edges} if offsets else None
     verbalized = _verbalize_lattice_validated(
@@ -387,6 +394,7 @@ def normalize(
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> str: ...
 
 
@@ -403,6 +411,7 @@ def normalize(
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> NormalizedText: ...
 
 
@@ -419,6 +428,7 @@ def normalize(
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> str | NormalizedText: ...
 
 
@@ -434,6 +444,7 @@ def normalize(
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
+    work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
 ) -> str | NormalizedText:
     """Return the first-choice spoken form of a plain-text document.
 
@@ -459,6 +470,7 @@ def normalize(
     locale = canonical_locale(locale)
     profile = validate_profile(profile)
     groups = None if groups is None else dict(validate_groups(groups) or ())
+    meter = work_meter(work_budget)
     ranges = _sentence_ranges(text, locale)
     registry = _reading_detectors(locale, symbol_run_threshold) if ranges or offsets else None
     if not ranges:
@@ -526,6 +538,7 @@ def normalize(
             max_unit_chars=max_unit_chars,
             symbol_run_threshold=symbol_run_threshold,
             groups=groups,
+            work_budget=meter,
         )
         parts.append(spoken)
         if aligned is not None:
