@@ -3,6 +3,10 @@
   "schema_version": 1,
   "source": "frend/curated",
   "forms": {
+    "date.day_one": {
+      "why": "Académie française, Dire, Ne pas dire, La date, records le premier for the first day of a month.",
+      "value": "premier"
+    },
     "decimal.fraction_as_number": {
       "why": "The locale convention permits reading the digits after the decimal separator as a whole number when they do not begin with zero.",
       "value": true

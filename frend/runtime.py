@@ -11,6 +11,20 @@ from collections.abc import Iterable
 
 from frend.locale_data import canonical_locale
 
+_DATE_PROBES = {
+    "de_DE": "02.03.2003",
+    "en_US": "March 3, 2020",
+    "es_ES": "15/03/2024",
+    "es_MX": "15/03/2024",
+    "fr_FR": "02.03.2003",
+    "it_IT": "02/03/2003",
+    "ja_JP": "2024/01/30",
+    "ko_KR": "2024. 6. 30.",
+    "pt_BR": "15/03/2024",
+    "pt_PT": "01/01/2000",
+    "zh_CN": "2019/2/10",
+}
+
 
 def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ...]:
     """Load the production path once per unique canonical locale, in input order.
@@ -23,6 +37,14 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
     order = tuple(dict.fromkeys(canonical_locale(locale) for locale in locales))
     for locale in order:
         normalize(probe_text, locale=locale)
+        if date_probe := _DATE_PROBES.get(locale):
+            normalize(date_probe, locale=locale)
+            if locale != "en_US":
+                # Lowering is locale-bound and must be resident even when a caller's
+                # sentence breaker ranks a narrower numeric path for the written probe.
+                from frend.date_rules import load_date_rule_bundle
+
+                load_date_rule_bundle(locale)
     return order
 
 

@@ -3,6 +3,10 @@
   "schema_version": 1,
   "source": "frend/curated",
   "forms": {
+    "date.day_one": {
+      "why": "RAE Diccionario panhispánico de dudas, s.v. fecha, records primero as the spoken ordinal for the first day of a month.",
+      "value": "primero"
+    },
     "fraction.plural_suffix": {
       "why": "RAE/ASALE Nueva gramática de la lengua española 21.4.1 uses ordinal-derived masculine fraction nouns with a cardinal numerator, including 'dos quintos'; the regular plural adds -s.",
       "value": "s"

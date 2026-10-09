@@ -1,0 +1,721 @@
+{
+  "insensitive_total": 42,
+  "rows": [
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_date.txt:5"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_date.txt:6"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_date.txt:1"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_date.txt:18"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_date.txt:2"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_date.txt:5"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_date.txt:6"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_date.txt:1"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_date.txt:18"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_date.txt:2"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_date.txt:5"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_date.txt:6"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_date.txt:1"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_date.txt:2"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_date.txt:4"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_date.txt:1"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:1"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:10"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:11"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:12"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:13"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:14"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:18"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:2"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:26"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:3"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:6"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:7"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:8"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_date.txt:9"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_PT:checked.tsv:18"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_PT:checked.tsv:19"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_PT:checked.tsv:20"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_PT:checked.tsv:21"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "zh_CN:test_cases_date.txt:22"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_date.txt:10"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_date.txt:11"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_normalize_with_audio.txt:23"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_date.txt:8"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_normalize_with_audio.txt:22"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_date.txt:8"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_normalize_with_audio.txt:22"
+    }
+  ],
+  "schema": 1,
+  "strict_total": 36
+}

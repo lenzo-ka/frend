@@ -3,6 +3,10 @@
   "schema_version": 1,
   "source": "frend/curated",
   "forms": {
+    "date.day_one": {
+      "why": "RAE Diccionario panhispánico de dudas, s.v. fecha, records primero as the spoken ordinal for the first day of a month.",
+      "value": "primero"
+    },
     "decimal.fraction_as_number": {
       "why": "RAE Diccionario panhispánico de dudas, s.v. coma, permits reading the digits after the decimal comma as a whole number when they do not begin with zero.",
       "value": true

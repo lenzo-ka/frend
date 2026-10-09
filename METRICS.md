@@ -170,6 +170,20 @@ Sources: `typographic-fold/results.md`, `ranges-ids/results.md`, and
 
 ## Latency and robustness
 
+PR5 date composition is evaluated as a paired immediate-base change under released
+`icukit>=0.8`, `tiergraph>=0.8`, and `cartlet>=0.7`. The correctness gate compares
+complete ordered alternative payloads and permits changes only in the checked
+`tools/date_expected_changes.json` rows; `tools/date_expected_recoveries.json` pins
+the predicted false-to-true totals. English date rows require exact identity.
+
+`tools/bench_date_compose.py` measures cold tiergraph load, lower, recognize, generate,
+and exact-token rendering, then the production path over the resulting locale/shape
+recipe. Five runs of at least 1,000 warm calls per generated-rule locale gate at p50
+<= 0.3 ms and p95 <= 1.0 ms. The
+end-to-end locale gate remains authoritative: five alternating base/head processes
+enforce first-hit, prewarm, warm p50/p95, RSS, unseen-date soak, and fold ceilings.
+Warm p95 has a strict 1.10x ceiling with no additive allowance or base-spread waiver.
+
 #63 was measured on `kale.local` (arm64, Python 3.13.15, ICU 78.3). This table gives
 pipeline p50 in milliseconds for warm calls and parent-observed process-wall p50 for a
 fresh process per utterance. Source: `latency-ab/results.md`.

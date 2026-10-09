@@ -3,6 +3,10 @@
   "schema_version": 1,
   "source": "frend/curated",
   "forms": {
+    "date.day_one": {
+      "why": "Cunha and Cintra, Nova Gramática do Português Contemporâneo, Numerais, supports primeiro for the first day of a month.",
+      "value": "primeiro"
+    },
     "fraction.plural_suffix": {
       "why": "Ciberdúvidas 'Números fraccionários', citing Cunha and Cintra's Nova Gramática do Português Contemporâneo, identifies ordinal names such as quarto and quinto as fraction nouns; Infopédia records 'oitavos' as the masculine plural of the fractional numeral oitavo, so the regular plural adds -s.",
       "value": "s"

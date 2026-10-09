@@ -28,7 +28,7 @@ from icukit.recognize import (
     PluralNumeralDetector,
 )
 
-from frend import compose_choices, resolve, resolve_choices, resolve_lattice
+from frend import compose_choices, normalize, resolve, resolve_choices, resolve_lattice
 from frend.electronic import ElectronicDetector
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
@@ -154,6 +154,17 @@ def test_date_alternatives_are_never_cut_to_a_prefix(monkeypatch):
     for year in extra:
         assert any(year in text and not text.startswith("the ") for text in texts), year
         assert any(year in text and text.startswith("the ") for text in texts), year
+
+
+def test_english_public_dates_keep_existing_output_and_provenance():
+    expected = (
+        ("March 3, 2020", " March third, twenty twenty "),
+        ("1/3/2026", " the third of January twenty twenty-six "),
+    )
+    for written, spoken in expected:
+        result = normalize(written, locale="en_US", offsets=True)
+        assert result.text == spoken
+        assert all("date-rule:" not in unit.provenance for unit in result.units)
 
 
 @pytest.mark.parametrize(

@@ -203,8 +203,20 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     """Return nonempty sentence ranges with boundary whitespace excluded."""
     spans = break_sentence_spans(text, locale)
     nonempty = [span for span in spans if span["text"].strip()]
+    # Sentence breaking must not split dotted acronym suffixes. Advance one
+    # monotone pointer so many protected spans and boundaries stay linear.
     protected = _dotted_acronym_suffix_spans(text)
     protected_index = 0
+
+    # Locale breakers can treat periods in numeric dates as sentence terminators
+    # (notably Korean ``2024. 6. 30.``). Recognition is authoritative for those
+    # spans, so keep each boundary strictly inside a date edge in one unit.
+    crossing_dates = sorted(
+        (int(edge["start"]), int(edge["end"]))
+        for edge in detect(text, date_detectors(locale, _DATE_SKELETONS).detectors)
+        if str(edge.get("type", "")).startswith("date:")
+    )
+    date_index = 0
     ranges: list[tuple[int, int]] = []
     for span in nonempty:
         surface = span["text"]
@@ -217,7 +229,13 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
         crosses_protected = protected_index < len(protected) and (
             protected[protected_index][0] < start < protected[protected_index][1]
         )
-        if ranges and crosses_protected:
+        previous_end = ranges[-1][1] if ranges else start
+        while date_index < len(crossing_dates) and crossing_dates[date_index][1] <= previous_end:
+            date_index += 1
+        crosses_date = date_index < len(crossing_dates) and (
+            crossing_dates[date_index][0] < previous_end and crossing_dates[date_index][1] > start
+        )
+        if ranges and (crosses_protected or crosses_date):
             ranges[-1] = (ranges[-1][0], end)
         else:
             ranges.append((start, end))
