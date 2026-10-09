@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "source": "public fixed date probes",
+  "locales": {
+    "de_DE": {"probe": "02.03.2003", "shape": "DD.MM.YYYY"},
+    "en_US": {"probe": "March 3, 2020", "shape": "MMMM D, YYYY"},
+    "es_ES": {"probe": "15/03/2024", "shape": "DD/MM/YYYY"},
+    "es_MX": {"probe": "15/03/2024", "shape": "DD/MM/YYYY"},
+    "fr_FR": {"probe": "02.03.2003", "shape": "DD.MM.YYYY"},
+    "it_IT": {"probe": "02/03/2003", "shape": "DD/MM/YYYY"},
+    "ja_JP": {"probe": "2024/01/30", "shape": "YYYY/MM/DD"},
+    "ko_KR": {"probe": "2024. 6. 30.", "shape": "YYYY. M. D."},
+    "pt_BR": {"probe": "15/03/2024", "shape": "DD/MM/YYYY"},
+    "pt_PT": {"probe": "01/01/2000", "shape": "DD/MM/YYYY"},
+    "zh_CN": {"probe": "2019/2/10", "shape": "YYYY/M/DD"}
+  }
+}

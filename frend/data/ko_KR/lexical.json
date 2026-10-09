@@ -1,0 +1,15 @@
+{
+  "locale": "ko_KR",
+  "schema_version": 1,
+  "source": "frend/curated",
+  "forms": {
+    "date.month.10": {
+      "why": "National Institute of Korean Language, Standard Korean Language Dictionary, 시월, gives the conventional name for October.",
+      "value": "시"
+    },
+    "date.month.6": {
+      "why": "National Institute of Korean Language, Standard Korean Language Dictionary, 유월, gives the conventional name for June.",
+      "value": "유"
+    }
+  }
+}

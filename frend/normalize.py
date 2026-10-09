@@ -211,7 +211,27 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
         start = int(span["start"]) + left
         end = int(span["start"]) + right
         ranges.append((start, end))
-    return ranges
+    if len(ranges) < 2:
+        return ranges
+
+    # A locale sentence breaker can treat the periods inside a numeric date as
+    # sentence terminators (notably Korean ``2024. 6. 30.``).  Recognition is the
+    # authority for that span, so keep any boundary strictly inside a date edge in
+    # the same resolution unit.
+    date_edges = detect(text, date_detectors(locale, _DATE_SKELETONS).detectors)
+    crossing = [
+        (int(edge["start"]), int(edge["end"]))
+        for edge in date_edges
+        if str(edge.get("type", "")).startswith("date:")
+    ]
+    merged = [ranges[0]]
+    for start, end in ranges[1:]:
+        previous_start, previous_end = merged[-1]
+        if any(left < previous_end and right > start for left, right in crossing):
+            merged[-1] = (previous_start, end)
+        else:
+            merged.append((start, end))
+    return merged
 
 
 def _alternative_text(alternative: SpokenAlternative) -> str:

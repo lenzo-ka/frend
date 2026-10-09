@@ -210,7 +210,8 @@ def test_unseen_soak_exposes_unbounded_input_keyed_cache(monkeypatch):
     retained_bytes = 0
 
     @functools.cache
-    def broken_normalize(text, *, locale):
+    def broken_normalize(text, *, locale, offsets=False):
+        del offsets
         nonlocal retained_bytes
         retained_bytes += 1024
         return bytearray(1024), text, locale
@@ -246,11 +247,34 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                 }
             },
         },
-        "runs": [{"rss_workload_pass1_bytes": 120 * mib, "rss_workload_pass2_bytes": 121 * mib}],
+        "runs": [
+            {
+                "run": 1,
+                "rss_workload_pass1_bytes": 120 * mib,
+                "rss_workload_pass2_bytes": 121 * mib,
+                "date_probes": {
+                    "en_US": {"date_units": 1, "selected_generated": False, "events": {}}
+                },
+            }
+        ],
     }
     runtime_head = json.loads(json.dumps(runtime_base))
     runtime_head["summary"]["rss_loaded_bytes"] = measurement(head_rss_mib * mib)
-    soak = {"summary": {"pass3_minus_pass1_bytes": measurement(mib)}}
+    soak_receipts = [
+        {
+            "locale": locale,
+            "pass": pass_index,
+            "count": 1,
+            "successful_date_detections": 1,
+            "selected_generated": 0 if locale == "en_US" else 1,
+        }
+        for locale in gate.GATE_LOCALES
+        for pass_index in range(1, 4)
+    ]
+    soak = {
+        "summary": {"pass3_minus_pass1_bytes": measurement(mib)},
+        "runs": [{"run": 1, "date_receipts": soak_receipts}],
+    }
     fold = {
         "rows": [
             {
@@ -319,6 +343,37 @@ def test_resource_gate_fails_breach_but_passes_within_noise(
     )["outside_base_range"] is bool(expected_status)
 
 
+def test_runtime_gate_rejects_empty_date_probe_receipts():
+    runtime_base, runtime_head, _soak, _fold = _resource_documents(100, 100)
+    runtime_head["runs"][0]["date_probes"] = {}
+
+    result = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_runtime=runtime_base,
+        head_runtime=runtime_head,
+    )
+
+    failures = {item["metric"] for item in result["resources"]["failures"]}
+    assert "runtime.date_probe.receipt_contract.run1" in failures
+
+
+def test_soak_gate_rejects_empty_date_receipts():
+    _runtime_base, _runtime_head, soak, _fold = _resource_documents(100, 100)
+    head_soak = json.loads(json.dumps(soak))
+    head_soak["runs"][0]["date_receipts"] = []
+
+    result = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_soak=soak,
+        head_soak=head_soak,
+    )
+
+    failures = {item["metric"] for item in result["resources"]["failures"]}
+    assert "soak.date_probe.receipt_contract.run1" in failures
+
+
 def test_require_identical_checks_first_choice_and_all_offers():
     row = {
         "id": "en_US:fixture:1",
@@ -365,6 +420,85 @@ def test_require_identical_rejects_documents_that_both_omit_offer_signature():
     assert result["identity"]["mismatches"][0]["changes"]["offer_signature"] == {
         "missing_on": ["base", "head"]
     }
+
+
+def test_offer_signature_records_every_public_alternative_field():
+    edge = SimpleNamespace(
+        start=0,
+        end=1,
+        kind="reading",
+        detection={"type": "date:yMd", "value": SimpleNamespace(fields=(("y", 2024),))},
+    )
+    alternative = SpokenAlternative("one", "icu:test", weight=None, prior_provenance="measured:old")
+    graph = SimpleNamespace(
+        lattice=SimpleNamespace(edges=(edge,)),
+        units=(SimpleNamespace(alternatives=(alternative,)),),
+    )
+    [signature] = gate._offer_signature(graph)
+    assert signature["type"] == "date:yMd"
+    assert signature["fields"] == ["y"]
+    assert signature["alternatives"] == [
+        {
+            "text": "one",
+            "provenance": "icu:test",
+            "prior_provenance": "measured:old",
+            "weight": None,
+            "surface": False,
+        }
+    ]
+
+
+def test_warm_p95_has_no_additive_or_base_spread_allowance():
+    base_runtime, head_runtime, _soak, _fold = _resource_documents(100, 100)
+    base_runtime["summary"]["locales"]["en_US"]["warm_p50_ns"] = {
+        "median": 200_000,
+        "min": 190_000,
+        "max": 300_000,
+    }
+    head_runtime["summary"]["locales"]["en_US"]["warm_p50_ns"] = {
+        "median": 290_000,
+        "min": 290_000,
+        "max": 290_000,
+    }
+    base_runtime["summary"]["locales"]["en_US"]["warm_p95_ns"] = {
+        "median": 200_000,
+        "min": 190_000,
+        "max": 300_000,
+    }
+    head_runtime["summary"]["locales"]["en_US"]["warm_p95_ns"] = {
+        "median": 290_000,
+        "min": 290_000,
+        "max": 290_000,
+    }
+    result = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        base_runtime=base_runtime,
+        head_runtime=head_runtime,
+    )
+    failures = {item["metric"] for item in result["resources"]["failures"]}
+    assert "runtime.locales.en_US.warm_p50_ns" not in failures
+    assert "runtime.locales.en_US.warm_p95_ns" in failures
+
+
+def test_require_no_negative_flips_is_an_executable_failure():
+    base = {
+        "id": "fr_FR:date:1",
+        "locale": "fr_FR",
+        "written": "x",
+        "strict": True,
+        "presentation": True,
+        "insensitive": True,
+        "first_strict": True,
+        "first_presentation": True,
+        "first": "x",
+        "offer_signature": [],
+        "error": None,
+    }
+    head = {**base, "strict": False}
+    result = gate.compare({"cases": [base]}, {"cases": [head]}, require_no_negative_flips=True)
+    assert not result["correctness"]["passed"]
+    assert result["correctness"]["failures"][0]["kind"] == "negative-flips"
 
 
 def test_pr4_improvement_profile_enforces_stricter_runtime_and_fold_budgets():

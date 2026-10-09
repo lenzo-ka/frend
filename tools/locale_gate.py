@@ -24,6 +24,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass, replace
+from datetime import date, timedelta
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -39,6 +40,7 @@ REPO = Path(__file__).resolve().parents[1]
 CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
 EXCLUSIONS_PATH = Path(__file__).with_name("nemo_exclusions.tsv")
 CONVENTIONS_PATH = Path(__file__).with_name("locale_conventions.json")
+DATE_LATENCY_INPUTS = Path(__file__).with_name("date_latency_inputs.json")
 
 LOCALES: dict[str, tuple[str, ...]] = {
     "en": ("en_US",),
@@ -52,6 +54,7 @@ LOCALES: dict[str, tuple[str, ...]] = {
     "ja": ("ja_JP",),
 }
 GATE_LOCALES = tuple(locale for locales in LOCALES.values() for locale in locales) + ("pt_PT",)
+_ALL_GATE_LOCALES = GATE_LOCALES
 
 
 @dataclass(frozen=True)
@@ -435,21 +438,31 @@ def _graph(case: FixtureCase) -> tuple[list[Mapping], ChoiceGraph]:
 
 def _offer_signature(graph: ChoiceGraph) -> list[dict]:
     """A byte-output-complete signature of the factored keep-all graph."""
-    return [
-        {
-            "start": edge.start,
-            "end": edge.end,
-            "kind": edge.kind,
-            "alternatives": [
-                {
-                    "text": alternative.text,
-                    "surface": alternative.provenance == "surface:passthrough",
-                }
-                for alternative in unit.alternatives
-            ],
-        }
-        for edge, unit in zip(graph.lattice.edges, graph.units, strict=True)
-    ]
+    signature = []
+    for edge, unit in zip(graph.lattice.edges, graph.units, strict=True):
+        detection = edge.detection or {}
+        value = detection.get("value") if isinstance(detection, Mapping) else None
+        fields = getattr(value, "fields", ())
+        signature.append(
+            {
+                "start": edge.start,
+                "end": edge.end,
+                "kind": edge.kind,
+                "type": detection.get("type") if isinstance(detection, Mapping) else None,
+                "fields": [name for name, _value in fields],
+                "alternatives": [
+                    {
+                        "text": alternative.text,
+                        "provenance": alternative.provenance,
+                        "prior_provenance": alternative.prior_provenance,
+                        "weight": None if alternative.weight is None else str(alternative.weight),
+                        "surface": alternative.provenance == "surface:passthrough",
+                    }
+                    for alternative in unit.alternatives
+                ],
+            }
+        )
+    return signature
 
 
 def _evaluate(case: FixtureCase, exclusions: Mapping[tuple[str, str, str], str]) -> dict:
@@ -711,6 +724,56 @@ def _runtime_comparisons(
     base_summary = base["summary"]
     head_summary = head["summary"]
     checks = []
+    expected_date_locales = set(head_summary["first_hit_ns"])
+    head_runs = head.get("runs", ())
+    if not head_runs:
+        checks.append(
+            {
+                "metric": "runtime.date_probe.receipt_contract",
+                "passed": False,
+                "breached": True,
+                "outside_base_range": False,
+                "budget": "one receipt per measured locale in every run",
+            }
+        )
+    for run in head_runs:
+        date_probes = run.get("date_probes", {})
+        observed_date_locales = set(date_probes)
+        receipt_contract_passed = observed_date_locales == expected_date_locales
+        checks.append(
+            {
+                "metric": f"runtime.date_probe.receipt_contract.run{run.get('run', 0)}",
+                "expected_locales": sorted(expected_date_locales),
+                "observed_locales": sorted(observed_date_locales),
+                "passed": receipt_contract_passed,
+                "breached": not receipt_contract_passed,
+                "outside_base_range": False,
+                "budget": "one receipt per measured locale in every run",
+            }
+        )
+        for locale, receipt in date_probes.items():
+            generated_locale = locale != "en_US"
+            events = receipt.get("events", {})
+            passed = (
+                receipt.get("date_units", 0) >= 1
+                and receipt.get("selected_generated") is generated_locale
+                and (
+                    not generated_locale
+                    or events.get("load") == 1
+                    and events.get("lower") == 1
+                    and events.get("generate", 0) >= 1
+                )
+            )
+            checks.append(
+                {
+                    "metric": f"runtime.date_probe.{locale}.run{run.get('run', 0)}",
+                    "receipt": receipt,
+                    "passed": passed,
+                    "breached": not passed,
+                    "outside_base_range": False,
+                    "budget": "selected date-rule provenance and cold load/lower/generate",
+                }
+            )
     for locale in sorted(set(base_summary["first_hit_ns"]) & set(head_summary["first_hit_ns"])):
         checks.append(
             _ratio_comparison(
@@ -790,14 +853,15 @@ def _runtime_comparisons(
                     base_summary["locales"][locale][statistic],
                     head_summary["locales"][locale][statistic],
                     ratio,
-                    additive_ns=100_000,
+                    additive_ns=100_000 if statistic == "warm_p50_ns" else 0,
+                    allow_base_spread=statistic == "warm_p50_ns",
                 )
             )
     return checks
 
 
 def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
-    return [
+    checks = [
         _absolute_comparison(
             "soak.pass3_minus_pass1_bytes",
             base["summary"]["pass3_minus_pass1_bytes"],
@@ -805,6 +869,59 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
             budget.rss_unseen_soak_delta_mib,
         )
     ]
+    expected_receipts = {
+        (locale, pass_index) for locale in GATE_LOCALES for pass_index in range(1, 4)
+    }
+    head_runs = head.get("runs", ())
+    if not head_runs:
+        checks.append(
+            {
+                "metric": "soak.date_probe.receipt_contract",
+                "passed": False,
+                "breached": True,
+                "outside_base_range": False,
+                "budget": "one receipt per locale and pass in every run",
+            }
+        )
+    for run in head_runs:
+        date_receipts = run.get("date_receipts", ())
+        observed_receipts = {
+            (receipt.get("locale"), receipt.get("pass")) for receipt in date_receipts
+        }
+        receipt_contract_passed = observed_receipts == expected_receipts and len(
+            date_receipts
+        ) == len(expected_receipts)
+        checks.append(
+            {
+                "metric": f"soak.date_probe.receipt_contract.run{run.get('run', 0)}",
+                "expected": sorted(expected_receipts),
+                "observed": sorted(observed_receipts),
+                "passed": receipt_contract_passed,
+                "breached": not receipt_contract_passed,
+                "outside_base_range": False,
+                "budget": "one receipt per locale and pass in every run",
+            }
+        )
+        for receipt in date_receipts:
+            count = receipt.get("count", 0)
+            generated_expected = receipt.get("locale") != "en_US"
+            passed = receipt.get("successful_date_detections") == count and (
+                receipt.get("selected_generated") == count if generated_expected else True
+            )
+            checks.append(
+                {
+                    "metric": (
+                        f"soak.date_probe.{receipt.get('locale')}."
+                        f"pass{receipt.get('pass')} .run{run.get('run', 0)}"
+                    ).replace(" ", ""),
+                    "receipt": receipt,
+                    "passed": passed,
+                    "breached": not passed,
+                    "outside_base_range": False,
+                    "budget": "full-span detection and selected date-rule provenance",
+                }
+            )
+    return checks
 
 
 def _fold_key(row: Mapping) -> tuple[str, str, str]:
@@ -920,6 +1037,10 @@ def compare(
     base_folds: Sequence[dict] = (),
     head_folds: Sequence[dict] = (),
     require_identical: bool = False,
+    expected_recoveries: dict | None = None,
+    allowed_changes: dict | None = None,
+    require_no_negative_flips: bool = False,
+    require_identity_locales: Sequence[str] = (),
     pr4_improvement: bool = False,
 ) -> dict:
     base_rows = {row["id"]: row for row in base.get("cases", ())}
@@ -945,9 +1066,11 @@ def compare(
                 }
             )
     identity_mismatches = []
-    if require_identical:
+    if require_identical or require_identity_locales:
         for identifier in sorted(set(base_rows) & set(head_rows)):
             before, after = base_rows[identifier], head_rows[identifier]
+            if require_identity_locales and before.get("locale") not in require_identity_locales:
+                continue
             changed = {
                 field: {"base": before.get(field), "head": after.get(field)}
                 for field in ("first", "offer_signature", "error")
@@ -963,6 +1086,162 @@ def compare(
                 identity_mismatches.append(
                     {"id": identifier, "written": after["written"], "changes": changed}
                 )
+
+    public_fields = (
+        "strict",
+        "presentation",
+        "insensitive",
+        "first",
+        "first_strict",
+        "first_presentation",
+        "error",
+        "offer_signature",
+    )
+    correctness_failures: list[dict] = []
+    allowed_ids: set[str] = set()
+    if allowed_changes is not None:
+        manifest_rows = allowed_changes.get("rows") if isinstance(allowed_changes, dict) else None
+        if not isinstance(manifest_rows, list):
+            correctness_failures.append({"kind": "allowed-changes-schema"})
+            manifest_rows = []
+        by_id = {str(row.get("id")): row for row in manifest_rows if isinstance(row, dict)}
+        if len(by_id) != len(manifest_rows):
+            correctness_failures.append({"kind": "allowed-changes-duplicate-id"})
+        allowed_ids = set(by_id)
+        routed_ids = {
+            identifier
+            for identifier, row in base_rows.items()
+            if row.get("locale") != "en_US"
+            and any(
+                str(edge.get("type", "")).startswith("date:")
+                and set(edge.get("fields", ())) in ({"M", "d"}, {"y", "M", "d"})
+                for edge in row.get("offer_signature", ())
+                if isinstance(edge, Mapping)
+            )
+        }
+        if allowed_ids != routed_ids:
+            correctness_failures.append(
+                {
+                    "kind": "allowed-changes-routing-set",
+                    "missing": sorted(routed_ids - allowed_ids),
+                    "extra": sorted(allowed_ids - routed_ids),
+                }
+            )
+        for identifier in sorted(set(base_rows) | set(head_rows) | allowed_ids):
+            before, after = base_rows.get(identifier), head_rows.get(identifier)
+            if before is None or after is None:
+                continue
+            if identifier in by_id:
+                declared = by_id[identifier]
+                for side, actual in (("base", before), ("head", after)):
+                    expected = declared.get(side)
+                    observed = {field: actual.get(field) for field in public_fields}
+                    if expected != observed:
+                        correctness_failures.append(
+                            {
+                                "kind": "allowed-change-payload",
+                                "id": identifier,
+                                "side": side,
+                                "expected": expected,
+                                "observed": observed,
+                            }
+                        )
+            else:
+                changed = {
+                    field: {"base": before.get(field), "head": after.get(field)}
+                    for field in public_fields
+                    if before.get(field) != after.get(field)
+                }
+                if changed:
+                    correctness_failures.append(
+                        {"kind": "change-outside-manifest", "id": identifier, "changes": changed}
+                    )
+
+    recovery_observations: list[dict] = []
+    recovery_ids: set[str] = set()
+    if expected_recoveries is not None:
+        manifest_rows = (
+            expected_recoveries.get("rows") if isinstance(expected_recoveries, dict) else None
+        )
+        if not isinstance(manifest_rows, list):
+            correctness_failures.append({"kind": "expected-recoveries-schema"})
+            manifest_rows = []
+        seen: set[str] = set()
+        for declared in manifest_rows:
+            identifier = str(declared.get("id"))
+            if identifier in seen:
+                correctness_failures.append(
+                    {"kind": "expected-recoveries-duplicate-id", "id": identifier}
+                )
+                continue
+            seen.add(identifier)
+            recovery_ids.add(identifier)
+            before, after = base_rows.get(identifier), head_rows.get(identifier)
+            observed = {
+                "id": identifier,
+                "base": None if before is None else {field: before.get(field) for field in fields},
+                "head": None if after is None else {field: after.get(field) for field in fields},
+            }
+            recovery_observations.append(observed)
+            if observed["base"] != declared.get("base") or observed["head"] != declared.get("head"):
+                correctness_failures.append(
+                    {
+                        "kind": "expected-recovery-mismatch",
+                        "id": identifier,
+                        "expected": {"base": declared.get("base"), "head": declared.get("head")},
+                        "observed": {"base": observed["base"], "head": observed["head"]},
+                    }
+                )
+        unexpected_positive = []
+        for identifier in sorted(set(base_rows) & set(head_rows) - recovery_ids):
+            before, after = base_rows[identifier], head_rows[identifier]
+            changed = {
+                field: {"base": before[field], "head": after[field]}
+                for field in ("strict", "presentation", "insensitive")
+                if before[field] is False and after[field] is True
+            }
+            if changed:
+                unexpected_positive.append({"id": identifier, "changes": changed})
+        if unexpected_positive:
+            correctness_failures.append(
+                {"kind": "unexpected-positive-flips", "rows": unexpected_positive}
+            )
+        strict_total = sum(
+            not row["base"]["strict"] and row["head"]["strict"]
+            for row in recovery_observations
+            if row["base"] is not None and row["head"] is not None
+        )
+        insensitive_total = sum(
+            not row["base"]["insensitive"] and row["head"]["insensitive"]
+            for row in recovery_observations
+            if row["base"] is not None and row["head"] is not None
+        )
+        for name, observed_total in (
+            ("strict_total", strict_total),
+            ("insensitive_total", insensitive_total),
+        ):
+            declared_total = expected_recoveries.get(name)
+            if observed_total != declared_total:
+                correctness_failures.append(
+                    {
+                        "kind": "expected-recovery-total",
+                        "field": name,
+                        "expected": declared_total,
+                        "observed": observed_total,
+                    }
+                )
+    if require_no_negative_flips and any(row["negative"] for row in flips):
+        correctness_failures.append(
+            {"kind": "negative-flips", "rows": [row for row in flips if row["negative"]]}
+        )
+    base_only = sorted(set(base_rows) - set(head_rows))
+    head_only = sorted(set(head_rows) - set(base_rows))
+    if (allowed_changes is not None or expected_recoveries is not None) and (
+        base_only or head_only
+    ):
+        correctness_failures.append(
+            {"kind": "row-set", "base_only": base_only, "head_only": head_only}
+        )
     budget = GateBudget()
     if pr4_improvement:
         budget = replace(
@@ -1002,21 +1281,28 @@ def compare(
         )
     return {
         "schema": 2,
-        "base_only": sorted(set(base_rows) - set(head_rows)),
-        "head_only": sorted(set(head_rows) - set(base_rows)),
+        "base_only": base_only,
+        "head_only": head_only,
         "flips": flips,
         "negative_flips": [row for row in flips if row["negative"]],
         "identity": {
-            "required": require_identical,
-            "base_only": sorted(set(base_rows) - set(head_rows)),
-            "head_only": sorted(set(head_rows) - set(base_rows)),
+            "required": require_identical or bool(require_identity_locales),
+            "locales": list(require_identity_locales),
+            "base_only": base_only,
+            "head_only": head_only,
             "mismatches": identity_mismatches,
-            "passed": not require_identical
+            "passed": not (require_identical or require_identity_locales)
             or not (
                 set(base_rows) - set(head_rows)
                 or set(head_rows) - set(base_rows)
                 or identity_mismatches
             ),
+        },
+        "correctness": {
+            "allowed_change_ids": sorted(allowed_ids),
+            "recoveries": recovery_observations,
+            "failures": correctness_failures,
+            "passed": not correctness_failures,
         },
         "resources": {
             "profile": "pr4-improvement" if pr4_improvement else "common",
@@ -1054,13 +1340,44 @@ def _workloads(nemo_root: Path, checked_path: Path) -> dict[str, list[str]]:
     return result
 
 
+@cache
+def _date_latency_probes() -> dict[str, dict[str, str]]:
+    document = json.loads(DATE_LATENCY_INPUTS.read_text(encoding="utf-8"))
+    if document.get("schema") != 1 or set(document.get("locales", ())) != set(_ALL_GATE_LOCALES):
+        raise ValueError("date latency manifest must name exactly the eleven gate locales")
+    return document["locales"]
+
+
+def _normalize_date_probe(locale: str) -> tuple[int, dict]:
+    probe = _date_latency_probes()[locale]["probe"]
+    started = time.perf_counter_ns()
+    result = normalize(probe, locale=locale, offsets=True)
+    elapsed = time.perf_counter_ns() - started
+    date_units = [unit for unit in result.units if str(unit.reader or "").startswith("date:")]
+    selected_generated = any(
+        f"date-rule:{locale}" in unit.provenance.split("+") for unit in date_units
+    )
+    events = {"load": 0, "lower": 0, "generate": 0}
+    try:
+        from frend.date_rules import date_rule_events
+    except ImportError:
+        pass
+    else:
+        events = dict(date_rule_events())
+    return elapsed, {
+        "probe": probe,
+        "date_units": len(date_units),
+        "selected_generated": selected_generated,
+        "events": events,
+    }
+
+
 def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path: Path) -> dict:
     _refuse_tracemalloc()
     if kind == "first":
         assert locale is not None
-        started = time.perf_counter_ns()
-        normalize("123", locale=locale)
-        return {"locale": locale, "first_hit_ns": time.perf_counter_ns() - started}
+        elapsed, receipt = _normalize_date_probe(locale)
+        return {"locale": locale, "first_hit_ns": elapsed, "date_probe": receipt}
     if kind == "prewarm":
         try:
             from frend import prewarm
@@ -1078,9 +1395,7 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
     sequential: dict[str, int] = {}
     started_total = time.perf_counter_ns()
     for item in GATE_LOCALES:
-        started = time.perf_counter_ns()
-        normalize("123", locale=item)
-        sequential[item] = time.perf_counter_ns() - started
+        sequential[item], _receipt = _normalize_date_probe(item)
     sequential_total = time.perf_counter_ns() - started_total
     gc.collect()
     loaded = rss_bytes()
@@ -1146,6 +1461,7 @@ def _runtime_once(
     include_prewarm: bool,
 ) -> dict:
     first_hits = {}
+    date_probes = {}
     for locale in GATE_LOCALES:
         payload = _child_command(
             "_runtime-child",
@@ -1160,6 +1476,7 @@ def _runtime_once(
             repo=repo,
         )
         first_hits[locale] = payload["first_hit_ns"]
+        date_probes[locale] = payload["date_probe"]
     combined = _child_command(
         "_runtime-child",
         "--kind",
@@ -1171,6 +1488,7 @@ def _runtime_once(
         repo=repo,
     )
     combined["first_hit_ns"] = first_hits
+    combined["date_probes"] = date_probes
     if include_prewarm:
         prewarm_result = _child_command(
             "_runtime-child",
@@ -1278,10 +1596,22 @@ def runtime_pair(
     return reports
 
 
+def _render_unseen_date(locale: str, value: date) -> str:
+    if locale == "en_US":
+        return f"{value.month:02d}/{value.day:02d}/{value.year:04d}"
+    if locale in {"de_DE", "fr_FR"}:
+        return f"{value.day:02d}.{value.month:02d}.{value.year:04d}"
+    if locale in {"zh_CN", "ja_JP"}:
+        return f"{value.year:04d}/{value.month:02d}/{value.day:02d}"
+    if locale == "ko_KR":
+        return f"{value.year:04d}. {value.month}. {value.day}."
+    return f"{value.day:02d}/{value.month:02d}/{value.year:04d}"
+
+
 def _unseen_inputs(locale: str, pass_index: int, count: int = 2000) -> list[str]:
     locale_index = GATE_LOCALES.index(locale)
-    seed = (locale_index + 1) * 1_000_000_000_000 + pass_index * 100_000_000
-    return [str(seed + index * 7919) for index in range(count)]
+    start = date(2000, 1, 1) + timedelta(days=(locale_index * 3 + pass_index) * count)
+    return [_render_unseen_date(locale, start + timedelta(days=index)) for index in range(count)]
 
 
 def _soak_child() -> dict:
@@ -1289,10 +1619,41 @@ def _soak_child() -> dict:
     for locale in GATE_LOCALES:
         normalize("123", locale=locale)
     rss_passes = []
+    receipts = []
     for pass_index in range(3):
         for locale in GATE_LOCALES:
-            for text in _unseen_inputs(locale, pass_index):
-                normalize(text, locale=locale)
+            inputs = _unseen_inputs(locale, pass_index)
+            detections = 0
+            selected = 0
+            for text in inputs:
+                rows = [
+                    row
+                    for row in detect(text, _reading_detectors(locale))
+                    if str(row.get("type", "")).startswith("date:")
+                    and row["start"] == 0
+                    and row["end"] == len(text)
+                ]
+                detections += bool(rows)
+                result = normalize(text, locale=locale, offsets=True)
+                selected += any(
+                    f"date-rule:{locale}" in unit.provenance.split("+")
+                    for unit in getattr(result, "units", ())
+                )
+            first = date(2000, 1, 1) + timedelta(
+                days=(GATE_LOCALES.index(locale) * 3 + pass_index) * len(inputs)
+            )
+            receipts.append(
+                {
+                    "locale": locale,
+                    "pass": pass_index + 1,
+                    "first_iso": first.isoformat(),
+                    "last_iso": (first + timedelta(days=len(inputs) - 1)).isoformat(),
+                    "count": len(inputs),
+                    "input_shape": _date_latency_probes()[locale]["shape"],
+                    "successful_date_detections": detections,
+                    "selected_generated": selected,
+                }
+            )
         gc.collect()
         rss_passes.append(rss_bytes())
     return {
@@ -1300,6 +1661,7 @@ def _soak_child() -> dict:
         "rss_pass2_bytes": rss_passes[1],
         "rss_pass3_bytes": rss_passes[2],
         "pass3_minus_pass1_bytes": rss_passes[2] - rss_passes[0],
+        "date_receipts": receipts,
     }
 
 
@@ -1472,6 +1834,10 @@ def _parser() -> argparse.ArgumentParser:
     compare_parser.add_argument("--head-fold", type=Path, action="append", default=[])
     compare_parser.add_argument("--out", type=Path)
     compare_parser.add_argument("--require-identical", action="store_true")
+    compare_parser.add_argument("--expected-recoveries", type=Path)
+    compare_parser.add_argument("--allowed-changes", type=Path)
+    compare_parser.add_argument("--require-no-negative-flips", action="store_true")
+    compare_parser.add_argument("--require-identity-locale", action="append", default=[])
     compare_parser.add_argument("--pr4-improvement", action="store_true")
     grep_parser = subparsers.add_parser("fixture-grep")
     grep_parser.add_argument("--nemo-root", type=Path, required=True)
@@ -1529,6 +1895,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             base_folds=[read_optional(path) for path in args.base_fold],
             head_folds=[read_optional(path) for path in args.head_fold],
             require_identical=args.require_identical,
+            expected_recoveries=read_optional(args.expected_recoveries),
+            allowed_changes=read_optional(args.allowed_changes),
+            require_no_negative_flips=args.require_no_negative_flips,
+            require_identity_locales=args.require_identity_locale,
             pr4_improvement=args.pr4_improvement,
         )
         text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
@@ -1539,6 +1909,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         if payload["resources"]["failures"]:
             return 1
         if not payload["identity"]["passed"]:
+            return 1
+        if not payload["correctness"]["passed"]:
             return 1
     elif args.command == "fixture-grep":
         payload = {

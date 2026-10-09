@@ -1,0 +1,473 @@
+{
+  "field_policy": {
+    "day": "cardinal-with-sourced-day-one",
+    "month": "numeric-unit-free",
+    "year": "icu-rbnf-year"
+  },
+  "grammar": {
+    "nonterminals": [
+      {
+        "local_name": "DATE",
+        "namespace": "urn:frend:date:v1:ko_KR"
+      },
+      {
+        "local_name": "Y",
+        "namespace": "urn:frend:date:v1:ko_KR"
+      },
+      {
+        "local_name": "M",
+        "namespace": "urn:frend:date:v1:ko_KR"
+      },
+      {
+        "local_name": "D",
+        "namespace": "urn:frend:date:v1:ko_KR"
+      }
+    ],
+    "rules": [
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "DATE",
+          "namespace": "urn:frend:date:v1:ko_KR"
+        },
+        "provenance": [
+          {
+            "lexical": "cldr:78.3:ko_KR:MMMMd",
+            "name": {
+              "local_name": "source",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "D",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "d",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "월",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "D",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "d",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "일",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "DATE",
+          "namespace": "urn:frend:date:v1:ko_KR"
+        },
+        "provenance": [
+          {
+            "lexical": "cldr:78.3:ko_KR:yMMMMd",
+            "name": {
+              "local_name": "source",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "Y",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "y",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "D",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "d",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "Y",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "y",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "년",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "월",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "D",
+              "namespace": "urn:frend:date:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "d",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "일",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "Y",
+          "namespace": "urn:frend:date:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:Y",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:Y",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "M",
+          "namespace": "urn:frend:date:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:M",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:M",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "D",
+          "namespace": "urn:frend:date:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:D",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:D",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:date:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      }
+    ],
+    "start": {
+      "local_name": "DATE",
+      "namespace": "urn:frend:date:v1:ko_KR"
+    }
+  },
+  "icu_version": "78.3",
+  "locale": "ko_KR",
+  "provenance": {
+    "source": "icu/78.3/cldr-date-patterns"
+  },
+  "schema": 1,
+  "sources": {
+    "Md": {
+      "pattern": "MMMM d일",
+      "skeleton": "MMMMd"
+    },
+    "yMd": {
+      "pattern": "y년 MMMM d일",
+      "skeleton": "yMMMMd"
+    }
+  }
+}

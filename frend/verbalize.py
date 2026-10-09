@@ -1982,6 +1982,29 @@ def _spoken_date(
         return _spoken_date_parts(value, detection, locale)
     if len(fields) != len(value.fields) or not fields or not set(fields) <= {"y", "M", "d"}:
         raise NotImplementedError("v1 date assembly supports unique y/M/d fields only")
+    detected_value = detection.get("value") if isinstance(detection, Mapping) else None
+    if (
+        not locale.startswith("en")
+        and locale
+        in {
+            "es_MX",
+            "es_ES",
+            "fr_FR",
+            "de_DE",
+            "pt_BR",
+            "pt_PT",
+            "it_IT",
+            "zh_CN",
+            "ko_KR",
+            "ja_JP",
+        }
+        and set(fields) in ({"M", "d"}, {"y", "M", "d"})
+        and isinstance(detected_value, DateTimeValue)
+        and detected_value.fields == value.fields
+    ):
+        from frend.date_rules import generate_date_alternatives
+
+        return generate_date_alternatives(value, detection, locale)
     parts: list[tuple[SpokenAlternative, ...]] = []
     if "M" in fields:
         parts.append((_month_name(fields["M"], value.calendar, locale),))

@@ -117,14 +117,19 @@ print(json.dumps(_reading_detectors.cache_info()._asdict()))
 def test_prewarm_loads_each_requested_locale_once(monkeypatch):
     calls = []
 
-    def record(_text, *, locale):
-        calls.append(locale)
+    def record(text, *, locale):
+        calls.append((text, locale))
 
     normalize_module = importlib.import_module("frend.normalize")
     monkeypatch.setattr(normalize_module, "normalize", record)
     loaded = frend.runtime.prewarm(("en-US", "fr_FR", "en_US", "FR-fr"))
     assert loaded == ("en_US", "fr_FR")
-    assert calls == ["en_US", "fr_FR"]
+    assert calls == [
+        ("123", "en_US"),
+        ("March 3, 2020", "en_US"),
+        ("123", "fr_FR"),
+        ("02.03.2003", "fr_FR"),
+    ]
 
 
 def test_prewarm_is_exported():
