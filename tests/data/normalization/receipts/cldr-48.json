@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T00:00:00Z",
+  "license_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "locator": "https://unicode.org/Public/cldr/48/",
+  "revision": "48",
+  "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+  "source": "cldr/48",
+  "transform_command": "fixture extract"
+}

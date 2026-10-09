@@ -1,0 +1,109 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "ru_RU",
+  "versions": {
+    "icu": "78.3",
+    "unicode": "17.0"
+  },
+  "sources": [
+    {
+      "id": "cldr/48",
+      "receipt": "receipts/cldr-48.json"
+    },
+    {
+      "id": "frend/curated",
+      "receipt": "receipts/public-ru-grammar.json"
+    }
+  ],
+  "selectors": [
+    {
+      "id": "ru-count-case",
+      "inputs": [
+        "number",
+        "case"
+      ],
+      "plural_source": "cldr-cardinal",
+      "case_values": [
+        "nominative",
+        "genitive"
+      ],
+      "rbnf_variant_from": "grammatical_gender",
+      "reachable": {
+        "number": [
+          "one",
+          "few",
+          "many",
+          "other"
+        ],
+        "case": [
+          "nominative",
+          "genitive"
+        ]
+      },
+      "mapping": {
+        "one.nominative": "nominative.one",
+        "few.nominative": "nominative.few",
+        "many.nominative": "nominative.many",
+        "other.nominative": "nominative.other",
+        "one.genitive": "genitive.one",
+        "few.genitive": "genitive.few",
+        "many.genitive": "genitive.many",
+        "other.genitive": "genitive.other"
+      },
+      "derived_from": [
+        "cldr/48#grammar"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "RUB",
+      "kind": "currency",
+      "forms": {
+        "nominative.one": "рубль",
+        "nominative.few": "рубля",
+        "nominative.many": "рублей",
+        "nominative.other": "рубля",
+        "genitive.one": "рубля",
+        "genitive.few": "рублей",
+        "genitive.many": "рублей",
+        "genitive.other": "рубля"
+      },
+      "derived_from": [
+        "cldr/48#RUB",
+        "public-ru-grammar#count-nouns"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "currency",
+      "fields": [
+        "number",
+        "currency",
+        "case"
+      ],
+      "select": "ru-count-case",
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "cldr/48#currencyFormats"
+      ]
+    }
+  ],
+  "ancestry": {
+    "cldr/48#grammar": [
+      "e738f3881fd2dfde710a1ee842b93c0680391b1744c414f3324da217d467e529"
+    ],
+    "cldr/48#RUB": [
+      "cldr/48#grammar"
+    ],
+    "cldr/48#currencyFormats": [
+      "e738f3881fd2dfde710a1ee842b93c0680391b1744c414f3324da217d467e529"
+    ],
+    "public-ru-grammar#count-nouns": [
+      "06de57dd0eb5136b40470749fdac9ef5e2361a37b59e7d717566437cf803b2d3"
+    ]
+  }
+}

@@ -31,6 +31,7 @@ __all__ = [
     "SHIPPABLE_SOURCES",
     "SOURCE_LABELS",
     "receipt_refusals",
+    "resolve_receipt",
     "register_receipt",
     "source_id",
     "source_class",
@@ -297,6 +298,26 @@ def _validated_receipt_catalog(
         ):
             catalog[fingerprint] = receipt
     return catalog
+
+
+def resolve_receipt(
+    reference: str,
+    receipt_index: Mapping[str, Mapping[str, object]] | None = None,
+) -> Mapping[str, object] | None:
+    """Resolve a receipt fingerprint or a caller-indexed bundle-relative reference.
+
+    Process registrations are addressed by their canonical fingerprints. Bundle
+    manifests may instead use stable relative receipt paths, whose contents still
+    have to pass the same acquisition-receipt validation.
+    """
+    catalog = {**_RECEIPT_INDEX, **_validated_receipt_catalog(receipt_index)}
+    receipt = catalog.get(reference)
+    if receipt is not None:
+        return receipt
+    receipt = (receipt_index or {}).get(reference)
+    if isinstance(receipt, Mapping) and not receipt_refusals(receipt):
+        return receipt
+    return None
 
 
 def shipping_refusals(
