@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- Require icukit 0.9.1, whose detectors decline candidates ending inside a grapheme
+  cluster instead of refusing the scan. Keycaps now read as their digit, number sign,
+  or asterisk does in the requested locale, without speaking the variation selector or
+  enclosing-keycap mark.
 - Add the public `normalize` speech API: pass plain text and receive its first-choice
   spoken text, or request `NormalizedText` with source/output offsets and per-unit reader
   and provenance metadata. It sentence-breaks documents, preserves boundary coverage,
