@@ -14,12 +14,26 @@ from pathlib import Path
 
 import pytest
 from tiergraph import (
+    AttributeDeclaration,
+    AttributeDomain,
     AttributeValuation,
+    AttributeValue,
+    BipartiteRelationDeclaration,
     BudgetExhausted,
     ChildCombination,
     FoldDeclaration,
     FoldTransition,
+    Graph,
+    Item,
+    ItemRef,
+    NamespaceDeclaration,
+    QualifiedName,
+    RelationInstance,
+    SimpleRelationDeclaration,
+    Tier,
+    TierDeclaration,
     WorkBudget,
+    XsdType,
     dumps,
     loads,
 )
@@ -381,6 +395,143 @@ def test_factor_is_on_reading_item():
         if item.weight.scored:
             assert Decimal(attrs[module._P]) == item.weight.p
             assert int(attrs[module._N]) == item.weight.n
+
+
+def test_builder_graph_has_exact_legacy_shape_and_round_trips(monkeypatch):
+    """The convenience builder must lower to the previous kernel graph exactly."""
+    calls = []
+    real_document = module.build_document
+
+    def document(namespace, *, prefix):
+        calls.append((namespace, prefix))
+        return real_document(namespace, prefix=prefix)
+
+    monkeypatch.setattr(module, "build_document", document)
+    alignment = build_align_graph(
+        choices(
+            "x",
+            [
+                (0, 1, ["one two", ""], prior(".2", n=7)),
+                (0, 1, ["other"], prior(".8", n=11)),
+            ],
+        )
+    )
+
+    def expected_item(
+        durable_id,
+        role,
+        reason,
+        *,
+        log_weight="0.0",
+        token=None,
+        p=None,
+        n=None,
+    ):
+        scored = p is not None
+        attributes = [
+            AttributeValue(module._LOG_WEIGHT, XsdType.DOUBLE, log_weight),
+            AttributeValue(module._COUNT, XsdType.INTEGER, "1"),
+            AttributeValue(module._SCORED, XsdType.BOOLEAN, "true" if scored else "false"),
+            AttributeValue(
+                module._PRIOR_KIND,
+                XsdType.STRING,
+                "scored" if scored else "unscored",
+            ),
+            AttributeValue(module._REASON, XsdType.STRING, reason),
+            AttributeValue(module._ROLE, XsdType.STRING, role),
+        ]
+        if token is not None:
+            attributes.append(AttributeValue(module._TOKEN, XsdType.STRING, token))
+        if p is not None:
+            attributes.append(AttributeValue(module._P, XsdType.DECIMAL, p))
+            if n is not None:
+                attributes.append(AttributeValue(module._N, XsdType.INTEGER, n))
+        return Item(durable_id, tuple(attributes))
+
+    graph_items = (
+        expected_item("B0", "position", "structure"),
+        expected_item("B1", "position", "structure"),
+        expected_item("tok0_1", "token", "passthrough", token="x"),
+        expected_item(
+            "c0",
+            "reading",
+            "measured",
+            log_weight="-1.3862943611198906",
+            p="0.2",
+            n="7",
+        ),
+        expected_item("c0w0", "word", "spoken-form", token="one"),
+        expected_item("c0w1", "word", "spoken-form", token="two"),
+        expected_item("c0x0", "form-exit", "structure"),
+        expected_item("c0x1", "form-exit", "structure"),
+        expected_item("c1", "reading", "measured", p="0.8", n="11"),
+        expected_item("c1w0", "word", "spoken-form", token="other"),
+        expected_item("c1x0", "form-exit", "structure"),
+    )
+    declarations = (
+        (module._LOG_WEIGHT, XsdType.DOUBLE),
+        (module._COUNT, XsdType.INTEGER),
+        (module._SCORED, XsdType.BOOLEAN),
+        (module._PRIOR_KIND, XsdType.STRING),
+        (module._REASON, XsdType.STRING),
+        (module._P, XsdType.DECIMAL),
+        (module._N, XsdType.INTEGER),
+        (module._ROLE, XsdType.STRING),
+        (module._TOKEN, XsdType.STRING),
+    )
+    refs = {
+        durable_id: ItemRef(module._TIER, index)
+        for index, durable_id in enumerate(
+            (
+                "B0",
+                "B1",
+                "tok0_1",
+                "c0",
+                "c0w0",
+                "c0w1",
+                "c0x0",
+                "c0x1",
+                "c1",
+                "c1w0",
+                "c1x0",
+            )
+        )
+    }
+    links = (
+        ("B0", "tok0_1"),
+        ("tok0_1", "B1"),
+        ("B0", "c0"),
+        ("c0", "c0w0"),
+        ("c0w0", "c0w1"),
+        ("c0w1", "c0x0"),
+        ("c0x0", "B1"),
+        ("c0", "c0x1"),
+        ("c0x1", "B1"),
+        ("B0", "c1"),
+        ("c1", "c1w0"),
+        ("c1w0", "c1x0"),
+        ("c1x0", "B1"),
+    )
+    expected = Graph(
+        (NamespaceDeclaration("frend", module.NS),),
+        (Tier(TierDeclaration(module._TIER, "Alignment"), tuple(graph_items)),),
+        (
+            SimpleRelationDeclaration(
+                QualifiedName(module.NS, "membership"), module._TIER, module._TYPE
+            ),
+            BipartiteRelationDeclaration(module._NEXT, module._TYPE, module._TYPE, acyclic=True),
+        ),
+        tuple(RelationInstance(module._NEXT, refs[left], refs[right]) for left, right in links),
+        tuple(
+            AttributeDeclaration(name, AttributeDomain.ITEM, kind) for name, kind in declarations
+        ),
+    )
+
+    assert calls == [(module.NS, "frend")]
+    assert alignment.graph == expected
+    serialized = dumps(alignment.graph)
+    assert loads(serialized) == expected
+    assert dumps(loads(serialized)) == serialized
 
 
 def test_carrier_log_survives_underflowing_p():
