@@ -355,8 +355,8 @@ def _vowels_for(locale: str) -> frozenset[str] | None:
 
 @dataclass(frozen=True)
 class LettersValue:
-    """A run of capitals and what follows it: "", a plural or possessive suffix, or
-    an initial's period."""
+    """A run of capitals and what follows it: "", a plural or possessive suffix, an
+    initial's period, or that period followed by a possessive suffix."""
 
     surface: str
     letters: str
@@ -441,6 +441,32 @@ class LettersDetector:
                         "captures": (
                             Capture("letters", start, middle, text[start:middle], letters, None),
                             Capture("suffix", middle, end, suffix, suffix, None),
+                        ),
+                    }
+                )
+                occupied.append((start, end))
+                continue
+            if chain.group(2):
+                initial = initials[0]
+                start, letter_end, period_end, end = (
+                    initial.start(),
+                    initial.end(1),
+                    initial.end(),
+                    chain.end(),
+                )
+                letter = initial.group(1)
+                suffix = chain.group(2)
+                detections.append(
+                    {
+                        "text": text[start:end],
+                        "start": start,
+                        "end": end,
+                        "type": "letters:initial",
+                        "value": LettersValue(text[start:end], letter, f".{suffix}"),
+                        "captures": (
+                            Capture("letters", start, letter_end, letter, letter, None),
+                            Capture("period", letter_end, period_end, ".", ".", None),
+                            Capture("suffix", period_end, end, suffix, suffix, None),
                         ),
                     }
                 )
