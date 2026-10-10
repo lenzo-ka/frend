@@ -32,6 +32,30 @@ def test_normalize_returns_a_string_by_default():
 
 
 @pytest.mark.parametrize(
+    ("canonical", "aliases", "localized_reading"),
+    [
+        ("en_US", ("en-US", "EN_us"), " one hundred twenty-three "),
+        ("es_MX", ("es-mx", "ES_mx"), " ciento veintitrés "),
+        ("es_ES", ("es-es", "ES_es"), " ciento veintitrés "),
+        ("fr_FR", ("fr-fr", "FR_fr"), " cent vingt-trois "),
+        ("de_DE", ("de-de", "DE_de"), " einhundertdreiundzwanzig "),
+        ("pt_BR", ("pt-br", "PT_br"), " cento e vinte e três "),
+        ("it_IT", ("it-it", "IT_it"), " centoventitré "),
+        ("zh_CN", ("zh-cn", "ZH_cn"), " 一百二十三 "),
+        ("ko_KR", ("ko-kr", "KO_kr"), " 백이십삼 "),
+        ("ja_JP", ("ja-jp", "JA_jp"), " 百二十三 "),
+        ("pt_PT", ("pt-pt", "PT_pt"), " cento e vinte e três "),
+    ],
+)
+def test_normalize_locale_aliases_are_byte_identical(canonical, aliases, localized_reading):
+    expected = frend.normalize("123", locale=canonical)
+    assert expected == localized_reading
+
+    for alias in aliases:
+        assert frend.normalize("123", locale=alias) == expected, alias
+
+
+@pytest.mark.parametrize(
     ("written", "spoken"),
     [
         ("Chapter I", "one"),
