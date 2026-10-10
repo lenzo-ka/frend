@@ -56,6 +56,7 @@ from typing import Any, Literal
 import icu
 from icukit.detectors import Capture, DateTimeValue, DetectorSet, NumberValue
 
+from frend.abbreviation_variants import abbreviation_expansions
 from frend.durations import fractional_duration_shape
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
 
@@ -961,8 +962,21 @@ def _month_numbers(locale: str) -> Mapping[str, int]:
     return MappingProxyType(names)
 
 
+def _month_number(text: str, locale: str) -> int | None:
+    """A CLDR month name, or an existing lexicon abbreviation for one."""
+    months = _month_numbers(locale)
+    month = months.get(text.casefold())
+    if month is not None:
+        return month
+    for expansion in abbreviation_expansions(text, locale):
+        month = months.get(str(getattr(expansion, "text", "")).casefold())
+        if month is not None:
+            return month
+    return None
+
+
 def _month_detection(text: str, locale: str) -> Mapping | None:
-    month = _month_numbers(locale).get(text.casefold())
+    month = _month_number(text, locale)
     if month is None:
         return None
     return {
@@ -1176,9 +1190,8 @@ class RangeDetector:
         window = text[max(0, left_edge - _END_REACH) : left_edge]
         if not any(char.isalpha() or char in "'’" for char in window):
             return None
-        month_names = _month_numbers(self.locale)
         words = re.findall(r"[^\W\d_]+\.?", window, re.UNICODE)
-        plausible_month = any(word.casefold() in month_names for word in words)
+        plausible_month = any(_month_number(word, self.locale) is not None for word in words)
         plausible_elision = re.search(r"['’][0-9]{2}\s*$", window) is not None
         if not plausible_month and not plausible_elision:
             return None

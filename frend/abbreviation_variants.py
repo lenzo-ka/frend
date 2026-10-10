@@ -60,6 +60,7 @@ __all__ = [
     "SPELLED_SOURCE",
     "VARIANT_TYPE",
     "AbbreviationVariantDetector",
+    "abbreviation_expansions",
     "abbreviation_priors",
     "abbreviation_weights",
     "category",
@@ -247,6 +248,19 @@ def chain_expansions(written: str, locale: str = "en_US") -> tuple[object, ...]:
     locale = canonical_locale(locale)
     source = _chains(locale).get(_lower(written, locale))
     return () if source is None else _expansions(_lexicon(locale)[source])
+
+
+@lru_cache(maxsize=LOCALE_CACHE * 16)
+def abbreviation_expansions(written: str, locale: str = "en_US") -> tuple[object, ...]:
+    """The lexicon expansions of ``written``, including a derived written variant.
+
+    Thus both a lexicon surface (``"Sept."``) and the period-less variant frend derives
+    from it (``"Sept"``) return the same ``"September"`` month expansion.
+    """
+    locale = canonical_locale(locale)
+    entries = _lexicon(locale)
+    source = written if written in entries else variant_surfaces(entries, locale).get(written)
+    return () if source is None else _expansions(entries[source])
 
 
 def _expansions(entry) -> tuple[object, ...]:

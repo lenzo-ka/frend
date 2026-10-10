@@ -667,6 +667,23 @@ def test_month_and_date_hyphens_are_ranges():
     assert _readings("June 26-July 3", 1)[0][0] == "june twenty sixth to july third"
 
 
+@pytest.mark.parametrize("separator", ["-", "–"])
+def test_period_bearing_month_abbreviations_are_date_ranges(separator):
+    periodless = _readings(f"Dec 31{separator}Jan 2", 1)
+
+    assert (
+        _readings(f"Dec. 31{separator}Jan. 2", 1)
+        == periodless
+        == [("december thirty first to january second", "range:date+to+date")]
+    )
+    assert _readings(f"Sept. 3{separator}5", 1) == [
+        ("september third to fifth", "range:date+to+date")
+    ]
+    assert _readings(f"Sept.{separator}Oct. 2024", 1) == [
+        ("september to october twenty twenty four", "range:date+to+date")
+    ]
+
+
 def test_elided_years_and_their_ranges_are_read():
     assert _readings("'94", 1)[0][0] == "ninety four"
     assert _readings("’94", 1)[0][0] == "ninety four"
