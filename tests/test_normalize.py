@@ -44,6 +44,16 @@ def test_period_ending_abbreviation_preserves_following_punctuation(
     assert result.removesuffix(punctuation).rstrip() == expected_reading
 
 
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+@pytest.mark.parametrize("punctuation", [",", ".", "!", "?", ":", ";"])
+def test_plural_possessive_apostrophe_is_silent_and_keeps_following_punctuation(
+    apostrophe, punctuation
+):
+    result = frend.normalize(f"teachers{apostrophe}{punctuation}").rstrip()
+
+    assert result == f"teachers'{punctuation}"
+
+
 @pytest.mark.parametrize(
     ("locale", "digit", "day", "year"),
     [
