@@ -395,6 +395,25 @@ def test_prime_measures_remain_unambiguous(locale, foot, inch, mixed):
 
 
 @pytest.mark.parametrize(
+    ("source", "spoken"),
+    [
+        ("1 ft", " one foot "),
+        ("2 lbs", " two pounds "),
+        ("60 mph", " sixty miles per hour "),
+        ("100 sq ft", " one hundred square feet "),
+        ("60 km/h", " sixty kilometers per hour "),
+        ("2 mi²", " two square miles "),
+        ("1 lb", " one pound "),
+        ("1 mph", " one mile per hour "),
+        ("1 sq ft", " one square foot "),
+        ("1 mi²", " one square mile "),
+    ],
+)
+def test_public_normalize_reads_common_english_unit_abbreviations(source, spoken):
+    assert frend.normalize(source) == spoken
+
+
+@pytest.mark.parametrize(
     ("source", "reader", "spoken"),
     [
         ("1 sq yd", "measure:square-yard", " one square yard "),
