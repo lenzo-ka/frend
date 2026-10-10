@@ -113,9 +113,12 @@ remain active.
 By default, public recognition applies the declared `fold="typographic"` input fold:
 curly single and double quotes become their ASCII forms; NBSP, figure space, thin space
 and narrow NBSP become a space; and Unicode hyphen, non-breaking hyphen and minus become
-hyphen-minus. Every replacement is one code point, so aligned source spans still slice
-the raw input directly. U+2013 EN DASH is not folded: the installed icukit accepts ICU's
-en dash in generated date intervals but not an ASCII hyphen in the same patterns.
+hyphen-minus. Fullwidth digits U+FF10–U+FF19 become ASCII digits `0`–`9`; fullwidth
+decimal/grouping punctuation between digits and signs beside digits become their ASCII
+forms, as do recognized fullwidth Latin measure symbols directly after a number. Every
+replacement is one code point, so aligned source spans still slice the raw input directly.
+U+2013 EN DASH is not folded: the installed icukit accepts ICU's en dash in generated date
+intervals but not an ASCII hyphen in the same patterns.
 `NormalizedText.fold` and `ReadingLattice.fold` declare the applied fold; their lattice
 also retains `raw_source_text`. Pass `fold=None` to disable it. Plain-string `normalize`
 output has no metadata, so request `offsets=True` when fold provenance is required. The
