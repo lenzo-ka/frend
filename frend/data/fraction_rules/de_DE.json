@@ -1,7 +1,7 @@
 {
   "icu_version": "78.3",
   "locale": "de_DE",
-  "normalization_sha256": "7d26ed55fc98fa07ec124706e236691bc05ea1b833ca0e0656a6c596e6ea28fc",
+  "normalization_sha256": "6956917ba7e88cebd8586447e8284f37fccf34df2cde875afcbbafde71264aee",
   "provenance": {
     "source": "frend/curated"
   },
@@ -80,6 +80,17 @@
       "id": "denominator-2-plural",
       "kind": "fraction-denominator",
       "number": "other"
+    },
+    {
+      "derived_from": [
+        "duden/online#de-halb"
+      ],
+      "forms": {
+        "compound": "einhalb",
+        "default": "ein halb"
+      },
+      "id": "fraction-one-half",
+      "kind": "fraction-reading"
     }
   ],
   "schema": 2

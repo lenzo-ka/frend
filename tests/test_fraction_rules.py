@@ -165,6 +165,15 @@ def test_source_review_speech_corrections(locale, written, spoken):
     assert normalize(written, locale=locale) == f" {spoken} "
 
 
+def test_german_one_half_is_adjectival_with_compound_alternative():
+    alternatives = generate_fraction_alternatives(_fraction_detection("de_DE", "1/2"), "de_DE")
+
+    assert alternatives[0].text == "ein halb"
+    assert "einhalb" in {item.text for item in alternatives}
+    assert normalize("3/5", locale="de_DE") == " drei Fünftel "
+    assert normalize("1/101", locale="de_DE") == " ein Hunderteintel "
+
+
 def test_italian_cardinal_denominator_forms_are_general_lower_ranked_alternatives():
     one_431 = generate_fraction_alternatives(_fraction_detection("it_IT", "1/431"), "it_IT")
     three_432 = generate_fraction_alternatives(_fraction_detection("it_IT", "3/432"), "it_IT")

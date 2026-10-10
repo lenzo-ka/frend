@@ -640,10 +640,18 @@ def generate_fraction_alternatives(
     fields = [("SIGN", _sign_realizations(negative, bundle.locale))]
     if whole is not None:
         fields.append(("WHOLE", _cardinal_realizations(whole, bundle.locale, masculine_one=True)))
+    denominator_realizations = (
+        _record_realizations(bundle.records["fraction-one-half"])
+        if whole is None
+        and numerator == 1
+        and denominator == 2
+        and "fraction-one-half" in bundle.records
+        else _denominator_realizations(int(denominator), int(numerator), bundle)
+    )
     fields.extend(
         (
             ("NUM", _cardinal_realizations(numerator, bundle.locale, masculine_one=True)),
-            ("DEN", _denominator_realizations(int(denominator), int(numerator), bundle)),
+            ("DEN", denominator_realizations),
         )
     )
     generated = _generate(
@@ -652,6 +660,12 @@ def generate_fraction_alternatives(
         _grammar_input(fields),
         max_derivations=max_derivations,
         omit_numerator=(
+            whole is None
+            and numerator == 1
+            and denominator == 2
+            and "fraction-one-half" in bundle.records
+        )
+        or (
             whole is not None
             and numerator == 1
             and denominator == 2
@@ -664,7 +678,16 @@ def generate_fraction_alternatives(
         previous = _spoken_fraction(detection, bundle.locale)
     except NotImplementedError:
         previous = ()
-    return _preserve_unchanged_ranking(generated, previous)
+    ranked = _preserve_unchanged_ranking(generated, previous)
+    if (
+        bundle.locale == "de_DE"
+        and whole is None
+        and numerator == 1
+        and denominator == 2
+        and "fraction-one-half" in bundle.records
+    ):
+        return tuple(sorted(ranked, key=lambda item: item.text != "ein halb"))
+    return ranked
 
 
 def generate_percent_alternatives(

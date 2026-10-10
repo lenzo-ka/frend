@@ -16,7 +16,8 @@
   "resources": [
     {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "german-cardinal-tel"}, "derived_from": ["serlo/fractions#de-denominators", "rechtschreibrat/amtliches-regelwerk-2018#de-fraction-capitalization"]},
     {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "neuter", "forms": {"default": "Halb"}, "derived_from": ["duden/online#de-halb"]},
-    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "neuter", "forms": {"default": "Halbe"}, "derived_from": ["serlo/fractions#de-halbe"]}
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "neuter", "forms": {"default": "Halbe"}, "derived_from": ["serlo/fractions#de-halbe"]},
+    {"id": "fraction-one-half", "kind": "fraction-reading", "forms": {"default": "ein halb", "compound": "einhalb"}, "derived_from": ["duden/online#de-halb"]}
   ],
   "rules": [
     {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["german-grammar/fractions#de-fraction-frame"]},
