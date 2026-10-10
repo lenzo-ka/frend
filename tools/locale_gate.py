@@ -37,6 +37,7 @@ from frend import apply_input_fold, compose_choices, normalize, resolve_choices
 from frend.lattice import ChoiceGraph
 from frend.locale_data import canonical_locale
 from frend.normalize import _append_alternative_part, _reading_detectors
+from frend.spacing import unit_gap
 
 REPO = Path(__file__).resolve().parents[1]
 CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
@@ -354,6 +355,77 @@ def offers(graph: ChoiceGraph, wanted: str, *, form: Callable[[str], str]) -> bo
     return any(
         canonical == target
         for canonical, _previous_text, _previous_surface in states[graph.lattice.text_length]
+    )
+
+
+def _source_record_offers(
+    row: Mapping[str, Any],
+    wanted: str,
+    source_record_id: str,
+    *,
+    form: Callable[[str], str],
+) -> bool:
+    """Return whether a complete serialized route offers ``wanted`` through the source.
+
+    A recovery target can be composed from several edges, so requiring one edge to emit
+    the complete fixture target rejects real sourced routes in surrounding text and in
+    mixed fractions. This repeats :func:`offers` over the byte-complete public offer
+    signature, while retaining whether the selected route actually traversed the
+    declared normalization record. An unrelated sourced alternative elsewhere in the
+    graph therefore cannot witness the route.
+    """
+    written = row.get("written")
+    signature = row.get("offer_signature")
+    if not isinstance(written, str) or not isinstance(signature, list):
+        return False
+    text_length = len(apply_input_fold(written, "typographic"))
+    source_marker = f"normalization-record:{source_record_id}"
+    target = form(wanted)
+    outgoing: dict[int, list[Mapping[str, Any]]] = defaultdict(list)
+    for edge in signature:
+        if not isinstance(edge, Mapping):
+            continue
+        start, end = edge.get("start"), edge.get("end")
+        if not isinstance(start, int) or not isinstance(end, int):
+            continue
+        outgoing[start].append(edge)
+    states: dict[
+        int,
+        dict[tuple[str, str | None, bool | None, bool], str],
+    ] = defaultdict(dict)
+    states[0][("", None, None, False)] = ""
+    for position in range(text_length + 1):
+        for (
+            _canonical,
+            previous_text,
+            _previous_surface,
+            carried_source,
+        ), rendered in tuple(states.get(position, {}).items()):
+            for edge in outgoing.get(position, ()):
+                end = edge.get("end")
+                for alternative in edge.get("alternatives", ()):
+                    if not isinstance(alternative, Mapping):
+                        continue
+                    text = alternative.get("text")
+                    provenance = alternative.get("provenance")
+                    if not isinstance(text, str) or not isinstance(provenance, str):
+                        continue
+                    surface = provenance == "surface:passthrough"
+                    part = text if surface else f" {text} "
+                    prefix = rendered
+                    if previous_text is not None and not unit_gap(previous_text, text):
+                        prefix = prefix.rstrip(" ")
+                        part = part.lstrip(" ")
+                    value = prefix + part
+                    canonical = form(value)
+                    if not target.startswith(canonical):
+                        continue
+                    has_source = carried_source or source_marker in provenance.split("+")
+                    key = (canonical, text, surface, has_source)
+                    states[end].setdefault(key, value)
+    return any(
+        canonical == target and carried_source
+        for canonical, _previous_text, _previous_surface, carried_source in states[text_length]
     )
 
 
@@ -1425,22 +1497,31 @@ def compare(
                     }
                 )
             source_record_id = declared.get("source_record_id")
-            source_marker = f"normalization-record:{source_record_id}"
-            alternatives = (
-                ()
-                if after is None
-                else tuple(
-                    alternative
-                    for edge in after.get("offer_signature", ())
-                    if isinstance(edge, Mapping)
-                    for alternative in edge.get("alternatives", ())
-                    if isinstance(alternative, Mapping)
+            recovered_forms = (
+                form
+                for name, form in (
+                    ("strict", strict_form),
+                    ("presentation", presentation_form),
+                    ("insensitive", insensitive_form),
                 )
+                if before is not None
+                and after is not None
+                and before.get(name) is False
+                and after.get(name) is True
             )
-            if not isinstance(source_record_id, str) or not any(
-                alternative.get("text") == expected_speech
-                and source_marker in str(alternative.get("provenance", "")).split("+")
-                for alternative in alternatives
+            if (
+                not isinstance(source_record_id, str)
+                or not isinstance(expected_speech, str)
+                or after is None
+                or not any(
+                    _source_record_offers(
+                        after,
+                        expected_speech,
+                        source_record_id,
+                        form=form,
+                    )
+                    for form in recovered_forms
+                )
             ):
                 correctness_failures.append(
                     {

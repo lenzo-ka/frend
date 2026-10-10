@@ -710,6 +710,8 @@ def test_fraction_recovery_gate_rejects_removed_expected_positive():
             },
             "offer_signature": [
                 {
+                    "start": 0,
+                    "end": 3,
                     "alternatives": [
                         {
                             "text": "trois septièmes",
@@ -718,7 +720,7 @@ def test_fraction_recovery_gate_rejects_removed_expected_positive():
                                 "normalization-record:frend/curated#fr-fractions"
                             ),
                         }
-                    ]
+                    ],
                 }
             ],
         }
@@ -784,6 +786,8 @@ def test_fraction_recovery_gate_validates_witness_metadata(field, replacement, f
         "target_hits": {name: [True] for name in ("strict", "presentation", "insensitive")},
         "offer_signature": [
             {
+                "start": 0,
+                "end": 3,
                 "alternatives": [
                     {
                         "text": "trois septièmes",
@@ -791,7 +795,7 @@ def test_fraction_recovery_gate_validates_witness_metadata(field, replacement, f
                             "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
                         ),
                     }
-                ]
+                ],
             }
         ],
     }
@@ -842,6 +846,8 @@ def test_fraction_recovery_source_must_offer_the_declared_speech():
         "target_hits": {name: [True] for name in ("strict", "presentation", "insensitive")},
         "offer_signature": [
             {
+                "start": 0,
+                "end": 3,
                 "alternatives": [
                     {"text": "trois septièmes", "provenance": "unrelated"},
                     {
@@ -850,7 +856,7 @@ def test_fraction_recovery_source_must_offer_the_declared_speech():
                             "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
                         ),
                     },
-                ]
+                ],
             }
         ],
     }
@@ -878,6 +884,69 @@ def test_fraction_recovery_source_must_offer_the_declared_speech():
     assert "expected-recovery-source-record" in {
         item["kind"] for item in result["correctness"]["failures"]
     }
+
+
+def test_fraction_recovery_source_can_be_one_edge_of_the_complete_target_route():
+    row = {
+        "written": "x3/7y",
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 1,
+                "alternatives": [{"text": "x", "provenance": "surface:passthrough"}],
+            },
+            {
+                "start": 1,
+                "end": 4,
+                "alternatives": [
+                    {
+                        "text": "trois septièmes",
+                        "provenance": (
+                            "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
+                        ),
+                    }
+                ],
+            },
+            {
+                "start": 4,
+                "end": 5,
+                "alternatives": [{"text": "y", "provenance": "surface:passthrough"}],
+            },
+        ],
+    }
+    assert gate._source_record_offers(
+        row,
+        "x trois septièmes y",
+        "frend/curated#fr-fractions",
+        form=gate.strict_form,
+    )
+
+
+def test_fraction_recovery_source_must_be_on_the_matching_complete_route():
+    row = {
+        "written": "3/7",
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 3,
+                "alternatives": [
+                    {"text": "trois septièmes", "provenance": "unrelated"},
+                    {
+                        "text": "une autre lecture",
+                        "provenance": (
+                            "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
+                        ),
+                    },
+                ],
+            }
+        ],
+    }
+    assert not gate._source_record_offers(
+        row,
+        "trois septièmes",
+        "frend/curated#fr-fractions",
+        form=gate.strict_form,
+    )
 
 
 def test_fraction_recovery_gate_validates_witness_hash():
