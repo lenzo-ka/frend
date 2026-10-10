@@ -440,6 +440,17 @@ def _dotted_acronym_suffix_spans(text: str) -> tuple[tuple[int, int], ...]:
     )
 
 
+def _dotted_plural_acronym_period_spans(text: str) -> frozenset[tuple[int, int]]:
+    """Full spans where a terminal period follows a dotted acronym's plural ``s``."""
+    return frozenset(
+        (chain.start(), chain.end() + 1)
+        for chain, initials, _letters in _initial_chains(text)
+        if chain.group(2) == "s"
+        and len(initials) >= 2
+        and text[chain.end() : chain.end() + 1] == "."
+    )
+
+
 def _capital_script_runs(letters: str) -> tuple[tuple[int, int, int], ...]:
     """Return maximal same-script spans within a capital sequence.
 

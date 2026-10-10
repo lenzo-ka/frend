@@ -44,6 +44,20 @@ def test_period_ending_abbreviation_preserves_following_punctuation(
     assert result.removesuffix(punctuation).rstrip() == expected_reading
 
 
+@pytest.mark.parametrize("acronym", ["F.B.I.s", "P.C.s"])
+def test_sentence_period_preserves_a_dotted_acronyms_plural_reading(acronym):
+    expected_reading = frend.normalize(acronym).rstrip()
+
+    for punctuation in [",", "!", "?", "."]:
+        assert frend.normalize(f"{acronym}{punctuation}").rstrip() == (
+            f"{expected_reading} {punctuation}"
+        )
+
+
+def test_genuine_dotted_lexicon_abbreviation_retains_precedence():
+    assert frend.normalize("Ph.D.") == " Doctor of Philosophy "
+
+
 @pytest.mark.parametrize("separator", ["-", "–"])
 def test_period_bearing_month_abbreviations_normalize_like_periodless_twins(separator):
     periodless = frend.normalize(f"Dec 31{separator}Jan 2")
