@@ -318,6 +318,19 @@ def _joined_unit_texts(units: tuple[VerbalizedUnit, ...]) -> list[str]:
     return parts
 
 
+def _is_paired_quote_measure(text: str, detection: dict) -> bool:
+    """Reject an ASCII quote as a unit when the same quote opens the number."""
+    start = int(detection["start"])
+    end = int(detection["end"])
+    quote = {"measure:foot": "'", "measure:inch": '"'}.get(detection.get("type"))
+    return (
+        quote is not None
+        and start > 0
+        and text[start - 1] == quote
+        and text[end - 1 : end] == quote
+    )
+
+
 def _sentence(
     text: str,
     *,
@@ -339,11 +352,14 @@ def _sentence(
     detections = [
         detection
         for detection in detections
-        if detection.get("type") != "symbol:run"
-        or not _symbol_overlaps(
-            symbol_code_ranges,
-            source_offset + int(detection["start"]),
-            source_offset + int(detection["end"]),
+        if not _is_paired_quote_measure(text, detection)
+        and (
+            detection.get("type") != "symbol:run"
+            or not _symbol_overlaps(
+                symbol_code_ranges,
+                source_offset + int(detection["start"]),
+                source_offset + int(detection["end"]),
+            )
         )
     ]
     lattice = _resolve_lattice_validated(

@@ -201,6 +201,74 @@ def test_typographic_fold_has_the_declared_one_code_point_mapping(source, expect
 
 
 @pytest.mark.parametrize(
+    ("locale", "one_kilogram"),
+    [
+        ("en_US", " one kilogram "),
+        ("ja_JP", " 一 キログラム "),
+        ("zh_CN", " 一千克 "),
+    ],
+)
+def test_fullwidth_decimal_digits_fold_to_ascii_numbers_and_measures(locale, one_kilogram):
+    ascii_digits = "0123456789"
+    fullwidth_digits = "０１２３４５６７８９"
+
+    assert frend.apply_input_fold(fullwidth_digits) == ascii_digits
+    assert frend.apply_input_fold(fullwidth_digits, fold=None) == fullwidth_digits
+    assert frend.normalize(fullwidth_digits, locale=locale, fold=None) == fullwidth_digits
+    assert frend.normalize(fullwidth_digits, locale=locale) == frend.normalize(
+        ascii_digits, locale=locale, fold=None
+    )
+    assert frend.normalize(fullwidth_digits + "kg", locale=locale) == frend.normalize(
+        ascii_digits + "kg", locale=locale, fold=None
+    )
+
+    measure = frend.normalize("１kg", locale=locale, offsets=True)
+    assert isinstance(measure, NormalizedText)
+    assert measure.text == one_kilogram
+    assert [unit.reader for unit in measure.units] == ["measure:kilogram"]
+    assert [unit.source_span for unit in measure.units] == [(0, 3)]
+
+    for ascii_digit, fullwidth_digit in zip(ascii_digits, fullwidth_digits, strict=True):
+        result = frend.normalize(fullwidth_digit, locale=locale, offsets=True)
+        assert isinstance(result, NormalizedText)
+        assert result.text == frend.normalize(ascii_digit, locale=locale, fold=None)
+        assert [unit.source_span for unit in result.units] == [(0, 1)]
+        assert fullwidth_digit[slice(*result.units[0].source_span)] == fullwidth_digit
+
+
+@pytest.mark.parametrize("locale", ["en_US", "ja_JP", "zh_CN"])
+@pytest.mark.parametrize(
+    ("fullwidth", "ascii_twin"),
+    [
+        ("３．５km", "3.5km"),
+        ("５０％", "50%"),
+        ("１，２３４", "1,234"),
+        ("３．５ｋｍ", "3.5km"),
+    ],
+)
+def test_fullwidth_number_punctuation_and_units_read_as_ascii_twins(locale, fullwidth, ascii_twin):
+    assert frend.normalize(fullwidth, locale=locale) == frend.normalize(
+        ascii_twin, locale=locale, fold=None
+    )
+
+
+def test_fullwidth_number_punctuation_is_contextual_and_length_preserving():
+    source = "＋５ ５－６ ５％ ３．５ １，２３４ ３．５ｋｍ"
+    expected = "+5 5-6 5% 3.5 1,234 3.5km"
+    assert frend.apply_input_fold(source) == expected
+    assert len(source) == len(expected)
+
+    result = frend.normalize(source, offsets=True)
+    assert isinstance(result, NormalizedText)
+    _assert_alignment_tiles(source, result)
+
+
+def test_fullwidth_cjk_punctuation_and_non_unit_letters_stay_fullwidth():
+    source = "語，語。 語．語 １Ａ"
+    assert frend.apply_input_fold(source) == source.replace("１", "1")
+
+
+@pytest.mark.parametrize(
     ("typographic", "ascii_twin"),
     [
         ("’94", "'94"),
@@ -213,6 +281,31 @@ def test_typographic_fold_has_the_declared_one_code_point_mapping(source, expect
 )
 def test_typographic_examples_read_as_their_folded_twins(typographic, ascii_twin):
     assert frend.normalize(typographic) == frend.normalize(ascii_twin, fold=None)
+
+
+@pytest.mark.parametrize(
+    ("source", "quote"),
+    [('"1"', '"'), ("'1'", "'"), ("“1”", '"'), ("‘1’", "'")],
+)
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+def test_paired_quotes_around_integer_remain_quotes(source, quote, locale):
+    assert frend.normalize(source, locale=locale) == (
+        quote + frend.normalize("1", locale=locale) + quote
+    )
+
+
+@pytest.mark.parametrize(
+    ("locale", "foot", "inch", "mixed"),
+    [
+        ("en_US", " one foot ", " one inch ", " five feet, two inches "),
+        ("fr_FR", " un\u00a0pied ", " un\u00a0pouce ", " cinq pieds et deux\u00a0pouces "),
+        ("ja_JP", " 一 フィート ", " 一 インチ ", " 五 フィート 二 インチ "),
+    ],
+)
+def test_prime_measures_remain_unambiguous(locale, foot, inch, mixed):
+    assert frend.normalize("1′", locale=locale) == foot
+    assert frend.normalize("1″", locale=locale) == inch
+    assert frend.normalize("5′2″", locale=locale) == mixed
 
 
 def test_project_authored_typographic_sentences_have_exact_outputs():
