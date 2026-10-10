@@ -54,6 +54,7 @@ from tiergraph import (
 from tiergraph.build import document, item
 from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
+from frend.context import is_roman_title_context
 from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.shape import shape
@@ -62,6 +63,7 @@ from frend.type_priors import (
     BlendedPrior,
     CorpusPrior,
     FeatureSource,
+    ReadingFeature,
     ReadingPrior,
     ResolveContext,
 )
@@ -850,6 +852,34 @@ def _merged_covers(
     return found
 
 
+@dataclass(frozen=True)
+class _RomanTitleCue:
+    """Support the Roman detection after a fixed, unambiguous English title cue."""
+
+    locale: str
+
+    def features(self, detection: Detection, context: ResolveContext) -> tuple[ReadingFeature, ...]:
+        if (
+            context.source_text is None
+            or detection.get("type") != "number:cardinal:roman"
+            or not is_roman_title_context(
+                context.source_text,
+                int(detection["start"]),
+                int(detection["end"]),
+                locale=self.locale,
+            )
+        ):
+            return ()
+        return (
+            ReadingFeature(
+                name="roman_title_context",
+                contribution=Decimal(1),
+                detail="Roman numeral follows an unambiguous title cue",
+                n=None,
+            ),
+        )
+
+
 def _validated_sources(
     canonical: str, sources: tuple[FeatureSource, ...]
 ) -> tuple[FeatureSource, ...]:
@@ -866,7 +896,7 @@ def _validated_sources(
 @lru_cache(maxsize=LOCALE_CACHE)
 def _default_sources(locale: str) -> tuple[FeatureSource, ...]:
     """Load and validate the immutable runtime tables once for one canonical locale."""
-    return _validated_sources(locale, (BlendedPrior(locale=locale),))
+    return _validated_sources(locale, (BlendedPrior(locale=locale), _RomanTitleCue(locale)))
 
 
 def _resolve_sources(
@@ -877,20 +907,21 @@ def _resolve_sources(
 ) -> tuple[FeatureSource, ...]:
     """Default to the measured-first, ICU-backfilled runtime prior."""
     canonical = canonical_locale(locale)
-    if feature_sources is None and class_prior is None and class_prior_source is None:
-        return _default_sources(canonical)
-    sources = (
-        (
-            BlendedPrior(
-                locale=canonical,
-                class_prior=class_prior,
-                class_prior_source=class_prior_source,
+    if feature_sources is None:
+        if class_prior is None and class_prior_source is None:
+            return _default_sources(canonical)
+        return _validated_sources(
+            canonical,
+            (
+                BlendedPrior(
+                    locale=canonical,
+                    class_prior=class_prior,
+                    class_prior_source=class_prior_source,
+                ),
+                _RomanTitleCue(canonical),
             ),
         )
-        if feature_sources is None
-        else tuple(feature_sources)
-    )
-    return _validated_sources(canonical, sources)
+    return _validated_sources(canonical, tuple(feature_sources))
 
 
 def _corpus_source(sources: Sequence[FeatureSource]) -> CorpusPrior | BlendedPrior | None:
@@ -912,9 +943,9 @@ def _feature_support(
     is True when at least one feature was emitted. Non-finite contributions are
     rejected at this boundary rather than left to corrupt the ordering (no
     ``-Infinity``, no fabrication). The summed contribution is the additive seam
-    for Layer-3 cues and is *not* used for the Layer-2 per-span decision, which
-    ranks on exact empirical probability (see :func:`_rank_span_readings`); it is
-    returned only so the finiteness gate has one place."""
+    for Layer-3 cues. A positive cue can override the Layer-2 empirical prior; a
+    corpus feature's log probability is non-positive and remains governed by its
+    exact :class:`ReadingPrior`."""
     supported = False
     contribution_sum = Decimal(0)
     for source in sources:
@@ -969,9 +1000,21 @@ def _rank_span_readings(
     for det in readings:
         feature_supported, contribution_sum = _feature_support(det, sources, context)
         prior = corpus.reading_prior(det) if corpus is not None else None
-        if prior is not None and prior.tier == "measured" and prior.p is not None:
+        if feature_supported and contribution_sum > 0:
+            # Positive rule evidence is contextual and therefore more specific than
+            # the surface-only corpus prior. Add any measured probability so a cue
+            # remains strictly above the full [0, 1] empirical range.
+            supported = True
+            strength = contribution_sum + (
+                prior.p if prior is not None and prior.p is not None else Decimal(0)
+            )
+        elif prior is not None and prior.tier == "measured" and prior.p is not None:
             # Exact empirical probability drives the per-span decision; no float.
             supported, strength = True, prior.p
+        elif feature_supported:
+            # A rule cue is evidence even when the corpus table reports this shape as
+            # unsupported. This is the Layer-3 seam described by FeatureSource.
+            supported, strength = True, contribution_sum
         elif prior is not None:
             supported = prior.supported
             strength = prior.p or Decimal(0)
@@ -1012,7 +1055,7 @@ def _rank_span_readings(
                 )
 
     def tier(reading: _RankedReading) -> str:
-        if reading.prior is not None:
+        if reading.prior is not None and reading.prior.tier != "unsupported":
             return reading.prior.tier
         return "measured" if reading.supported else "unsupported"
 
@@ -1033,11 +1076,15 @@ def _span_is_ambiguous(ranked: Sequence[_RankedReading]) -> bool:
     first = ranked[0]
     first_tier = (
         first.prior.tier
-        if first.prior is not None
+        if first.prior is not None and first.prior.tier != "unsupported"
         else ("measured" if first.supported else "unsupported")
     )
     return any(
-        (r.prior.tier if r.prior is not None else ("measured" if r.supported else "unsupported"))
+        (
+            r.prior.tier
+            if r.prior is not None and r.prior.tier != "unsupported"
+            else ("measured" if r.supported else "unsupported")
+        )
         == first_tier
         and r.strength == first.strength
         for r in ranked[1:]
@@ -1308,9 +1355,9 @@ def resolve(
     Geometry (coverage, then parsimony, then capture count) and the full span
     signature decide which spans form a cover. Within the top geometry level the
     type at each span is chosen independently by ``feature_sources`` -- by default
-    the corpus base-rate prior only (Layer 2). ``source_text`` is offered to
-    feature sources through :class:`ResolveContext` for future context cues; the
-    corpus prior ignores it.
+    the corpus base-rate prior (Layer 2) and narrow contextual rules (Layer 3).
+    ``source_text`` is offered to feature sources through :class:`ResolveContext`;
+    the corpus prior ignores it.
 
     The correctness-critical outputs -- the 1-best cover, the ``ambiguous`` flag,
     and the per-span alternatives (``spans``) -- do not depend on ``n``, which only

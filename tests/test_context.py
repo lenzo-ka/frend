@@ -242,6 +242,60 @@ def test_the_context_tree_puts_the_reading_the_text_favors_first(text, said):
     assert _said(text) == said
 
 
+@pytest.mark.parametrize(
+    ("text", "surface"),
+    [
+        ("Chapter I", "I"),
+        ("Chapter V", "V"),
+        ("Chapter IV", "IV"),
+        ("Chapter IX", "IX"),
+        ("Act IV", "IV"),
+        ("Volume IV", "IV"),
+        ("Super Bowl LVIII", "LVIII"),
+    ],
+)
+def test_an_unambiguous_title_cue_selects_the_roman_detection(text, surface):
+    from reading_profile import reading_detectors
+
+    from frend.fold_resolve import resolve
+
+    detections = list(detect(text, reading_detectors("en_US")))
+    resolution = resolve(detections, source_text=text)
+    span = next(item for item in resolution.spans if text[item.start : item.end] == surface)
+
+    assert span.winner["type"] == "number:cardinal:roman"
+    assert not span.ambiguous
+
+
+def test_a_standalone_roman_surface_retains_its_ambiguous_readings():
+    from reading_profile import reading_detectors
+
+    from frend.fold_resolve import resolve
+
+    detections = list(detect("IV", reading_detectors("en_US")))
+    (span,) = resolve(detections, source_text="IV").spans
+
+    assert span.ambiguous
+    assert {reading.detection["type"] for reading in span.readings} == {
+        "letters:run",
+        "number:cardinal:roman",
+    }
+
+
+def test_a_supplied_class_prior_retains_the_roman_title_cue():
+    from reading_profile import reading_detectors
+
+    from frend.fold_resolve import resolve
+
+    text = "Chapter IV"
+    detections = list(detect(text, reading_detectors("en_US")))
+    resolution = resolve(detections, source_text=text, class_prior={"cardinal": 1})
+    span = next(item for item in resolution.spans if text[item.start : item.end] == "IV")
+
+    assert span.winner["type"] == "number:cardinal:roman"
+    assert not span.ambiguous
+
+
 def test_the_tree_overrides_at_seventy_percent():
     """ "UEFA" after "by" is said as a word at 0.73 (main spells it, "u e f a"): at or
     over the threshold, the tree's reading leads."""
