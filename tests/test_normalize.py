@@ -58,6 +58,20 @@ def test_genuine_dotted_lexicon_abbreviation_retains_precedence():
     assert frend.normalize("Ph.D.") == " Doctor of Philosophy "
 
 
+@pytest.mark.parametrize("written", ["COVID-19", "F-16", "UTF-8", "Q4-2024", "ISO-8859-1"])
+def test_hyphenated_alphanumeric_identifier_is_not_negative_or_a_range(written):
+    spoken = frend.normalize(written)
+
+    assert "minus" not in spoken
+    assert " to " not in spoken
+
+
+def test_leading_negative_and_numeric_range_keep_their_readings():
+    assert frend.normalize("-19") == " minus nineteen "
+    assert frend.normalize("4-2024") == " four twenty twenty-four "
+    assert frend.normalize("1-2-3") == " one  minus two  minus three "
+
+
 @pytest.mark.parametrize("separator", ["-", "–"])
 def test_period_bearing_month_abbreviations_normalize_like_periodless_twins(separator):
     periodless = frend.normalize(f"Dec 31{separator}Jan 2")
