@@ -48,6 +48,7 @@ from frend.spacing import unit_gap
 from frend.symbols import (
     DEFAULT_SYMBOL_RUN_THRESHOLD,
     SymbolDetector,
+    _period_ending_abbreviation_ends,
 )
 from frend.symbols import (
     _code_ranges as _symbol_code_ranges,
@@ -253,6 +254,7 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     # monotone pointer so many protected spans and boundaries stay linear.
     protected = _dotted_acronym_suffix_spans(text)
     protected_index = 0
+    abbreviation_ends = _period_ending_abbreviation_ends(text, locale)
 
     # Locale breakers can treat periods in numeric dates as sentence terminators
     # (notably Korean ``2024. 6. 30.``). Recognition is authoritative for those
@@ -281,7 +283,10 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
         crosses_date = date_index < len(crossing_dates) and (
             crossing_dates[date_index][0] < previous_end and crossing_dates[date_index][1] > start
         )
-        if ranges and (crosses_protected or crosses_date):
+        follows_period_ending_abbreviation = (
+            ranges and previous_end == start and start in abbreviation_ends
+        )
+        if ranges and (crosses_protected or crosses_date or follows_period_ending_abbreviation):
             ranges[-1] = (ranges[-1][0], end)
         else:
             ranges.append((start, end))

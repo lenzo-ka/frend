@@ -12,10 +12,11 @@ import frend
 from frend import compose_choices, resolve_choices, resolve_lattice
 from frend.align_graph import build_align_graph
 from frend.context import TextContext
+from frend.locale_data import LOCALE_CACHE
 from frend.normalize import _reading_detectors
 from frend.profiles import GOOGLE_TN
 from frend.spoken_priors import normalize_spoken
-from frend.symbols import SymbolDetector, SymbolRunValue
+from frend.symbols import SymbolDetector, SymbolRunValue, _abbreviation_detector
 from frend.verbalize import verbalize_edge, verbalize_lattice
 
 
@@ -67,6 +68,32 @@ def test_sentence_end_punctuation_after_percent_stays_written(locale, punctuatio
 
     assert not any(item["text"] == punctuation for item in SymbolDetector(locale).detect(text))
     assert frend.normalize(text, locale=locale).rstrip().endswith(punctuation)
+
+
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize("abbreviation", ["U.S.A.", "Dr."])
+@pytest.mark.parametrize("punctuation", [",", "!", "?", ":", ";", "…", ")", "]", "}"])
+def test_punctuation_after_period_ending_abbreviation_stays_on_the_surface(
+    locale, abbreviation, punctuation
+):
+    text = f"{abbreviation}{punctuation}"
+
+    assert not any(item["text"] == punctuation for item in SymbolDetector(locale).detect(text))
+
+
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize("punctuation", [",", "!", "?", ":", ";", "…", ")", "]", "}"])
+def test_standalone_punctuation_keeps_its_named_alternatives(locale, punctuation):
+    (detection,) = SymbolDetector(locale).detect(punctuation)
+
+    assert detection["value"].names
+
+
+def test_abbreviation_detector_cache_holds_a_bounded_number_of_locales():
+    for index in range(3 * LOCALE_CACHE):
+        _abbreviation_detector(f"en_US_{1000 + index}")
+
+    assert _abbreviation_detector.cache_info().currsize <= LOCALE_CACHE
 
 
 @pytest.mark.parametrize("locale", ["root", "und"])
