@@ -345,6 +345,23 @@ def test_recognition_profile_includes_compacts_currency_names_and_xcd():
     assert document["provenance"]["recognition_profile"]["compact_styles"] == ["long", "short"]
 
 
+@pytest.mark.parametrize(
+    ("source", "spoken", "unit"),
+    [
+        ("10 sq yd", "ten square yards", "square-yard"),
+        ("10 sq in", "ten square inches", "square-inch"),
+        ("10 cu ft", "ten cubic feet", "cubic-foot"),
+    ],
+)
+def test_measure_profile_recognizes_common_area_and_volume_units(source, spoken, unit):
+    build = _load_builder()
+
+    recognized, alternatives = build._alternatives(source, "measure", build._detectors())
+
+    assert recognized
+    assert [(text, sub_key) for text, _, sub_key in alternatives] == [(spoken, unit)]
+
+
 def test_range_readers_join_the_kinds_of_their_endpoints():
     """ICU's range readers join the kinds whose amounts they read, and no other: a
     digit, decimal or ordinal row is a single value, which a range would only contest."""
