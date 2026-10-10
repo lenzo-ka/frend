@@ -101,8 +101,8 @@ def test_signs_and_denominator_first_order_are_exact():
 @pytest.mark.parametrize(
     ("locale", "written", "spoken"),
     [
-        ("de_DE", "3/7", "drei siebtel"),
-        ("de_DE", "5/40", "fünf vierzigstel"),
+        ("de_DE", "3/7", "drei Siebtel"),
+        ("de_DE", "5/40", "fünf Vierzigstel"),
         ("es_ES", "3/17", "tres diecisieteavos"),
         ("es_MX", "5/19", "cinco diecinueveavos"),
         ("pt_BR", "7/23", "sete vinte e três avos"),
@@ -119,6 +119,26 @@ def test_unseen_productive_fraction_probes_use_the_sourced_rule(locale, written,
     assert result.text == f" {spoken} "
     assert len(result.units) == 1
     assert result.units[0].provenance.startswith(f"fraction-rule:{locale}+")
+
+
+@pytest.mark.parametrize(
+    ("locale", "written", "spoken"),
+    [
+        ("de_DE", "1/101", "ein Hunderteintel"),
+        ("es_ES", "1/3000", "un tresmilésimo"),
+        ("es_MX", "1/100000", "un cienmilésimo"),
+        ("es_ES", "1/1000000", "un millonésimo"),
+        ("fr_FR", "2 1/2", "deux et demi"),
+        ("it_IT", "2 1/2", "due e mezzo"),
+        ("pt_BR", "2 1/2", "dois e meio"),
+        ("pt_PT", "2 1/2", "dois e meio"),
+        ("ko_KR", "2 1/2", "이와 이분의 일"),
+        ("ko_KR", "3 1/2", "삼과 이분의 일"),
+        ("it_IT", "10/431", "dieci su quattrocentotrentuno"),
+    ],
+)
+def test_source_review_speech_corrections(locale, written, spoken):
+    assert normalize(written, locale=locale) == f" {spoken} "
 
 
 @pytest.mark.parametrize(
@@ -276,8 +296,8 @@ def test_chinese_fraction_and_mixed_frames_have_specific_receipts():
     document = json.loads((REPO / "frend/data/normalization/zh_CN.json").read_text("utf-8"))
     receipts = {source["receipt"] for source in document["sources"]}
     assert {"chinese-fractions.json", "chinese-mixed-fractions.json"} <= receipts
-    assert document["rules"][0]["derived_from"] == ["frend/curated#zh-fractions"]
-    assert document["rules"][1]["derived_from"] == ["frend/curated#zh-mixed-fractions"]
+    assert document["rules"][0]["derived_from"] == ["jixi/education-cloud#zh-fractions"]
+    assert document["rules"][1]["derived_from"] == ["life-education/journal#zh-mixed-fractions"]
 
 
 def test_manifest_builder_cannot_select_new_recoveries_from_head(tmp_path):

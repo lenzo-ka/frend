@@ -5,27 +5,36 @@
   "versions": {"icu": "78.3"},
   "sources": [
     {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
-    {"id": "frend/curated", "receipt": "oqlf-fractions.json"}
+    {"id": "oqlf/bdl", "receipt": "oqlf-fractions.json"},
+    {"id": "academie-francaise/dictionnaire", "receipt": "academie-demi-9e.json"},
+    {"id": "academie-francaise/dictionnaire", "receipt": "academie-demi-8e.json"},
+    {"id": "academie-francaise/dictionnaire", "receipt": "academie-quart.json"},
+    {"id": "eduscol/fractions-cycle-3", "receipt": "eduscol-fractions.json"}
   ],
   "selectors": [],
   "resources": [
-    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "demi"}, "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "demis"}, "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "denominator-3-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "tiers"}, "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "denominator-3-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "tiers"}, "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "denominator-4-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "quart"}, "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "denominator-4-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "quarts"}, "derived_from": ["frend/curated#fr-fractions"]}
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["oqlf/bdl#fr-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "demi"}, "derived_from": ["academie-francaise/dictionnaire#fr-demi-singular"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "demis"}, "derived_from": ["academie-francaise/dictionnaire#fr-demi-plural"]},
+    {"id": "denominator-3-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "tiers"}, "derived_from": ["eduscol/fractions-cycle-3#fr-thirds-quarters"]},
+    {"id": "denominator-3-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "tiers"}, "derived_from": ["oqlf/bdl#fr-fractions"]},
+    {"id": "denominator-4-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "quart"}, "derived_from": ["academie-francaise/dictionnaire#fr-quart"]},
+    {"id": "denominator-4-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "quarts"}, "derived_from": ["eduscol/fractions-cycle-3#fr-thirds-quarters"]},
+    {"id": "mixed-half-omit-one", "kind": "fraction-mixed-half-strategy", "forms": {"default": "omit-one"}, "derived_from": ["academie-francaise/dictionnaire#fr-demi-singular"]}
   ],
   "rules": [
-    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#fr-fractions"]},
-    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " et ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["oqlf/bdl#fr-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " et ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["academie-francaise/dictionnaire#fr-demi-singular"]},
     {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " pour cent"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#fr_FR-percent"]}
   ],
   "weights": [],
   "curated_rows": [],
   "ancestry": {
     "icu/78.3/fraction-percent#fr_FR-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
-    "frend/curated#fr-fractions": ["1c90f56697eb20bf09c3e21b2e865fa8f20e7c53f29fae7d63a4db7bdcd24bfc"]
+    "oqlf/bdl#fr-fractions": ["8bc995735e653eec83c03811cf443f9526752a161fbe8144e8e9a429d2341c02"],
+    "academie-francaise/dictionnaire#fr-demi-singular": ["d974978b4c5425fca1146acce685a40769b02ff5b02734ee10c2a5f71a980b72"],
+    "academie-francaise/dictionnaire#fr-demi-plural": ["9b4a75b2c3e57747882563f8335ac07876c009ceae087d32074b7173887ee5b0"],
+    "academie-francaise/dictionnaire#fr-quart": ["ab2c12fbd97c7036991c0d8b0d301276ba9108242c51b3ec5c1fcb8e7103d7cc"],
+    "eduscol/fractions-cycle-3#fr-thirds-quarters": ["bcf417fc79bc9ae66ebc6afcdc0f2bbba924853aa6b8576c6feffd1996944ee7"]
   }
 }

@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.duden.de/rechtschreibung/zweieinhalb",
+  "revision": "Duden online headword zweieinhalb",
+  "sha256": "a6254b911e3b99466976214f8335497295de683496b8b77d2abe4e4a5f7409ed",
+  "source": "duden/online",
+  "transform_command": "manual transcription of the cited mixed-half compound"
+}

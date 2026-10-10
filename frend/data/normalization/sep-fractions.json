@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://nuevaescuelamexicana.sep.gob.mx/contenido/coleccion/fraccionando-las-cosas-3/",
+  "revision": "Nueva Escuela Mexicana, Fraccionando las cosas",
+  "sha256": "1fa31c1ed5800643e131da9d10539e327f75f8c792ad24f29b8a18cfe1669ec1",
+  "source": "sep/nueva-escuela-mexicana",
+  "transform_command": "manual transcription of the cited plural medios forms"
+}

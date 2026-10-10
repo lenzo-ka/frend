@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.dictionnaire-academie.fr/article/A9Q0091",
+  "revision": "Dictionnaire de l'Academie francaise, 9e ed., quart sense 1",
+  "sha256": "a7e39f89ca7b74dfd1c3a5ca0a1521cd228282962e7412980800026387c39b42",
+  "source": "academie-francaise/dictionnaire",
+  "transform_command": "manual transcription of the cited un quart example"
+}

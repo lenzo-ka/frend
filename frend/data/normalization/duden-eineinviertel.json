@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.duden.de/rechtschreibung/eineinviertel",
+  "revision": "Duden online headword eineinviertel",
+  "sha256": "421e5271add8cb9f380cfa0e6f6caf2ecbb37c5d4e408ecafa271b4586732267",
+  "source": "duden/online",
+  "transform_command": "manual transcription of the cited mixed-fraction compound"
+}

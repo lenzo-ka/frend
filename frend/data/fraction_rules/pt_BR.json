@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#pt-fractions",
+            "lexical": "normalization-record:ciberduvidas/consultorio#pt-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:pt_BR"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#pt-fractions",
+            "lexical": "normalization-record:ciberduvidas/consultorio#pt-mixed-half",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:pt_BR"
             },
             "value_type": "string"
@@ -348,7 +348,7 @@
           {
             "lexical": "normalization-record:icu/78.3/fraction-percent#pt_BR-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:pt_BR"
             },
             "value_type": "string"
@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "pt_BR",
-  "normalization_sha256": "888a48675f279998076404a42aa35d3590ba9e5a37f4baa49a84339d152208ee",
+  "normalization_sha256": "1da1b9dff5e01e7830eaf07b37790e460a070986c295a7b44485a9e140189393",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +657,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#pt-fractions"
+          "normalization-record:ciberduvidas/consultorio#pt-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,7 +670,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#pt-fractions"
+          "normalization-record:ciberduvidas/consultorio#pt-mixed-half"
         ],
         "tokens": [
           "￰SIGN￱",

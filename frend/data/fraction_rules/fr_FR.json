@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#fr-fractions",
+            "lexical": "normalization-record:oqlf/bdl#fr-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:fr_FR"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#fr-fractions",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#fr-demi-singular",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:fr_FR"
             },
             "value_type": "string"
@@ -348,7 +348,7 @@
           {
             "lexical": "normalization-record:icu/78.3/fraction-percent#fr_FR-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:fr_FR"
             },
             "value_type": "string"
@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "fr_FR",
-  "normalization_sha256": "6882f53e5e549c715b255b2aa4b4b427b312837e97467d8b9b16accbea4daccd",
+  "normalization_sha256": "e3cfb11ea4c5d14349666e159075b17ef4d40c405863b21ff91ceaabb1d410a2",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +657,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#fr-fractions"
+          "normalization-record:oqlf/bdl#fr-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,7 +670,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#fr-fractions"
+          "normalization-record:academie-francaise/dictionnaire#fr-demi-singular"
         ],
         "tokens": [
           "￰SIGN￱",

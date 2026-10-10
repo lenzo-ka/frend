@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://nuevaescuelamexicana.sep.gob.mx/contenido/coleccion/de-diferentes-maneras/",
+  "revision": "Nueva Escuela Mexicana, De diferentes maneras",
+  "sha256": "3c7e37d2cd144999767e519f00845a9df0cc258462d84640885797267cce71ab",
+  "source": "sep/nueva-escuela-mexicana",
+  "transform_command": "registered supplemental citation for the mixed-number enteros variant"
+}

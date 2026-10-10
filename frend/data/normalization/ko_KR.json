@@ -5,22 +5,25 @@
   "versions": {"icu": "78.3"},
   "sources": [
     {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
-    {"id": "frend/curated", "receipt": "korean-fractions.json"},
-    {"id": "frend/curated", "receipt": "korean-percent.json"}
+    {"id": "nikl/online-qna", "receipt": "korean-fractions.json"},
+    {"id": "nikl/online-qna", "receipt": "nikl-wa-gwa.json"},
+    {"id": "nikl/basic-dictionary", "receipt": "korean-percent.json"}
   ],
   "selectors": [],
   "resources": [
-    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "cardinal"}, "derived_from": ["frend/curated#ko-fractions"]}
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "cardinal"}, "derived_from": ["nikl/online-qna#ko-fractions"]},
+    {"id": "mixed-joiner-strategy", "kind": "fraction-mixed-joiner", "forms": {"default": "korean-wa-gwa"}, "derived_from": ["nikl/online-qna#ko-wa-gwa"]}
   ],
   "rules": [
-    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "DEN", "분의 ", "NUM"], "directions": ["tn"], "derived_from": ["frend/curated#ko-fractions"]},
-    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "과 ", "DEN", "분의 ", "NUM"], "directions": ["tn"], "derived_from": ["frend/curated#ko-fractions"]},
-    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " 퍼센트"], "directions": ["tn"], "derived_from": ["frend/curated#ko-percent"]}
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "DEN", "분의 ", "NUM"], "directions": ["tn"], "derived_from": ["nikl/online-qna#ko-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "{{WA_GWA}} ", "DEN", "분의 ", "NUM"], "directions": ["tn"], "derived_from": ["nikl/online-qna#ko-fractions", "nikl/online-qna#ko-wa-gwa"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " 퍼센트"], "directions": ["tn"], "derived_from": ["nikl/basic-dictionary#ko-percent"]}
   ],
   "weights": [],
   "curated_rows": [],
   "ancestry": {
-    "frend/curated#ko-fractions": ["d43c5e7686e3888544619de9ac1aa5ff0e34f3a6537ebdf4039efd16929c79f5"],
-    "frend/curated#ko-percent": ["f8e8b5d84432be784291ab4060b74f72cba439ef26608ba339eb9c3404af1361"]
+    "nikl/online-qna#ko-fractions": ["2e3a571bd5fd7cd250818f666e4b9b162780aaaac802f045766779b391e1b909"],
+    "nikl/online-qna#ko-wa-gwa": ["9667fcae52d4ab4ca41ddd8e54676557bcb2b661136b204c40f6587d2346cb63"],
+    "nikl/basic-dictionary#ko-percent": ["22555420343772c3e16db3e3e5be280fc591d3ab31007bfdf096c7845425bee2"]
   }
 }

@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#es-fractions",
+            "lexical": "normalization-record:rae/dpd-2#es-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:es_ES"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#es-fractions",
+            "lexical": "normalization-record:ua/matesfacil#es-mixed",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:es_ES"
             },
             "value_type": "string"
@@ -348,7 +348,7 @@
           {
             "lexical": "normalization-record:icu/78.3/fraction-percent#es_ES-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:es_ES"
             },
             "value_type": "string"
@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "es_ES",
-  "normalization_sha256": "50f33dd3724bbe388e6c91ef2cb0b19c2574082315b49f7d21b6e28acd1256ec",
+  "normalization_sha256": "71e397cec2ddb35499e2cd5de40d81086ec3e1e016daad7d613f87a0d6e2baf7",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +657,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#es-fractions"
+          "normalization-record:rae/dpd-2#es-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,7 +670,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#es-fractions"
+          "normalization-record:ua/matesfacil#es-mixed"
         ],
         "tokens": [
           "￰SIGN￱",

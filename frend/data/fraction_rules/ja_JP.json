@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#ja-fractions",
+            "lexical": "normalization-record:mext/math-grade4#ja-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:ja_JP"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#ja-fractions",
+            "lexical": "normalization-record:mext/math-grade4#ja-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:ja_JP"
             },
             "value_type": "string"
@@ -348,7 +348,7 @@
           {
             "lexical": "normalization-record:icu/78.3/fraction-percent#ja_JP-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:ja_JP"
             },
             "value_type": "string"
@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "ja_JP",
-  "normalization_sha256": "a1545787a6f1bbcbda4ccb4b3ac937a2b4b55aa797eb75e42220abd2d8f56679",
+  "normalization_sha256": "aff9521cc0d61cb772600b1b139b30c363faedfc64e2c28ccd300149acba65b8",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +657,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#ja-fractions"
+          "normalization-record:mext/math-grade4#ja-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,7 +670,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#ja-fractions"
+          "normalization-record:mext/math-grade4#ja-fractions"
         ],
         "tokens": [
           "￰SIGN￱",

@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#it-fractions",
+            "lexical": "normalization-record:treccani/enciclopedia-italiano#it-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:it_IT"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#it-fractions",
+            "lexical": "normalization-record:treccani/vocabolario#it-mezzo",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:it_IT"
             },
             "value_type": "string"
@@ -348,7 +348,7 @@
           {
             "lexical": "normalization-record:icu/78.3/fraction-percent#it_IT-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:it_IT"
             },
             "value_type": "string"
@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "it_IT",
-  "normalization_sha256": "814aacc5fd588656ff0d4bcf8869974c14d5fec0c213e806ec1ae70d47bdac37",
+  "normalization_sha256": "e93715069685c749dc277ad8f41d8cf6f122806af5f834268c0997af4860e9e0",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +657,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#it-fractions"
+          "normalization-record:treccani/enciclopedia-italiano#it-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,7 +670,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#it-fractions"
+          "normalization-record:treccani/vocabolario#it-mezzo"
         ],
         "tokens": [
           "￰SIGN￱",

@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#ko-fractions",
+            "lexical": "normalization-record:nikl/online-qna#ko-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:ko_KR"
             },
             "value_type": "string"
@@ -174,9 +174,17 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#ko-fractions",
+            "lexical": "normalization-record:nikl/online-qna#ko-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:nikl/online-qna#ko-wa-gwa",
+            "name": {
+              "local_name": "source-2",
               "namespace": "urn:frend:fraction:v1:ko_KR"
             },
             "value_type": "string"
@@ -278,7 +286,7 @@
           {
             "kind": "terminal",
             "text": {
-              "lexical": "과 ",
+              "lexical": "{{WA_GWA}} ",
               "name": {
                 "local_name": "text",
                 "namespace": "urn:frend:fraction:v1:ko_KR"
@@ -346,9 +354,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#ko-percent",
+            "lexical": "normalization-record:nikl/basic-dictionary#ko-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:ko_KR"
             },
             "value_type": "string"
@@ -649,7 +657,7 @@
   },
   "icu_version": "78.3",
   "locale": "ko_KR",
-  "normalization_sha256": "8e6fb71e2402a023a37edb71bd8bda0b12cd8e3a62c4a2966179f27afb677ab3",
+  "normalization_sha256": "d6ea7a5ad38e9cc70bf36ffbe427d08c98b05f6197588862dd610e5287f1dc4d",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +665,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#ko-fractions"
+          "normalization-record:nikl/online-qna#ko-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,12 +678,13 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#ko-fractions"
+          "normalization-record:nikl/online-qna#ko-fractions",
+          "normalization-record:nikl/online-qna#ko-wa-gwa"
         ],
         "tokens": [
           "￰SIGN￱",
           "￰WHOLE￱",
-          "과 ",
+          "{{WA_GWA}} ",
           "￰DEN￱",
           "분의 ",
           "￰NUM￱"
@@ -685,7 +694,7 @@
     "percent": [
       {
         "provenance": [
-          "normalization-record:frend/curated#ko-percent"
+          "normalization-record:nikl/basic-dictionary#ko-percent"
         ],
         "tokens": [
           "￰SIGN￱",

@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x POST word_no=249573 to /search/contentViewOne.do",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://stdict.korean.go.kr/search/searchView.do?word_no=249573&searchKeywordTo=3",
+  "revision": "Standard Korean Language Dictionary, 와3, conjunction particle sense",
+  "sha256": "8cf781fb46eb34f4db2feaed077387e95a442571407806daa110a07c4f9aab81",
+  "source": "nikl/standard-dictionary",
+  "transform_command": "registered supplemental citation for the conjunctive particle 와"
+}

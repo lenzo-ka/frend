@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#de-fractions",
+            "lexical": "normalization-record:german-grammar/fractions#de-fraction-frame",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:de_DE"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#de-fractions",
+            "lexical": "normalization-record:duden/online#de-mixed-compounds",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:de_DE"
             },
             "value_type": "string"
@@ -326,7 +326,7 @@
           {
             "lexical": "normalization-record:icu/78.3/fraction-percent#de_DE-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:de_DE"
             },
             "value_type": "string"
@@ -627,7 +627,7 @@
   },
   "icu_version": "78.3",
   "locale": "de_DE",
-  "normalization_sha256": "9332531681cebf537443741c62d3b0123769a93cf6b918dcd5a56badafee0d14",
+  "normalization_sha256": "7d26ed55fc98fa07ec124706e236691bc05ea1b833ca0e0656a6c596e6ea28fc",
   "provenance": {
     "source": "frend/curated"
   },
@@ -635,7 +635,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#de-fractions"
+          "normalization-record:german-grammar/fractions#de-fraction-frame"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -648,7 +648,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#de-fractions"
+          "normalization-record:duden/online#de-mixed-compounds"
         ],
         "tokens": [
           "￰SIGN￱",

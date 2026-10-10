@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed direct PDF fetch",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://portaldaobmep.impa.br/uploads/msg/d0ujl55pfbc4s.pdf#page=43",
+  "revision": "Fracoes no Ensino Fundamental, vol. 1, p. 43",
+  "sha256": "ad3ca0f9ebac7d38f33aff130502df772802ba81ca4f7d74f7ddac0f963d0adc",
+  "source": "impa/obmep",
+  "transform_command": "manual transcription of the cited tres meios form"
+}

@@ -43,9 +43,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#zh-fractions",
+            "lexical": "normalization-record:jixi/education-cloud#zh-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:zh_CN"
             },
             "value_type": "string"
@@ -174,9 +174,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#zh-mixed-fractions",
+            "lexical": "normalization-record:life-education/journal#zh-mixed-fractions",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:zh_CN"
             },
             "value_type": "string"
@@ -346,9 +346,9 @@
         },
         "provenance": [
           {
-            "lexical": "normalization-record:frend/curated#zh-percent",
+            "lexical": "normalization-record:urumqi/government#zh-percent",
             "name": {
-              "local_name": "source",
+              "local_name": "source-1",
               "namespace": "urn:frend:fraction:v1:zh_CN"
             },
             "value_type": "string"
@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "zh_CN",
-  "normalization_sha256": "39c1260f9ea048daef7a232a382b1739eb175616a4822ddb1e54546f4d2ef16f",
+  "normalization_sha256": "424a7a699e97e9024aff2ae22d35812f224468916954d3ac4cee43023f93fb5d",
   "provenance": {
     "source": "frend/curated"
   },
@@ -657,7 +657,7 @@
     "fraction": [
       {
         "provenance": [
-          "normalization-record:frend/curated#zh-fractions"
+          "normalization-record:jixi/education-cloud#zh-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -670,7 +670,7 @@
     "mixed": [
       {
         "provenance": [
-          "normalization-record:frend/curated#zh-mixed-fractions"
+          "normalization-record:life-education/journal#zh-mixed-fractions"
         ],
         "tokens": [
           "￰SIGN￱",
@@ -685,7 +685,7 @@
     "percent": [
       {
         "provenance": [
-          "normalization-record:frend/curated#zh-percent"
+          "normalization-record:urumqi/government#zh-percent"
         ],
         "tokens": [
           "￰SIGN￱",

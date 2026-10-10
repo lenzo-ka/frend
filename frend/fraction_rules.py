@@ -226,6 +226,24 @@ def _record_value(bundle: FractionRuleBundle, identifier: str) -> str:
     return value
 
 
+def _record_realizations(record: Mapping[str, object]) -> tuple[Realization, ...]:
+    forms = record.get("forms")
+    if (
+        not isinstance(forms, Mapping)
+        or not forms
+        or not all(
+            isinstance(key, str) and isinstance(value, str) and value
+            for key, value in forms.items()
+        )
+    ):
+        raise ValueError(f"fraction record {record.get('id')!r} has invalid textual forms")
+    identifier = str(record["id"])
+    return tuple(
+        Realization((value,), (f"normalization-record:{identifier}",), None)
+        for value in forms.values()
+    )
+
+
 def _normal_cardinals(value: Decimal, locale: str):
     from frend.verbalize import _number_leaf
 
@@ -312,27 +330,34 @@ def _denominator_realizations(
         f"denominator-{denominator}-{'plural' if plural else 'singular'}"
     )
     if irregular is not None:
-        text = _record_value(bundle, str(irregular["id"]))
-        return (Realization((text,), (f"normalization-record:{irregular['id']}",), None),)
+        return _record_realizations(irregular)
     strategy = _record_value(bundle, "denominator-strategy")
     if strategy == "icu-ordinal":
         return tuple(
             _realization(item) for item in _ordinal_realizations(denominator, locale, plural=plural)
         )
-    if strategy == "german-ordinal-l":
-        forms = _ordinal_realizations(denominator, locale, plural=False)
-        result = []
-        for item in forms:
-            if not item.text.endswith("e"):
-                raise ValueError(f"German ordinal {item.text!r} has no terminal e")
-            result.append(
-                _realization(
-                    item,
-                    text=f"{item.text[:-1]}el",
-                    source="normalization-record:denominator-strategy",
-                )
-            )
-        return tuple(result)
+    if strategy == "german-cardinal-tel":
+        cardinal = _normal_cardinals(Decimal(denominator), locale)[0]
+        stem = cardinal.text
+        if denominator >= 100 and stem.startswith("ein"):
+            stem = stem[3:]
+        if stem.endswith("eins"):
+            text = f"{stem[:-4]}eintel"
+        elif denominator == 3:
+            text = "drittel"
+        elif denominator == 7:
+            text = "siebtel"
+        elif denominator >= 20 and not 1 <= denominator % 100 <= 19:
+            text = f"{stem}stel"
+        else:
+            text = f"{stem}tel"
+        return (
+            _realization(
+                cardinal,
+                text=text[0].upper() + text[1:],
+                source="normalization-record:denominator-strategy",
+            ),
+        )
     if strategy == "portuguese-precedence":
         if denominator <= 10 or denominator in {100, 1000}:
             forms = _ordinal_realizations(denominator, locale, plural=False)
@@ -355,11 +380,29 @@ def _denominator_realizations(
             for item in _normal_cardinals(Decimal(denominator), locale)
         )
     if strategy == "spanish-avo":
-        if denominator <= 10 or denominator in {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000}:
-            return tuple(
-                _realization(item)
-                for item in _ordinal_realizations(denominator, locale, plural=plural)
-            )
+        if (
+            denominator <= 10
+            or denominator
+            in {
+                100,
+                200,
+                300,
+                400,
+                500,
+                600,
+                700,
+                800,
+                900,
+            }
+            or denominator % 1000 == 0
+        ):
+            result = []
+            for item in _ordinal_realizations(denominator, locale, plural=plural):
+                text = item.text
+                if denominator == 1_000_000 and text.startswith("un "):
+                    text = text[3:]
+                result.append(_realization(item, text=text.replace(" ", "")))
+            return tuple(result)
         cardinal = _normal_cardinals(Decimal(denominator), locale)[0]
         text = _strip_accents(cardinal.text)
         stem_record = bundle.records.get(f"denominator-stem-{denominator}")
@@ -436,12 +479,20 @@ def render_fraction_tokens(tokens: Sequence[str]) -> str:
     return "".join(tokens)
 
 
+def _korean_mixed_particle(whole: str) -> str:
+    final = whole.rstrip()[-1]
+    if not "\uac00" <= final <= "\ud7a3":
+        raise ValueError(f"Korean mixed-number whole {whole!r} has no final Hangul syllable")
+    return "\uacfc" if (ord(final) - 0xAC00) % 28 else "\uc640"
+
+
 def _generate(
     bundle: FractionRuleBundle,
     kind: str,
     grammar_input: GrammarInput,
     *,
     max_derivations: int,
+    omit_numerator: bool = False,
 ):
     from frend.verbalize import SpokenAlternative
 
@@ -479,10 +530,17 @@ def _generate(
             ]
             prior: list[str] = []
             weights: list[Decimal | None] = []
+            skip_space_after_omitted_numerator = False
             for token in recipe.tokens:
                 realization = selected.get(token)
                 if realization is None:
+                    if skip_space_after_omitted_numerator and token.isspace():
+                        skip_space_after_omitted_numerator = False
+                        continue
                     rendered.append(token)
+                    continue
+                if omit_numerator and token == "\ufff0NUM\ufff1":
+                    skip_space_after_omitted_numerator = True
                     continue
                 rendered.extend(realization.tokens)
                 provenance.extend(realization.provenance)
@@ -496,9 +554,15 @@ def _generate(
             prior = list(
                 dict.fromkeys(item for item in prior if item and not item.startswith("recipe:"))
             )
+            text = render_fraction_tokens(rendered)
+            if kind == "mixed" and bundle.locale == "de_DE":
+                text = text.lower()
+            if "{{WA_GWA}}" in text:
+                whole = selected["\ufff0WHOLE\ufff1"].tokens[0]
+                text = text.replace("{{WA_GWA}}", _korean_mixed_particle(whole))
             alternatives.append(
                 SpokenAlternative(
-                    render_fraction_tokens(rendered),
+                    text,
                     "+".join(provenance),
                     sum(weights, Decimal(0))
                     if weights and all(item is not None for item in weights)
@@ -563,6 +627,12 @@ def generate_fraction_alternatives(
         "mixed" if whole is not None else "fraction",
         _grammar_input(fields),
         max_derivations=max_derivations,
+        omit_numerator=(
+            whole is not None
+            and numerator == 1
+            and denominator == 2
+            and "mixed-half-omit-one" in bundle.records
+        ),
     )
     from frend.verbalize import _spoken_fraction
 

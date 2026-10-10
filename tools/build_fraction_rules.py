@@ -66,7 +66,6 @@ def compile_grammar(locale: str, document: Mapping[str, object]) -> GrammarDecla
         key: QualifiedName(namespace, key) for key in ("SIGN", "WHOLE", "NUM", "DEN", "AMOUNT")
     }
     variable = QualifiedName(namespace, "variable")
-    provenance = QualifiedName(namespace, "source")
     rules = []
     expected = {
         "fraction": ("SIGN", "NUM", "DEN"),
@@ -97,8 +96,11 @@ def compile_grammar(locale: str, document: Mapping[str, object]) -> GrammarDecla
                 tuple(holes[field] for field in fields),
                 target_items,
                 provenance=tuple(
-                    _string(provenance, f"normalization-record:{source}")
-                    for source in record["derived_from"]
+                    _string(
+                        QualifiedName(namespace, f"source-{index}"),
+                        f"normalization-record:{source}",
+                    )
+                    for index, source in enumerate(record["derived_from"], start=1)
                 ),
             )
         )

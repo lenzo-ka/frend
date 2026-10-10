@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://blogs.ua.es/matesfacil/secundaria-numeros-operaciones/fracciones/fraccion-mixta/",
+  "revision": "Matesfacil, Fraccion mixta",
+  "sha256": "c675f5a21a1d7f578589586e75082b920c9b0c116a390b90af9ec5c5fd363258",
+  "source": "ua/matesfacil",
+  "transform_command": "manual transcription of the cited mixed-fraction reading"
+}

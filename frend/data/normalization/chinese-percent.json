@@ -1,9 +1,11 @@
 {
+  "fetch_method": "manual citation; source could not be fetched reproducibly in the build environment",
   "fetched_at": "2026-10-09T20:20:00-04:00",
-  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
   "locator": "https://www.wlmq.gov.cn/wlmqs/c119358/202306/4e409e8ad968492d8ffa10612de28cf7.shtml",
   "revision": "2023-06-01",
   "sha256": "c484f6e0816976588bb8f310c4ef05ed173bd7f96cc6adeb3d1c588e90e3cb97",
-  "source": "frend/curated",
-  "transform_command": "manual transcription of the cited percent frame"
+  "manual_citation": true,
+  "source": "urumqi/government",
+  "transform_command": "manual citation and transcription of the cited percent frame"
 }

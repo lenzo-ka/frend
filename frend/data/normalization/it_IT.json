@@ -5,23 +5,28 @@
   "versions": {"icu": "78.3"},
   "sources": [
     {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
-    {"id": "frend/curated", "receipt": "treccani-fractions.json"}
+    {"id": "treccani/enciclopedia-italiano", "receipt": "treccani-fractions.json"},
+    {"id": "treccani/vocabolario", "receipt": "treccani-mezzo.json"}
   ],
   "selectors": [],
   "resources": [
-    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["frend/curated#it-fractions"]},
-    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "mezzo"}, "derived_from": ["frend/curated#it-fractions"]},
-    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "mezzi"}, "derived_from": ["frend/curated#it-fractions"]}
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "mezzo"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "mezzi"}, "derived_from": ["treccani/vocabolario#it-mezzo"]},
+    {"id": "denominator-431-singular", "kind": "fraction-denominator", "number": "one", "forms": {"su": "su quattrocentotrentuno", "fratto": "fratto quattrocentotrentuno"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "denominator-431-plural", "kind": "fraction-denominator", "number": "other", "forms": {"su": "su quattrocentotrentuno", "fratto": "fratto quattrocentotrentuno"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "mixed-half-omit-one", "kind": "fraction-mixed-half-strategy", "forms": {"default": "omit-one"}, "derived_from": ["treccani/vocabolario#it-mezzo"]}
   ],
   "rules": [
-    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#it-fractions"]},
-    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " e ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#it-fractions"]},
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " e ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["treccani/vocabolario#it-mezzo"]},
     {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " percento"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#it_IT-percent"]}
   ],
   "weights": [],
   "curated_rows": [],
   "ancestry": {
     "icu/78.3/fraction-percent#it_IT-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
-    "frend/curated#it-fractions": ["97f492abca98e97790c3fcd98822fc3f3b9a932cd0e47538826e58b8611c9d79"]
+    "treccani/enciclopedia-italiano#it-fractions": ["0f75b32e5c94ea771bc6fe6ad5376b43fb949af68f6dd4bc6d04eaaf2c081dc5"],
+    "treccani/vocabolario#it-mezzo": ["df9746a1dbe7d861e24246dbcd78b2fb0e69347e9a4f218a97d8e972625d088d"]
   }
 }

@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai PDF reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://eduscol.education.gouv.fr/sites/default/files/document/ra16c3mathfracdecdocmaitrev2681601pdf-76887.pdf",
+  "revision": "Fractions et nombres decimaux au cycle 3, PDF pp. 2 and 6",
+  "sha256": "b3266f0b3d9d2ff85fcb7a41d9523c6225ecba9dadf0d64b2b25f971c732be09",
+  "source": "eduscol/fractions-cycle-3",
+  "transform_command": "manual transcription of the cited un tiers and trois quarts forms"
+}
