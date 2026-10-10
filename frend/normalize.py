@@ -531,10 +531,12 @@ def normalize(
         raise TypeError(
             f"case_variant_lookup must be a bool, got {type(case_variant_lookup).__name__}"
         )
-    validate_input(text, max_input_chars=max_input_chars)
+    validated_text = validate_input(text, max_input_chars=max_input_chars)
+    if validated_text is None:
+        raise InputValidationError("source_text must be a str containing plain text, got NoneType")
     validate_unit_length(0, max_unit_chars=max_unit_chars)
     SymbolDetector("root", run_threshold=symbol_run_threshold)
-    raw_text = text
+    raw_text = validated_text
     text = apply_input_fold(raw_text, fold)
     symbol_code_ranges = _symbol_code_ranges(text)
     locale = canonical_locale(locale)
