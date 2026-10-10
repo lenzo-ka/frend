@@ -1,0 +1,28 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "pt_BR",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "ciberduvidas-fractions.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "portuguese-precedence"}, "derived_from": ["frend/curated#pt-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "meio"}, "derived_from": ["frend/curated#pt-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "meios"}, "derived_from": ["frend/curated#pt-fractions"]},
+    {"id": "denominator-3-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "terço"}, "derived_from": ["frend/curated#pt-fractions"]},
+    {"id": "denominator-3-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "terços"}, "derived_from": ["frend/curated#pt-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#pt-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " e ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#pt-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " por cento"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#pt_BR-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#pt_BR-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "frend/curated#pt-fractions": ["b382f5153f190ec7020c911c93e24446cb4271f31d52be9ac3eee6f870c8ea78"]
+  }
+}

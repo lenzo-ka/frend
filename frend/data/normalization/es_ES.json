@@ -1,0 +1,41 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "es_ES",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "rae-fractions.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "spanish-avo"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "medio"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "medios"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-3-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "tercio"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-3-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "tercios"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-30", "kind": "fraction-denominator-stem", "forms": {"default": "treint"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-40", "kind": "fraction-denominator-stem", "forms": {"default": "cuarent"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-50", "kind": "fraction-denominator-stem", "forms": {"default": "cincuent"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-60", "kind": "fraction-denominator-stem", "forms": {"default": "sesent"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-70", "kind": "fraction-denominator-stem", "forms": {"default": "setent"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-80", "kind": "fraction-denominator-stem", "forms": {"default": "ochent"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-stem-90", "kind": "fraction-denominator-stem", "forms": {"default": "novent"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-2000-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "dosmilésimo"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-2000-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "dosmilésimos"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-5000-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "cincomilésimo"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-5000-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "cincomilésimos"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-10000-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "diezmilésimo"}, "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "denominator-10000-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "diezmilésimos"}, "derived_from": ["frend/curated#es-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " y ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#es-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " por ciento"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#es_ES-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#es_ES-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "frend/curated#es-fractions": ["a72fbb08d86ad9511adf824f54fe14ee572bf3af415bce7cffd8d759d22ab291"]
+  }
+}

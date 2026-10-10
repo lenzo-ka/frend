@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:24:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://webfrl.rae.es/BRAE_DB_PDF/TOMO_VI/XXVII/Alemany_261_281.pdf#page=8",
+  "revision": "BRAE tomo VI cuaderno XXVII pp. 268-269",
+  "sha256": "ffc1eedd7fb9e7f8ca1a86a93a0e3ed34f9d1ff4e3ccd039df0aab096a9f7477",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited fraction morphology"
+}

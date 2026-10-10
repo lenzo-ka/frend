@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:20:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://vitrinelinguistique.oqlf.gouv.qc.ca/index.php?id=23494",
+  "revision": "Déterminants numéraux, section Pluriel des fractions",
+  "sha256": "1b02daa969895bcca4ed0b35b780950229e1655d298d889469d7254994c98fe7",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited fraction morphology"
+}

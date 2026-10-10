@@ -613,7 +613,7 @@ def test_real_flexible_fraction_composes_captured_numeric_leaves():
     assert result.best_path.units[0].verbalized is True
 
 
-def test_written_ordinal_plurality_does_not_reorder_fraction_rulesets():
+def test_french_fraction_uses_plural_ordinal_without_appending_an_extra_s():
     text = "17/18"
     locale = "fr_FR"
     detection = next(iter(FlexibleFractionDetector(locale).detect(text)))
@@ -625,10 +625,8 @@ def test_written_ordinal_plurality_does_not_reorder_fraction_rulesets():
         .alternatives
     )
 
-    assert [item.text for item in alternatives[:2]] == [
-        "dix sept dix huitièmess",
-        "dix sept dix huitièmes",
-    ]
+    assert [item.text for item in alternatives] == ["dix-sept dix-huitièmes"]
+    assert alternatives[0].provenance.startswith("fraction-rule:fr_FR+")
 
 
 def test_fraction_denominator_measurement_ranks_half_above_second():
@@ -785,6 +783,25 @@ def test_fraction_keeps_regular_and_over_alternatives():
     )
 
     assert {"one quarter", "one fourth", "one over four"} <= {item.text for item in alternatives}
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("1/4", " one quarter "),
+        ("3 1/2", " three and a half "),
+        ("3/7", " three sevenths "),
+        ("45%", " forty-five percent "),
+        ("1.5%", " one point five percent "),
+        ("5%-10%", " five percent  minus ten percent "),
+        ("-1.5%", " minus one point five percent "),
+        ("(-1.5%)", "( minus one point five percent )"),
+    ],
+)
+def test_english_fraction_and_percent_outputs_are_unchanged(written, spoken):
+    result = normalize(written, locale="en_US", offsets=True)
+    assert result.text == spoken
+    assert all("fraction-rule:" not in unit.provenance for unit in result.units)
 
 
 @pytest.mark.parametrize(

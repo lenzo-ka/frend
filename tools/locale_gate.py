@@ -13,6 +13,7 @@ import argparse
 import ast
 import csv
 import gc
+import hashlib
 import json
 import os
 import re
@@ -42,6 +43,7 @@ CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
 EXCLUSIONS_PATH = Path(__file__).with_name("nemo_exclusions.tsv")
 CONVENTIONS_PATH = Path(__file__).with_name("locale_conventions.json")
 DATE_LATENCY_INPUTS = Path(__file__).with_name("date_latency_inputs.json")
+FRACTION_LATENCY_INPUTS = Path(__file__).with_name("fraction_latency_inputs.json")
 
 LOCALES: dict[str, tuple[str, ...]] = {
     "en": ("en_US",),
@@ -802,6 +804,52 @@ def _runtime_comparisons(
                     "budget": "selected date-rule provenance and cold load/lower/generate",
                 }
             )
+        fraction_probes = run.get("fraction_probes", {})
+        observed_fraction_locales = set(fraction_probes)
+        fraction_contract = observed_fraction_locales == expected_date_locales
+        checks.append(
+            {
+                "metric": f"runtime.fraction_probe.receipt_contract.run{run.get('run', 0)}",
+                "expected_locales": sorted(expected_date_locales),
+                "observed_locales": sorted(observed_fraction_locales),
+                "passed": fraction_contract,
+                "breached": not fraction_contract,
+                "outside_base_range": False,
+                "budget": "one fraction and percent receipt per measured locale",
+            }
+        )
+        for locale, receipt in fraction_probes.items():
+            generated_locale = locale != "en_US"
+            probes = receipt.get("probes", {})
+            events = receipt.get("events", {})
+            passed = (
+                set(probes) == {"fraction", "percent"}
+                and all(item.get("units", 0) >= 1 for item in probes.values())
+                and all(
+                    item.get("selected_generated") is generated_locale for item in probes.values()
+                )
+                and receipt.get("bundle_available") is True
+                and (
+                    not generated_locale
+                    or events.get("load") == 1
+                    and events.get("lower") == 0
+                    and events.get("generate") == 0
+                )
+                and (generated_locale or events == {"load": 0, "lower": 0, "generate": 0})
+            )
+            checks.append(
+                {
+                    "metric": f"runtime.fraction_probe.{locale}.run{run.get('run', 0)}",
+                    "receipt": receipt,
+                    "passed": passed,
+                    "breached": not passed,
+                    "outside_base_range": False,
+                    "budget": (
+                        "selected fraction-rule provenance; compiled recipes avoid runtime "
+                        "lower/generate; English zero bundle calls"
+                    ),
+                }
+            )
     for locale in sorted(set(base_summary["first_hit_ns"]) & set(head_summary["first_hit_ns"])):
         checks.append(
             _ratio_comparison(
@@ -947,6 +995,45 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
                     "breached": not passed,
                     "outside_base_range": False,
                     "budget": "full-span detection and selected date-rule provenance",
+                }
+            )
+        fraction_receipts = run.get("fraction_receipts", ())
+        observed_fraction_receipts = {
+            (receipt.get("locale"), receipt.get("pass")) for receipt in fraction_receipts
+        }
+        fraction_contract = observed_fraction_receipts == expected_receipts and len(
+            fraction_receipts
+        ) == len(expected_receipts)
+        checks.append(
+            {
+                "metric": f"soak.fraction_probe.receipt_contract.run{run.get('run', 0)}",
+                "expected": sorted(expected_receipts),
+                "observed": sorted(observed_fraction_receipts),
+                "passed": fraction_contract,
+                "breached": not fraction_contract,
+                "outside_base_range": False,
+                "budget": "one unseen fraction receipt per locale and pass",
+            }
+        )
+        for receipt in fraction_receipts:
+            count = receipt.get("count", 0)
+            generated_expected = receipt.get("locale") != "en_US"
+            passed = receipt.get("successful_fraction_detections") == count and (
+                receipt.get("selected_generated") == count
+                if generated_expected
+                else receipt.get("selected_generated") == 0
+            )
+            checks.append(
+                {
+                    "metric": (
+                        f"soak.fraction_probe.{receipt.get('locale')}."
+                        f"pass{receipt.get('pass')}.run{run.get('run', 0)}"
+                    ),
+                    "receipt": receipt,
+                    "passed": passed,
+                    "breached": not passed,
+                    "outside_base_range": False,
+                    "budget": "full-span detection and selected fraction-rule provenance",
                 }
             )
     return checks
@@ -1136,15 +1223,33 @@ def compare(
         if len(by_id) != len(manifest_rows):
             correctness_failures.append({"kind": "allowed-changes-duplicate-id"})
         allowed_ids = set(by_id)
+        manifest_family = allowed_changes.get("family", "date")
+
+        def routed(edge: Mapping) -> bool:
+            type_name = str(edge.get("type", ""))
+            if manifest_family == "date":
+                return type_name.startswith("date:") and set(edge.get("fields", ())) in (
+                    {"M", "d"},
+                    {"y", "M", "d"},
+                )
+            if manifest_family == "fraction":
+                return (
+                    type_name.startswith("fraction:")
+                    or type_name.startswith("number:fraction")
+                    or type_name == "number:percent"
+                )
+            return False
+
+        if manifest_family not in {"date", "fraction"}:
+            correctness_failures.append(
+                {"kind": "allowed-changes-family", "family": manifest_family}
+            )
         routed_ids = {
             identifier
             for identifier, row in base_rows.items()
             if row.get("locale") != "en_US"
             and any(
-                str(edge.get("type", "")).startswith("date:")
-                and set(edge.get("fields", ())) in ({"M", "d"}, {"y", "M", "d"})
-                for edge in row.get("offer_signature", ())
-                if isinstance(edge, Mapping)
+                routed(edge) for edge in row.get("offer_signature", ()) if isinstance(edge, Mapping)
             )
         }
         if allowed_ids != routed_ids:
@@ -1174,6 +1279,79 @@ def compare(
                                 "observed": observed,
                             }
                         )
+                if manifest_family == "fraction":
+                    base_edges = {
+                        (edge.get("start"), edge.get("end"), edge.get("type")): edge
+                        for edge in before.get("offer_signature", ())
+                        if isinstance(edge, Mapping)
+                    }
+                    head_edges = {
+                        (edge.get("start"), edge.get("end"), edge.get("type")): edge
+                        for edge in after.get("offer_signature", ())
+                        if isinstance(edge, Mapping)
+                    }
+                    for edge_key in sorted(set(base_edges) & set(head_edges), key=str):
+                        base_alternatives = base_edges[edge_key].get("alternatives", ())
+                        head_alternatives = head_edges[edge_key].get("alternatives", ())
+                        base_by_text = {
+                            item.get("text"): item
+                            for item in base_alternatives
+                            if isinstance(item, Mapping)
+                        }
+                        head_by_text = {
+                            item.get("text"): item
+                            for item in head_alternatives
+                            if isinstance(item, Mapping)
+                        }
+                        common = set(base_by_text) & set(head_by_text)
+                        base_order = [
+                            item.get("text")
+                            for item in base_alternatives
+                            if isinstance(item, Mapping) and item.get("text") in common
+                        ]
+                        head_order = [
+                            item.get("text")
+                            for item in head_alternatives
+                            if isinstance(item, Mapping) and item.get("text") in common
+                        ]
+                        if base_order != head_order:
+                            correctness_failures.append(
+                                {
+                                    "kind": "unchanged-reading-order",
+                                    "id": identifier,
+                                    "edge": edge_key,
+                                    "base": base_order,
+                                    "head": head_order,
+                                }
+                            )
+                        for text in common:
+                            base_item = base_by_text[text]
+                            head_item = head_by_text[text]
+                            base_key = base_item.get("prior_provenance") or base_item.get(
+                                "provenance"
+                            )
+                            head_key = head_item.get("prior_provenance") or head_item.get(
+                                "provenance"
+                            )
+                            if base_key != head_key or base_item.get("weight") != head_item.get(
+                                "weight"
+                            ):
+                                correctness_failures.append(
+                                    {
+                                        "kind": "unchanged-reading-ranking",
+                                        "id": identifier,
+                                        "edge": edge_key,
+                                        "text": text,
+                                        "base": {
+                                            "effective_prior_provenance": base_key,
+                                            "weight": base_item.get("weight"),
+                                        },
+                                        "head": {
+                                            "effective_prior_provenance": head_key,
+                                            "weight": head_item.get("weight"),
+                                        },
+                                    }
+                                )
             else:
                 changed = {
                     field: {"base": before.get(field), "head": after.get(field)}
@@ -1194,6 +1372,21 @@ def compare(
         if not isinstance(manifest_rows, list):
             correctness_failures.append({"kind": "expected-recoveries-schema"})
             manifest_rows = []
+        witness_bytes = json.dumps(
+            manifest_rows,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        observed_witness_sha256 = hashlib.sha256(witness_bytes).hexdigest()
+        if expected_recoveries.get("witness_sha256") != observed_witness_sha256:
+            correctness_failures.append(
+                {
+                    "kind": "expected-recovery-witness-hash",
+                    "expected": expected_recoveries.get("witness_sha256"),
+                    "observed": observed_witness_sha256,
+                }
+            )
         seen: set[str] = set()
         for declared in manifest_rows:
             identifier = str(declared.get("id"))
@@ -1220,6 +1413,42 @@ def compare(
                         "observed": {"base": observed["base"], "head": observed["head"]},
                     }
                 )
+            expected_speech = declared.get("expected_speech")
+            targets = () if after is None else after.get("targets", ())
+            if not isinstance(expected_speech, str) or expected_speech not in targets:
+                correctness_failures.append(
+                    {
+                        "kind": "expected-recovery-speech",
+                        "id": identifier,
+                        "expected_speech": expected_speech,
+                        "targets": targets,
+                    }
+                )
+            source_record_id = declared.get("source_record_id")
+            source_marker = f"normalization-record:{source_record_id}"
+            alternatives = (
+                ()
+                if after is None
+                else tuple(
+                    alternative
+                    for edge in after.get("offer_signature", ())
+                    if isinstance(edge, Mapping)
+                    for alternative in edge.get("alternatives", ())
+                    if isinstance(alternative, Mapping)
+                )
+            )
+            if not isinstance(source_record_id, str) or not any(
+                alternative.get("text") == expected_speech
+                and source_marker in str(alternative.get("provenance", "")).split("+")
+                for alternative in alternatives
+            ):
+                correctness_failures.append(
+                    {
+                        "kind": "expected-recovery-source-record",
+                        "id": identifier,
+                        "source_record_id": source_record_id,
+                    }
+                )
         unexpected_positive = []
         for identifier in sorted(set(base_rows) & set(head_rows) - recovery_ids):
             before, after = base_rows[identifier], head_rows[identifier]
@@ -1244,6 +1473,15 @@ def compare(
             for row in recovery_observations
             if row["base"] is not None and row["head"] is not None
         )
+        if strict_total < 3:
+            correctness_failures.append(
+                {
+                    "kind": "expected-recovery-minimum",
+                    "field": "strict_total",
+                    "minimum": 3,
+                    "observed": strict_total,
+                }
+            )
         for name, observed_total in (
             ("strict_total", strict_total),
             ("insensitive_total", insensitive_total),
@@ -1271,6 +1509,22 @@ def compare(
             {"kind": "row-set", "base_only": base_only, "head_only": head_only}
         )
     budget = GateBudget()
+    if isinstance(allowed_changes, dict) and allowed_changes.get("family") == "fraction":
+        generated_bytes = sum(
+            path.stat().st_size for path in (REPO / "frend/data/fraction_rules").glob("*.json")
+        )
+        allocation_bytes = sum(
+            max(256 * 2**10, 4 * path.stat().st_size)
+            for path in (REPO / "frend/data/fraction_rules").glob("*.json")
+        )
+        loaded_mib = min(8.0, allocation_bytes / 2**20)
+        budget = replace(
+            budget,
+            rss_loaded_delta_mib=loaded_mib,
+            rss_workload_delta_mib=loaded_mib + 2.0,
+        )
+        if generated_bytes == 0:
+            correctness_failures.append({"kind": "fraction-bundle-size-empty"})
     if pr4_improvement:
         budget = replace(
             budget,
@@ -1400,12 +1654,66 @@ def _normalize_date_probe(locale: str) -> tuple[int, dict]:
     }
 
 
+@cache
+def _fraction_latency_probes() -> dict[str, dict[str, str]]:
+    document = json.loads(FRACTION_LATENCY_INPUTS.read_text(encoding="utf-8"))
+    if document.get("schema") != 1 or set(document.get("locales", ())) != set(_ALL_GATE_LOCALES):
+        raise ValueError("fraction latency manifest must name exactly the eleven gate locales")
+    return document["locales"]
+
+
+def _normalize_fraction_probes(locale: str) -> tuple[int, dict]:
+    elapsed = 0
+    receipts = {}
+    before = {"load": 0, "lower": 0, "generate": 0}
+    try:
+        from frend.fraction_rules import fraction_rule_events
+    except ImportError:
+        fraction_rule_events = None
+    if fraction_rule_events is not None:
+        before = dict(fraction_rule_events())
+    for kind, probe in _fraction_latency_probes()[locale].items():
+        started = time.perf_counter_ns()
+        result = normalize(probe, locale=locale, offsets=True)
+        elapsed += time.perf_counter_ns() - started
+        units = [
+            unit
+            for unit in result.units
+            if str(unit.reader or "").startswith("fraction:")
+            or str(unit.reader or "").startswith("number:fraction")
+            or unit.reader == "number:percent"
+        ]
+        receipts[kind] = {
+            "probe": probe,
+            "units": len(units),
+            "selected_generated": any(
+                f"fraction-rule:{locale}" in unit.provenance.split("+") for unit in units
+            ),
+        }
+    after = before if fraction_rule_events is None else dict(fraction_rule_events())
+    return elapsed, {
+        "probes": receipts,
+        "events": {key: after[key] - before[key] for key in before},
+        "bundle_available": fraction_rule_events is not None,
+    }
+
+
 def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path: Path) -> dict:
     _refuse_tracemalloc()
     if kind == "first":
         assert locale is not None
-        elapsed, receipt = _normalize_date_probe(locale)
-        return {"locale": locale, "first_hit_ns": elapsed, "date_probe": receipt}
+        started = time.perf_counter_ns()
+        normalize("123", locale=locale)
+        elapsed = time.perf_counter_ns() - started
+        date_elapsed, date_receipt = _normalize_date_probe(locale)
+        fraction_elapsed, fraction_receipt = _normalize_fraction_probes(locale)
+        del date_elapsed, fraction_elapsed
+        return {
+            "locale": locale,
+            "first_hit_ns": elapsed,
+            "date_probe": date_receipt,
+            "fraction_probe": fraction_receipt,
+        }
     if kind == "prewarm":
         try:
             from frend import prewarm
@@ -1423,8 +1731,13 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
     sequential: dict[str, int] = {}
     started_total = time.perf_counter_ns()
     for item in GATE_LOCALES:
-        sequential[item], _receipt = _normalize_date_probe(item)
+        started = time.perf_counter_ns()
+        normalize("123", locale=item)
+        sequential[item] = time.perf_counter_ns() - started
     sequential_total = time.perf_counter_ns() - started_total
+    for item in GATE_LOCALES:
+        _normalize_date_probe(item)
+        _normalize_fraction_probes(item)
     gc.collect()
     loaded = rss_bytes()
     samples: dict[str, list[int]] = {item: [] for item in GATE_LOCALES}
@@ -1490,6 +1803,7 @@ def _runtime_once(
 ) -> dict:
     first_hits = {}
     date_probes = {}
+    fraction_probes = {}
     for locale in GATE_LOCALES:
         payload = _child_command(
             "_runtime-child",
@@ -1505,6 +1819,7 @@ def _runtime_once(
         )
         first_hits[locale] = payload["first_hit_ns"]
         date_probes[locale] = payload["date_probe"]
+        fraction_probes[locale] = payload["fraction_probe"]
     combined = _child_command(
         "_runtime-child",
         "--kind",
@@ -1517,6 +1832,7 @@ def _runtime_once(
     )
     combined["first_hit_ns"] = first_hits
     combined["date_probes"] = date_probes
+    combined["fraction_probes"] = fraction_probes
     if include_prewarm:
         prewarm_result = _child_command(
             "_runtime-child",
@@ -1642,12 +1958,29 @@ def _unseen_inputs(locale: str, pass_index: int, count: int = 2000) -> list[str]
     return [_render_unseen_date(locale, start + timedelta(days=index)) for index in range(count)]
 
 
+def _unseen_fraction_inputs(locale: str, pass_index: int, count: int = 2000) -> list[str]:
+    locale_index = GATE_LOCALES.index(locale)
+    offset = (locale_index * 3 + pass_index) * count
+    result = []
+    for index in range(count):
+        value = offset + index + 1
+        denominator = value % 89 + 2
+        if index % 3 == 0:
+            result.append(f"{value}/{denominator}")
+        elif index % 3 == 1:
+            result.append(f"{value} {value % denominator + 1}/{denominator}")
+        else:
+            result.append(f"{value}%")
+    return result
+
+
 def _soak_child() -> dict:
     _refuse_tracemalloc()
     for locale in GATE_LOCALES:
         normalize("123", locale=locale)
     rss_passes = []
     receipts = []
+    fraction_receipts = []
     for pass_index in range(3):
         for locale in GATE_LOCALES:
             inputs = _unseen_inputs(locale, pass_index)
@@ -1682,6 +2015,37 @@ def _soak_child() -> dict:
                     "selected_generated": selected,
                 }
             )
+            fraction_inputs = _unseen_fraction_inputs(locale, pass_index)
+            fraction_detections = 0
+            fraction_selected = 0
+            for text in fraction_inputs:
+                rows = [
+                    row
+                    for row in detect(text, _reading_detectors(locale))
+                    if (
+                        str(row.get("type", "")).startswith("fraction:")
+                        or str(row.get("type", "")).startswith("number:fraction")
+                        or row.get("type") == "number:percent"
+                    )
+                    and row["start"] == 0
+                    and row["end"] == len(text)
+                ]
+                fraction_detections += bool(rows)
+                result = normalize(text, locale=locale, offsets=True)
+                fraction_selected += any(
+                    f"fraction-rule:{locale}" in unit.provenance.split("+")
+                    for unit in getattr(result, "units", ())
+                )
+            fraction_receipts.append(
+                {
+                    "locale": locale,
+                    "pass": pass_index + 1,
+                    "count": len(fraction_inputs),
+                    "kinds": ["fraction", "mixed", "percent"],
+                    "successful_fraction_detections": fraction_detections,
+                    "selected_generated": fraction_selected,
+                }
+            )
         gc.collect()
         rss_passes.append(rss_bytes())
     return {
@@ -1690,6 +2054,7 @@ def _soak_child() -> dict:
         "rss_pass3_bytes": rss_passes[2],
         "pass3_minus_pass1_bytes": rss_passes[2] - rss_passes[0],
         "date_receipts": receipts,
+        "fraction_receipts": fraction_receipts,
     }
 
 

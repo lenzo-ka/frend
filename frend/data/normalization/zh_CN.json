@@ -1,0 +1,27 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "zh_CN",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "chinese-fractions.json"},
+    {"id": "frend/curated", "receipt": "chinese-mixed-fractions.json"},
+    {"id": "frend/curated", "receipt": "chinese-percent.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "cardinal"}, "derived_from": ["frend/curated#zh-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "DEN", "分之", "NUM"], "directions": ["tn"], "derived_from": ["frend/curated#zh-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "又", "DEN", "分之", "NUM"], "directions": ["tn"], "derived_from": ["frend/curated#zh-mixed-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "百分之", "AMOUNT"], "directions": ["tn"], "derived_from": ["frend/curated#zh-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "frend/curated#zh-fractions": ["bbb3e068e322a603a08fde87af64a507a70b30813cf575e00b251c89e63d89a7"],
+    "frend/curated#zh-mixed-fractions": ["0e082633f7f39f8ea8b87b86c749fa5ba1a64881e06e99797249241389bf9448"],
+    "frend/curated#zh-percent": ["56eef05d2ab68e9dbf7bad10c9d6bd94327b021d85be9b23a8360c478f2b5ec0"]
+  }
+}

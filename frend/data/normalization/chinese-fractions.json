@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T22:40:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://edu.jixi.gov.cn/Article/50163.html",
+  "revision": "鸡西教育云, 人教版三上 分数的初步认识--几分之几, Article 50163",
+  "sha256": "ce840114c4f0ddc1ec31a044d27cf94cbe7034fa9a22907e1f92a5003816b77b",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the denominator-first 几分之几 fraction frame"
+}

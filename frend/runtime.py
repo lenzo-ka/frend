@@ -50,6 +50,12 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
                 from frend.date_rules import load_date_rule_bundle
 
                 load_date_rule_bundle(locale)
+        if locale != "en_US":
+            from frend.fraction_rules import GENERATED_FRACTION_LOCALES
+
+            if locale in GENERATED_FRACTION_LOCALES:
+                normalize("3/7", locale=locale)
+                normalize("45%", locale=locale)
     return order
 
 

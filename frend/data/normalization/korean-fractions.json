@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:20:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://www.korean.go.kr/front/onlineQna/onlineQnaView.do?mn_id=216&pageIndex=1&qna_seq=305678",
+  "revision": "2024-11-11 answer, suffix -분",
+  "sha256": "96a28f54cc3f92a9584f5ca7c75b7cac24bece7418d8afc3a8dd555daf1fe8be",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited fraction frame"
+}

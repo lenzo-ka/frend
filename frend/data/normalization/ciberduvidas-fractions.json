@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:20:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://ciberduvidas.iscte-iul.pt/consultorio/perguntas/numeros-fraccionarios/11493",
+  "revision": "Números fraccionários, 2003-10-10",
+  "sha256": "1fd4de5aea08016733b89cf25fa9b8dfe6f8272560ac58f78041a097cb02aecb",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited fraction morphology"
+}

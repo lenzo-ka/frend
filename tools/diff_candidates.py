@@ -43,10 +43,22 @@ def _graph_signature(text: str, locale: str) -> list[dict]:
     return signature
 
 
-def _offer_signature(text: str, locale: str) -> tuple[bool, dict]:
+def _candidate_type(type_name: str, family: str) -> bool:
+    if family == "date":
+        return type_name.startswith("date:")
+    return (
+        type_name.startswith("fraction:")
+        or type_name.startswith("number:fraction")
+        or type_name == "number:percent"
+    )
+
+
+def _offer_signature(text: str, locale: str, family: str = "date") -> tuple[bool, dict]:
     detectors = _reading_detectors(locale)
     candidate_detectors = tuple(
-        detector for detector in detectors if str(getattr(detector, "type", "")).startswith("date:")
+        detector
+        for detector in detectors
+        if _candidate_type(str(getattr(detector, "type", "")), family)
     )
     if not list(detect(text, candidate_detectors)):
         return False, {}
@@ -108,13 +120,21 @@ def _signature_digest(signature: dict) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def _child(corpus_dir: Path, out: Path, sentence_cap: int | None, shard: str | None = None) -> int:
+def _child(
+    corpus_dir: Path,
+    out: Path,
+    sentence_cap: int | None,
+    family: str,
+    shard: str | None = None,
+) -> int:
+    if shard is not None and shard not in SHARDS:
+        raise ValueError(f"refusing non-development shard {shard!r}")
     cases = {}
     scanned = 0
     selected_shards = SHARDS if shard is None else (shard,)
     for shard_name, line_number, written in _rows(corpus_dir, sentence_cap, selected_shards):
         scanned += 1
-        found, signature = _offer_signature(written, "en_US")
+        found, signature = _offer_signature(written, "en_US", family)
         if not found:
             continue
         identifier = hashlib.sha256(f"{shard_name}:{line_number}:{written}".encode()).hexdigest()
@@ -123,6 +143,7 @@ def _child(corpus_dir: Path, out: Path, sentence_cap: int | None, shard: str | N
         json.dumps(
             {
                 "schema": 1,
+                "family": family,
                 "shards": list(selected_shards),
                 "scanned": scanned,
                 "signature_encoding": "sha256-canonical-json",
@@ -142,6 +163,7 @@ def compare(
     corpus_dir: Path,
     out_dir: Path,
     sentence_cap: int | None,
+    family: str,
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     destinations: dict[str, dict[str, Path]] = {"base": {}, "head": {}}
@@ -163,6 +185,8 @@ def compare(
                 str(destination),
                 "--corpus-dir",
                 str(corpus_dir),
+                "--family",
+                family,
                 "--shard",
                 shard,
             ]
@@ -194,7 +218,7 @@ def compare(
         )
     report = {
         "schema": 1,
-        "family": "date",
+        "family": family,
         "scanned": scanned,
         "candidate_union": candidate_union,
         "signature_encoding": "sha256-canonical-json",
@@ -209,7 +233,7 @@ def compare(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--family", choices=("date",), default="date")
+    parser.add_argument("--family", choices=("date", "fraction"), default="date")
     parser.add_argument("--base-repo", type=Path)
     parser.add_argument("--head-repo", type=Path)
     parser.add_argument("--corpus-dir", type=Path, required=True)
@@ -219,7 +243,13 @@ def main() -> int:
     parser.add_argument("--shard", choices=SHARDS)
     args = parser.parse_args()
     if args.child_out is not None:
-        return _child(args.corpus_dir, args.child_out, args.sentences_per_shard, args.shard)
+        return _child(
+            args.corpus_dir,
+            args.child_out,
+            args.sentences_per_shard,
+            args.family,
+            args.shard,
+        )
     if args.base_repo is None or args.head_repo is None or args.out_dir is None:
         parser.error("--base-repo, --head-repo, and --out-dir are required")
     report = compare(
@@ -228,6 +258,7 @@ def main() -> int:
         args.corpus_dir,
         args.out_dir,
         args.sentences_per_shard,
+        args.family,
     )
     return int(not report["empty_diff"])
 

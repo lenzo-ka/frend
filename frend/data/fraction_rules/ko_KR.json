@@ -1,0 +1,696 @@
+{
+  "grammar": {
+    "nonterminals": [
+      {
+        "local_name": "COMPOSE",
+        "namespace": "urn:frend:fraction:v1:ko_KR"
+      },
+      {
+        "local_name": "SIGN",
+        "namespace": "urn:frend:fraction:v1:ko_KR"
+      },
+      {
+        "local_name": "WHOLE",
+        "namespace": "urn:frend:fraction:v1:ko_KR"
+      },
+      {
+        "local_name": "NUM",
+        "namespace": "urn:frend:fraction:v1:ko_KR"
+      },
+      {
+        "local_name": "DEN",
+        "namespace": "urn:frend:fraction:v1:ko_KR"
+      },
+      {
+        "local_name": "AMOUNT",
+        "namespace": "urn:frend:fraction:v1:ko_KR"
+      }
+    ],
+    "rules": [
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "COMPOSE",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:frend/curated#ko-fractions",
+            "name": {
+              "local_name": "source",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "SIGN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "sign",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "NUM",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "num",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "DEN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "den",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "SIGN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "sign",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "DEN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "den",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "분의 ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "NUM",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "num",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "COMPOSE",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:frend/curated#ko-fractions",
+            "name": {
+              "local_name": "source",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "SIGN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "sign",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "WHOLE",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "whole",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "NUM",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "num",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "DEN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "den",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "SIGN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "sign",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "WHOLE",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "whole",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "과 ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "DEN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "den",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "분의 ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "NUM",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "num",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "COMPOSE",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:frend/curated#ko-percent",
+            "name": {
+              "local_name": "source",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "SIGN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "sign",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "AMOUNT",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "amount",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "SIGN",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "sign",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "AMOUNT",
+              "namespace": "urn:frend:fraction:v1:ko_KR"
+            },
+            "variable": {
+              "lexical": "amount",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " 퍼센트",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "SIGN",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:SIGN",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:SIGN",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "WHOLE",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:WHOLE",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:WHOLE",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "NUM",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:NUM",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:NUM",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "DEN",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:DEN",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:DEN",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "AMOUNT",
+          "namespace": "urn:frend:fraction:v1:ko_KR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:AMOUNT",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:AMOUNT",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:fraction:v1:ko_KR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      }
+    ],
+    "start": {
+      "local_name": "COMPOSE",
+      "namespace": "urn:frend:fraction:v1:ko_KR"
+    }
+  },
+  "icu_version": "78.3",
+  "locale": "ko_KR",
+  "normalization_sha256": "426092ab11fa380bf478b76a737cc58b0ade37f8e9310e06e74e8947f1a731c8",
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:frend/curated#ko-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰DEN￱",
+          "분의 ",
+          "￰NUM￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:frend/curated#ko-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          "과 ",
+          "￰DEN￱",
+          "분의 ",
+          "￰NUM￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:frend/curated#ko-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " 퍼센트"
+        ]
+      }
+    ]
+  },
+  "schema": 1
+}

@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:20:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://www.treccani.it/enciclopedia/numerali-prontuario_(Enciclopedia-dell'Italiano)/",
+  "revision": "Enciclopedia dell'Italiano, Numerali, Frazioni",
+  "sha256": "f0a1b8183745dc5600d5d00a0a593b61ac9b1706023aff76ea9fce331b770114",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited fraction morphology"
+}

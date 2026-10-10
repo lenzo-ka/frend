@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:20:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://www.german-grammar.de/grammar/chapter_29/29_4_fractions.htm",
+  "revision": "29.4 Fractions",
+  "sha256": "82c2e1debfdb5fba0c9012208b05d618d4a7d90134e2b4abb179a3b9446204d3",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited fraction morphology"
+}

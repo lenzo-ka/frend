@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:30:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://krdict.korean.go.kr/eng/dicSearch/SearchView?ParaWordNo=63859&nation=eng",
+  "revision": "Korean Basic Dictionary entry example, ParaWordNo 63859",
+  "sha256": "3d055f17b19a60cc60cb538e13ea8bccc5ce0706ce775c81562c65a902e66db0",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited percent example"
+}

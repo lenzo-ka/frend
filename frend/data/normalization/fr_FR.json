@@ -1,0 +1,30 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "fr_FR",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "oqlf-fractions.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "demi"}, "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "demis"}, "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "denominator-3-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "tiers"}, "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "denominator-3-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "tiers"}, "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "denominator-4-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "quart"}, "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "denominator-4-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "quarts"}, "derived_from": ["frend/curated#fr-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " et ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#fr-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " pour cent"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#fr_FR-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#fr_FR-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "frend/curated#fr-fractions": ["1c90f56697eb20bf09c3e21b2e865fa8f20e7c53f29fae7d63a4db7bdcd24bfc"]
+  }
+}

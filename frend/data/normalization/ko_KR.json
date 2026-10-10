@@ -1,0 +1,25 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "ko_KR",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "korean-fractions.json"},
+    {"id": "frend/curated", "receipt": "korean-percent.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "cardinal"}, "derived_from": ["frend/curated#ko-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "DEN", "분의 ", "NUM"], "directions": ["tn"], "derived_from": ["frend/curated#ko-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "과 ", "DEN", "분의 ", "NUM"], "directions": ["tn"], "derived_from": ["frend/curated#ko-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " 퍼센트"], "directions": ["tn"], "derived_from": ["frend/curated#ko-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "frend/curated#ko-fractions": ["d43c5e7686e3888544619de9ac1aa5ff0e34f3a6537ebdf4039efd16929c79f5"],
+    "frend/curated#ko-percent": ["f8e8b5d84432be784291ab4060b74f72cba439ef26608ba339eb9c3404af1361"]
+  }
+}

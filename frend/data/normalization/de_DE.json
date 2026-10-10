@@ -1,0 +1,26 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "de_DE",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "german-fractions.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "german-ordinal-l"}, "derived_from": ["frend/curated#de-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "neuter", "forms": {"default": "halb"}, "derived_from": ["frend/curated#de-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "neuter", "forms": {"default": "halbe"}, "derived_from": ["frend/curated#de-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#de-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "NUM", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#de-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " Prozent"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#de_DE-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#de_DE-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "frend/curated#de-fractions": ["78e2573ff3a15dd90833854833bbdbaa209d1db57f652add58d5b7db1614a10f"]
+  }
+}

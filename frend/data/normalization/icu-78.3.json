@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:24:00-04:00",
+  "license_sha256": "e55522d81edc687a341a4411e0776e54ca654e90147f354a90458aaced4116af",
+  "locator": "https://github.com/unicode-org/icu/releases/tag/release-78.3",
+  "revision": "release-78.3",
+  "sha256": "4290ec9c66eff1c95da0810ac7e35007ccde33fafed69c97bca3ab86f4bddf9c",
+  "source": "icu/78.3/fraction-percent",
+  "transform_command": "tools/build_fraction_rules.py"
+}

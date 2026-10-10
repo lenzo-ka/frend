@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "locales": {
+    "de_DE": {"fraction": "3/7", "percent": "45%"},
+    "en_US": {"fraction": "3/7", "percent": "45%"},
+    "es_ES": {"fraction": "3/7", "percent": "45%"},
+    "es_MX": {"fraction": "3/7", "percent": "45%"},
+    "fr_FR": {"fraction": "3/7", "percent": "45%"},
+    "it_IT": {"fraction": "3/7", "percent": "45%"},
+    "ja_JP": {"fraction": "3/7", "percent": "45%"},
+    "ko_KR": {"fraction": "3/7", "percent": "45%"},
+    "pt_BR": {"fraction": "3/7", "percent": "45%"},
+    "pt_PT": {"fraction": "3/7", "percent": "45%"},
+    "zh_CN": {"fraction": "3/7", "percent": "45%"}
+  }
+}

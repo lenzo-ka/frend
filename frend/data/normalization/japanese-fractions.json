@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T20:21:00-04:00",
+  "license_sha256": "5109958f7f2f70de74866b52dc97e7d197f3db90ab44f235b8f1eafc196128ea",
+  "locator": "https://www.mext.go.jp/a_menu/shotou/clarinet/002/20210817-mxt_kouhou02_4.pdf#page=41",
+  "revision": "MEXT 小学校4年生算数 指導資料 p.41",
+  "sha256": "5865aa840a15bd5767984518c96a2698d601024563b0ce1a271a9bf069c1c8fd",
+  "source": "frend/curated",
+  "transform_command": "manual transcription of the cited mixed-fraction frame"
+}

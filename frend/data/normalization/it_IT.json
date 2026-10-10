@@ -1,0 +1,26 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "it_IT",
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "frend/curated", "receipt": "treccani-fractions.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["frend/curated#it-fractions"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "mezzo"}, "derived_from": ["frend/curated#it-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "mezzi"}, "derived_from": ["frend/curated#it-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#it-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " e ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["frend/curated#it-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " percento"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#it_IT-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#it_IT-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "frend/curated#it-fractions": ["97f492abca98e97790c3fcd98822fc3f3b9a932cd0e47538826e58b8611c9d79"]
+  }
+}
