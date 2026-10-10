@@ -3,8 +3,10 @@
 "ATM", "GWR" and "ESPN" are spelled in the corpus far more often than read; icukit's
 abbreviation lexicon covers the acronyms it knows ("FBI", "NASA"), and this covers the
 rest. A run is two or more capitals of one script standing alone ("ATM", "ÉCU",
-"СССР"), with a plural or possessive ("UFOs", "AFI's"), or one capital written as an
-initial ("S." in "Jane S. Smith"). A capital is a letter of Unicode general category
+"СССР") or next to a different script ("東京ABC"), with a plural or possessive
+("UFOs", "AFI's"), or one capital written as an initial ("S." in "Jane S. Smith").
+A mixed capital sequence is split into maximal same-script runs. A capital is a letter of
+Unicode general category
 ``Lu`` with any combining marks written after it, so a decomposed run reads as its NFC
 form; its script is ICU's, resolved as UAX #24 resolves a run (a Common capital such as
 "ℂ" takes its neighbors'). The acronym builder counts a token as a run by the same
@@ -63,7 +65,8 @@ if TYPE_CHECKING:
 # character classes below are built from ICU's sets, so the patterns match exactly their
 # members. A capital carries the combining marks (general category M) written after it,
 # so a decomposed "E\u0301CO" is one run, as its NFC form "ÉCO" is, and the match keeps
-# the text's own spans; a match is a run only if its capitals share one script.
+# the text's own spans; each detected run's capitals share one script, and a mixed
+# capital sequence can contain multiple runs separated by real-script transitions.
 _CAPITALS = icu.UnicodeSet("[:Lu:]")
 _CAPITALS.freeze()
 _LETTERS = icu.UnicodeSet("[:L:]")
@@ -91,9 +94,7 @@ _M = _character_class(_MARKS)
 _MARK_RANGES = _character_class(_MARKS, bracket=False)
 _CAPITAL = f"{_LU}{_M}*"
 _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
-_RUN = re.compile(
-    rf"{_BEFORE}((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)"
-)
+_RUN = re.compile(rf"((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?")
 _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(s['’]?|['’][sS])?(?![\w'’{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
 _DOTTED_RUN = re.compile(rf"(?:{_CAPITAL}\.){{2,}}")
@@ -439,6 +440,89 @@ def _dotted_acronym_suffix_spans(text: str) -> tuple[tuple[int, int], ...]:
     )
 
 
+def _capital_script_runs(letters: str) -> tuple[tuple[int, int, int], ...]:
+    """Return maximal same-script spans within a capital sequence.
+
+    Common and Inherited capitals take an unambiguous neighboring real script. At a
+    transition between two real scripts they remain a separator, rather than being
+    assigned arbitrarily to either acronym.
+    """
+    units = _letters(letters)
+    scripts = [icu.Script.getScript(ord(unit[0])).getScriptCode() for unit in units]
+    real = [script if script not in _NEUTRAL_SCRIPTS else None for script in scripts]
+    if not any(script is not None for script in real):
+        resolved = scripts
+    else:
+        resolved: list[int | None] = []
+        for index, script in enumerate(real):
+            if script is not None:
+                resolved.append(script)
+                continue
+            left = next((item for item in reversed(real[:index]) if item is not None), None)
+            right = next((item for item in real[index + 1 :] if item is not None), None)
+            resolved.append(
+                left
+                if right is None
+                else right
+                if left is None
+                else left
+                if left == right
+                else None
+            )
+
+    spans = []
+    start = 0
+    at = 0
+    active = resolved[0]
+    for unit, script in zip(units, resolved, strict=True):
+        end = at + len(unit)
+        if script != active:
+            if active is not None:
+                spans.append((start, at, active))
+            start = at
+            active = script
+        at = end
+    if active is not None:
+        spans.append((start, at, active))
+    return tuple(spans)
+
+
+def _neighboring_real_script(text: str, at: int, *, before: bool) -> int | None:
+    """Find the real script beyond adjacent marks and neutral-script letters."""
+    step = -1 if before else 1
+    index = at - 1 if before else at
+    while 0 <= index < len(text):
+        neighbor = text[index]
+        if _MARKS.contains(neighbor):
+            index += step
+            continue
+        if not _LETTERS.contains(neighbor):
+            return None
+        neighbor_script = icu.Script.getScript(ord(neighbor)).getScriptCode()
+        if neighbor_script not in _NEUTRAL_SCRIPTS:
+            return neighbor_script
+        index += step
+    return None
+
+
+def _run_boundary(text: str, at: int, script: int, *, before: bool) -> bool:
+    """Whether ``at`` is an old token boundary or a resolved script transition."""
+    neighbor_at = at - 1 if before else at
+    if neighbor_at < 0 or neighbor_at >= len(text):
+        return True
+    neighbor = text[neighbor_at]
+    if _LETTERS.contains(neighbor) or _MARKS.contains(neighbor):
+        neighbor_script = _neighboring_real_script(text, at, before=before)
+        return script not in _NEUTRAL_SCRIPTS and neighbor_script not in (None, script)
+    if before:
+        return re.match(rf"[\w&'’.\-{_MARK_RANGES}]", neighbor) is None
+    if re.match(rf"[\w&'’{_MARK_RANGES}]", neighbor):
+        return False
+    return not (
+        neighbor in "-." and at + 1 < len(text) and re.match(r"\w", text[at + 1]) is not None
+    )
+
+
 class LettersDetector:
     """Detect capital runs, initials, and bounded spell-or-say tokens."""
 
@@ -510,34 +594,42 @@ class LettersDetector:
                 )
         for match in _RUN.finditer(text):
             letters, suffix = match.group(1), match.group(2) or ""
-            if not is_letter_run(letters):
-                # Capitals of two scripts ("AΒ") are not one run.
-                continue
-            if (
-                suffix.endswith("S")
-                and canonical_locale(self.locale).split("_", 1)[0] == "en"
-                and letters in _EN_UPPERCASE_S_CONTRACTION_STEMS
-            ):
-                continue
-            if (
-                not suffix
-                and is_roman(letters, self.locale)
-                and numeral_share(letters, self.locale) > 0.5
-            ):
-                # The corpus reads "II" as a number: icukit's Roman reading stands alone.
-                continue
-            start, end = match.start(), match.end()
-            occupied.append((start, end))
-            detections.append(
-                {
-                    "text": text[start:end],
-                    "start": start,
-                    "end": end,
-                    "type": "letters:run",
-                    "value": LettersValue(text[start:end], letters, suffix),
-                    "captures": _captures(start, letters, suffix),
-                }
-            )
+            for relative_start, relative_end, script in _capital_script_runs(letters):
+                run_letters = letters[relative_start:relative_end]
+                if not is_letter_run(run_letters):
+                    continue
+                run_suffix = suffix if relative_end == len(letters) else ""
+                start = match.start(1) + relative_start
+                letters_end = match.start(1) + relative_end
+                end = letters_end + len(run_suffix)
+                if not _run_boundary(text, start, script, before=True) or not _run_boundary(
+                    text, end, script, before=False
+                ):
+                    continue
+                if (
+                    run_suffix.endswith("S")
+                    and canonical_locale(self.locale).split("_", 1)[0] == "en"
+                    and run_letters in _EN_UPPERCASE_S_CONTRACTION_STEMS
+                ):
+                    continue
+                if (
+                    not run_suffix
+                    and is_roman(run_letters, self.locale)
+                    and numeral_share(run_letters, self.locale) > 0.5
+                ):
+                    # The corpus reads "II" as a number: icukit's Roman reading stands alone.
+                    continue
+                occupied.append((start, end))
+                detections.append(
+                    {
+                        "text": text[start:end],
+                        "start": start,
+                        "end": end,
+                        "type": "letters:run",
+                        "value": LettersValue(text[start:end], run_letters, run_suffix),
+                        "captures": _captures(start, run_letters, run_suffix),
+                    }
+                )
         for match in _SHORT_TOKEN.finditer(text):
             letters = match.group(1)
             if (

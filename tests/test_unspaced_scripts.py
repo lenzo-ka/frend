@@ -19,6 +19,23 @@ def test_zh_reading_inside_han_has_no_spaces():
 
 
 @pytest.mark.parametrize(
+    ("locale", "written", "expected"),
+    [
+        ("en_US", "ABC東京", " a b c 東京"),
+        ("en_US", "東京ABC", "東京 a b c "),
+        ("en_US", "ABCМосква", " a b c Москва"),
+        ("en_US", "МоскваABC", "Москва a b c "),
+        ("ja_JP", "東京ABC", "東京 ABC "),
+        ("zh_CN", "用户ABC", "用户 ABC "),
+        ("ja_JP", "サーバーABC", "サーバー ABC "),
+        ("en_US", "हिंदीABC", "हिंदी a b c "),
+    ],
+)
+def test_acronym_reading_survives_an_adjacent_script_transition(locale, written, expected):
+    assert normalize(written, locale=locale) == expected
+
+
+@pytest.mark.parametrize(
     ("locale", "written"),
     [
         pytest.param("de_DE", "23", id="de_DE-23"),
