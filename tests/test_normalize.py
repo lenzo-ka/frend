@@ -252,6 +252,24 @@ def test_boundary_whitespace_is_trimmed_or_collapsed_without_losing_source_cover
             assert output_text == (" " if "inter-sentence" in unit.provenance else "")
 
 
+def test_source_boundary_whitespace_is_discarded_without_trimming_reader_emissions():
+    without_source_padding = frend.normalize("12")
+    with_source_padding = frend.normalize("  12  ")
+
+    assert without_source_padding == " twelve "
+    assert with_source_padding == without_source_padding
+
+    result = frend.normalize("  12  ", offsets=True)
+    assert isinstance(result, NormalizedText)
+    boundary_units = [
+        unit for unit in result.units if unit.provenance == "surface:boundary-whitespace"
+    ]
+    assert [(unit.source_span, unit.output_span) for unit in boundary_units] == [
+        ((0, 2), (0, 0)),
+        ((4, 6), (8, 8)),
+    ]
+
+
 def test_trailing_text_without_terminal_punctuation_is_preserved():
     source = "a. trailing text without terminal punctuation"
     result = frend.normalize(source, offsets=True)
