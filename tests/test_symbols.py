@@ -462,6 +462,38 @@ def test_coordinate_does_not_join_fields_across_lines(text):
 
 
 @pytest.mark.parametrize(
+    ("text", "captures", "spoken"),
+    [
+        (
+            "45° 30 ′ N",
+            (("degrees", "45"), ("minutes", "30"), ("direction", "north")),
+            "forty-five degrees thirty minutes north",
+        ),
+        (
+            "45° 30 ′ 15 ″ N",
+            (
+                ("degrees", "45"),
+                ("minutes", "30"),
+                ("seconds", "15"),
+                ("direction", "north"),
+            ),
+            "forty-five degrees thirty minutes fifteen seconds north",
+        ),
+    ],
+)
+def test_coordinate_owns_detached_prime_fields_without_unit_detections(text, captures, spoken):
+    coordinate = next(
+        detection
+        for detection in SymbolDetector("en_US").detect(text)
+        if detection["type"] == "measure:coordinate"
+    )
+
+    assert tuple((capture.name, capture.value) for capture in coordinate["captures"]) == captures
+    lattice = resolve_lattice([coordinate], source_text=text)
+    assert verbalize_lattice(lattice).best_path.spoken == spoken
+
+
+@pytest.mark.parametrize(
     ("text", "expected"),
     [(f"&{sign}1", ("symbol:cldr", "&")) for sign in ("+", "-", "−")]
     + [(f"α{sign}1", ("symbol:letter", "α")) for sign in ("+", "-", "−")],

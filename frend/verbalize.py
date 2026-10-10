@@ -1101,7 +1101,7 @@ _SPOKEN_CAPTURES = {
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
-    "coordinate": frozenset({"degrees", "minutes", "direction"}),
+    "coordinate": frozenset({"degrees", "minutes", "seconds", "direction"}),
     "mixed-measure": frozenset({"integer", "unit"}),
     "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
     "unit": frozenset({"unit"}),
@@ -2340,6 +2340,25 @@ def _minus_follows_letter_bearing_run(detection: object, context: TextContext | 
         cursor -= 1
 
 
+def _number_precedes_detached_prime(
+    edge: ReadingEdge,
+    context: TextContext | None,
+    alternatives: Sequence[SpokenAlternative],
+    locale: str,
+) -> bool:
+    """Whether a digit-string reading could misread a detached arcminute field."""
+    if context is None:
+        return False
+    digit_source = _rbnf_provenance("%spellout-cardinal", locale)
+    if not any(
+        alternative.provenance in {digit_source, f"{digit_source}+{lexical_source(locale)}"}
+        for alternative in alternatives
+    ):
+        return False
+    after = context.text[context.offset + edge.end :]
+    return re.match(r"[ \t]+′", after) is not None
+
+
 def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     """ICU's wide measure form for an amount, with ICU's own formatted number cut out.
 
@@ -2396,7 +2415,7 @@ def _spoken_measure(
 def _spoken_coordinate(
     value: MeasureValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
-    """Speak degrees, optional arcminutes, and a localized compass direction."""
+    """Speak degrees, optional arcminutes and arcseconds, and a compass direction."""
     direction = _capture(detection, "direction")
     if direction is None or not direction.value:
         raise NotImplementedError("coordinate without a compass direction")
@@ -2404,6 +2423,9 @@ def _spoken_coordinate(
     minutes = _capture(detection, "minutes")
     if minutes is not None:
         components.append(_spoken_measure(MeasureValue(str(minutes.value), "minute"), locale))
+    seconds = _capture(detection, "seconds")
+    if seconds is not None:
+        components.append(_spoken_measure(MeasureValue(str(seconds.value), "second"), locale))
     return _ranked(
         [
             SpokenAlternative(
@@ -3888,6 +3910,7 @@ def _verbalize_edge(
             key_value = (
                 value.decimal,
                 getattr(_capture(detection, "minutes"), "value", None),
+                getattr(_capture(detection, "seconds"), "value", None),
                 getattr(_capture(detection, "direction"), "value", None),
             )
             path = "coordinate"
@@ -4092,6 +4115,10 @@ def _verbalize_edge(
         and rerank_by_context
         and path != "symbol-run"
         and not (path == "date" and type_ == "date:y" and _bare_four_digit(detection, locale))
+        and not (
+            path == "number"
+            and _number_precedes_detached_prime(edge, context, alternatives, locale)
+        )
     ):
         alternatives, choice = rerank(
             alternatives,

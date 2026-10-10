@@ -521,6 +521,11 @@ def test_bare_degree_range_does_not_invent_a_temperature_scale():
         ("45°N", " forty-five degrees north "),
         ("122°W", " one hundred twenty-two degrees west "),
         ("45° 30′ N", " forty-five degrees thirty minutes north "),
+        ("45° 30 ′ N", " forty-five degrees thirty minutes north "),
+        (
+            "45° 30 ′ 15 ″ N",
+            " forty-five degrees thirty minutes fifteen seconds north ",
+        ),
         ("45°", " forty-five degrees "),
     ],
 )
