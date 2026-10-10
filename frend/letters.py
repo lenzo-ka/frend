@@ -11,14 +11,16 @@ Unicode general category
 form; its script is ICU's, resolved as UAX #24 resolves a run (a Common capital such as
 "ℂ" takes its neighbors'). The acronym builder counts a token as a run by the same
 predicate (:func:`is_letter_run`), so it counts what this reader matches, except the
-Roman numerals the reader leaves to icukit (see :func:`is_letter_run`). A
-run leaves a following period as written; an initial takes its period, as icukit's
-abbreviations do, so "S." ties "South" on span and the corpus decides (a letter, 26,596
-of 26,792 times in shard 0). Which reading comes first is taken from the case-preserved
-spell-out dictionary. Optional unanimous case-variant lookup is caller-selected and
-off by default. A missing bounded-token row uses the vowel rule. The older acronym
-prior remains the fallback for unattested capital runs because the vowel rule regressed
-held-out UNSEEN tokens; it also handles Roman numerals and the explicit Google-TN profile.
+Roman numerals the reader leaves to icukit (see :func:`is_letter_run`). A run leaves a
+following period as written, except when its measured uppercase row ranks a borrowed
+lexicon expansion first: before a following word that run occupies its abbreviation
+period. An initial takes its period, as icukit's abbreviations do, so "S." ties "South"
+on span and the corpus decides (a letter, 26,596 of 26,792 times in shard 0). Which
+reading comes first is taken from the case-preserved spell-out dictionary. Optional
+unanimous case-variant lookup is caller-selected and off by default. A missing bounded-
+token row uses the vowel rule. The older acronym prior remains the fallback for
+unattested capital runs because the vowel rule regressed held-out UNSEEN tokens; it also
+handles Roman numerals and the explicit Google-TN profile.
 
 A non-uppercase token of two through six letters in the locale's script is also an
 ambiguous spell-or-say candidate. Training counts rank the word and letter-name
@@ -36,6 +38,7 @@ import icu
 from icukit import LetterNameDetector
 from icukit.detectors import Capture
 
+from frend.abbreviation_variants import upper_variant_expansion_wins
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 
 __all__ = [
@@ -440,6 +443,22 @@ def _dotted_acronym_suffix_spans(text: str) -> tuple[tuple[int, int], ...]:
     )
 
 
+def _uppercase_abbreviation_period_spans(
+    text: str, locale: str = "en_US"
+) -> tuple[tuple[int, int], ...]:
+    """Spans that keep a consumed uppercase abbreviation period with its next word."""
+    spans = []
+    for detection in LettersDetector(locale).detect(text):
+        if detection["type"] != "letters:run" or not detection["text"].endswith("."):
+            continue
+        next_word = detection["end"]
+        while next_word < len(text) and text[next_word].isspace():
+            next_word += 1
+        if next_word < len(text) and text[next_word].isalpha():
+            spans.append((detection["start"], next_word + 1))
+    return tuple(spans)
+
+
 def _dotted_plural_acronym_period_spans(text: str) -> frozenset[tuple[int, int]]:
     """Full spans where a terminal period follows a dotted acronym's plural ``s``."""
     return frozenset(
@@ -534,6 +553,16 @@ def _run_boundary(text: str, at: int, script: int, *, before: bool) -> bool:
     )
 
 
+def _period_before_word(text: str, at: int) -> bool:
+    """Whether the period at ``at`` is separated by whitespace from a following word."""
+    if text[at : at + 1] != "." or not text[at + 1 : at + 2].isspace():
+        return False
+    next_word = at + 1
+    while next_word < len(text) and text[next_word].isspace():
+        next_word += 1
+    return next_word < len(text) and text[next_word].isalpha()
+
+
 class LettersDetector:
     """Detect capital runs, initials, and bounded spell-or-say tokens."""
 
@@ -612,7 +641,12 @@ class LettersDetector:
                 run_suffix = suffix if relative_end == len(letters) else ""
                 start = match.start(1) + relative_start
                 letters_end = match.start(1) + relative_end
-                end = letters_end + len(run_suffix)
+                abbreviation_period = (
+                    not run_suffix
+                    and _period_before_word(text, letters_end)
+                    and upper_variant_expansion_wins(run_letters, self.locale)
+                )
+                end = letters_end + len(run_suffix) + int(abbreviation_period)
                 if not _run_boundary(text, start, script, before=True) or not _run_boundary(
                     text, end, script, before=False
                 ):
@@ -630,6 +664,12 @@ class LettersDetector:
                 ):
                     # The corpus reads "II" as a number: icukit's Roman reading stands alone.
                     continue
+                captures = _captures(start, run_letters, run_suffix)
+                if abbreviation_period:
+                    captures = (
+                        *captures,
+                        Capture("period", letters_end, end, ".", ".", None),
+                    )
                 occupied.append((start, end))
                 detections.append(
                     {
@@ -637,8 +677,12 @@ class LettersDetector:
                         "start": start,
                         "end": end,
                         "type": "letters:run",
-                        "value": LettersValue(text[start:end], run_letters, run_suffix),
-                        "captures": _captures(start, run_letters, run_suffix),
+                        "value": LettersValue(
+                            text[start : end - int(abbreviation_period)],
+                            run_letters,
+                            run_suffix,
+                        ),
+                        "captures": captures,
                     }
                 )
         for match in _SHORT_TOKEN.finditer(text):

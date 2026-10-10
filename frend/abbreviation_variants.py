@@ -71,6 +71,7 @@ __all__ = [
     "measured_case",
     "measured_keys",
     "measures_spelled",
+    "upper_variant_expansion_wins",
     "upper_variant_expansions",
     "variant_sources",
     "variant_surfaces",
@@ -238,6 +239,36 @@ def upper_variant_expansions(run: str, locale: str = "en_US") -> tuple[object, .
     locale = canonical_locale(locale)
     source = _uppers(locale).get(run)
     return () if source is None else _expansions(_lexicon(locale)[source])
+
+
+def upper_variant_expansion_wins(run: str, locale: str = "en_US") -> bool:
+    """Whether a measured uppercase ``run`` ranks a borrowed expansion first.
+
+    A run without its own uppercase row does not qualify: it may borrow the key's
+    expansions, but the letters reader retains its established order. An expansion
+    must outrank both the spelling and the run as written. Ties likewise retain the
+    established order, in which those readings precede the borrowed expansions.
+    """
+    expansions = upper_variant_expansions(run, locale)
+    if not expansions or not measured_case(run, locale=locale):
+        return False
+    weights = abbreviation_weights(
+        run,
+        [*(item.text for item in expansions), _spelled(run, locale), run],
+        locale=locale,
+    )
+    if weights is None:
+        return False
+    expansion_weights, competing_weights = weights[: len(expansions)], weights[len(expansions) :]
+    best_expansion = max(
+        (weight for weight in expansion_weights if weight is not None), default=None
+    )
+    best_competitor = max(
+        (weight for weight in competing_weights if weight is not None), default=None
+    )
+    return best_expansion is not None and (
+        best_competitor is None or best_expansion > best_competitor
+    )
 
 
 def chain_expansions(written: str, locale: str = "en_US") -> tuple[object, ...]:

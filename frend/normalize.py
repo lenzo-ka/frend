@@ -44,6 +44,7 @@ from frend.letters import (
     LettersDetector,
     _dotted_acronym_suffix_spans,
     _dotted_plural_acronym_period_spans,
+    _uppercase_abbreviation_period_spans,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
@@ -255,9 +256,17 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     """Return nonempty sentence ranges with boundary whitespace excluded."""
     spans = break_sentence_spans(text, locale)
     nonempty = [span for span in spans if span["text"].strip()]
-    # Sentence breaking must not split dotted acronym suffixes. Advance one
-    # monotone pointer so many protected spans and boundaries stay linear.
-    protected = _dotted_acronym_suffix_spans(text)
+    # Sentence breaking must not split dotted acronym suffixes or a consumed uppercase
+    # abbreviation period from its following word. Advance one monotone pointer so many
+    # protected spans and boundaries stay linear.
+    protected = tuple(
+        sorted(
+            (
+                *_dotted_acronym_suffix_spans(text),
+                *_uppercase_abbreviation_period_spans(text, locale),
+            )
+        )
+    )
     protected_index = 0
     abbreviation_ends = _period_ending_abbreviation_ends(text, locale)
 

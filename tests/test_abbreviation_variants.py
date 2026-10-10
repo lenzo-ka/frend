@@ -171,6 +171,37 @@ def test_a_capitals_run_reads_as_its_upper_row_says(written, said):
 
 
 @pytest.mark.parametrize(
+    ("uppercase", "title_case"),
+    [("DR. SMITH.", "Dr. Smith."), ("MR. JONES.", "Mr. Jones.")],
+)
+def test_a_winning_capitals_expansion_consumes_its_abbreviation_period(uppercase, title_case):
+    """A measured capitals expansion occupies its abbreviation period before a word;
+    the following sentence period remains separate, as it does for the title-case source.
+    """
+    from frend import normalize
+
+    assert normalize(uppercase) == normalize(title_case)
+
+
+@pytest.mark.parametrize("written", ["PA. ROAD", "ZZ. TOP"])
+def test_a_nonexpanding_capitals_run_leaves_its_period(written):
+    """A state code and an unknown capitals run do not claim the following period."""
+    from frend import normalize
+
+    assert "." in normalize(written)
+
+
+@pytest.mark.parametrize("written", ["SAT. MORNING", "MON. MORNING"])
+def test_an_as_written_capitals_run_leaves_its_period(written):
+    """A borrowed expansion does not claim the period when the uppercase corpus row
+    ranks the run as written first, even if that expansion outranks the spelling.
+    """
+    from frend import normalize
+
+    assert "." in normalize(written)
+
+
+@pytest.mark.parametrize(
     ("written", "expansions"),
     [("MR", ["mister"]), ("DR", ["doctor", "drive"]), ("LT", ["lieutenant"])],
 )
