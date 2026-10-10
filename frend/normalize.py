@@ -107,6 +107,7 @@ _MEASURE_UNITS = (
     "terabyte",
     "liter",
     "milliliter",
+    "degree",
     "celsius",
     "fahrenheit",
     "second",
@@ -336,6 +337,24 @@ def _is_paired_quote_measure(text: str, detection: dict) -> bool:
     )
 
 
+def _is_bare_degree_temperature_measure(text: str, detection: dict) -> bool:
+    """Reject a temperature scale that is absent from the written measure."""
+    type_ = detection.get("type")
+    if type_ in {"measure:celsius", "measure:fahrenheit"}:
+        inferred_temperature = True
+    elif type_ == "measure:range":
+        value = detection.get("value")
+        inferred_temperature = {
+            getattr(getattr(value, "start", None), "unit", None),
+            getattr(getattr(value, "end", None), "unit", None),
+        } & {"celsius", "fahrenheit"}
+    else:
+        return False
+    start = int(detection["start"])
+    end = int(detection["end"])
+    return bool(inferred_temperature) and text[start:end].rstrip().endswith("°")
+
+
 def _sentence(
     text: str,
     *,
@@ -358,6 +377,7 @@ def _sentence(
         detection
         for detection in detections
         if not _is_paired_quote_measure(text, detection)
+        and not _is_bare_degree_temperature_measure(text, detection)
         and (
             detection.get("type") != "symbol:run"
             or not _symbol_overlaps(
