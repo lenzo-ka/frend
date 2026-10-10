@@ -31,6 +31,22 @@ def test_normalize_returns_a_string_by_default():
     assert "twelve" in result
 
 
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("Chapter I", "one"),
+        ("Chapter V", "five"),
+        ("Chapter IV", "four"),
+        ("Chapter IX", "nine"),
+        ("Act IV", "four"),
+        ("Volume IV", "four"),
+        ("Super Bowl LVIII", "fifty-eight"),
+    ],
+)
+def test_roman_numerals_after_title_cues_read_as_numbers(written, spoken):
+    assert frend.normalize(written).split()[-1] == spoken
+
+
 @pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
 @pytest.mark.parametrize("abbreviation", ["U.S.A.", "Dr."])
 @pytest.mark.parametrize("punctuation", [",", "!", "?", ":", ";", "…", ")", "]", "}"])

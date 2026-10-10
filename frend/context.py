@@ -73,6 +73,7 @@ __all__ = [
     "class_windows",
     "context_model",
     "features",
+    "is_roman_title_context",
     "neighbor_words",
     "problem_labels",
     "cldr_range_separator",
@@ -98,6 +99,17 @@ _REACH = 96
 _CLASS_WINDOW = 3
 _WORDS_LEFT = 3  # Festival's title feature looks three words back
 _WORDS_RIGHT = 2
+
+# Nearest word first, as returned by ``neighbor_words``. These English labels make
+# an immediately following Roman surface a numbered title, not an acronym or word.
+_ROMAN_TITLE_CUES = frozenset(
+    {
+        ("act",),
+        ("chapter",),
+        ("volume",),
+        ("bowl", "super"),
+    }
+)
 
 BOS, EOS, PAD = "<BOS>", "<EOS>", "<PAD>"
 
@@ -255,6 +267,21 @@ def neighbor_words(
         return tuple(words)
 
     return pad(words_before, left, left_edge), pad(words_after, right, right_edge)
+
+
+def is_roman_title_context(text: str, start: int, end: int, *, locale: str = "en_US") -> bool:
+    """Whether the span immediately follows an unambiguous English title cue.
+
+    This settles the detection-level Roman-versus-letters choice. It is deliberately
+    narrower than the learned spoken-form context below: only fixed labels such as
+    ``Chapter`` and ``Super Bowl`` qualify, and a bare Roman surface remains ambiguous.
+    """
+    canonical = canonical_locale(locale)
+    if canonical.partition("_")[0] != "en":
+        return False
+    before, _ = neighbor_words(text, start, end, locale=canonical)
+    lowered = tuple(_lower(word, canonical) for word in before)
+    return any(lowered[: len(cue)] == cue for cue in _ROMAN_TITLE_CUES)
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
