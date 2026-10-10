@@ -31,6 +31,19 @@ def test_normalize_returns_a_string_by_default():
     assert "twelve" in result
 
 
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize("abbreviation", ["U.S.A.", "Dr."])
+@pytest.mark.parametrize("punctuation", [",", "!", "?", ":", ";", "…", ")", "]", "}"])
+def test_period_ending_abbreviation_preserves_following_punctuation(
+    locale, abbreviation, punctuation
+):
+    expected_reading = frend.normalize(abbreviation, locale=locale).rstrip()
+    result = frend.normalize(f"{abbreviation}{punctuation}", locale=locale).rstrip()
+
+    assert result.endswith(punctuation)
+    assert result.removesuffix(punctuation).rstrip() == expected_reading
+
+
 @pytest.mark.parametrize(
     ("locale", "digit", "day", "year"),
     [

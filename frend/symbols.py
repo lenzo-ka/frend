@@ -25,13 +25,13 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from functools import cache
+from functools import cache, lru_cache
 
 import icu
 from icukit import break_grapheme_spans
 from icukit.detectors import Capture, NumberValue
 
-from frend.locale_data import canonical_locale
+from frend.locale_data import LOCALE_CACHE, canonical_locale
 
 __all__ = [
     "ScriptRunValue",
@@ -418,6 +418,38 @@ def _follows_number_reading(text: str, start: int, end: int) -> bool:
     return saw_suffix and at >= 0 and text[at].isdecimal()
 
 
+@lru_cache(maxsize=LOCALE_CACHE)
+def _abbreviation_detector(locale: str):
+    from icukit.abbreviation_recognize import AbbreviationDetector
+
+    return AbbreviationDetector(locale)
+
+
+def _period_ending_abbreviation_ends(text: str, locale: str) -> frozenset[int]:
+    """Offsets where punctuation immediately follows a semantic abbreviation period.
+
+    English abbreviations can occur in otherwise non-English text (``Dr.`` and dotted
+    Latin initials are common examples), so consult English as a fallback after the
+    requested locale. Following punctuation belongs on the surface, just as it does
+    after an undotted acronym; it is not a standalone symbol merely because the
+    abbreviation's final period is non-alphanumeric.
+    """
+    candidates = frozenset(
+        index
+        for index in range(1, len(text))
+        if text[index - 1] == "." and _PUNCTUATION.contains(text[index])
+    )
+    if not candidates:
+        return frozenset()
+    locales = dict.fromkeys((canonical_locale(locale), "en_US"))
+    return frozenset(
+        detection["end"]
+        for candidate in locales
+        for detection in _abbreviation_detector(candidate).detect(text)
+        if detection["end"] in candidates and detection["text"].endswith(".")
+    )
+
+
 def _standalone(text: str, start: int, end: int) -> bool:
     before = text[start - 1] if start > 0 else " "
     after = text[end] if end < len(text) else " "
@@ -721,6 +753,9 @@ class SymbolDetector:
     def detect(self, text: str) -> list[dict]:
         language_neutral = canonical_locale(self.locale) == "root"
         detections = []
+        abbreviation_ends = (
+            frozenset() if language_neutral else _period_ending_abbreviation_ends(text, self.locale)
+        )
         symbol_runs = () if language_neutral else _symbol_runs(text, self.run_threshold)
         for start, end, symbols in symbol_runs:
             names = tuple(symbol_names(symbol, self.locale)[0] for symbol in symbols)
@@ -770,6 +805,8 @@ class SymbolDetector:
         for span in break_grapheme_spans(text, "root"):
             index, end, char = span["start"], span["end"], span["text"]
             if any(position in in_runs for position in range(index, end)):
+                continue
+            if index in abbreviation_ends and all(_PUNCTUATION.contains(unit) for unit in char):
                 continue
             if (keycap_base := _keycap_base(char)) is not None:
                 if keycap_base.isdecimal():
