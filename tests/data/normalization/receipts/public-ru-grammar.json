@@ -1,0 +1,9 @@
+{
+  "fetched_at": "2026-10-09T00:00:00Z",
+  "license_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+  "locator": "https://example.org/public-russian-grammar",
+  "revision": "fixture-1",
+  "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+  "source": "frend/curated",
+  "transform_command": "fixture transcription"
+}
