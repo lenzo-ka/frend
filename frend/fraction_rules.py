@@ -464,13 +464,20 @@ def _denominator_realizations(
         elif text.endswith("uno"):
             text = f"{text[:-3]}un"
         text = text.replace(" y ", "i").replace(" ", "")
-        return (
+        avos = (
             _realization(
                 cardinal,
                 text=f"{text}avo{'s' if plural else ''}",
                 source="normalization-record:denominator-strategy",
             ),
         )
+        if 20 <= denominator <= 90 and denominator % 10 == 0:
+            ordinals = tuple(
+                _realization(item, source="normalization-record:denominator-strategy")
+                for item in _ordinal_realizations(denominator, locale, plural=plural)
+            )
+            return (*avos, *ordinals)
+        return avos
     if strategy == "cardinal":
         return _cardinal_realizations(Decimal(denominator), locale)
     raise ValueError(f"unknown denominator strategy {strategy!r} for {locale}")

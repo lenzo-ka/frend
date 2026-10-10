@@ -79,10 +79,35 @@ def test_sourced_percent_frames(locale, spoken):
 
 def test_spanish_and_portuguese_selector_boundaries():
     assert normalize("1/23", locale="es_MX") == " un veintitresavo "
-    assert normalize("2/40", locale="es_MX") == " dos cuarentavos "
+    assert normalize("2/40", locale="es_MX") == " dos cuadragésimos "
     assert normalize("1/10", locale="pt_BR") == " um décimo "
     assert normalize("1/11", locale="pt_BR") == " um onze avos "
     assert normalize("1/100", locale="pt_BR") == " um centésimo "
+
+
+@pytest.mark.parametrize("locale", ("es_MX", "es_ES"))
+def test_spanish_tens_offer_avo_and_existing_prior_ordinal_forms(locale):
+    expected = {
+        20: ("veinteavos", "vigésimos"),
+        30: ("treintavos", "trigésimos"),
+        40: ("cuarentavos", "cuadragésimos"),
+        50: ("cincuentavos", "quincuagésimos"),
+        60: ("sesentavos", "sexagésimos"),
+        70: ("setentavos", "septuagésimos"),
+        80: ("ochentavos", "octogésimos"),
+        90: ("noventavos", "nonagésimos"),
+    }
+    for denominator, (avo, ordinal) in expected.items():
+        alternatives = generate_fraction_alternatives(
+            _fraction_detection(locale, f"3/{denominator}"), locale
+        )
+        texts = tuple(item.text for item in alternatives)
+        assert f"tres {avo}" in texts
+        assert f"tres {ordinal}" in texts
+
+    alternatives = generate_fraction_alternatives(_fraction_detection(locale, "3/20"), locale)
+    assert alternatives[0].text == "tres vigésimos"
+    assert normalize("3/20", locale=locale) == " tres vigésimos "
 
 
 def test_french_plural_is_not_appended_twice_and_italian_avoids_display_name():
