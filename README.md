@@ -46,9 +46,11 @@ for unit in aligned.units:
 ```
 
 `normalize` sentence-breaks documents with icukit and returns the first-choice spoken
-text. Pass `offsets=True` when a screen reader or aligner also needs the source mapping;
-inter-sentence whitespace is one space in the returned text, and leading and trailing
-whitespace is trimmed. Offset units still cover those trimmed boundary spans explicitly.
+text. Leading and trailing source whitespace is discarded in both return forms, while
+inter-sentence source whitespace contributes one space. Reader emissions can add spaces of
+their own, including at the edges of the returned text and next to inter-sentence spacing.
+Pass `offsets=True` when a screen reader or aligner also needs the source mapping; offset
+units cover discarded boundary-whitespace spans explicitly.
 
 Named behavior schemas compose in caller order, with later presets winning key by key.
 Resolve shipped names or JSON files with `resolve_behavior`, then spread its immutable
