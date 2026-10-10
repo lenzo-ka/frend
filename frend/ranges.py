@@ -56,6 +56,7 @@ from typing import Any, Literal
 import icu
 from icukit.detectors import Capture, DateTimeValue, DetectorSet, NumberValue
 
+from frend.abbreviation_variants import abbreviation_expansions
 from frend.durations import fractional_duration_shape
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
 
@@ -961,8 +962,21 @@ def _month_numbers(locale: str) -> Mapping[str, int]:
     return MappingProxyType(names)
 
 
+def _month_number(text: str, locale: str) -> int | None:
+    """A CLDR month name, or an existing lexicon abbreviation for one."""
+    months = _month_numbers(locale)
+    month = months.get(text.casefold())
+    if month is not None:
+        return month
+    for expansion in abbreviation_expansions(text, locale):
+        month = months.get(str(getattr(expansion, "text", "")).casefold())
+        if month is not None:
+            return month
+    return None
+
+
 def _month_detection(text: str, locale: str) -> Mapping | None:
-    month = _month_numbers(locale).get(text.casefold())
+    month = _month_number(text, locale)
     if month is None:
         return None
     return {
@@ -999,6 +1013,7 @@ class RangeDetector:
         self._table = table
         self._ends: dict[str, Mapping | None] = {}
         self._date_ends: dict[str, Mapping | None] = {}
+        self._ordinal_ends: dict[str, Mapping | None] = {}
 
     @property
     def table(self) -> RangePriorTable | None:
@@ -1139,6 +1154,101 @@ class RangeDetector:
                 return stop, found
         return None
 
+    def ordinal_end(self, text: str) -> Mapping | None:
+        """A locale-valid written ordinal covering ``text`` whole."""
+        if text in self._ordinal_ends:
+            return self._ordinal_ends[text]
+        found = None
+        for reading in self._read(text):
+            if (
+                reading["start"] == 0
+                and reading["end"] == len(text)
+                and str(reading["type"]).startswith("ordinal:")
+            ):
+                found = {
+                    "type": reading["type"],
+                    "text": text,
+                    "start": 0,
+                    "end": len(text),
+                    "value": reading["value"],
+                    "captures": tuple(reading.get("captures", ())),
+                }
+                break
+        self._ordinal_ends[text] = found
+        return found
+
+    def _left_ordinal_end(self, text: str, at: int) -> tuple[int, Mapping] | None:
+        """The longest complete ordinal ending immediately before ``at``."""
+        low = max(0, at - _END_REACH)
+        for start in range(low, at):
+            if not _whole_before(text, start):
+                continue
+            found = self.ordinal_end(text[start:at])
+            if found is not None:
+                return start, found
+        return None
+
+    def _right_ordinal_end(self, text: str, at: int) -> tuple[int, Mapping] | None:
+        """The longest complete ordinal starting immediately after ``at``."""
+        high = min(len(text), at + _END_REACH)
+        for stop in range(high, at, -1):
+            if not _whole_after(text, stop):
+                continue
+            found = self.ordinal_end(text[at:stop])
+            if found is not None:
+                return stop, found
+        return None
+
+    def _ordinal_chain_length(self, text: str, at: int, separators: frozenset[str]) -> int:
+        """The ordinal groups joined through ``text[at]`` with matching spacing."""
+        spans = {
+            (reading["start"], reading["end"])
+            for reading in self._read(text)
+            if str(reading["type"]).startswith("ordinal:")
+        }
+        spaced = text[at - 1 : at].isspace()
+
+        def link(separator_at: int) -> bool:
+            before = text[separator_at - 1 : separator_at].isspace()
+            after = text[separator_at + 1 : separator_at + 2].isspace()
+            return before == after == spaced
+
+        count = 0
+        separator_at = at
+        while True:  # leftward
+            end = separator_at
+            while end > 0 and text[end - 1].isspace():
+                end -= 1
+            starts = [start for start, stop in spans if stop == end]
+            if not starts:
+                break
+            count += 1
+            start = min(starts)
+            previous = start
+            while previous > 0 and text[previous - 1].isspace():
+                previous -= 1
+            if previous == 0 or text[previous - 1] not in separators or not link(previous - 1):
+                break
+            separator_at = previous - 1
+
+        separator_at = at
+        while True:  # rightward
+            start = separator_at + 1
+            while start < len(text) and text[start].isspace():
+                start += 1
+            stops = [stop for ordinal_start, stop in spans if ordinal_start == start]
+            if not stops:
+                break
+            count += 1
+            stop = max(stops)
+            following = stop
+            while following < len(text) and text[following].isspace():
+                following += 1
+            if following == len(text) or text[following] not in separators or not link(following):
+                break
+            separator_at = following
+        return count
+
     def _day_end(self, left: Mapping, right: Mapping) -> Mapping | None:
         """A numeric right end as the left date's day, completing an abbreviated day."""
         value = left.get("value")
@@ -1176,9 +1286,8 @@ class RangeDetector:
         window = text[max(0, left_edge - _END_REACH) : left_edge]
         if not any(char.isalpha() or char in "'’" for char in window):
             return None
-        month_names = _month_numbers(self.locale)
         words = re.findall(r"[^\W\d_]+\.?", window, re.UNICODE)
-        plausible_month = any(word.casefold() in month_names for word in words)
+        plausible_month = any(_month_number(word, self.locale) is not None for word in words)
         plausible_elision = re.search(r"['’][0-9]{2}\s*$", window) is not None
         if not plausible_month and not plausible_elision:
             return None
@@ -1206,6 +1315,29 @@ class RangeDetector:
             "captures": _span_captures(text, start, left_end, at, separator, right_edge, right_end),
             "sub_key": "dash:date",
             "rule": "date-structure",
+        }
+
+    def _ordinal_candidate(
+        self, text: str, at: int, left_edge: int, right_edge: int, separator: str
+    ) -> dict | None:
+        """A range dash joining two complete locale-valid ordinal surfaces."""
+        # Match the ordinary dash rule's spacing: joined, or spaced on both sides.
+        if (left_edge < at) != (right_edge > at + 1):
+            return None
+        left = self._left_ordinal_end(text, left_edge)
+        right = self._right_ordinal_end(text, right_edge)
+        if left is None or right is None:
+            return None
+        (start, left_end), (stop, right_end) = left, right
+        return {
+            "type": "range:dash",
+            "start": start,
+            "end": stop,
+            "text": text[start:stop],
+            "value": RangeValue((left_end,), separator, "range", (right_end,)),
+            "captures": _span_captures(text, start, left_end, at, separator, right_edge, right_end),
+            "sub_key": "dash:ordinal",
+            "rule": "ordinal-structure",
         }
 
     def sub_key(self, cls: str, left: str, separator: str, right: str) -> str:
@@ -1247,6 +1379,12 @@ class RangeDetector:
                 date_candidate = self._date_candidate(text, at, left_edge, right_edge, char)
                 if date_candidate is not None:
                     found.append(date_candidate)
+                ordinal_candidate = self._ordinal_candidate(text, at, left_edge, right_edge, char)
+                if (
+                    ordinal_candidate is not None
+                    and self._ordinal_chain_length(text, at, classes[cls]) < 3
+                ):
+                    found.append(ordinal_candidate)
             # R1: an ASCII digit before, an ASCII digit (or a currency sign and one) after.
             if left_edge == 0 or text[left_edge - 1] not in _ASCII_DIGITS:
                 continue
@@ -1341,13 +1479,17 @@ class RangeDetector:
                 for found in date_candidates
                 if (found["start"], found["end"]) not in icu_spans
             ]
+        ordinal_candidates = [
+            found for found in candidates if found.get("rule") == "ordinal-structure"
+        ]
         measured = (
             []
             if table is None
             else [
                 found
                 for found in candidates
-                if found.get("rule") != "date-structure" and table.emits(found["sub_key"])
+                if found.get("rule") not in {"date-structure", "ordinal-structure"}
+                and table.emits(found["sub_key"])
             ]
         )
-        return [*date_candidates, *measured]
+        return [*date_candidates, *ordinal_candidates, *measured]

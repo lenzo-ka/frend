@@ -44,6 +44,25 @@ def test_period_ending_abbreviation_preserves_following_punctuation(
     assert result.removesuffix(punctuation).rstrip() == expected_reading
 
 
+@pytest.mark.parametrize("separator", ["-", "–"])
+def test_period_bearing_month_abbreviations_normalize_like_periodless_twins(separator):
+    periodless = frend.normalize(f"Dec 31{separator}Jan 2")
+
+    assert frend.normalize(f"Dec. 31{separator}Jan. 2") == periodless
+    assert periodless == " December thirty-first to January second "
+    assert frend.normalize(f"Sept. 3{separator}5") == " September third to fifth "
+    assert frend.normalize(f"Sept.{separator}Oct. 2024") == (
+        " September to October twenty twenty-four "
+    )
+
+
+def test_period_bearing_month_range_support_does_not_change_other_periods():
+    assert frend.normalize("Dec.") == " December "
+    assert frend.normalize("The deadline is Dec. 31.") == (
+        " the  deadline  is   December thirty-first ."
+    )
+
+
 @pytest.mark.parametrize("apostrophe", ["'", "’"])
 @pytest.mark.parametrize("punctuation", [",", ".", "!", "?", ":", ";"])
 def test_plural_possessive_apostrophe_is_silent_and_keeps_following_punctuation(

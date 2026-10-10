@@ -287,6 +287,45 @@ def test_written_hyphen_range_is_one_span():
     assert "five to ten" in said and "five ten" in said
 
 
+@pytest.mark.parametrize(
+    ("ordinal", "numeric", "expected"),
+    [
+        ("1st–3rd", "1–3", "first to third"),
+        ("21st-23rd", "21-23", "twenty first to twenty third"),
+        ("March 1st–3rd", "March 1–3", "march first to third"),
+    ],
+)
+def test_complete_ordinal_surfaces_use_the_numeric_range_connector(ordinal, numeric, expected):
+    """A dash between complete English ordinals says the range connector, just as the
+    corresponding numeric range does."""
+    assert _said(ordinal) == expected
+    assert " to " in f" {_said(numeric)} "
+
+
+@pytest.mark.parametrize(
+    ("text", "separator"), [("1th–3rd", "–"), ("1st–3st", "–"), ("1st-class", "-")]
+)
+def test_nonordinal_surfaces_do_not_form_ordinal_ranges(text, separator):
+    """Invalid ordinal suffixes and a word joined to an ordinal retain their dash."""
+    units = _units(text)
+    assert not any(unit.best.provenance.startswith("range:") for unit in units)
+    assert " to " not in f" {_said(text)} "
+    assert any(
+        unit.best.text == separator and unit.best.provenance == "surface:passthrough"
+        for unit in units
+    )
+
+
+@pytest.mark.parametrize(
+    "text", ["1st-2nd-3rd", "1st - 2nd - 3rd", "1st–2nd–3rd", "1st-2nd-3rd-4th"]
+)
+def test_an_ordinal_chain_is_not_a_range(text):
+    """Three or more ordinal groups are an identifier, not a range fragment."""
+    for unit in _units(text):
+        assert not unit.best.provenance.startswith("range:"), text
+    assert " to " not in f" {_said(text)} ", text
+
+
 def test_year_range_prior_order(no_context_trees):
     """J's ``dash:4+4`` leader is ``range:date+to+date`` (main, no trees: "nineteen
     ninety minus one thousand nine hundred ninety five")."""
@@ -665,6 +704,23 @@ def test_month_and_date_hyphens_are_ranges():
     assert _readings("June-July 2020", 1)[0][0] == "june to july twenty twenty"
     assert _readings("Jun-Jul", 1)[0][0] == "june to july"
     assert _readings("June 26-July 3", 1)[0][0] == "june twenty sixth to july third"
+
+
+@pytest.mark.parametrize("separator", ["-", "–"])
+def test_period_bearing_month_abbreviations_are_date_ranges(separator):
+    periodless = _readings(f"Dec 31{separator}Jan 2", 1)
+
+    assert (
+        _readings(f"Dec. 31{separator}Jan. 2", 1)
+        == periodless
+        == [("december thirty first to january second", "range:date+to+date")]
+    )
+    assert _readings(f"Sept. 3{separator}5", 1) == [
+        ("september third to fifth", "range:date+to+date")
+    ]
+    assert _readings(f"Sept.{separator}Oct. 2024", 1) == [
+        ("september to october twenty twenty four", "range:date+to+date")
+    ]
 
 
 def test_elided_years_and_their_ranges_are_read():
