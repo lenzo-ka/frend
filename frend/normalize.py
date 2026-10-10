@@ -40,7 +40,12 @@ from frend.input_limits import (
     validate_unit_length,
 )
 from frend.lattice import ReadingEdge, _resolve_lattice_validated
-from frend.letters import LettersDetector, _dotted_acronym_suffix_spans
+from frend.letters import (
+    LettersDetector,
+    _dotted_acronym_suffix_spans,
+    _dotted_plural_acronym_period_spans,
+    _uppercase_abbreviation_period_spans,
+)
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
 from frend.ranges import RangeDetector, _date_interval_gang, icu_range_readers
@@ -251,9 +256,17 @@ def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
     """Return nonempty sentence ranges with boundary whitespace excluded."""
     spans = break_sentence_spans(text, locale)
     nonempty = [span for span in spans if span["text"].strip()]
-    # Sentence breaking must not split dotted acronym suffixes. Advance one
-    # monotone pointer so many protected spans and boundaries stay linear.
-    protected = _dotted_acronym_suffix_spans(text)
+    # Sentence breaking must not split dotted acronym suffixes or a consumed uppercase
+    # abbreviation period from its following word. Advance one monotone pointer so many
+    # protected spans and boundaries stay linear.
+    protected = tuple(
+        sorted(
+            (
+                *_dotted_acronym_suffix_spans(text),
+                *_uppercase_abbreviation_period_spans(text, locale),
+            )
+        )
+    )
     protected_index = 0
     abbreviation_ends = _period_ending_abbreviation_ends(text, locale)
 
@@ -355,6 +368,17 @@ def _is_bare_degree_temperature_measure(text: str, detection: dict) -> bool:
     return bool(inferred_temperature) and text[start:end].rstrip().endswith("°")
 
 
+def _is_empty_dotted_plural_abbreviation(
+    detection: dict, plural_period_spans: frozenset[tuple[int, int]]
+) -> bool:
+    """Reject the lexicon's empty longer match, but keep genuine abbreviations."""
+    return (
+        detection.get("type") == "abbreviation"
+        and (int(detection["start"]), int(detection["end"])) in plural_period_spans
+        and not getattr(detection.get("value"), "expansions", ())
+    )
+
+
 def _sentence(
     text: str,
     *,
@@ -373,11 +397,13 @@ def _sentence(
     work_budget: TiergraphWorkBudget,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
     detections = _reading_detectors(locale, symbol_run_threshold).detect(text)
+    plural_period_spans = _dotted_plural_acronym_period_spans(text)
     detections = [
         detection
         for detection in detections
         if not _is_paired_quote_measure(text, detection)
         and not _is_bare_degree_temperature_measure(text, detection)
+        and not _is_empty_dotted_plural_abbreviation(detection, plural_period_spans)
         and (
             detection.get("type") != "symbol:run"
             or not _symbol_overlaps(

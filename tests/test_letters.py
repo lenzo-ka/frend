@@ -656,6 +656,41 @@ def test_capitals_of_two_scripts_are_not_one_run(text):
     assert _spans(text) == []
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("ABC東京", [("letters:run", "ABC")]),
+        ("東京ABC", [("letters:run", "ABC")]),
+        ("ABCМосква", [("letters:run", "ABC")]),
+        ("МоскваABC", [("letters:run", "ABC")]),
+        (
+            "ABCАБВ",
+            [("letters:run", "ABC"), ("letters:run", "АБВ")],
+        ),
+    ],
+)
+def test_script_transitions_bound_same_script_acronyms(text, expected):
+    assert _spans(text) == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "サーバーABC",
+        "ユーザーID",
+        "हिंदीABC",
+    ],
+)
+def test_neutral_letters_and_combining_marks_inherit_the_adjacent_word_script(text):
+    expected = "ID" if text.endswith("ID") else "ABC"
+    assert _spans(text) == [("letters:run", expected)]
+
+
+@pytest.mark.parametrize("text", ["wordABC", "ABCword", "wordABCword", "cafe\u0301ABC"])
+def test_same_script_word_internal_capitals_remain_unread(text):
+    assert _spans(text) == []
+
+
 def _acronym_builder():
     import importlib.util
     import sys
