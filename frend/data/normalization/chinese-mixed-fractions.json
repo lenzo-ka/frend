@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation; source could not be fetched reproducibly in the build environment",
+  "fetched_at": "2026-10-09T22:40:00-04:00",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://tyy.njxzc.edu.cn/_upload/article/files/08/e9/2899b8d743e0885f7d2072e9be86/510fea2a-ab7a-41b5-b75d-437fb74c6d8c.pdf#page=91",
+  "revision": "生活教育 2018年第4期 p.91, 这个数读作一又三分之一",
+  "sha256": "6b1d2beb9ed17dad8d1ae1f641a18bf57dbd8c236dbaa4af5f7470051a70963e",
+  "manual_citation": true,
+  "source": "life-education/journal",
+  "transform_command": "manual citation and transcription of the 又 mixed-fraction frame"
+}

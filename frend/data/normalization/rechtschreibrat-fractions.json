@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed direct PDF fetch",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.rechtschreibrat.com/DOX/rfdr_Regeln_2016_redigiert_2018.pdf#page=58",
+  "revision": "Amtliches Regelwerk 2018 section 58(6) E5, PDF p. 58",
+  "sha256": "703764f5a9a566e7852e065b890f3a0e639521b5331f43e50991b970c9385d8d",
+  "source": "rechtschreibrat/amtliches-regelwerk-2018",
+  "transform_command": "manual transcription of the cited nominal fraction capitalization examples"
+}

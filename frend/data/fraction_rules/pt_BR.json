@@ -1,0 +1,121 @@
+{
+  "icu_version": "78.3",
+  "locale": "pt_BR",
+  "normalization_sha256": "1da1b9dff5e01e7830eaf07b37790e460a070986c295a7b44485a9e140189393",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:ciberduvidas/consultorio#pt-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:ciberduvidas/consultorio#pt-mixed-half"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          " e ",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:icu/78.3/fraction-percent#pt_BR-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " por cento"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "uel/matematica-essencial#pt-denominators"
+      ],
+      "forms": {
+        "default": "portuguese-precedence"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-fractions"
+      ],
+      "forms": {
+        "default": "meio"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "impa/obmep#pt-meios"
+      ],
+      "forms": {
+        "default": "meios"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-fractions"
+      ],
+      "forms": {
+        "default": "terço"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-tercos"
+      ],
+      "forms": {
+        "default": "terços"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-mixed-half"
+      ],
+      "forms": {
+        "default": "omit-one"
+      },
+      "id": "mixed-half-omit-one",
+      "kind": "fraction-mixed-half-strategy"
+    }
+  ],
+  "schema": 2
+}

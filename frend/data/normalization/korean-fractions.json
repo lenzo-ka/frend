@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed direct HTML fetch",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.korean.go.kr/front/onlineQna/onlineQnaView.do?mn_id=216&pageIndex=1&qna_seq=305678",
+  "revision": "2024-11-11 answer, suffix -분",
+  "sha256": "129928fd63ef5fd4caf7d6946f7ab6213972ba2ab80bd199a6aaa0b2810323ca",
+  "source": "nikl/online-qna",
+  "transform_command": "manual transcription of the cited fraction frame"
+}

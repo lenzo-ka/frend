@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://de.serlo.org/mathe/49468/bruchzahlen-in-worten",
+  "revision": "Bruchzahlen in Worten, rule list and -tel/-stel exceptions",
+  "sha256": "838714715aa4d587a1459287f83fa6bce4be432befe9bfaadab6393c0c3e787c",
+  "source": "serlo/fractions",
+  "transform_command": "manual transcription of cited denominator rules from reader-fetched text"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "zh_CN",
+  "provenance": {"source": "frend/curated"},
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "jixi/education-cloud", "receipt": "chinese-fractions.json"},
+    {"id": "life-education/journal", "receipt": "chinese-mixed-fractions.json"},
+    {"id": "urumqi/government", "receipt": "chinese-percent.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "cardinal"}, "derived_from": ["jixi/education-cloud#zh-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "DEN", "分之", "NUM"], "directions": ["tn"], "derived_from": ["jixi/education-cloud#zh-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "又", "DEN", "分之", "NUM"], "directions": ["tn"], "derived_from": ["life-education/journal#zh-mixed-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "百分之", "AMOUNT"], "directions": ["tn"], "derived_from": ["urumqi/government#zh-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "jixi/education-cloud#zh-fractions": ["aeb64bd26ae82025b4cd8f531d0fc71bc32037c5bfb164deea05a9f2e6694afd"],
+    "life-education/journal#zh-mixed-fractions": ["af1b4b6a67c53d21a29c4111bf0fb4d442a82bd9928c203d3defefa277472918"],
+    "urumqi/government#zh-percent": ["0b7e9bc36e4fc370e40f1a266294446d15f0578e2901bd0ea1eb941f321f7e03"]
+  }
+}

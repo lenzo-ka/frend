@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed https://r.jina.ai/http://www.rae.es/dpd/fraccionarios (plain rae.es fetch returned HTTP 403)",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.rae.es/dpd/fraccionarios",
+  "revision": "Diccionario panhispanico de dudas, 2nd ed., fraccionarios, sections 1-5 and table",
+  "sha256": "8fd6e8a42c4e982817c263a7f8c7e403a307ea2275844993e2d1b1902afce4d9",
+  "source": "rae/dpd-2",
+  "transform_command": "manual transcription of cited forms and rules from the reader-fetched text"
+}

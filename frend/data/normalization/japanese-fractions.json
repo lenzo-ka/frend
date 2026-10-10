@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation; direct TLS fetch was not reproducible in the build environment",
+  "fetched_at": "2026-10-09T20:21:00-04:00",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.mext.go.jp/a_menu/shotou/clarinet/002/20210817-mxt_kouhou02_4.pdf#page=223",
+  "manual_citation": true,
+  "revision": "MEXT 小学校4年生算数 PDF pp. 223-224 (lesson 分数, textbook 下p.42)",
+  "sha256": "5865aa840a15bd5767984518c96a2698d601024563b0ce1a271a9bf069c1c8fd",
+  "source": "mext/math-grade4",
+  "transform_command": "manual citation and transcription of the cited mixed-fraction frame"
+}

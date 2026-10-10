@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.duden.de/rechtschreibung/halb_zur_Haelfte_teilweise",
+  "revision": "Duden online, halb (zur Haelfte), examples",
+  "sha256": "62e6db1152db3f04341a927e5002d845fd7233913fc552ec89ba37b310a0e2b6",
+  "source": "duden/online",
+  "transform_command": "manual transcription of the cited halb fraction example"
+}

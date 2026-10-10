@@ -2224,6 +2224,10 @@ def _spoken_number(
     if not preserve_negative_zero and not decimal:
         decimal = abs(decimal)
     if type_.startswith("fraction:") or type_.startswith("number:fraction"):
+        from frend.fraction_rules import GENERATED_FRACTION_LOCALES, generate_fraction_alternatives
+
+        if locale in GENERATED_FRACTION_LOCALES:
+            return generate_fraction_alternatives(detection, locale)
         return _spoken_fraction(detection, locale, negative=decimal.is_signed())
     compact = _capture(detection, "compact")
     if compact is not None:
@@ -2266,6 +2270,10 @@ def _spoken_number(
             digits = "".join(ch for ch in str(integer.text) if ch.isdigit())
             sign = "-" if decimal.is_signed() else ""
             amount = Decimal(f"{sign}{digits or '0'}.{fraction.text}")
+        from frend.fraction_rules import GENERATED_FRACTION_LOCALES, generate_percent_alternatives
+
+        if locale in GENERATED_FRACTION_LOCALES:
+            return generate_percent_alternatives(amount, detection, locale)
         suffix = _percent_name(locale)
         return tuple(
             SpokenAlternative(f"{item.text} {suffix}", item.provenance, item.weight)

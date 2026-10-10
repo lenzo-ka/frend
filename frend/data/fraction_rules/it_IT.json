@@ -1,0 +1,119 @@
+{
+  "icu_version": "78.3",
+  "locale": "it_IT",
+  "normalization_sha256": "f4e1b5c7ba25e0105de4c627e95db2321dd59abc88148177313c0f2e60f1c67d",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:treccani/enciclopedia-italiano#it-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:treccani/vocabolario#it-mezzo"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          " e ",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:icu/78.3/fraction-percent#it_IT-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " percento"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "treccani/enciclopedia-italiano#it-fractions"
+      ],
+      "forms": {
+        "default": "icu-ordinal"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "treccani/enciclopedia-italiano#it-fractions"
+      ],
+      "forms": {
+        "default": "terminal-o-to-i"
+      },
+      "id": "denominator-plural-rule",
+      "kind": "fraction-denominator-plural-rule"
+    },
+    {
+      "derived_from": [
+        "treccani/enciclopedia-italiano#it-fractions"
+      ],
+      "forms": {
+        "fratto": "fratto {cardinal}",
+        "su": "su {cardinal}"
+      },
+      "id": "denominator-cardinal-alternatives",
+      "kind": "fraction-denominator-alternatives",
+      "scope": "all-denominators-no-sourced-threshold"
+    },
+    {
+      "derived_from": [
+        "treccani/enciclopedia-italiano#it-fractions"
+      ],
+      "forms": {
+        "default": "mezzo"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "treccani/vocabolario#it-mezzo"
+      ],
+      "forms": {
+        "default": "mezzi"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "treccani/vocabolario#it-mezzo"
+      ],
+      "forms": {
+        "default": "omit-one"
+      },
+      "id": "mixed-half-omit-one",
+      "kind": "fraction-mixed-half-strategy"
+    }
+  ],
+  "schema": 2
+}

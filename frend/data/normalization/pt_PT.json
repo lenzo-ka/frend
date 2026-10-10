@@ -1,0 +1,38 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "pt_PT",
+  "provenance": {"source": "frend/curated"},
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "ciberduvidas/consultorio", "receipt": "ciberduvidas-fractions.json"},
+    {"id": "uel/matematica-essencial", "receipt": "uel-fractions.json"},
+    {"id": "impa/obmep", "receipt": "impa-fractions.json"},
+    {"id": "ciberduvidas/consultorio", "receipt": "ciberduvidas-tercos.json"},
+    {"id": "ciberduvidas/consultorio", "receipt": "ciberduvidas-meio.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "portuguese-precedence"}, "derived_from": ["uel/matematica-essencial#pt-denominators"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "meio"}, "derived_from": ["ciberduvidas/consultorio#pt-fractions"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "meios"}, "derived_from": ["impa/obmep#pt-meios"]},
+    {"id": "denominator-3-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "terço"}, "derived_from": ["ciberduvidas/consultorio#pt-fractions"]},
+    {"id": "denominator-3-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "terços"}, "derived_from": ["ciberduvidas/consultorio#pt-tercos"]},
+    {"id": "mixed-half-omit-one", "kind": "fraction-mixed-half-strategy", "forms": {"default": "omit-one"}, "derived_from": ["ciberduvidas/consultorio#pt-mixed-half"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["ciberduvidas/consultorio#pt-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", " e ", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["ciberduvidas/consultorio#pt-mixed-half"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " por cento"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#pt_PT-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#pt_PT-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "ciberduvidas/consultorio#pt-fractions": ["ae9d639d07405c62abfddadf99209a5cff976fe9a80cebeb9e473ae2fc657eaf"],
+    "uel/matematica-essencial#pt-denominators": ["3221501db4a25405f9573921efea47237d6715efcb0d6fb5f470262addb2711f"],
+    "impa/obmep#pt-meios": ["42816734cd54dd1aec4e4d4be36665ff4df9931d7435181fa4d0908c8519aa49"],
+    "ciberduvidas/consultorio#pt-tercos": ["bf7183fac2f0efd55f8b4354a3e6571bd6d3cf54ba3ce63114396676b1b925ce"],
+    "ciberduvidas/consultorio#pt-mixed-half": ["37b5db31c3d9631dcb7bafbb409bbc40799069601f52de9a4d8c20075b49ff0d"]
+  }
+}

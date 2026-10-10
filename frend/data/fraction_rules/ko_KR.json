@@ -1,0 +1,74 @@
+{
+  "icu_version": "78.3",
+  "locale": "ko_KR",
+  "normalization_sha256": "d6ea7a5ad38e9cc70bf36ffbe427d08c98b05f6197588862dd610e5287f1dc4d",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:nikl/online-qna#ko-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰DEN￱",
+          "분의 ",
+          "￰NUM￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:nikl/online-qna#ko-fractions",
+          "normalization-record:nikl/online-qna#ko-wa-gwa"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          "{{WA_GWA}} ",
+          "￰DEN￱",
+          "분의 ",
+          "￰NUM￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:nikl/basic-dictionary#ko-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " 퍼센트"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "nikl/online-qna#ko-fractions"
+      ],
+      "forms": {
+        "default": "cardinal"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "nikl/online-qna#ko-wa-gwa"
+      ],
+      "forms": {
+        "default": "korean-wa-gwa"
+      },
+      "id": "mixed-joiner-strategy",
+      "kind": "fraction-mixed-joiner"
+    }
+  ],
+  "schema": 2
+}

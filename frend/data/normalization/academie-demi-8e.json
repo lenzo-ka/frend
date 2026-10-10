@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.dictionnaire-academie.fr/article/A8D0746",
+  "revision": "Dictionnaire de l'Academie francaise, 8e ed., demi",
+  "sha256": "ef81b0c6a63500f04cb4848eb0207df5b9eaf7a5bb116e0e34024f61be1ee86c",
+  "source": "academie-francaise/dictionnaire",
+  "transform_command": "manual transcription of the cited quatre demis example"
+}

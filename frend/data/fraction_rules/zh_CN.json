@@ -1,0 +1,63 @@
+{
+  "icu_version": "78.3",
+  "locale": "zh_CN",
+  "normalization_sha256": "424a7a699e97e9024aff2ae22d35812f224468916954d3ac4cee43023f93fb5d",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:jixi/education-cloud#zh-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰DEN￱",
+          "分之",
+          "￰NUM￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:life-education/journal#zh-mixed-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          "又",
+          "￰DEN￱",
+          "分之",
+          "￰NUM￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:urumqi/government#zh-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "百分之",
+          "￰AMOUNT￱"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "jixi/education-cloud#zh-fractions"
+      ],
+      "forms": {
+        "default": "cardinal"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    }
+  ],
+  "schema": 2
+}

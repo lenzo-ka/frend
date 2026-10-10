@@ -6,6 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -64,3 +66,23 @@ def test_signature_observes_public_sentence_handling(monkeypatch):
 
     assert original("March 3, 2020. Next.", "en_US") != [(0, 20)]
     assert before != after
+
+
+def test_fraction_family_selects_fraction_and_percent_only():
+    for text in ("3/7", "45%"):
+        found, signature = diff._offer_signature(text, "en_US", "fraction")
+        assert found
+        assert signature["sentences"]
+    found, _signature = diff._offer_signature("March 3, 2020", "en_US", "fraction")
+    assert not found
+
+
+def test_child_refuses_report_shard_99(tmp_path):
+    with pytest.raises(ValueError, match="refusing non-development shard"):
+        diff._child(
+            tmp_path,
+            tmp_path / "out.json",
+            None,
+            "fraction",
+            "output-00099-of-00100",
+        )

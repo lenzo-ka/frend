@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.rae.es/gramática-básica/cuantificadores-y-numerales/los-numerales/los-numerales-fraccionarios",
+  "revision": "Nueva gramatica basica, section 12.4.4a, numerales fraccionarios",
+  "sha256": "720750d4f151a01b3d26dc87cab27fdd04e3c2e36d0dfdd59155f4e9ef87eaab",
+  "source": "rae/gramatica-basica",
+  "transform_command": "registered supplemental citation for medio as a mathematical fraction noun"
+}

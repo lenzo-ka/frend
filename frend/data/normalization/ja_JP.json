@@ -1,0 +1,25 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "ja_JP",
+  "provenance": {"source": "frend/curated"},
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "mext/math-grade4", "receipt": "japanese-fractions.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "cardinal"}, "derived_from": ["mext/math-grade4#ja-fractions"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "DEN", "分の", "NUM"], "directions": ["tn"], "derived_from": ["mext/math-grade4#ja-fractions"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "と", "DEN", "分の", "NUM"], "directions": ["tn"], "derived_from": ["mext/math-grade4#ja-fractions"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " パーセント"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#ja_JP-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#ja_JP-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "mext/math-grade4#ja-fractions": ["495913d65807093d44d822d492fd5281b1a4a8ff80dadc4e60c89a546da12eab"]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.uel.br/projetos/matessencial/basico/fundamental/fracoes.html",
+  "revision": "Matematica Essencial, Fracoes sections 5.1-5.3",
+  "sha256": "4e89500959145b3af03b8bd1fa32f500f21df975b101177a630d11e0b0fb40fc",
+  "source": "uel/matematica-essencial",
+  "transform_command": "manual transcription of the cited denominator precedence and avos forms"
+}

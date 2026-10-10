@@ -1,0 +1,97 @@
+{
+  "icu_version": "78.3",
+  "locale": "de_DE",
+  "normalization_sha256": "6956917ba7e88cebd8586447e8284f37fccf34df2cde875afcbbafde71264aee",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:german-grammar/fractions#de-fraction-frame"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:duden/online#de-mixed-compounds"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          "￰NUM￱",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:icu/78.3/fraction-percent#de_DE-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " Prozent"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "serlo/fractions#de-denominators",
+        "rechtschreibrat/amtliches-regelwerk-2018#de-fraction-capitalization"
+      ],
+      "forms": {
+        "default": "german-cardinal-tel"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "duden/online#de-halb"
+      ],
+      "forms": {
+        "default": "Halb"
+      },
+      "gender": "neuter",
+      "id": "denominator-2-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "serlo/fractions#de-halbe"
+      ],
+      "forms": {
+        "default": "Halbe"
+      },
+      "gender": "neuter",
+      "id": "denominator-2-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "duden/online#de-halb"
+      ],
+      "forms": {
+        "compound": "einhalb",
+        "default": "ein halb"
+      },
+      "id": "fraction-one-half",
+      "kind": "fraction-reading"
+    }
+  ],
+  "schema": 2
+}

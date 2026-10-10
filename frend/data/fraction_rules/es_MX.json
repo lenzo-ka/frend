@@ -1,0 +1,253 @@
+{
+  "icu_version": "78.3",
+  "locale": "es_MX",
+  "normalization_sha256": "061fdd5dc59db02fbcd0c148175f3f8ec325c9d77f2affb2fc9a73b3b7c949f9",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:rae/dpd-2#es-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:ua/matesfacil#es-mixed"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          " y ",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:icu/78.3/fraction-percent#es_MX-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " por ciento"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "spanish-avo"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "medio"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "sep/nueva-escuela-mexicana#es-medios"
+      ],
+      "forms": {
+        "default": "medios"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "tercio"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "tercios"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "treint"
+      },
+      "id": "denominator-stem-30",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "cuarent"
+      },
+      "id": "denominator-stem-40",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "cincuent"
+      },
+      "id": "denominator-stem-50",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "sesent"
+      },
+      "id": "denominator-stem-60",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "setent"
+      },
+      "id": "denominator-stem-70",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "ochent"
+      },
+      "id": "denominator-stem-80",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "novent"
+      },
+      "id": "denominator-stem-90",
+      "kind": "fraction-denominator-stem"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "dosmilésimo"
+      },
+      "gender": "masculine",
+      "id": "denominator-2000-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "dosmilésimos"
+      },
+      "gender": "masculine",
+      "id": "denominator-2000-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "cincomilésimo"
+      },
+      "gender": "masculine",
+      "id": "denominator-5000-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "cincomilésimos"
+      },
+      "gender": "masculine",
+      "id": "denominator-5000-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "diezmilésimo"
+      },
+      "gender": "masculine",
+      "id": "denominator-10000-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "rae/dpd-2#es-fractions"
+      ],
+      "forms": {
+        "default": "diezmilésimos"
+      },
+      "gender": "masculine",
+      "id": "denominator-10000-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    }
+  ],
+  "schema": 2
+}

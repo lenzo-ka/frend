@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import functools
+import hashlib
 import importlib.util
 import json
 import sys
@@ -206,6 +207,44 @@ def test_unseen_soak_inputs_are_disjoint_across_passes():
     assert all(left.isdisjoint(right) for left in passes for right in passes if left is not right)
 
 
+def test_unseen_soak_keeps_two_thousand_dates_per_locale_per_pass(monkeypatch):
+    observed_counts = []
+
+    def dates(_locale, _pass_index, count=2000):
+        observed_counts.append(count)
+        return ["not-a-date"]
+
+    monkeypatch.setattr(gate, "GATE_LOCALES", ("en_US",))
+    monkeypatch.setattr(gate, "_unseen_inputs", dates)
+    monkeypatch.setattr(gate, "_unseen_fraction_inputs", lambda *_args: ["not-a-fraction"])
+    monkeypatch.setattr(gate, "_reading_detectors", lambda _locale: ())
+    monkeypatch.setattr(gate, "detect", lambda *_args: ())
+    monkeypatch.setattr(
+        gate,
+        "normalize",
+        lambda *_args, **_kwargs: SimpleNamespace(units=()),
+    )
+    monkeypatch.setattr(gate, "rss_bytes", lambda: 0)
+    gate._soak_child()
+    assert observed_counts == [2000, 2000, 2000]
+
+
+def test_first_hit_times_only_the_lazy_default_request(monkeypatch):
+    clock = iter((100, 250))
+    calls = []
+    monkeypatch.setattr(gate.time, "perf_counter_ns", lambda: next(clock))
+    monkeypatch.setattr(gate, "normalize", lambda text, *, locale: calls.append((text, locale)))
+    monkeypatch.setattr(gate, "_normalize_date_probe", lambda _locale: (10_000, {"date": True}))
+    monkeypatch.setattr(
+        gate,
+        "_normalize_fraction_probes",
+        lambda _locale: (20_000, {"fraction": True}),
+    )
+    result = gate._runtime_child("first", "fr_FR", Path("unused"), Path("unused"))
+    assert result["first_hit_ns"] == 150
+    assert calls == [("123", "fr_FR")]
+
+
 def test_unseen_soak_exposes_unbounded_input_keyed_cache(monkeypatch):
     retained_bytes = 0
 
@@ -255,6 +294,16 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                 "date_probes": {
                     "en_US": {"date_units": 1, "selected_generated": False, "events": {}}
                 },
+                "fraction_probes": {
+                    "en_US": {
+                        "probes": {
+                            "fraction": {"units": 1, "selected_generated": False},
+                            "percent": {"units": 1, "selected_generated": False},
+                        },
+                        "events": {"load": 0, "lower": 0, "generate": 0},
+                        "bundle_available": True,
+                    }
+                },
             }
         ],
     }
@@ -273,7 +322,22 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
     ]
     soak = {
         "summary": {"pass3_minus_pass1_bytes": measurement(mib)},
-        "runs": [{"run": 1, "date_receipts": soak_receipts}],
+        "runs": [
+            {
+                "run": 1,
+                "date_receipts": soak_receipts,
+                "fraction_receipts": [
+                    {
+                        "locale": row["locale"],
+                        "pass": row["pass"],
+                        "count": 1,
+                        "successful_fraction_detections": 1,
+                        "selected_generated": 0 if row["locale"] == "en_US" else 1,
+                    }
+                    for row in soak_receipts
+                ],
+            }
+        ],
     }
     fold = {
         "rows": [
@@ -552,6 +616,552 @@ def test_require_no_negative_flips_is_an_executable_failure():
     result = gate.compare({"cases": [base]}, {"cases": [head]}, require_no_negative_flips=True)
     assert not result["correctness"]["passed"]
     assert result["correctness"]["failures"][0]["kind"] == "negative-flips"
+
+
+def test_expected_recoveries_cannot_pass_empty():
+    result = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        expected_recoveries={
+            "rows": [],
+            "strict_total": 0,
+            "insensitive_total": 0,
+            "witness_sha256": hashlib.sha256(b"[]").hexdigest(),
+        },
+    )
+    assert not result["correctness"]["passed"]
+    assert result["correctness"]["failures"][0]["kind"] == "expected-recovery-minimum"
+
+
+def test_fraction_manifest_routing_set_is_independent_of_date_rows():
+    common = {
+        "locale": "fr_FR",
+        "written": "3/7",
+        "strict": False,
+        "presentation": False,
+        "insensitive": False,
+        "first_strict": False,
+        "first_presentation": False,
+        "first": "x",
+        "error": None,
+    }
+    fraction = {
+        **common,
+        "id": "fr_FR:fraction:1",
+        "offer_signature": [{"type": "number:fraction", "fields": []}],
+    }
+    date = {
+        **common,
+        "id": "fr_FR:date:1",
+        "offer_signature": [{"type": "date:yMd", "fields": ["y", "M", "d"]}],
+    }
+    public_fields = (
+        "strict",
+        "presentation",
+        "insensitive",
+        "first",
+        "first_strict",
+        "first_presentation",
+        "error",
+        "offer_signature",
+    )
+    payload = {field: fraction.get(field) for field in public_fields}
+    result = gate.compare(
+        {"cases": [fraction, date]},
+        {"cases": [fraction, date]},
+        allowed_changes={
+            "family": "fraction",
+            "rows": [{"id": fraction["id"], "base": payload, "head": payload}],
+        },
+    )
+    assert result["correctness"]["passed"]
+
+
+def test_fraction_recovery_gate_rejects_removed_expected_positive():
+    base_rows = []
+    head_rows = []
+    for index in range(4):
+        base = {
+            "id": f"fr_FR:fraction:{index}",
+            "locale": "fr_FR",
+            "written": "3/7",
+            "strict": False,
+            "presentation": False,
+            "insensitive": False,
+            "first_strict": False,
+            "first_presentation": False,
+            "targets": ["trois septièmes"],
+            "target_hits": {
+                "strict": [False],
+                "presentation": [False],
+                "insensitive": [False],
+            },
+            "offer_signature": [],
+        }
+        head = {
+            **base,
+            "strict": True,
+            "presentation": True,
+            "insensitive": True,
+            "target_hits": {
+                "strict": [True],
+                "presentation": [True],
+                "insensitive": [True],
+            },
+            "offer_signature": [
+                {
+                    "start": 0,
+                    "end": 3,
+                    "alternatives": [
+                        {
+                            "text": "trois septièmes",
+                            "provenance": (
+                                "fraction-rule:fr_FR+"
+                                "normalization-record:frend/curated#fr-fractions"
+                            ),
+                        }
+                    ],
+                }
+            ],
+        }
+        base_rows.append(base)
+        head_rows.append(head)
+    fields = ("strict", "presentation", "insensitive", "first_strict", "first_presentation")
+    manifest_rows = [
+        {
+            "id": base_rows[index]["id"],
+            "base": {field: base_rows[index][field] for field in fields},
+            "head": {field: head_rows[index][field] for field in fields},
+            "expected_speech": "trois septièmes",
+            "source_record_id": "frend/curated#fr-fractions",
+        }
+        for index in range(3)
+    ]
+    witness_sha256 = hashlib.sha256(
+        json.dumps(
+            manifest_rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()
+    ).hexdigest()
+    result = gate.compare(
+        {"cases": base_rows},
+        {"cases": head_rows},
+        expected_recoveries={
+            "rows": manifest_rows,
+            "strict_total": 3,
+            "insensitive_total": 3,
+            "witness_sha256": witness_sha256,
+        },
+    )
+    assert {failure["kind"] for failure in result["correctness"]["failures"]} == {
+        "unexpected-positive-flips"
+    }
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement", "failure_kind"),
+    [
+        ("expected_speech", "nonsense", "expected-recovery-speech"),
+        ("source_record_id", "nonsense", "expected-recovery-source-record"),
+    ],
+)
+def test_fraction_recovery_gate_validates_witness_metadata(field, replacement, failure_kind):
+    base = {
+        "id": "fr_FR:fraction:1",
+        "locale": "fr_FR",
+        "written": "3/7",
+        "strict": False,
+        "presentation": False,
+        "insensitive": False,
+        "first_strict": False,
+        "first_presentation": False,
+        "targets": ["trois septièmes"],
+        "target_hits": {name: [False] for name in ("strict", "presentation", "insensitive")},
+        "offer_signature": [],
+    }
+    head = {
+        **base,
+        "strict": True,
+        "presentation": True,
+        "insensitive": True,
+        "target_hits": {name: [True] for name in ("strict", "presentation", "insensitive")},
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 3,
+                "alternatives": [
+                    {
+                        "text": "trois septièmes",
+                        "provenance": (
+                            "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
+                        ),
+                    }
+                ],
+            }
+        ],
+    }
+    fields = ("strict", "presentation", "insensitive", "first_strict", "first_presentation")
+    declared = {
+        "id": base["id"],
+        "base": {name: base[name] for name in fields},
+        "head": {name: head[name] for name in fields},
+        "expected_speech": "trois septièmes",
+        "source_record_id": "frend/curated#fr-fractions",
+    }
+    declared[field] = replacement
+    witness_sha256 = hashlib.sha256(
+        json.dumps([declared], ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    result = gate.compare(
+        {"cases": [base]},
+        {"cases": [head]},
+        expected_recoveries={
+            "rows": [declared],
+            "strict_total": 1,
+            "insensitive_total": 1,
+            "witness_sha256": witness_sha256,
+        },
+    )
+    assert failure_kind in {item["kind"] for item in result["correctness"]["failures"]}
+
+
+def test_fraction_recovery_source_must_offer_the_declared_speech():
+    base = {
+        "id": "fr_FR:fraction:1",
+        "locale": "fr_FR",
+        "written": "3/7",
+        "strict": False,
+        "presentation": False,
+        "insensitive": False,
+        "first_strict": False,
+        "first_presentation": False,
+        "targets": ["trois septièmes"],
+        "target_hits": {name: [False] for name in ("strict", "presentation", "insensitive")},
+        "offer_signature": [],
+    }
+    head = {
+        **base,
+        "strict": True,
+        "presentation": True,
+        "insensitive": True,
+        "target_hits": {name: [True] for name in ("strict", "presentation", "insensitive")},
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 3,
+                "alternatives": [
+                    {"text": "trois septièmes", "provenance": "unrelated"},
+                    {
+                        "text": "une autre lecture",
+                        "provenance": (
+                            "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
+                        ),
+                    },
+                ],
+            }
+        ],
+    }
+    fields = ("strict", "presentation", "insensitive", "first_strict", "first_presentation")
+    declared = {
+        "id": base["id"],
+        "base": {name: base[name] for name in fields},
+        "head": {name: head[name] for name in fields},
+        "expected_speech": "trois septièmes",
+        "source_record_id": "frend/curated#fr-fractions",
+    }
+    witness_sha256 = hashlib.sha256(
+        json.dumps([declared], ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    result = gate.compare(
+        {"cases": [base]},
+        {"cases": [head]},
+        expected_recoveries={
+            "rows": [declared],
+            "strict_total": 1,
+            "insensitive_total": 1,
+            "witness_sha256": witness_sha256,
+        },
+    )
+    assert "expected-recovery-source-record" in {
+        item["kind"] for item in result["correctness"]["failures"]
+    }
+
+
+def test_fraction_recovery_source_can_be_one_edge_of_the_complete_target_route():
+    row = {
+        "written": "x3/7y",
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 1,
+                "alternatives": [{"text": "x", "provenance": "surface:passthrough"}],
+            },
+            {
+                "start": 1,
+                "end": 4,
+                "alternatives": [
+                    {
+                        "text": "trois septièmes",
+                        "provenance": (
+                            "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
+                        ),
+                    }
+                ],
+            },
+            {
+                "start": 4,
+                "end": 5,
+                "alternatives": [{"text": "y", "provenance": "surface:passthrough"}],
+            },
+        ],
+    }
+    assert gate._source_record_offers(
+        row,
+        "x trois septièmes y",
+        "frend/curated#fr-fractions",
+        form=gate.strict_form,
+    )
+
+
+def test_fraction_recovery_source_must_be_on_the_matching_complete_route():
+    row = {
+        "written": "3/7",
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 3,
+                "alternatives": [
+                    {"text": "trois septièmes", "provenance": "unrelated"},
+                    {
+                        "text": "une autre lecture",
+                        "provenance": (
+                            "fraction-rule:fr_FR+normalization-record:frend/curated#fr-fractions"
+                        ),
+                    },
+                ],
+            }
+        ],
+    }
+    assert not gate._source_record_offers(
+        row,
+        "trois septièmes",
+        "frend/curated#fr-fractions",
+        form=gate.strict_form,
+    )
+
+
+def test_fraction_recovery_gate_validates_witness_hash():
+    result = gate.compare(
+        {"cases": []},
+        {"cases": []},
+        expected_recoveries={
+            "rows": [],
+            "strict_total": 0,
+            "insensitive_total": 0,
+            "witness_sha256": "0" * 64,
+        },
+    )
+    assert "expected-recovery-witness-hash" in {
+        item["kind"] for item in result["correctness"]["failures"]
+    }
+
+
+def test_allowed_change_gate_rejects_provenance_only_change_outside_routing_set():
+    fraction = {
+        "id": "fr_FR:fraction:1",
+        "locale": "fr_FR",
+        "written": "3/7",
+        "strict": False,
+        "presentation": False,
+        "insensitive": False,
+        "first_strict": False,
+        "first_presentation": False,
+        "first": "x",
+        "offer_signature": [{"type": "number:fraction", "alternatives": []}],
+        "error": None,
+    }
+    cardinal = {
+        **fraction,
+        "id": "fr_FR:cardinal:1",
+        "written": "3",
+        "offer_signature": [{"type": "number:decimal", "alternatives": [{"provenance": "base"}]}],
+    }
+    changed = json.loads(json.dumps(cardinal))
+    changed["offer_signature"][0]["alternatives"][0]["provenance"] = "head"
+    fields = (
+        "strict",
+        "presentation",
+        "insensitive",
+        "first",
+        "first_strict",
+        "first_presentation",
+        "error",
+        "offer_signature",
+    )
+    payload = {field: fraction[field] for field in fields}
+    result = gate.compare(
+        {"cases": [fraction, cardinal]},
+        {"cases": [fraction, changed]},
+        allowed_changes={
+            "family": "fraction",
+            "rows": [{"id": fraction["id"], "base": payload, "head": payload}],
+        },
+    )
+    assert result["correctness"]["failures"][0]["kind"] == "change-outside-manifest"
+
+
+def test_fraction_manifest_cannot_bless_changed_effective_ranking_input():
+    common = {
+        "id": "es_ES:fraction:1",
+        "locale": "es_ES",
+        "written": "2/7",
+        "strict": True,
+        "presentation": True,
+        "insensitive": True,
+        "first_strict": True,
+        "first_presentation": True,
+        "first": "dos séptimos",
+        "error": None,
+    }
+    base = {
+        **common,
+        "offer_signature": [
+            {
+                "start": 0,
+                "end": 3,
+                "type": "fraction:flexible",
+                "alternatives": [
+                    {
+                        "text": "dos séptimos",
+                        "provenance": "base-public",
+                        "prior_provenance": "legacy-measurement-key",
+                        "weight": None,
+                    }
+                ],
+            }
+        ],
+    }
+    head = json.loads(json.dumps(base))
+    head["offer_signature"][0]["alternatives"][0].update(
+        provenance="fraction-rule:es_ES", prior_provenance="changed-measurement-key"
+    )
+    public_fields = (
+        "strict",
+        "presentation",
+        "insensitive",
+        "first",
+        "first_strict",
+        "first_presentation",
+        "error",
+        "offer_signature",
+    )
+    result = gate.compare(
+        {"cases": [base]},
+        {"cases": [head]},
+        allowed_changes={
+            "family": "fraction",
+            "rows": [
+                {
+                    "id": base["id"],
+                    "base": {field: base[field] for field in public_fields},
+                    "head": {field: head[field] for field in public_fields},
+                }
+            ],
+        },
+    )
+    assert "unchanged-reading-ranking" in {
+        item["kind"] for item in result["correctness"]["failures"]
+    }
+
+
+def test_fraction_rank_gate_uses_shared_relative_order_not_absolute_index():
+    def row(alternatives):
+        return {
+            "id": "es_ES:test_cases_fraction.txt:3",
+            "locale": "es_ES",
+            "written": "1/4",
+            "strict": True,
+            "presentation": True,
+            "insensitive": True,
+            "first_strict": True,
+            "first_presentation": True,
+            "first": "un cuarto",
+            "error": None,
+            "offer_signature": [
+                {
+                    "start": 0,
+                    "end": 3,
+                    "type": "fraction:flexible",
+                    "alternatives": alternatives,
+                }
+            ],
+        }
+
+    invalid = [
+        {"text": text, "provenance": "legacy-invalid", "weight": None}
+        for text in ("uno cuarto", "uno cuartos", "uno cuartas", "uno cuarta")
+    ]
+    shared = [
+        {
+            "text": "un cuarto",
+            "provenance": "legacy-quarter",
+            "prior_provenance": None,
+            "weight": None,
+        },
+        {
+            "text": "una cuarta parte",
+            "provenance": "legacy-part",
+            "prior_provenance": None,
+            "weight": None,
+        },
+    ]
+    base = row([*invalid, *shared])
+    head = row(
+        [
+            {
+                **item,
+                "provenance": f"fraction-rule:es_ES+{item['provenance']}",
+                "prior_provenance": item["provenance"],
+            }
+            for item in shared
+        ]
+    )
+    public_fields = (
+        "strict",
+        "presentation",
+        "insensitive",
+        "first",
+        "first_strict",
+        "first_presentation",
+        "error",
+        "offer_signature",
+    )
+
+    def compare(candidate):
+        return gate.compare(
+            {"cases": [base]},
+            {"cases": [candidate]},
+            allowed_changes={
+                "family": "fraction",
+                "rows": [
+                    {
+                        "id": base["id"],
+                        "base": {field: base[field] for field in public_fields},
+                        "head": {field: candidate[field] for field in public_fields},
+                    }
+                ],
+            },
+        )
+
+    result = compare(head)
+    assert not {
+        item["kind"]
+        for item in result["correctness"]["failures"]
+        if item["kind"].startswith("unchanged-reading-")
+    }
+    reordered = json.loads(json.dumps(head))
+    reordered["offer_signature"][0]["alternatives"].reverse()
+    result = compare(reordered)
+    assert "unchanged-reading-order" in {item["kind"] for item in result["correctness"]["failures"]}
 
 
 def test_pr4_improvement_profile_enforces_stricter_runtime_and_fold_budgets():

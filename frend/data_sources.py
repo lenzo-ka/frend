@@ -54,6 +54,19 @@ INTERNAL_ONLY = "internal-only"
 LICENSE_CLASSES = ("shippable", "shippable-share-alike", "derived-shippable", INTERNAL_ONLY)
 SHIPPABLE_CLASSES = frozenset({"shippable", "shippable-share-alike", "derived-shippable"})
 
+
+def _citation_source(authority: str) -> Mapping[str, object]:
+    return {
+        "license": "LicenseRef-Citation-Only",
+        "notice": (
+            f"{authority} is cited as public linguistic evidence; no source text is redistributed."
+        ),
+        "allowed_use": "citation evidence only",
+        "class": "shippable",
+        "vendored": (),
+    }
+
+
 # id -> SPDX/license identifier, notice, allowed use, license class, and files under
 # frend/data/ that are the source itself. An id ending in "/" is a namespace.
 SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
@@ -137,6 +150,46 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
             "class": "shippable",
             "vendored": (),
         },
+        "german-grammar/fractions": _citation_source("german-grammar.de"),
+        "serlo/fractions": _citation_source("Serlo Education e.V."),
+        "rechtschreibrat/amtliches-regelwerk-2018": _citation_source(
+            "Rat fuer deutsche Rechtschreibung"
+        ),
+        "duden/online": _citation_source("Duden online"),
+        "rae/dpd-2": _citation_source("RAE and ASALE, Diccionario panhispanico de dudas"),
+        "rae/gramatica-basica": _citation_source("RAE and ASALE, Nueva gramatica basica"),
+        "rae/brae": _citation_source("Real Academia Espanola, BRAE"),
+        "sep/nueva-escuela-mexicana": _citation_source(
+            "Secretaria de Educacion Publica, Nueva Escuela Mexicana"
+        ),
+        "ua/matesfacil": _citation_source("Universidad de Alicante, Matesfacil"),
+        "oqlf/bdl": _citation_source("Office quebecois de la langue francaise"),
+        "academie-francaise/dictionnaire": _citation_source("Academie francaise, Dictionnaire"),
+        "eduscol/fractions-cycle-3": _citation_source(
+            "Ministere de l'Education nationale, Eduscol"
+        ),
+        "treccani/enciclopedia-italiano": _citation_source(
+            "Istituto della Enciclopedia Italiana, Enciclopedia dell'Italiano"
+        ),
+        "treccani/vocabolario": _citation_source(
+            "Istituto della Enciclopedia Italiana, Vocabolario"
+        ),
+        "mext/math-grade4": _citation_source(
+            "Japan Ministry of Education, Culture, Sports, Science and Technology"
+        ),
+        "nikl/online-qna": _citation_source("National Institute of Korean Language"),
+        "nikl/standard-dictionary": _citation_source(
+            "National Institute of Korean Language, Standard Korean Language Dictionary"
+        ),
+        "nikl/basic-dictionary": _citation_source(
+            "National Institute of Korean Language, Basic Korean Dictionary"
+        ),
+        "ciberduvidas/consultorio": _citation_source("Ciberduvidas da Lingua Portuguesa"),
+        "uel/matematica-essencial": _citation_source("Universidade Estadual de Londrina"),
+        "impa/obmep": _citation_source("IMPA and OBMEP"),
+        "jixi/education-cloud": _citation_source("Jixi Education Cloud"),
+        "life-education/journal": _citation_source("Life Education journal"),
+        "urumqi/government": _citation_source("Urumqi Municipal People's Government"),
         # Festival's hand-curated word lists (github.com/festvox/festival): free to use
         # and distribute with its notice kept and changes marked, which
         # en/context/festival_classes.json carries.

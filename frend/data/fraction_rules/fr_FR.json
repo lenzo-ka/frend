@@ -1,0 +1,145 @@
+{
+  "icu_version": "78.3",
+  "locale": "fr_FR",
+  "normalization_sha256": "e3cfb11ea4c5d14349666e159075b17ef4d40c405863b21ff91ceaabb1d410a2",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "fraction": [
+      {
+        "provenance": [
+          "normalization-record:oqlf/bdl#fr-fractions"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "mixed": [
+      {
+        "provenance": [
+          "normalization-record:academie-francaise/dictionnaire#fr-demi-singular"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰WHOLE￱",
+          " et ",
+          "￰NUM￱",
+          " ",
+          "￰DEN￱"
+        ]
+      }
+    ],
+    "percent": [
+      {
+        "provenance": [
+          "normalization-record:icu/78.3/fraction-percent#fr_FR-percent"
+        ],
+        "tokens": [
+          "￰SIGN￱",
+          "￰AMOUNT￱",
+          " pour cent"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "oqlf/bdl#fr-fractions"
+      ],
+      "forms": {
+        "default": "icu-ordinal"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "academie-francaise/dictionnaire#fr-demi-singular"
+      ],
+      "forms": {
+        "default": "demi"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "academie-francaise/dictionnaire#fr-demi-plural"
+      ],
+      "forms": {
+        "default": "demis"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "eduscol/fractions-cycle-3#fr-thirds-quarters"
+      ],
+      "forms": {
+        "default": "tiers"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "oqlf/bdl#fr-fractions"
+      ],
+      "forms": {
+        "default": "tiers"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "academie-francaise/dictionnaire#fr-quart"
+      ],
+      "forms": {
+        "default": "quart"
+      },
+      "gender": "masculine",
+      "id": "denominator-4-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "eduscol/fractions-cycle-3#fr-thirds-quarters"
+      ],
+      "forms": {
+        "default": "quarts"
+      },
+      "gender": "masculine",
+      "id": "denominator-4-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "academie-francaise/dictionnaire#fr-demi-singular"
+      ],
+      "forms": {
+        "default": "omit-one"
+      },
+      "id": "mixed-half-omit-one",
+      "kind": "fraction-mixed-half-strategy"
+    }
+  ],
+  "schema": 2
+}

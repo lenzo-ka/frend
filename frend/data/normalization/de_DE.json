@@ -1,0 +1,38 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "de_DE",
+  "provenance": {"source": "frend/curated"},
+  "versions": {"icu": "78.3"},
+  "sources": [
+    {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
+    {"id": "german-grammar/fractions", "receipt": "german-fractions.json"},
+    {"id": "serlo/fractions", "receipt": "serlo-fractions.json"},
+    {"id": "rechtschreibrat/amtliches-regelwerk-2018", "receipt": "rechtschreibrat-fractions.json"},
+    {"id": "duden/online", "receipt": "duden-halb.json"},
+    {"id": "duden/online", "receipt": "duden-zweieinhalb.json"},
+    {"id": "duden/online", "receipt": "duden-eineinviertel.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "german-cardinal-tel"}, "derived_from": ["serlo/fractions#de-denominators", "rechtschreibrat/amtliches-regelwerk-2018#de-fraction-capitalization"]},
+    {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "neuter", "forms": {"default": "Halb"}, "derived_from": ["duden/online#de-halb"]},
+    {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "neuter", "forms": {"default": "Halbe"}, "derived_from": ["serlo/fractions#de-halbe"]},
+    {"id": "fraction-one-half", "kind": "fraction-reading", "forms": {"default": "ein halb", "compound": "einhalb"}, "derived_from": ["duden/online#de-halb"]}
+  ],
+  "rules": [
+    {"id": "fraction", "fields": ["sign", "num", "den"], "target": ["SIGN", "NUM", " ", "DEN"], "directions": ["tn"], "derived_from": ["german-grammar/fractions#de-fraction-frame"]},
+    {"id": "mixed", "fields": ["sign", "whole", "num", "den"], "target": ["SIGN", "WHOLE", "NUM", "DEN"], "directions": ["tn"], "derived_from": ["duden/online#de-mixed-compounds"]},
+    {"id": "percent", "fields": ["sign", "amount"], "target": ["SIGN", "AMOUNT", " Prozent"], "directions": ["tn"], "derived_from": ["icu/78.3/fraction-percent#de_DE-percent"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "icu/78.3/fraction-percent#de_DE-percent": ["2ed163051f1138e15276c324b1567924f4697b67318e5b560cccfa182a161111"],
+    "german-grammar/fractions#de-fraction-frame": ["c20c38600359672b58fbd316da59ecfda1dfa997d1a9a64fe03c0afee8fdefd9"],
+    "serlo/fractions#de-denominators": ["09f78ba54e95450252066f8c6d47175af1ed5d3c4204eaa5ea2ec250092d64e6"],
+    "serlo/fractions#de-halbe": ["09f78ba54e95450252066f8c6d47175af1ed5d3c4204eaa5ea2ec250092d64e6"],
+    "rechtschreibrat/amtliches-regelwerk-2018#de-fraction-capitalization": ["9d68c37536ebd3717e76cb21ac999653bbc68b3ff6e93f23da683428666988a2"],
+    "duden/online#de-halb": ["c251c25dbd9404a7ddb556d69c88d20afafc9b384ef8bb5aecb3f439c7c87f92"],
+    "duden/online#de-mixed-compounds": ["cc4495cc960ed2473e031f1faea4dbaa93bf611e5d3104193b4da377e3abae10", "759f1c5d8fda8cf4363c7d29aeb43104c332fdfdfb36b9ee3f795cdd0fd91f9b"]
+  }
+}

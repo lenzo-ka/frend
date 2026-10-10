@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-10T13:48:55Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.dictionnaire-academie.fr/article/A9D1174",
+  "revision": "Dictionnaire de l'Academie francaise, 9e ed., demi II.1",
+  "sha256": "73ff190673dc116336b078b1b64fc0fc31d87f4b658e3c55c808a71a1a77c2f7",
+  "source": "academie-francaise/dictionnaire",
+  "transform_command": "manual transcription of the cited demi and douze et demi examples"
+}

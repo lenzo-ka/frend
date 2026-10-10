@@ -1,0 +1,2861 @@
+{
+  "base_head": "d2fdc9bfdc00a71fa495e9b6ef4d9940a75a67a1",
+  "family": "fraction",
+  "insensitive_total": 144,
+  "rows": [
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "zwei neuntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:10",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein ein halb",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_fraction.txt:11",
+      "source_record_id": "duden/online#de-mixed-compounds"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein sechstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:12",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein zehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:13",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein elftel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:14",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein zehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:15",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein zwölftel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:16",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein dreizehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:17",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein vierzehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:18",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein fünfzehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:19",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein halb",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:2",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein sechzehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:20",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein siebzehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:21",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein achtzehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:22",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein neunzehntel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:23",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein zwanzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:24",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein dreißigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:25",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein vierzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:26",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein fünfzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:27",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein sechzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:28",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein siebzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:29",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "vier halbe",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:3",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein achtzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:30",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein neunzigstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:31",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein zwei und zwanzigstel",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_fraction.txt:33",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "minus ein zwei und zwanzigstel",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "de_DE:test_cases_fraction.txt:34",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein drittel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:4",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein viertel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:5",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein fünftel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:6",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein sechstel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:7",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ein siebtel",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "de_DE:test_cases_fraction.txt:8",
+      "source_record_id": "german-grammar/fractions#de-fraction-frame"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un tercio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:1",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un onceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:17",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un doceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:18",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un treceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:19",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos tercios",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:2",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un catorceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:20",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un quinceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:21",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un dieciseisavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:22",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un diecisieteavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:23",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un dieciochoavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:24",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un diecinueveavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:25",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un veinteavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:26",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un veintiunavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:27",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un veintidosavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:28",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un treintavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:29",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un treintaiunavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:30",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cuarentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:31",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cuarentaiunavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:32",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cincuentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:33",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un sesentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:34",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un setentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:35",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un ochentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:36",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un noventavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:37",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "tres y dos centésimos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:40",
+      "source_record_id": "ua/matesfacil#es-mixed"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos y dos milésimos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:61",
+      "source_record_id": "ua/matesfacil#es-mixed"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un dosmilésimo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:66",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cincomilésimo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:67",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un diezmilésimo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:68",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos un tercio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:73",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos dos y un tercio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_fraction.txt:74",
+      "source_record_id": "ua/matesfacil#es-mixed"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "tres medios",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_ES:test_cases_normalize_with_audio.txt:28",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un tercio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:1",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un onceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:17",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un doceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:18",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un treceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:19",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos tercios",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:2",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un catorceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:20",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un quinceavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:21",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un dieciseisavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:22",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un diecisieteavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:23",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un dieciochoavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:24",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un diecinueveavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:25",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un veinteavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:26",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un veintiunavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:27",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un veintidosavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:28",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un treintavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:29",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un treintaiunavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:30",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cuarentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:31",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cuarentaiunavo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:32",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cincuentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:33",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un sesentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:34",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un setentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:35",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un ochentavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:36",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un noventavo",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:37",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "tres y dos centésimos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:40",
+      "source_record_id": "ua/matesfacil#es-mixed"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos y dos milésimos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:61",
+      "source_record_id": "ua/matesfacil#es-mixed"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un dosmilésimo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:66",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un cincomilésimo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:67",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un diezmilésimo",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:68",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos un tercio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:73",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos dos y un tercio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_fraction.txt:74",
+      "source_record_id": "ua/matesfacil#es-mixed"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "tres medios",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "es_MX:test_cases_normalize_with_audio.txt:28",
+      "source_record_id": "rae/dpd-2#es-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un demi",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_fraction.txt:1",
+      "source_record_id": "oqlf/bdl#fr-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quatre et deux quarts",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_fraction.txt:11",
+      "source_record_id": "academie-francaise/dictionnaire#fr-demi-singular"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "moins quatre et un tiers",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_fraction.txt:12",
+      "source_record_id": "academie-francaise/dictionnaire#fr-demi-singular"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un tiers",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_fraction.txt:2",
+      "source_record_id": "oqlf/bdl#fr-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un quart",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_fraction.txt:3",
+      "source_record_id": "oqlf/bdl#fr-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un et demi",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "fr_FR:test_cases_fraction.txt:9",
+      "source_record_id": "academie-francaise/dictionnaire#fr-demi-singular"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "il diciotto percento delle emissioni di carbonio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "it_IT:test_cases_measure.txt:7",
+      "source_record_id": "icu/78.3/fraction-percent#it_IT-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "二分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:1",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一と三分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:16",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:2",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一と二分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:4",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一荷二分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:5",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一荷二分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:6",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一荷二分の一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ja_JP:test_cases_fraction.txt:7",
+      "source_record_id": "mext/math-grade4#ja-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이분의 일",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:1",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "일과 삼분의 일",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:11",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이번 경기의 오분의 삼이 중요하다",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:15",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "마이너스 이분의 일",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:2",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "참가자의 칠분의 육 이 통과했다",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:20",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "전체의 사분의 삼 이 감소했다",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:21",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "학생의 구분의 칠 이 합격했다",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:23",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "전체의 이분의 일 이 남았다",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:24",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "참가자의 팔분의 삼이 탈락했다",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:27",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "응답자의 십분의 육 이 동의했다",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_fraction.txt:28",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "일과 이분의 일",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:3",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이와 삼십삼분의 십이",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:4",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "마이너스 일과 이분의 일",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:5",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "마이너스 일과 이분의 일",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": false,
+        "strict": false
+      },
+      "id": "ko_KR:test_cases_fraction.txt:6",
+      "source_record_id": "nikl/online-qna#ko-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백 퍼센트",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "ko_KR:test_cases_measure.txt:26",
+      "source_record_id": "nikl/basic-dictionary#ko-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "um meio",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:1",
+      "source_record_id": "ciberduvidas/consultorio#pt-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "três onze avos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:15",
+      "source_record_id": "ciberduvidas/consultorio#pt-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "cinco treze avos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:16",
+      "source_record_id": "ciberduvidas/consultorio#pt-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "um terço",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:2",
+      "source_record_id": "ciberduvidas/consultorio#pt-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dois e um quarto",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:20",
+      "source_record_id": "ciberduvidas/consultorio#pt-mixed-half"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "três e dois terços",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:21",
+      "source_record_id": "ciberduvidas/consultorio#pt-mixed-half"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quarenta e sete mil setecentos e um novecentos e treze avos",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:22",
+      "source_record_id": "ciberduvidas/consultorio#pt-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dois terços",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "pt_BR:test_cases_fraction.txt:4",
+      "source_record_id": "ciberduvidas/consultorio#pt-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:1",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "负百分之九十八",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:10",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:16",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "负五分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:17",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一又五分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:18",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "百分之三十",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:2",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "百分之零点四",
+      "head": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:20",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "百分之六点三",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:21",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "公司的年收益率是百分之六点五",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:22",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "百分之六十的人口是男性",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:23",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "全校有百分之八十的学生来自大山深处的贫困地区",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:24",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "我们的队伍有三分之一的人是士官学校出身",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:25",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "今年的降雨量较往年多了百分之五",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:26",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:3",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "负三分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:4",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "负三分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:5",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "二分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:6",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "十分之一",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:7",
+      "source_record_id": "jixi/education-cloud#zh-fractions"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "百分之九十八",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:8",
+      "source_record_id": "urumqi/government#zh-percent"
+    },
+    {
+      "base": {
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "负百分之九十八",
+      "head": {
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "presentation": true,
+        "strict": true
+      },
+      "id": "zh_CN:test_cases_fraction.txt:9",
+      "source_record_id": "urumqi/government#zh-percent"
+    }
+  ],
+  "schema": 1,
+  "status": "development-only",
+  "strict_total": 140,
+  "witness_sha256": "9ed9928118054cb13e72f4be87889ef1c8976cf82a9bbc923c745fa4db7b5b57"
+}

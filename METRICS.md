@@ -170,6 +170,24 @@ Sources: `typographic-fold/results.md`, `ranges-ids/results.md`, and
 
 ## Latency and robustness
 
+PR6 fraction and percent composition uses the same paired immediate-base discipline.
+`tools/fraction_expected_changes.json` closes the routed non-English fixture scope and
+`tools/fraction_expected_recoveries.json` pins its source-linked positive witnesses;
+English fraction and percent rows require exact identity. `tools/diff_candidates.py
+--family fraction` reads development shards 90--94 only and compares the complete
+ordered public payload. It refuses every other shard, including report-only shard 99.
+
+`tools/bench_fraction_compose.py` measures fresh-process composition for `3/7` and
+`45%`. Five runs of at least 1,000 alternating warm calls per generated locale require
+cold <= 10 ms, warm p50 <= 0.3 ms, and warm p95 <= 1 ms, with complete generation.
+Tiergraph lowering and exact recipe generation happen in the deterministic bundle
+builder; runtime validates and loads those compiled recipes.
+The paired locale gate additionally checks the common first-hit, prewarm, workload,
+fold, and RSS ceilings. Its unseen soak uses three disjoint passes of 2,000 simple
+fractions, mixed fractions, and percents plus the inherited 2,000 dates per locale;
+pass 3 minus pass 1 is <= 2 MiB.
+All commands run against released dependency versions and the immediate parent.
+
 PR5 date composition is evaluated as a paired immediate-base change under released
 `icukit>=0.8`, `tiergraph>=0.8`, and `cartlet>=0.7`. The correctness gate compares
 complete ordered alternative payloads and permits changes only in the checked
