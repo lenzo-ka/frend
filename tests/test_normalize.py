@@ -395,6 +395,46 @@ def test_prime_measures_remain_unambiguous(locale, foot, inch, mixed):
 
 
 @pytest.mark.parametrize(
+    ("source", "spoken"),
+    [
+        ("1 ft", " one foot "),
+        ("2 lbs", " two pounds "),
+        ("60 mph", " sixty miles per hour "),
+        ("100 sq ft", " one hundred square feet "),
+        ("60 km/h", " sixty kilometers per hour "),
+        ("2 mi²", " two square miles "),
+        ("1 lb", " one pound "),
+        ("1 mph", " one mile per hour "),
+        ("1 sq ft", " one square foot "),
+        ("1 mi²", " one square mile "),
+    ],
+)
+def test_public_normalize_reads_common_english_unit_abbreviations(source, spoken):
+    assert frend.normalize(source) == spoken
+
+
+@pytest.mark.parametrize(
+    ("source", "reader", "spoken"),
+    [
+        ("1 sq yd", "measure:square-yard", " one square yard "),
+        ("2 sq yd", "measure:square-yard", " two square yards "),
+        ("1 sq in", "measure:square-inch", " one square inch "),
+        ("2 sq in", "measure:square-inch", " two square inches "),
+        ("1 cu ft", "measure:cubic-foot", " one cubic foot "),
+        ("2 cu ft", "measure:cubic-foot", " two cubic feet "),
+    ],
+)
+def test_common_area_and_volume_units_use_one_measure_span(source, reader, spoken):
+    normalized = frend.normalize(source, locale="en_US", offsets=True)
+
+    assert isinstance(normalized, NormalizedText)
+    assert normalized.text == spoken
+    assert [(unit.reader, unit.source_span) for unit in normalized.units] == [
+        (reader, (0, len(source)))
+    ]
+
+
+@pytest.mark.parametrize(
     ("locale", "degree", "celsius", "fahrenheit"),
     [
         ("en_US", " one degree ", " one degree Celsius ", " one degree Fahrenheit "),

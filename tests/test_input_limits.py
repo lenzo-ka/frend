@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+import importlib
 import inspect
 
 import pytest
 
+import frend
 from frend import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -21,6 +23,24 @@ from frend import (
 from frend.context import TextContext
 from frend.electronic import ElectronicDetector
 from frend.fold_resolve import resolve_cover
+
+
+@pytest.mark.parametrize("source_text", [None, b"123", 123, ["123"]])
+def test_normalize_refuses_non_string_input_before_folding(monkeypatch, source_text):
+    normalize_module = importlib.import_module("frend.normalize")
+
+    def unexpected_fold(*args, **kwargs):
+        pytest.fail("input folding ran before plain-text validation")
+
+    monkeypatch.setattr(normalize_module, "apply_input_fold", unexpected_fold)
+
+    with pytest.raises(InputValidationError, match="source_text must be a str"):
+        frend.normalize(source_text)
+
+
+@pytest.mark.parametrize("source_text", ["", " ", "\t\n"])
+def test_normalize_retains_empty_and_whitespace_only_results(source_text):
+    assert frend.normalize(source_text) == ""
 
 
 def test_binary_and_core_file_like_input_is_refused_before_resolution():
