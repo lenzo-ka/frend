@@ -1073,6 +1073,97 @@ def test_fraction_manifest_cannot_bless_changed_effective_ranking_input():
     }
 
 
+def test_fraction_rank_gate_uses_shared_relative_order_not_absolute_index():
+    def row(alternatives):
+        return {
+            "id": "es_ES:test_cases_fraction.txt:3",
+            "locale": "es_ES",
+            "written": "1/4",
+            "strict": True,
+            "presentation": True,
+            "insensitive": True,
+            "first_strict": True,
+            "first_presentation": True,
+            "first": "un cuarto",
+            "error": None,
+            "offer_signature": [
+                {
+                    "start": 0,
+                    "end": 3,
+                    "type": "fraction:flexible",
+                    "alternatives": alternatives,
+                }
+            ],
+        }
+
+    invalid = [
+        {"text": text, "provenance": "legacy-invalid", "weight": None}
+        for text in ("uno cuarto", "uno cuartos", "uno cuartas", "uno cuarta")
+    ]
+    shared = [
+        {
+            "text": "un cuarto",
+            "provenance": "legacy-quarter",
+            "prior_provenance": None,
+            "weight": None,
+        },
+        {
+            "text": "una cuarta parte",
+            "provenance": "legacy-part",
+            "prior_provenance": None,
+            "weight": None,
+        },
+    ]
+    base = row([*invalid, *shared])
+    head = row(
+        [
+            {
+                **item,
+                "provenance": f"fraction-rule:es_ES+{item['provenance']}",
+                "prior_provenance": item["provenance"],
+            }
+            for item in shared
+        ]
+    )
+    public_fields = (
+        "strict",
+        "presentation",
+        "insensitive",
+        "first",
+        "first_strict",
+        "first_presentation",
+        "error",
+        "offer_signature",
+    )
+
+    def compare(candidate):
+        return gate.compare(
+            {"cases": [base]},
+            {"cases": [candidate]},
+            allowed_changes={
+                "family": "fraction",
+                "rows": [
+                    {
+                        "id": base["id"],
+                        "base": {field: base[field] for field in public_fields},
+                        "head": {field: candidate[field] for field in public_fields},
+                    }
+                ],
+            },
+        )
+
+    result = compare(head)
+    assert not {
+        item["kind"]
+        for item in result["correctness"]["failures"]
+        if item["kind"].startswith("unchanged-reading-")
+    }
+    reordered = json.loads(json.dumps(head))
+    reordered["offer_signature"][0]["alternatives"].reverse()
+    result = compare(reordered)
+    assert "unchanged-reading-order" in {item["kind"] for item in result["correctness"]["failures"]}
+
+
 def test_pr4_improvement_profile_enforces_stricter_runtime_and_fold_budgets():
     base_runtime, head_runtime, soak, _fold = _resource_documents(100, 100)
     head_runtime["summary"]["first_hit_ns"]["en_US"] = {
