@@ -453,6 +453,21 @@ def test_symbol_before_a_signed_number_keeps_its_reading(text, expected):
     assert [(d["type"], d["text"]) for d in detections] == [expected]
 
 
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize(
+    ("opening", "closing"),
+    [('"', '"'), ("'", "'"), ("«", "»"), ("‹", "›"), ("“", "”"), ("‘", "’")],
+)
+@pytest.mark.parametrize("number", ["-1", "-1/2", "-5 °C"])
+def test_matched_quote_pair_around_signed_number_stays_on_surface(locale, opening, closing, number):
+    assert SymbolDetector(locale).detect(f"{opening}{number}{closing}") == []
+
+
+@pytest.mark.parametrize("text", ["<-1>", "«-1", "“-1"])
+def test_comparison_and_unmatched_quote_before_signed_number_keep_their_reading(text):
+    assert [detection["text"] for detection in SymbolDetector().detect(text)] == [text[0]]
+
+
 def test_the_locale_scripts_come_from_icu():
     """Likely subtags' script first, the exemplars' scripts, then Common and Inherited."""
     from frend.symbols import locale_scripts

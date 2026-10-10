@@ -351,14 +351,50 @@ def _digit_like_cldr_symbol(char: str, locale: str) -> bool:
 
 
 _SIGNS = frozenset({"+", "-", "−"})
+# Quotation marks are not Unicode opening brackets: guillemets and curly quotes are
+# Initial/Final_Punctuation, while straight quotes are Other_Punctuation.  Keep this
+# deliberately narrower than mirrored punctuation so comparison operators remain
+# standalone symbols before signed numbers.
+_QUOTATION_PAIRS = {
+    '"': '"',
+    "'": "'",
+    "«": "»",
+    "‹": "›",
+    "‘": "’",
+    "“": "”",
+}
+_NUMBER_SEPARATORS = frozenset({",", ".", "٫", "٬", "，", "．"})
 # Non-alphanumeric suffixes accepted by the configured percent and measure readers.
 # Currency symbols are handled by their Unicode property below.
 _NUMBER_READING_SUFFIXES = frozenset({"%", "٪", "﹪", "％", "°", "'", '"', "′", "″"})
+_QUOTED_NUMBER_READING_MARKS = _NUMBER_READING_SUFFIXES | {"/", "C", "F"}
+
+
+def _matched_quote_closes_signed_number(text: str, at: int, closing: str) -> bool:
+    """Whether ``closing`` ends the numeric surface which starts at ``at``."""
+    while at < len(text):
+        char = text[at]
+        if char == closing:
+            return True
+        if not (
+            char.isdecimal()
+            or char.isspace()
+            or _CURRENCY_SYMBOLS.contains(char)
+            or char in _NUMBER_SEPARATORS
+            or char in _QUOTED_NUMBER_READING_MARKS
+        ):
+            return False
+        at += 1
+    return False
 
 
 def _opens_signed_number(text: str, start: int, end: int) -> bool:
-    """Whether one opening bracket is immediately before a signed numeric reading."""
-    if end - start != 1 or not _OPENING_BRACKETS.contains(text[start:end]):
+    """Whether one opening delimiter is immediately before a signed numeric reading."""
+    if end - start != 1:
+        return False
+    opening = text[start:end]
+    closing = _QUOTATION_PAIRS.get(opening)
+    if not _OPENING_BRACKETS.contains(opening) and closing is None:
         return False
     at = end
     if at >= len(text) or text[at] not in _SIGNS:
@@ -367,7 +403,9 @@ def _opens_signed_number(text: str, start: int, end: int) -> bool:
     # ICU currency readers accept both ``-$3`` and the ordinary ``-3`` shape.
     while at < len(text) and _CURRENCY_SYMBOLS.contains(text[at]):
         at += 1
-    return at < len(text) and text[at].isdecimal()
+    if at >= len(text) or not text[at].isdecimal():
+        return False
+    return closing is None or _matched_quote_closes_signed_number(text, at, closing)
 
 
 def _closes_number_reading(text: str, start: int, end: int) -> bool:
