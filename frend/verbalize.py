@@ -3099,7 +3099,10 @@ def _range_end(
     else:
         amount = Decimal(value.decimal)
         number = detection.get("number")
-        if (bare or type_ == "number:decimal") and number is not None:
+        if type_.startswith("ordinal:"):
+            alternatives = _spoken_ordinal(value, detection, locale)
+            kind = "ordinal"
+        elif (bare or type_ == "number:decimal") and number is not None:
             # The number the end writes, read as written ("1.00" "one point o o", "79.20"
             # in "79.20%"): a cardinal where it writes no fraction, else a decimal.
             amount = Decimal(number["value"].decimal)
