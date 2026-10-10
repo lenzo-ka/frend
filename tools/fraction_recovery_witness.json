@@ -1,0 +1,1809 @@
+{
+  "audit": {
+    "coverage": [
+      {
+        "path": "pr6-gate/base-coverage/coverage.json",
+        "rows": 3886,
+        "sha256": "e0b11e2123739a87f51552af20d964bcab5e6c4dcbee10588a3658bd07854b6e"
+      },
+      {
+        "path": "pr6-gate/head-coverage/coverage.json",
+        "rows": 3886,
+        "sha256": "d21d44f160f5e8bca4e8ccaeac053151240412f48e7571236bfa30703b755fcf"
+      },
+      {
+        "path": "pr6-gate2/base-coverage/coverage.json",
+        "rows": 3886,
+        "sha256": "45a591c22602c6a850ce3fe5e814ba0266fc7957c8ab225e9e1e28a488229449"
+      },
+      {
+        "path": "pr6-gate2/head-coverage/coverage.json",
+        "rows": 3886,
+        "sha256": "0a475928f558531b125dded21c6be3b84ddc86455680cd3e3820d81b76180d77"
+      }
+    ],
+    "prior_artifacts": [
+      {
+        "path": "pr6-report.md",
+        "sha256": "dedbc4ccffbe9ce3492bbb94b14f9d760c565e2bb0630df92db889a4580e2f56"
+      },
+      {
+        "path": "pr6-gate.md",
+        "sha256": "62271701afc8ceec6fd438e94cd04f044021919dffdc97f79ab720dbf8b29567"
+      },
+      {
+        "path": "pr6-gate-final.md",
+        "sha256": "e67eb2f572faedea2aaa59f13ac0e0e750339e54bb20d57c83bf9b6d69745818"
+      },
+      {
+        "path": "pr6-gate2.md",
+        "sha256": "081951ddad6370e237a315619adcca423b45216a7da863bca8ef545bc2dbbce7"
+      },
+      {
+        "path": "pr6-gate2-final.md",
+        "sha256": "aecb79bd932b0f5f0a2a353489666c2223b47f5508ac236ce23c1c58fb554e85"
+      },
+      {
+        "path": "tools/fraction_expected_changes.json",
+        "sha256": "789090530563fc0020c899a3ebd414bca18f84adfacfc00c970991c21337a7d0"
+      },
+      {
+        "path": "tools/fraction_expected_recoveries.json",
+        "sha256": "31997b13e3fb9e453bc6f03c6f45a2d644b82db74f076e60228e256257a12d00"
+      }
+    ],
+    "source": "nemo",
+    "source_files": [
+      {
+        "path": "de/data_inverse_text_normalization/test_cases_fraction.txt",
+        "sha256": "7a146fa03fc10a7c6caf8b3cdb5a090a6b29e147f5a4ea52358aca9129cbddb9"
+      },
+      {
+        "path": "de/data_inverse_text_normalization/test_cases_measure.txt",
+        "sha256": "7f78b98c20b02839358c2b7215fa7c1007b3439edba2d42bde0d1af65ae53037"
+      },
+      {
+        "path": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+        "sha256": "cbe9017c01844d8693b1afb2a9b252358fb264d2aa441a252b50b36aad723b65"
+      },
+      {
+        "path": "es/data_inverse_text_normalization/test_cases_measure.txt",
+        "sha256": "6ea2d2c4d3c4591820bacade26e14fcb1332f09ea05f3bbe3556a5c02be9d334"
+      },
+      {
+        "path": "fr/data_inverse_text_normalization/test_cases_fraction.txt",
+        "sha256": "54f4da39bc51b95e64d86cda6248c50a553fcfa68c67e90239888fa07c0a462d"
+      },
+      {
+        "path": "fr/data_inverse_text_normalization/test_cases_measure.txt",
+        "sha256": "01cd6beaacf2c0d41160fe0e549181ba5b75b65e0d219771a876c50c715d70a0"
+      },
+      {
+        "path": "pt/data_inverse_text_normalization/test_cases_measure.txt",
+        "sha256": "dfb90b080681c3176d8d652f3548f18901670f1cc955d68e405343e65f945e16"
+      },
+      {
+        "path": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+        "sha256": "ddf6f0e76983ebaab34b5f6bf156ddd21240dcd63a3a48084d9d9279b2945d34"
+      },
+      {
+        "path": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+        "sha256": "537f498ab78e1033fd4634fb01ce2e664c5a089b28626b6ce28180df3c5ff9b6"
+      },
+      {
+        "path": "ko/data_inverse_text_normalization/test_cases_measure.txt",
+        "sha256": "e4d69c15a8392de991f36ae4abc59f885a2c447b526dc750354c7839a5d41131"
+      },
+      {
+        "path": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+        "sha256": "6a5bec568a23925cbaaa6a0c3ea6cbc899ae03ec9fc94f6a105b1497d0487aae"
+      }
+    ],
+    "source_revision": "acacc21b1cb7916b10558855bc4f85957a0b2fde"
+  },
+  "base_head": "de520b6f46a80e44832a7d14524e9c79064a7dcd",
+  "family": "fraction-percent-heldout",
+  "rows": [
+    {
+      "base": {
+        "error": null,
+        "first": " 2 2/3 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "264c16bf0212328ad537dbf6d3651c8eda72653638373885727117afd38b4cb2",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos y dos tercios",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:10",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 10,
+      "written": "2 2/3"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -4 1/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5af2502558740444fcb4852e257c46da31097c47decb0bfb6a7c8c68748a4315",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos cuatro y un quinto",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:11",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 11,
+      "written": "-4 1/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " menos diez vigésimos ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a4abdc9c894cacb587ddc761ea992f8e8ff8fa339915d72ccd93e8edfdb0add3",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos diez veinteavos",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:12",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 12,
+      "written": "-10/20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ocho tercers ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "384fbea0e2d394c1fb571442fb5be09b4df39cc1dace87bcf63a6660976a834c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ocho tercios",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:3",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 3,
+      "written": "8/3"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " diez trigésimos ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7e47fed0a71052e9725e119ed34ce7dbf33f20abc114370def9bb12f7881bae5",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "diez treintavos",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:5",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 5,
+      "written": "10/30"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " tres vigésimos ",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "411e85989ed9d7cd8cafea22f4c8f2e9e74fd5b0544041705715e0660539da08",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "tres vigésimos",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:6",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 6,
+      "written": "3/20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " once centésimo primers ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5220852bd4c01af29a49b657fb8e675615de2c04fe6446c51a1307061d7d60b7",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "once cientounavos",
+      "family": "fraction",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_fraction.txt:7",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 7,
+      "written": "11/101"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 2 2/3 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9ff7dbc9b283a7010d76a38c2a61ddc410fbfb116398a23eb91548d6d9335860",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos y dos tercios",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:10",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 10,
+      "written": "2 2/3"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -4 1/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "df8adca56e6dd583899b5d1c27ada2551c307c942b43bfd3838f94326a980cb4",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos cuatro y un quinto",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:11",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 11,
+      "written": "-4 1/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " menos diez vigésimos ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "73f1e85908c6f2e2e4be5302f6e04b99c88af229603e3c60f9b289ba44053cba",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "menos diez veinteavos",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:12",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 12,
+      "written": "-10/20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ocho tercers ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3405f3b1569b3fb287b8213fe9bd425f24db70034112c3851c04bbea3fed21cd",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "ocho tercios",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:3",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 3,
+      "written": "8/3"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " diez trigésimos ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3607c8f88c0a7a840de1a4c165330bdec428459b97fc33e4426070a151084ee7",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "diez treintavos",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:5",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 5,
+      "written": "10/30"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " tres vigésimos ",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "4afe5f03d824df43ef4d7b181e57fa080297c60c890d87b7dc64523da497711a",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "tres vigésimos",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:6",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 6,
+      "written": "3/20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " once centésimo primers ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "25490456f2f97af7d68bb6bdd41eb5ab041d56ec87b677ce95439d6d3db229cc",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "once cientounavos",
+      "family": "fraction",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_fraction.txt:7",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 7,
+      "written": "11/101"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1 3/4 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b34544dad53b4d4c83da5c71c0fa08b4b2eba73e104253b8927bbcbfed519f43",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一と四分の三",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:1",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 1,
+      "written": "-1 3/4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1/350 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c20dcbe1ae7f66f23cd22b78507eb21c87e5cdb39034ec57623f64377347f9f7",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス三百五十分の一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:10",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 10,
+      "written": "-1/350"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -471/98 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "00bf7879984c950dd3489352180c04aa4e7710fc907ad3b1f91421dfe7aec520",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス九十八分の四百七十一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:11",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 11,
+      "written": "-471/98"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -2 3/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "104caa45a77c6fe2ccad510313a726e7e1d294f1ef4876b3ca0956833766b1ce",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二と五分の三",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:12",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 12,
+      "written": "-2 3/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -9/20 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "109a7235a39c7474c19b17ca08d3a5aa6291f95b410779935700c0ee9434bb45",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二十分の九",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:13",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 13,
+      "written": "-9/20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -21/20 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "da57f8bf17008ec2e34c43969d02485f56202bc7d76b82610fd1febb0c3e887f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二十分の二十一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:14",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 14,
+      "written": "-21/20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1/24 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ca783f1de5e8359880be1f81a0ac931cf3e62209de39260dcb9c22b407bf06e6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二十四分の一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:15",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 15,
+      "written": "-1/24"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1/220 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b2b311e7e73ccb18e450ef90ee2a89b294f45b89898f4a1b0a7462e95f99db1a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二百二十分の一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:16",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 16,
+      "written": "-1/220"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -147/252 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "890d4e9f41ed9202d88fd19011a4da9a40c55346c78d124117ae5099f5943655",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二百五十二分の百四十七",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:17",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 17,
+      "written": "-147/252"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1/256 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "15fcb1670c0e32e058d398308d7fdc2597204a9f93fdf8d865314721fea54e9b",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二百五十六分の一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:18",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 18,
+      "written": "-1/256"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -2 3/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "104caa45a77c6fe2ccad510313a726e7e1d294f1ef4876b3ca0956833766b1ce",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス二荷五分の三",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:19",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 19,
+      "written": "-2 3/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 1 3/4 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d40f7f81ff1d720f14033f143f6e108599b980dd8c6d33307e624609d7f30d27",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一と四分の三",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:2",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 2,
+      "written": "1 3/4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -7/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "36a58076a8971af1d3a29b3417525cdb05d2e095d450937639927ffb4b93b102",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス五分の七",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:20",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 20,
+      "written": "-7/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -8/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "fb7209e2fbed293c42b8b38326624e302aeb28552e0fe79d9586c6a90c21e6fa",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス五分の八",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:21",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 21,
+      "written": "-8/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -14/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e6ebefe69dc8a028854c579828e1d00be3539b0ca3904d1388898729ae904b1a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス五分の十四",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:22",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 22,
+      "written": "-14/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -132/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ab93bcc4082ac4d5f8af57d0d5ed4bf16dc5ca40d7ef301baa758df19f4b084c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス五分の百三十二",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:23",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 23,
+      "written": "-132/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -5/8 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e65986a80e771b9ff9265d3d9697d24726b1eebe2905479ad3c76b4ac5056f49",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス八分の五",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:24",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 24,
+      "written": "-5/8"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "答えは -5/8 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d42f09a67d90bf12f99d2b27a15b164a420de5728b20086041b8db00bfd7fe7f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "答えはマイナス八分の五",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:25",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 25,
+      "written": "答えは-5/8"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 1/3 の人がその場を離れた",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ae4ba6cc293ac59b030adab5a13c74b756f499c04fbd14d1878b63b1274d6186",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三分の一の人がその場を離れた",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:26",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 26,
+      "written": "1/3の人がその場を離れた"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "約 1/2 を削る",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "8676350ae033df1404886bd0257925534fa8c8146fccedb9a0882d0ddcd5ef71",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "約二分の一を削る",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:27",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 27,
+      "written": "約1/2を削る"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 3/10 を削って吟醸をつくる",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "07a445295b2209fc1aceeb3988623dbdd485355b0034505b2fea1710618be9e5",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "十分の三を削って吟醸をつくる",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:28",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 28,
+      "written": "3/10を削って吟醸をつくる"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一人 1/3 ぐらい取る",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "91b130468334dee8f03f1fab7b28ed3f8d7ce3244449b7bc770155462a10be6e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一人三分の一ぐらい取る",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:29",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 29,
+      "written": "1人1/3ぐらい取る"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -9/1 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4224f136c8080a4d9614549c86f9e69fd08649a8297c91e725b9dff4d8b7d6bc",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一分の九",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:3",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 3,
+      "written": "-9/1"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "答えは 1/9 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6c7464a33813d70d4386da4870591a257c7b1b329cf381ef57f2af421f923a00",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "答えは九分の一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:30",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 30,
+      "written": "答えは1/9"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 2/3 の人がその場を離れた",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "948c90cc8c6d836152ee6b5fd8da37c8664f304c8778ddaf82552d620cefffce",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三分の二の人がその場を離れた",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:31",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 31,
+      "written": "2/3の人がその場を離れた"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "約 1/10 を削る",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b3c4d3464172376f78d490bebd9fcce195cb46f87bfe8e6c129d7ca2f018584f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "約十分の一を削る",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:32",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 32,
+      "written": "約1/10を削る"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 1/3 を削って吟醸をつくる",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6d4a458d1141a4450ad61df93473bc28f86b9eb9fcd5dd5ba61dab097015b8ac",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三分の一を削って吟醸をつくる",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:33",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 33,
+      "written": "1/3を削って吟醸をつくる"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一人 1/2 とぐらい取る",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a50c0487e303a5652489acbed227fb952efe28cca36b5c0ea70d3b5709adddbb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一人二分の一とぐらい取る",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:34",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 34,
+      "written": "1人1/2とぐらい取る"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -60/1 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "0207c40d7df01ebb670e351c30b980ee381f43f6426d4a26ecc07ed7397ad331",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一分の六十",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:4",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 4,
+      "written": "-60/1"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -123/1 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "16f24e99be7b042685751cd5828bbbd4d6c755510bf04b35ba8fff0e2202d4d5",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一分の百二十三",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:5",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 5,
+      "written": "-123/1"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1 3/4 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b34544dad53b4d4c83da5c71c0fa08b4b2eba73e104253b8927bbcbfed519f43",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス一荷四分の三",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:6",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 6,
+      "written": "-1 3/4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1/720 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4b637f1366ed314d81ede15b126cf1a37c6aed60b32c899152326248780143e3",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス七百二十分の一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:7",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 7,
+      "written": "-1/720"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -31/32 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "addb2404d8630ed17334df3a3dec1facc0158a512710ad09db0a9b4e8f458950",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス三十二分の三十一",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:8",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 8,
+      "written": "-31/32"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -4/397 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "70773c4075945b87ed3536b8af46c1e9996bd915718c2d12931de83628c65a22",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "マイナス三百九十七分の四",
+      "family": "fraction",
+      "id": "ja_JP:ja/data_inverse_text_normalization/test_cases_fraction.txt:9",
+      "language": "ja",
+      "locale": "ja_JP",
+      "source": "ja/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 9,
+      "written": "-4/397"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 123/1000 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b27dee73eefbffbe9de7a45c6d5991942692b596b223da7b23e2f8c50c814e54",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "천분의백이십삼",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:10",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 10,
+      "written": "123/1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 3 1/4 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "fcc7c6b5c8d92f71558a9d89ecbecb0ada6c14c28cd153869768ad097be369cc",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "삼과사분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:12",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 12,
+      "written": "3 1/4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 5 3/8 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b68d10d4aa26ad8653a9089a2e7399543e9ba0c6cdd20cf74cb24a92c8f7eb9f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "오와팔분의삼",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:13",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 13,
+      "written": "5 3/8"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 10 75/100 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "31def5805e3ddea5dccf5db9c92ce80beaa0f1580511a0996ffdebd77e3859b9",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십과백분의칠십오",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:14",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 14,
+      "written": "10 75/100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -1/4 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4cfb87d963ea43e1d73fbc89c861b450cd0dfc90fbfb95bb47269ab5aae1f3cb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "마이너스사분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:15",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 15,
+      "written": "-1/4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 일 / 공점오 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2214b61639c8de5005cd5b3dfcaf39fef48856408297beeeb5fdd0b366f02c40",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "영점오분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:16",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 16,
+      "written": "1/0.5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 일점오 / 삼 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7a5c0ee7c7c55c1f16429c780a052f74f1faef691c683cf74c610bd2ddeb5ef7",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "삼분의일점오",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:17",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 17,
+      "written": "1.5/3"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 일 /√ 사 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2b78838420fba95fbf5e87e77fd357ededa64bc673999e02973626de8ddf63a0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "루트사분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:18",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 18,
+      "written": "1/√4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "√ 16/9 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c8e308547fb91a52448b3a56579e78489ad8770d83a3829451d000a0cc40d340",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "구분의루트십육",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:19",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 19,
+      "written": "√16/9"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 이   일 /√ 구 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e03eb3d1441905a38160b152361deefab8fc8ffabdec463b8f2afe624cc71633",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이와루트구분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:20",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 20,
+      "written": "2 1/√9"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 하이픈 마이너스 √ 25/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "048470010b9dfaa98741d715ec5e0a7bd71908292c6e7eecad712d7517949681",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "마이너스오분의루트이십오",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:21",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 21,
+      "written": "-√25/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 20/150 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c7d6f69b66aeeb539fc2fa4b8ad85115ac89d3610482586c75685df73f366102",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백오십분의이십",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:23",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 23,
+      "written": "20/150"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 4 2/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "df03cb8764154506edaf793b78627ad3d6c5cb10dcd9b6686f373465d4061c40",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "사와오분의이",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:24",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 24,
+      "written": "4 2/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 20 1/100 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a2fd9c24ee74d6c9bb1630631551db23aee75ad99fd32acbc27792c04638e524",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이십과백분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:25",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 25,
+      "written": "20 1/100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 공점이 / 일점오 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ec30530eefd5a477dfe516e65ad40096d46ceb4b114b2191045c680fc8edfd88",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "일점오분의영점이",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:26",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 26,
+      "written": "0.2/1.5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 십 /√ 백 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "505bf7c66e919d14b1381a280d2ed22aa78ca64277c8434cf2969d65dbeaaeda",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "루트백분의십",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:27",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 27,
+      "written": "10/√100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 십   삼 /√ 팔십일 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "252541ea240220a9a546281abe87931c7894287f48d9bde1bec06b14c75ca294",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십과루트팔십일분의삼",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:28",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 28,
+      "written": "10 3/√81"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " -2 1/10 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f1cc3f86fb5af60a00e3e3b808dcb33c82a7dd3536d9f9a8bed3a01633509430",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "마이너스이와십분의일",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:29",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 29,
+      "written": "-2 1/10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 7/10 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3e0bc2374934155fc6928b1cbf1b099266f3718b0bf023a86aef78aa28ad8ed2",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십분의칠",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:5",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 5,
+      "written": "7/10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 5/12 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c2d9ea90941da4ab56b546a786327e40984908a59fca660d5224b5db60d328d9",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십이분의오",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:6",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 6,
+      "written": "5/12"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 10/23 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "09767741e89fe53df8bd1e8847c23fe95170e441d92c07346120751cb949109a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이십삼분의십",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:7",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 7,
+      "written": "10/23"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 99/100 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bdc53e0c1d0c21dd299b2b3b09ed3bb49f150a3450d65f0386b71d231ee329d2",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백분의구십구",
+      "family": "fraction",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_fraction.txt:9",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 9,
+      "written": "99/100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 백 % ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "0e7f441c5dab6cf3df5f2e2094cd59825fd8f66ac4de1468a9efa9f917669611",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백퍼센트",
+      "family": "percent",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_measure.txt:37",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_measure.txt",
+      "source_line": 37,
+      "written": "100 %"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 오십 % ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ce87718e646692a9112454961877baca48ec98a91e138e1ff9080b6b72e76eb4",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "오십 프로",
+      "family": "percent",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_measure.txt:38",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_measure.txt",
+      "source_line": 38,
+      "written": "50 %"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 삼십점오 % ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "04e9ac50dec73cc0475e6056bfdaa566f8203d66e560aeb9ac7000ff83e4ac94",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "삼십 점 오 퍼센트",
+      "family": "percent",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_measure.txt:39",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_measure.txt",
+      "source_line": 39,
+      "written": "30.5 %"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 5/1000 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "cb3a974eca27ff3a9a50550c2ae799a4944bf54c636967ac7b1d95e8efdccf68",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千分之五",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:10",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 10,
+      "written": "5/1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 三又 1/5 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c8213d8134d31db6a5c18e3de1ce31fd22579a8a7091503dcc1a2170a15c1ae7",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三又五分之一",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:11",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 11,
+      "written": "3又1/5"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一又 1/2 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5d9aa6b464a849219e697b7cf7ae0778583cf6c8d4ad0c47c9f7d646b5aa0741",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一又二分之一",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:12",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 12,
+      "written": "1又1/2"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一又 1/3 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e0702e126028b052148fd6e0d41d1f7db6b87a9e03ffc763a3ab7c9af6e4d6cd",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一又三分之一",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:13",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 13,
+      "written": "1又1/3"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 三又 1/10 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6ff072cf0bf54828ed8c8e9d2ed21294e7f6557cd4ca5d316ea100ebbab53f4f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三又十分之一",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:14",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 14,
+      "written": "3又1/10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十又 1/100 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5c1593e56d76510697078754b592a14248571b8e2791e19021c0a7488b343271",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五十又一百分之一",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:15",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 15,
+      "written": "50又1/100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 三又 5/1000 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "8189113834b9ee150b29a7b350df60e8373342096d4e3ab2d05939635ebdc308",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "三又一千分之五",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:16",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 16,
+      "written": "3又5/1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 六又 5/10 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4719bb336e106f03f65744a88fd99c23e8c037bb30424e585f388c78420d9754",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "六又十分之五",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:17",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 17,
+      "written": "6又5/10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 八又 5/7 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2fcefba5a48be9b6ba88b56cd54836862e875d56c8e335dc003bcb24acb2857d",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "八又七分之五",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:18",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 18,
+      "written": "8又5/7"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 九又 3/4 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "270c4cbedae29b6762e7191735b7c55975a945c8bea2db3095d72aa114c060a1",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "九又四分之三",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:19",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 19,
+      "written": "9又3/4"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 5/10 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7b151a4e3ed238dfaf211f32086e933231f25cbde771b78f4b949cf525712b81",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "十分之五",
+      "family": "fraction",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_fraction.txt:9",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_fraction.txt",
+      "source_line": 9,
+      "written": "5/10"
+    }
+  ],
+  "rows_sha256": "f6669210437c2efa2e6caf7cfd72647990cfd4b5b585e1bc88ec8622fc5b0483",
+  "schema": 1,
+  "selection": {
+    "candidate_rows": 186,
+    "excluded_occurrences": {
+      "artifact-spoken": 59,
+      "artifact-written": 48,
+      "coverage-pair": 50,
+      "coverage-written": 96
+    },
+    "rule": "all inverse-TN fraction rows and inverse-TN measure rows containing %, excluding any written surface/pair present in prior coverage and any row whose written or spoken literal occurs in prior PR6 reports/manifests",
+    "selected_by_locale_family": {
+      "es_ES:fraction": 7,
+      "es_MX:fraction": 7,
+      "ja_JP:fraction": 34,
+      "ko_KR:fraction": 22,
+      "ko_KR:percent": 3,
+      "zh_CN:fraction": 11
+    },
+    "selected_rows": 84
+  }
+}
