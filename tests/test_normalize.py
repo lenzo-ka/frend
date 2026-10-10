@@ -321,6 +321,45 @@ def test_prime_measures_remain_unambiguous(locale, foot, inch, mixed):
     assert frend.normalize("5′2″", locale=locale) == mixed
 
 
+@pytest.mark.parametrize(
+    ("locale", "degree", "celsius", "fahrenheit"),
+    [
+        ("en_US", " one degree ", " one degree Celsius ", " one degree Fahrenheit "),
+        ("es_MX", " uno grado ", " uno grado Celsius ", " uno grado Fahrenheit "),
+        ("es_ES", " uno grado ", " uno grado Celsius ", " uno grado Fahrenheit "),
+        (
+            "fr_FR",
+            " un\N{NO-BREAK SPACE}degré ",
+            " un\N{NO-BREAK SPACE}degré Celsius ",
+            " un\N{NO-BREAK SPACE}degré Fahrenheit ",
+        ),
+        ("de_DE", " eins Grad ", " eins Grad Celsius ", " eins Grad Fahrenheit "),
+        ("pt_BR", " um grau ", " um grau Celsius ", " um grau Fahrenheit "),
+        ("it_IT", " uno grado ", " uno grado Celsius ", " uno grado Fahrenheit "),
+        ("zh_CN", " 一度 ", " 一摄氏度 ", " 一华氏度 "),
+        ("ko_KR", " 일도 ", " 섭씨 일도 ", " 화씨 일도 "),
+        ("ja_JP", " 一 度 ", " 摂氏 一 度 ", " 華氏 一 度 "),
+        ("pt_PT", " um grau ", " um grau Celsius ", " um grau Fahrenheit "),
+    ],
+)
+def test_bare_degree_sign_does_not_invent_a_temperature_scale(locale, degree, celsius, fahrenheit):
+    bare = frend.normalize("1°", locale=locale, offsets=True)
+    assert isinstance(bare, NormalizedText)
+    assert bare.text == degree
+    assert {unit.reader for unit in bare.units} == {"measure:degree"}
+    assert not {"measure:celsius", "measure:fahrenheit"} & {unit.reader for unit in bare.units}
+
+    assert frend.normalize("1°C", locale=locale) == celsius
+    assert frend.normalize("1°F", locale=locale) == fahrenheit
+
+
+def test_bare_degree_range_does_not_invent_a_temperature_scale():
+    normalized = frend.normalize("1°–2°", locale="en_US", offsets=True)
+    assert isinstance(normalized, NormalizedText)
+    assert normalized.text == " one degree to two degrees "
+    assert {unit.reader for unit in normalized.units} == {"measure:range"}
+
+
 def test_project_authored_typographic_sentences_have_exact_outputs():
     path = Path(__file__).parent / "data" / "typographic_fold_synthetic.json"
     document = json.loads(path.read_text(encoding="utf-8"))
