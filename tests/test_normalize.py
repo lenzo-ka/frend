@@ -215,6 +215,31 @@ def test_typographic_examples_read_as_their_folded_twins(typographic, ascii_twin
     assert frend.normalize(typographic) == frend.normalize(ascii_twin, fold=None)
 
 
+@pytest.mark.parametrize(
+    ("source", "quote"),
+    [('"1"', '"'), ("'1'", "'"), ("“1”", '"'), ("‘1’", "'")],
+)
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+def test_paired_quotes_around_integer_remain_quotes(source, quote, locale):
+    assert frend.normalize(source, locale=locale) == (
+        quote + frend.normalize("1", locale=locale) + quote
+    )
+
+
+@pytest.mark.parametrize(
+    ("locale", "foot", "inch", "mixed"),
+    [
+        ("en_US", " one foot ", " one inch ", " five feet, two inches "),
+        ("fr_FR", " un\u00a0pied ", " un\u00a0pouce ", " cinq pieds et deux\u00a0pouces "),
+        ("ja_JP", " 一 フィート ", " 一 インチ ", " 五 フィート 二 インチ "),
+    ],
+)
+def test_prime_measures_remain_unambiguous(locale, foot, inch, mixed):
+    assert frend.normalize("1′", locale=locale) == foot
+    assert frend.normalize("1″", locale=locale) == inch
+    assert frend.normalize("5′2″", locale=locale) == mixed
+
+
 def test_project_authored_typographic_sentences_have_exact_outputs():
     path = Path(__file__).parent / "data" / "typographic_fold_synthetic.json"
     document = json.loads(path.read_text(encoding="utf-8"))
