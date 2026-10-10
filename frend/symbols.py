@@ -29,7 +29,7 @@ from functools import cache, lru_cache
 
 import icu
 from icukit import break_grapheme_spans
-from icukit.detectors import Capture, NumberValue
+from icukit.detectors import Capture, MeasureValue, NumberValue
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 
@@ -79,6 +79,15 @@ LETTER_NAME_SOURCE = "icu-name:letter"
 PROPERTY_NAME_SOURCE = "icu-name:property"
 SYMBOL_NAME_SOURCE = "icu-name:symbol"
 DEFAULT_SYMBOL_RUN_THRESHOLD = 3
+
+_COORDINATE_RE = re.compile(
+    r"(?<![\w])(?P<degrees>[0-9]+(?:\.[0-9]+)?)°"
+    r"(?:[ \t]*(?P<minutes>[0-9]+(?:\.[0-9]+)?)′)?"
+    r"[ \t]*(?P<direction>[NSEW])(?![\w])"
+)
+_COMPASS_WORDS = {
+    "en": {"N": "north", "S": "south", "E": "east", "W": "west"},
+}
 
 # Training shards 00--89: these ICU (General_Category, Script) classes each have at
 # least 100 occurrences and at least 99% of their occurrences are in wholly silent
@@ -368,6 +377,7 @@ _NUMBER_SEPARATORS = frozenset({",", ".", "٫", "٬", "，", "．"})
 # Currency symbols are handled by their Unicode property below.
 _NUMBER_READING_SUFFIXES = frozenset({"%", "٪", "﹪", "％", "°", "'", '"', "′", "″"})
 _QUOTED_NUMBER_READING_MARKS = _NUMBER_READING_SUFFIXES | {"/", "C", "F"}
+_POSSESSIVE_FOLLOWING_PUNCTUATION = frozenset({",", ".", "!", "?", ":", ";"})
 
 
 def _matched_quote_closes_signed_number(text: str, at: int, closing: str) -> bool:
@@ -456,6 +466,21 @@ def _follows_number_reading(text: str, start: int, end: int) -> bool:
     return saw_suffix and at >= 0 and text[at].isdecimal()
 
 
+def _follows_trailing_possessive_apostrophe(text: str, start: int, end: int) -> bool:
+    """Whether sentence punctuation follows the apostrophe on an s-final possessive.
+
+    The apostrophe makes the punctuation appear standalone even though it belongs on
+    the surface, as it does after the same word without a possessive apostrophe.
+    """
+    return (
+        end - start == 1
+        and text[start:end] in _POSSESSIVE_FOLLOWING_PUNCTUATION
+        and start >= 2
+        and text[start - 1] in "'’"
+        and text[start - 2] in "sS"
+    )
+
+
 @lru_cache(maxsize=LOCALE_CACHE)
 def _abbreviation_detector(locale: str):
     from icukit.abbreviation_recognize import AbbreviationDetector
@@ -498,6 +523,7 @@ def _standalone(text: str, start: int, end: int) -> bool:
         _opens_signed_number(text, start, end)
         or _closes_number_reading(text, start, end)
         or _follows_number_reading(text, start, end)
+        or _follows_trailing_possessive_apostrophe(text, start, end)
     ):
         return False
     return not (before.isalnum() or after.isalnum())
@@ -791,6 +817,53 @@ class SymbolDetector:
     def detect(self, text: str) -> list[dict]:
         language_neutral = canonical_locale(self.locale) == "root"
         detections = []
+        compass_words = _COMPASS_WORDS.get(icu.Locale(self.locale).getLanguage(), {})
+        for match in _COORDINATE_RE.finditer(text):
+            direction = match.group("direction")
+            word = compass_words.get(direction)
+            if word is None:
+                continue
+            captures = [
+                Capture(
+                    "degrees",
+                    match.start("degrees"),
+                    match.end("degrees"),
+                    match.group("degrees"),
+                    match.group("degrees"),
+                    "numeric",
+                )
+            ]
+            if match.group("minutes") is not None:
+                captures.append(
+                    Capture(
+                        "minutes",
+                        match.start("minutes"),
+                        match.end("minutes"),
+                        match.group("minutes"),
+                        match.group("minutes"),
+                        "numeric",
+                    )
+                )
+            captures.append(
+                Capture(
+                    "direction",
+                    match.start("direction"),
+                    match.end("direction"),
+                    direction,
+                    word,
+                    "text",
+                )
+            )
+            detections.append(
+                {
+                    "text": match.group(),
+                    "start": match.start(),
+                    "end": match.end(),
+                    "type": "measure:coordinate",
+                    "value": MeasureValue(match.group("degrees"), "degree"),
+                    "captures": tuple(captures),
+                }
+            )
         abbreviation_ends = (
             frozenset() if language_neutral else _period_ending_abbreviation_ends(text, self.locale)
         )

@@ -1092,6 +1092,7 @@ _SPOKEN_CAPTURES = {
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
     "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
+    "coordinate": frozenset({"degrees", "minutes", "direction"}),
     "mixed-measure": frozenset({"integer", "unit"}),
     "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
     "unit": frozenset({"unit"}),
@@ -2351,6 +2352,28 @@ def _spoken_measure(
             SpokenAlternative(template.format(item.text), f"{item.provenance}+{source}")
             for template, source in templates
             for item in _spoken_decimal(amount, locale)
+        ]
+    )
+
+
+def _spoken_coordinate(
+    value: MeasureValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak degrees, optional arcminutes, and a localized compass direction."""
+    direction = _capture(detection, "direction")
+    if direction is None or not direction.value:
+        raise NotImplementedError("coordinate without a compass direction")
+    components = [_spoken_measure(value, locale)]
+    minutes = _capture(detection, "minutes")
+    if minutes is not None:
+        components.append(_spoken_measure(MeasureValue(str(minutes.value), "minute"), locale))
+    return _ranked(
+        [
+            SpokenAlternative(
+                " ".join((*[item.text for item in combination], str(direction.value))),
+                "+".join((*[item.provenance for item in combination], lexical_source(locale))),
+            )
+            for combination in product(*components)
         ]
     )
 
@@ -3796,6 +3819,14 @@ def _verbalize_edge(
             alternatives = _spoken_time(value, detection, locale)
             key_value = tuple(value.fields)
             path = "time"
+        elif isinstance(value, MeasureValue) and type_ == "measure:coordinate":
+            alternatives = _spoken_coordinate(value, detection, locale)
+            key_value = (
+                value.decimal,
+                getattr(_capture(detection, "minutes"), "value", None),
+                getattr(_capture(detection, "direction"), "value", None),
+            )
+            path = "coordinate"
         elif isinstance(value, MeasureValue) and type_.startswith("measure:duration"):
             alternatives = _spoken_duration(detection, locale)
             key_value = (value.decimal, value.unit)

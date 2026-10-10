@@ -70,6 +70,16 @@ def test_sentence_end_punctuation_after_percent_stays_written(locale, punctuatio
     assert frend.normalize(text, locale=locale).rstrip().endswith(punctuation)
 
 
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+@pytest.mark.parametrize("punctuation", [",", ".", "!", "?", ":", ";"])
+def test_punctuation_after_plural_possessive_apostrophe_stays_on_the_surface(
+    apostrophe, punctuation
+):
+    text = f"teachers{apostrophe}{punctuation}"
+
+    assert SymbolDetector().detect(text) == []
+
+
 @pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
 @pytest.mark.parametrize("abbreviation", ["U.S.A.", "Dr."])
 @pytest.mark.parametrize("punctuation", [",", "!", "?", ":", ";", "…", ")", "]", "}"])
@@ -441,6 +451,14 @@ def test_locale_without_symbol_run_phrase_keeps_names_and_silence():
 def test_a_standalone_symbol_in_running_text_is_read():
     detections = SymbolDetector().detect("Tom & Jerry")
     assert [(d["type"], d["text"]) for d in detections] == [("symbol:cldr", "&")]
+
+
+@pytest.mark.parametrize("text", ["45°\nN", "45°\n30′ N", "45° 30′\nN"])
+def test_coordinate_does_not_join_fields_across_lines(text):
+    assert not any(
+        detection["type"] == "measure:coordinate"
+        for detection in SymbolDetector("en_US").detect(text)
+    )
 
 
 @pytest.mark.parametrize(
