@@ -377,6 +377,7 @@ _NUMBER_SEPARATORS = frozenset({",", ".", "٫", "٬", "，", "．"})
 # Currency symbols are handled by their Unicode property below.
 _NUMBER_READING_SUFFIXES = frozenset({"%", "٪", "﹪", "％", "°", "'", '"', "′", "″"})
 _QUOTED_NUMBER_READING_MARKS = _NUMBER_READING_SUFFIXES | {"/", "C", "F"}
+_POSSESSIVE_FOLLOWING_PUNCTUATION = frozenset({",", ".", "!", "?", ":", ";"})
 
 
 def _matched_quote_closes_signed_number(text: str, at: int, closing: str) -> bool:
@@ -465,6 +466,21 @@ def _follows_number_reading(text: str, start: int, end: int) -> bool:
     return saw_suffix and at >= 0 and text[at].isdecimal()
 
 
+def _follows_trailing_possessive_apostrophe(text: str, start: int, end: int) -> bool:
+    """Whether sentence punctuation follows the apostrophe on an s-final possessive.
+
+    The apostrophe makes the punctuation appear standalone even though it belongs on
+    the surface, as it does after the same word without a possessive apostrophe.
+    """
+    return (
+        end - start == 1
+        and text[start:end] in _POSSESSIVE_FOLLOWING_PUNCTUATION
+        and start >= 2
+        and text[start - 1] in "'’"
+        and text[start - 2] in "sS"
+    )
+
+
 @lru_cache(maxsize=LOCALE_CACHE)
 def _abbreviation_detector(locale: str):
     from icukit.abbreviation_recognize import AbbreviationDetector
@@ -507,6 +523,7 @@ def _standalone(text: str, start: int, end: int) -> bool:
         _opens_signed_number(text, start, end)
         or _closes_number_reading(text, start, end)
         or _follows_number_reading(text, start, end)
+        or _follows_trailing_possessive_apostrophe(text, start, end)
     ):
         return False
     return not (before.isalnum() or after.isalnum())

@@ -70,6 +70,16 @@ def test_sentence_end_punctuation_after_percent_stays_written(locale, punctuatio
     assert frend.normalize(text, locale=locale).rstrip().endswith(punctuation)
 
 
+@pytest.mark.parametrize("apostrophe", ["'", "’"])
+@pytest.mark.parametrize("punctuation", [",", ".", "!", "?", ":", ";"])
+def test_punctuation_after_plural_possessive_apostrophe_stays_on_the_surface(
+    apostrophe, punctuation
+):
+    text = f"teachers{apostrophe}{punctuation}"
+
+    assert SymbolDetector().detect(text) == []
+
+
 @pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
 @pytest.mark.parametrize("abbreviation", ["U.S.A.", "Dr."])
 @pytest.mark.parametrize("punctuation", [",", "!", "?", ":", ";", "…", ")", "]", "}"])
