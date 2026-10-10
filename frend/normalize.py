@@ -97,6 +97,8 @@ _MEASURE_UNITS = (
     "square-kilometer",
     "square-mile",
     "square-meter",
+    "square-yard",
+    "square-inch",
     "kilowatt",
     "megawatt",
     "watt",
@@ -123,6 +125,7 @@ _MEASURE_UNITS = (
     "square-foot",
     "millibar",
     "cubic-meter",
+    "cubic-foot",
 )
 _MIXED_MEASURES = ("foot-and-inch", "pound-and-ounce")
 
