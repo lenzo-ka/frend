@@ -42,7 +42,7 @@ def _fraction_detection(locale: str, text: str) -> dict:
     ("locale", "written", "spoken"),
     [
         ("es_MX", "3/17", "tres diecisieteavos"),
-        ("es_ES", "1/30", "un treintavo"),
+        ("es_ES", "1/30", "un trigésimo"),
         ("fr_FR", "2/8", "deux huitièmes"),
         ("de_DE", "3 1/2", "dreieinhalb"),
         ("pt_BR", "1/11", "um onze avos"),
