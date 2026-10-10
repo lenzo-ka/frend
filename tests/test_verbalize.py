@@ -1191,6 +1191,26 @@ def test_signed_bracket_regression_witnesses(written, spoken):
     assert normalize(written) == spoken
 
 
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize(
+    ("opening", "closing"),
+    [("«", "»"), ("‹", "›"), ("“", "”"), ("‘", "’")],
+)
+@pytest.mark.parametrize("number", ["1", "-1", "-1/2", "-5 °C"])
+def test_matched_quotes_around_signed_and_unsigned_numbers_keep_raw_delimiters(
+    locale, opening, closing, number
+):
+    assert normalize(f"{opening}{number}{closing}", locale=locale, fold=None) == (
+        opening + normalize(number, locale=locale, fold=None) + closing
+    )
+
+
+@pytest.mark.parametrize("locale", ["en_US", "fr_FR", "ja_JP"])
+@pytest.mark.parametrize(("source", "quote"), [("“-1”", '"'), ("‘-1’", "'")])
+def test_folded_curly_quotes_around_signed_number_keep_both_delimiters(locale, source, quote):
+    assert normalize(source, locale=locale) == quote + normalize("-1", locale=locale) + quote
+
+
 @pytest.mark.parametrize(
     ("opening", "closing"),
     [
