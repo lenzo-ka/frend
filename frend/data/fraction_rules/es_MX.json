@@ -649,7 +649,10 @@
   },
   "icu_version": "78.3",
   "locale": "es_MX",
-  "normalization_sha256": "d60fef4ffdc1874cd2a4b8c975dca7f3b8d8fa98042b2e63aeb91322b87a2a68",
+  "normalization_sha256": "302a2c4b4ea0dd088b3334f9b3374afcca5a2456421900eaf926ed59fdbb2849",
+  "provenance": {
+    "source": "frend/curated"
+  },
   "recipes": {
     "fraction": [
       {

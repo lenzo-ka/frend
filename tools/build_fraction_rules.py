@@ -160,6 +160,7 @@ def build_bundle(locale: str) -> dict[str, object]:
     declaration = compile_grammar(locale, document)
     return {
         "schema": 1,
+        "provenance": {"source": "frend/curated"},
         "locale": locale,
         "icu_version": icu.ICU_VERSION,
         "normalization_sha256": hashlib.sha256(_canonical_bytes(document)).hexdigest(),

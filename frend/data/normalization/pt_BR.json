@@ -1,6 +1,7 @@
 {
   "schema": "frend-normalization/2",
   "locale": "pt_BR",
+  "provenance": {"source": "frend/curated"},
   "versions": {"icu": "78.3"},
   "sources": [
     {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},

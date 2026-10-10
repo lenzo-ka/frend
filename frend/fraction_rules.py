@@ -472,7 +472,11 @@ def _generate(
         for realizations in product(*(by_placeholder[field].realization for field in fields)):
             selected = dict(zip(fields, realizations, strict=True))
             rendered: list[str] = []
-            provenance = [f"fraction-rule:{bundle.locale}", *recipe.provenance]
+            provenance = [
+                f"fraction-rule:{bundle.locale}",
+                f"lexical:{bundle.locale}",
+                *recipe.provenance,
+            ]
             prior: list[str] = []
             weights: list[Decimal | None] = []
             for token in recipe.tokens:

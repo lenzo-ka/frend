@@ -137,6 +137,8 @@ def test_prewarm_loads_each_requested_locale_once(monkeypatch, locales):
         ("March 3, 2020", "en_US"),
         ("123", "fr_FR"),
         ("02.03.2003", "fr_FR"),
+        ("3/7", "fr_FR"),
+        ("45%", "fr_FR"),
     ]
 
 

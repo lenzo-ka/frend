@@ -649,7 +649,10 @@
   },
   "icu_version": "78.3",
   "locale": "ko_KR",
-  "normalization_sha256": "426092ab11fa380bf478b76a737cc58b0ade37f8e9310e06e74e8947f1a731c8",
+  "normalization_sha256": "8e6fb71e2402a023a37edb71bd8bda0b12cd8e3a62c4a2966179f27afb677ab3",
+  "provenance": {
+    "source": "frend/curated"
+  },
   "recipes": {
     "fraction": [
       {
