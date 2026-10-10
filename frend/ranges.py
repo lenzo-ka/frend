@@ -614,6 +614,22 @@ def _starts_an_amount(text: str) -> bool:
     return len(text) > 1 and unicodedata.category(text[0]) == "Sc" and text[1] in _ASCII_DIGITS
 
 
+def _letter_bearing_hyphenated_alnum_before(text: str, end: int) -> bool:
+    """Whether the joined hyphenated alphanumeric run before ``end`` has a letter."""
+    cursor = end
+    while True:
+        group_end = cursor
+        while cursor > 0 and text[cursor - 1].isalnum():
+            cursor -= 1
+        if cursor == group_end:
+            return False
+        if any(char.isalpha() for char in text[cursor:group_end]):
+            return True
+        if cursor == 0 or text[cursor - 1] != "-":
+            return False
+        cursor -= 1
+
+
 def emit_relevant(
     left_written: str, separator: str, right_written: str, locale: str = "en_US"
 ) -> bool:
@@ -1387,6 +1403,8 @@ class RangeDetector:
                     found.append(ordinal_candidate)
             # R1: an ASCII digit before, an ASCII digit (or a currency sign and one) after.
             if left_edge == 0 or text[left_edge - 1] not in _ASCII_DIGITS:
+                continue
+            if _letter_bearing_hyphenated_alnum_before(text, left_edge):
                 continue
             if not _starts_an_amount(text[right_edge : right_edge + 2]):
                 continue

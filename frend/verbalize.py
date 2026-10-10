@@ -803,7 +803,11 @@ def _compact_scale(magnitude: int, amount: Decimal, locale: str) -> SpokenAltern
 
 
 def _spoken_compact(
-    detection: object, locale: str, *, preserve_negative_zero: bool = False
+    detection: object,
+    locale: str,
+    *,
+    preserve_negative_zero: bool = False,
+    negative: bool | None = None,
 ) -> tuple[SpokenAlternative, ...]:
     integer = _capture(detection, "integer")
     compact = _capture(detection, "compact")
@@ -814,7 +818,9 @@ def _spoken_compact(
     if fraction is not None:
         mantissa_text = f"{mantissa_text}.{fraction.value}"
     sign = _capture(detection, "sign")
-    if sign is not None and str(sign.text).strip() == "-":
+    if negative is None:
+        negative = sign is not None and str(sign.text).strip() == "-"
+    if negative:
         mantissa_text = f"-{mantissa_text}"
     mantissa = Decimal(mantissa_text)
     if not preserve_negative_zero and not mantissa:
@@ -878,14 +884,17 @@ def _compose_lexical(
     return _ranked(composed)
 
 
-def _spoken_fraction(detection: object, locale: str) -> tuple[SpokenAlternative, ...]:
+def _spoken_fraction(
+    detection: object, locale: str, *, negative: bool | None = None
+) -> tuple[SpokenAlternative, ...]:
     whole = _capture_integer(detection, "whole")
     numerator = _capture_integer(detection, "numerator")
     denominator = _capture_integer(detection, "denominator")
     if numerator is None or denominator is None:
         raise NotImplementedError("fraction recognition did not retain numerator/denominator")
     sign = _capture(detection, "sign")
-    negative = sign is not None and str(sign.text).strip() == "-"
+    if negative is None:
+        negative = sign is not None and str(sign.text).strip() == "-"
     numerator_words = tuple(
         SpokenAlternative(item.text.replace("-", " "), item.provenance)
         for item in _signed_integer_leaf(numerator, negative, locale)
@@ -2191,11 +2200,14 @@ def _spoken_number(
     locale: str,
     *,
     preserve_negative_zero: bool = False,
+    suppress_in_token_minus: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     try:
         decimal = Decimal(value.decimal)
     except InvalidOperation as exc:
         raise ValueError(f"invalid captured decimal {value.decimal!r}") from exc
+    if suppress_in_token_minus:
+        decimal = abs(decimal)
     if not preserve_negative_zero and not decimal:
         decimal = abs(decimal)
     if type_.startswith("fraction:") or type_.startswith("number:fraction"):
@@ -2203,11 +2215,14 @@ def _spoken_number(
 
         if locale in GENERATED_FRACTION_LOCALES:
             return generate_fraction_alternatives(detection, locale)
-        return _spoken_fraction(detection, locale)
+        return _spoken_fraction(detection, locale, negative=decimal.is_signed())
     compact = _capture(detection, "compact")
     if compact is not None:
         alternatives = _spoken_compact(
-            detection, locale, preserve_negative_zero=preserve_negative_zero
+            detection,
+            locale,
+            preserve_negative_zero=preserve_negative_zero,
+            negative=decimal.is_signed(),
         )
         if value.currency is None:
             return alternatives
@@ -2309,6 +2324,30 @@ def _has_leading_minus(detection: object, context: TextContext | None) -> bool:
     return not context.text[position - 1].isalnum()
 
 
+def _minus_follows_letter_bearing_run(detection: object, context: TextContext | None) -> bool:
+    """Whether a captured minus follows a joined hyphenated run containing a letter."""
+    sign = _capture(detection, "sign")
+    if (
+        context is None
+        or sign is None
+        or str(getattr(sign, "text", "")).strip() not in _MINUS_SIGNS
+    ):
+        return False
+    position = context.offset + int(sign.start)
+    cursor = position
+    while True:
+        group_end = cursor
+        while cursor > 0 and context.text[cursor - 1].isalnum():
+            cursor -= 1
+        if cursor == group_end:
+            return False
+        if any(char.isalpha() for char in context.text[cursor:group_end]):
+            return True
+        if cursor == 0 or context.text[cursor - 1] != "-":
+            return False
+        cursor -= 1
+
+
 def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     """ICU's wide measure form for an amount, with ICU's own formatted number cut out.
 
@@ -2325,7 +2364,11 @@ def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
 
 
 def _spoken_measure(
-    value: MeasureValue, locale: str, *, preserve_negative_zero: bool = False
+    value: MeasureValue,
+    locale: str,
+    *,
+    preserve_negative_zero: bool = False,
+    suppress_in_token_minus: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
     """Speak a measure: the amount as frend reads any number, the unit as ICU names it.
 
@@ -2335,6 +2378,8 @@ def _spoken_measure(
     choice, so that form is lexical over them.
     """
     amount = Decimal(value.decimal)
+    if suppress_in_token_minus:
+        amount = abs(amount)
     if not preserve_negative_zero and not amount:
         amount = abs(amount)
     head = _measure_template(amount, value.unit, locale)
@@ -2846,6 +2891,22 @@ def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) 
     return len(groups) >= 3 or groups == [3, 4]
 
 
+def _letter_bearing_hyphenated_alnum_before(text: str, end: int) -> bool:
+    """Whether the joined hyphenated alphanumeric run before ``end`` has a letter."""
+    cursor = end
+    while True:
+        group_end = cursor
+        while cursor > 0 and text[cursor - 1].isalnum():
+            cursor -= 1
+        if cursor == group_end:
+            return False
+        if any(char.isalpha() for char in text[cursor:group_end]):
+            return True
+        if cursor == 0 or text[cursor - 1] != "-":
+            return False
+        cursor -= 1
+
+
 def _range_to(
     context: TextContext | None, start: int, end: int, locale: str
 ) -> RangeConnector | None:
@@ -2871,6 +2932,8 @@ def _range_to(
     else:
         return None
     if not between_numbers(context.text, a, b):
+        return None
+    if _letter_bearing_hyphenated_alnum_before(context.text, a):
         return None
     if _is_identifier(context.text, a, b, separators):
         return None
@@ -3751,6 +3814,9 @@ def _verbalize_edge(
                     detection,
                     locale,
                     preserve_negative_zero=_has_leading_minus(detection, written_context),
+                    suppress_in_token_minus=_minus_follows_letter_bearing_run(
+                        detection, written_context
+                    ),
                 ),
                 value,
                 detection,
@@ -3765,6 +3831,9 @@ def _verbalize_edge(
                 detection,
                 locale,
                 preserve_negative_zero=_has_leading_minus(detection, written_context),
+                suppress_in_token_minus=_minus_follows_letter_bearing_run(
+                    detection, written_context
+                ),
             )
             key_value = value.decimal
             path = "number"
@@ -3921,6 +3990,9 @@ def _verbalize_edge(
                 value,
                 locale,
                 preserve_negative_zero=_has_leading_minus(detection, written_context),
+                suppress_in_token_minus=_minus_follows_letter_bearing_run(
+                    detection, written_context
+                ),
             )
             key_value = (value.decimal, value.unit)
             path = "measure"
