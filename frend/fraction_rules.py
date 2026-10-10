@@ -306,11 +306,58 @@ def _ordinal_realizations(value: int, locale: str, *, plural: bool):
             for item in _number_leaf(Decimal(value), "ordinal", locale)
             if any(part.endswith(":%spellout-ordinal") for part in item.provenance.split("+"))
         )[:1]
-    if not forms:
-        raise ValueError(
-            f"no ICU masculine {'plural' if plural else 'singular'} ordinal for {locale}"
-        )
     return forms
+
+
+def _sourced_plural_ordinals(
+    forms: Sequence[object], bundle: FractionRuleBundle
+) -> tuple[Realization, ...]:
+    record = bundle.records.get("denominator-plural-rule")
+    if record is None:
+        return ()
+    rule = _record_value(bundle, "denominator-plural-rule")
+    if rule != "terminal-o-to-i":
+        raise ValueError(f"unknown denominator plural rule {rule!r} for {bundle.locale}")
+    return tuple(
+        _realization(
+            item,
+            text=f"{item.text[:-1]}i",
+            source="normalization-record:denominator-plural-rule",
+        )
+        for item in forms
+        if item.text.endswith("o")
+    )
+
+
+def _cardinal_denominator_alternatives(
+    denominator: int, bundle: FractionRuleBundle
+) -> tuple[Realization, ...]:
+    record = bundle.records.get("denominator-cardinal-alternatives")
+    if record is None:
+        return ()
+    forms = record.get("forms")
+    if not isinstance(forms, Mapping):
+        raise ValueError("denominator-cardinal-alternatives has no textual forms")
+    identifier = str(record["id"])
+    return tuple(
+        _realization(
+            cardinal,
+            text=str(pattern).format(cardinal=cardinal.text),
+            source=f"normalization-record:{identifier}",
+        )
+        for cardinal in _normal_cardinals(Decimal(denominator), bundle.locale)
+        for pattern in forms.values()
+    )
+
+
+def _written_denominator(denominator: int) -> tuple[Realization, ...]:
+    return (
+        Realization(
+            (str(denominator),),
+            ("written-surface:fraction-denominator",),
+            None,
+        ),
+    )
 
 
 def _strip_accents(value: str) -> str:
@@ -329,13 +376,18 @@ def _denominator_realizations(
     irregular = bundle.records.get(
         f"denominator-{denominator}-{'plural' if plural else 'singular'}"
     )
+    cardinal_alternatives = _cardinal_denominator_alternatives(denominator, bundle)
     if irregular is not None:
-        return _record_realizations(irregular)
+        return (*_record_realizations(irregular), *cardinal_alternatives)
     strategy = _record_value(bundle, "denominator-strategy")
     if strategy == "icu-ordinal":
-        return tuple(
-            _realization(item) for item in _ordinal_realizations(denominator, locale, plural=plural)
-        )
+        forms = _ordinal_realizations(denominator, locale, plural=plural)
+        ordinals = tuple(_realization(item) for item in forms)
+        if plural and not ordinals:
+            ordinals = _sourced_plural_ordinals(
+                _ordinal_realizations(denominator, locale, plural=False), bundle
+            )
+        return (*ordinals, *cardinal_alternatives) or _written_denominator(denominator)
     if strategy == "german-cardinal-tel":
         cardinal = _normal_cardinals(Decimal(denominator), locale)[0]
         stem = cardinal.text
@@ -362,7 +414,7 @@ def _denominator_realizations(
         if denominator <= 10 or denominator in {100, 1000}:
             forms = _ordinal_realizations(denominator, locale, plural=False)
             suffix = "s" if plural else ""
-            return tuple(
+            result = tuple(
                 _realization(
                     item,
                     text=f"{item.text}{suffix}",
@@ -370,6 +422,7 @@ def _denominator_realizations(
                 )
                 for item in forms
             )
+            return result or _written_denominator(denominator)
         suffix = " avos"
         return tuple(
             _realization(
@@ -402,7 +455,7 @@ def _denominator_realizations(
                 if denominator == 1_000_000 and text.startswith("un "):
                     text = text[3:]
                 result.append(_realization(item, text=text.replace(" ", "")))
-            return tuple(result)
+            return tuple(result) or _written_denominator(denominator)
         cardinal = _normal_cardinals(Decimal(denominator), locale)[0]
         text = _strip_accents(cardinal.text)
         stem_record = bundle.records.get(f"denominator-stem-{denominator}")

@@ -11,10 +11,10 @@
   "selectors": [],
   "resources": [
     {"id": "denominator-strategy", "kind": "fraction-denominator-strategy", "forms": {"default": "icu-ordinal"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "denominator-plural-rule", "kind": "fraction-denominator-plural-rule", "forms": {"default": "terminal-o-to-i"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
+    {"id": "denominator-cardinal-alternatives", "kind": "fraction-denominator-alternatives", "scope": "all-denominators-no-sourced-threshold", "forms": {"su": "su {cardinal}", "fratto": "fratto {cardinal}"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
     {"id": "denominator-2-singular", "kind": "fraction-denominator", "number": "one", "gender": "masculine", "forms": {"default": "mezzo"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
     {"id": "denominator-2-plural", "kind": "fraction-denominator", "number": "other", "gender": "masculine", "forms": {"default": "mezzi"}, "derived_from": ["treccani/vocabolario#it-mezzo"]},
-    {"id": "denominator-431-singular", "kind": "fraction-denominator", "number": "one", "forms": {"su": "su quattrocentotrentuno", "fratto": "fratto quattrocentotrentuno"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
-    {"id": "denominator-431-plural", "kind": "fraction-denominator", "number": "other", "forms": {"su": "su quattrocentotrentuno", "fratto": "fratto quattrocentotrentuno"}, "derived_from": ["treccani/enciclopedia-italiano#it-fractions"]},
     {"id": "mixed-half-omit-one", "kind": "fraction-mixed-half-strategy", "forms": {"default": "omit-one"}, "derived_from": ["treccani/vocabolario#it-mezzo"]}
   ],
   "rules": [

@@ -134,11 +134,40 @@ def test_unseen_productive_fraction_probes_use_the_sourced_rule(locale, written,
         ("pt_PT", "2 1/2", "dois e meio"),
         ("ko_KR", "2 1/2", "이와 이분의 일"),
         ("ko_KR", "3 1/2", "삼과 이분의 일"),
-        ("it_IT", "10/431", "dieci su quattrocentotrentuno"),
     ],
 )
 def test_source_review_speech_corrections(locale, written, spoken):
     assert normalize(written, locale=locale) == f" {spoken} "
+
+
+def test_italian_cardinal_denominator_forms_are_general_lower_ranked_alternatives():
+    one_431 = generate_fraction_alternatives(_fraction_detection("it_IT", "1/431"), "it_IT")
+    three_432 = generate_fraction_alternatives(_fraction_detection("it_IT", "3/432"), "it_IT")
+
+    assert "un su quattrocentotrentuno" in {item.text for item in one_431}
+    assert "tre su quattrocentotrentadue" in {item.text for item in three_432}
+    assert normalize("1/431", locale="it_IT") == " un quattrocentotrentunesimo "
+    assert normalize("3/432", locale="it_IT") == " tre quattrocentotrentaduesimi "
+    assert normalize("1/20", locale="it_IT") == " un ventesimo "
+
+
+def test_missing_icu_plural_ordinal_uses_sourced_italian_plural_rule():
+    alternatives = generate_fraction_alternatives(_fraction_detection("it_IT", "3/432"), "it_IT")
+    derived = next(item for item in alternatives if item.text == "tre quattrocentotrentaduesimi")
+    assert "normalization-record:denominator-plural-rule" in derived.provenance
+
+
+@pytest.mark.parametrize("locale", (*GENERATED_FRACTION_LOCALES, "en_US"))
+def test_fraction_percent_exception_sweep_representative_subset(locale):
+    denominators = (1, 2, 3, 7, 20, 100, 431, 432, 999, 1200)
+    written = [
+        *(f"{numerator}/{denominator}" for denominator in denominators for numerator in (1, 3, 12)),
+        *(f"2 3/{denominator}" for denominator in denominators),
+        *(f"{amount}%" for amount in (0, 1, 73, 100, 1000)),
+        "-3/7",
+    ]
+    for text in written:
+        normalize(text, locale=locale)
 
 
 @pytest.mark.parametrize(

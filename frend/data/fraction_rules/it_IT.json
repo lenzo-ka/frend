@@ -649,7 +649,7 @@
   },
   "icu_version": "78.3",
   "locale": "it_IT",
-  "normalization_sha256": "e93715069685c749dc277ad8f41d8cf6f122806af5f834268c0997af4860e9e0",
+  "normalization_sha256": "f4e1b5c7ba25e0105de4c627e95db2321dd59abc88148177313c0f2e60f1c67d",
   "provenance": {
     "source": "frend/curated"
   },
