@@ -1,652 +1,4 @@
 {
-  "grammar": {
-    "nonterminals": [
-      {
-        "local_name": "COMPOSE",
-        "namespace": "urn:frend:fraction:v1:pt_BR"
-      },
-      {
-        "local_name": "SIGN",
-        "namespace": "urn:frend:fraction:v1:pt_BR"
-      },
-      {
-        "local_name": "WHOLE",
-        "namespace": "urn:frend:fraction:v1:pt_BR"
-      },
-      {
-        "local_name": "NUM",
-        "namespace": "urn:frend:fraction:v1:pt_BR"
-      },
-      {
-        "local_name": "DEN",
-        "namespace": "urn:frend:fraction:v1:pt_BR"
-      },
-      {
-        "local_name": "AMOUNT",
-        "namespace": "urn:frend:fraction:v1:pt_BR"
-      }
-    ],
-    "rules": [
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "COMPOSE",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "provenance": [
-          {
-            "lexical": "normalization-record:ciberduvidas/consultorio#pt-fractions",
-            "name": {
-              "local_name": "source-1",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "value_type": "string"
-          }
-        ],
-        "source": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "SIGN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "sign",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "NUM",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "num",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "DEN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "den",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "SIGN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "sign",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "NUM",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "num",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "DEN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "den",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "COMPOSE",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "provenance": [
-          {
-            "lexical": "normalization-record:ciberduvidas/consultorio#pt-mixed-half",
-            "name": {
-              "local_name": "source-1",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "value_type": "string"
-          }
-        ],
-        "source": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "SIGN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "sign",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "WHOLE",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "whole",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "NUM",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "num",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "DEN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "den",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "SIGN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "sign",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "WHOLE",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "whole",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " e ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "NUM",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "num",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "DEN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "den",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "COMPOSE",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "provenance": [
-          {
-            "lexical": "normalization-record:icu/78.3/fraction-percent#pt_BR-percent",
-            "name": {
-              "local_name": "source-1",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "value_type": "string"
-          }
-        ],
-        "source": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "SIGN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "sign",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "AMOUNT",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "amount",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "SIGN",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "sign",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "AMOUNT",
-              "namespace": "urn:frend:fraction:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "amount",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " por cento",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "SIGN",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "source": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:SIGN",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:SIGN",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "WHOLE",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "source": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:WHOLE",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:WHOLE",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "NUM",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "source": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:NUM",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:NUM",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "DEN",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "source": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:DEN",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:DEN",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "AMOUNT",
-          "namespace": "urn:frend:fraction:v1:pt_BR"
-        },
-        "source": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:AMOUNT",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": "FIELD:AMOUNT",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:fraction:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      }
-    ],
-    "start": {
-      "local_name": "COMPOSE",
-      "namespace": "urn:frend:fraction:v1:pt_BR"
-    }
-  },
   "icu_version": "78.3",
   "locale": "pt_BR",
   "normalization_sha256": "1da1b9dff5e01e7830eaf07b37790e460a070986c295a7b44485a9e140189393",
@@ -695,5 +47,75 @@
       }
     ]
   },
-  "schema": 1
+  "records": [
+    {
+      "derived_from": [
+        "uel/matematica-essencial#pt-denominators"
+      ],
+      "forms": {
+        "default": "portuguese-precedence"
+      },
+      "id": "denominator-strategy",
+      "kind": "fraction-denominator-strategy"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-fractions"
+      ],
+      "forms": {
+        "default": "meio"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "impa/obmep#pt-meios"
+      ],
+      "forms": {
+        "default": "meios"
+      },
+      "gender": "masculine",
+      "id": "denominator-2-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-fractions"
+      ],
+      "forms": {
+        "default": "terço"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-singular",
+      "kind": "fraction-denominator",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-tercos"
+      ],
+      "forms": {
+        "default": "terços"
+      },
+      "gender": "masculine",
+      "id": "denominator-3-plural",
+      "kind": "fraction-denominator",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "ciberduvidas/consultorio#pt-mixed-half"
+      ],
+      "forms": {
+        "default": "omit-one"
+      },
+      "id": "mixed-half-omit-one",
+      "kind": "fraction-mixed-half-strategy"
+    }
+  ],
+  "schema": 2
 }

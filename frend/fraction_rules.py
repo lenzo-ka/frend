@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import unicodedata
@@ -22,11 +21,9 @@ from tiergraph import (
     GrammarInputToken,
     GrammarTerminal,
     Realization,
-    grammar_loads,
 )
 
 from frend.locale_data import canonical_locale
-from frend.normalization_schema import validate_bundle
 
 GENERATED_FRACTION_LOCALES = (
     "es_MX",
@@ -50,7 +47,6 @@ def fraction_rule_events() -> Mapping[str, int]:
 @dataclass(frozen=True)
 class FractionRuleBundle:
     locale: str
-    declaration: GrammarDeclaration
     recipes: Mapping[str, tuple[FractionRuleRecipe, ...]]
     records: Mapping[str, Mapping[str, object]]
 
@@ -59,24 +55,6 @@ class FractionRuleBundle:
 class FractionRuleRecipe:
     tokens: tuple[str, ...]
     provenance: tuple[str, ...]
-
-
-def _canonical_bytes(document: object) -> bytes:
-    return json.dumps(document, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
-
-
-def _receipt_index(document: Mapping[str, object]) -> dict[str, Mapping[str, object]]:
-    result: dict[str, Mapping[str, object]] = {}
-    for source in document.get("sources", []):
-        if not isinstance(source, Mapping) or not isinstance(source.get("receipt"), str):
-            continue
-        reference = source["receipt"]
-        receipt = json.loads(
-            files("frend").joinpath("data", "normalization", reference).read_text("utf-8")
-        )
-        result[reference] = receipt
-        result[hashlib.sha256(_canonical_bytes(receipt)).hexdigest()] = receipt
-    return result
 
 
 def _validate_holes(declaration: GrammarDeclaration) -> None:
@@ -149,28 +127,15 @@ def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
     locale = canonical_locale(locale)
     if locale not in GENERATED_FRACTION_LOCALES:
         raise ValueError(f"no generated fraction-rule bundle for {locale!r}")
-    normalization = json.loads(
-        files("frend").joinpath("data", "normalization", f"{locale}.json").read_text("utf-8")
-    )
-    validate_bundle(normalization, receipt_index=_receipt_index(normalization))
-    if normalization["locale"] != locale or normalization["versions"].get("icu") != icu.ICU_VERSION:
-        raise ValueError(f"fraction normalization record identity/version mismatch for {locale!r}")
     resource = files("frend").joinpath("data", "fraction_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
-    if document.get("schema") != 1 or document.get("locale") != locale:
+    if document.get("schema") != 2 or document.get("locale") != locale:
         raise ValueError(f"fraction-rule bundle identity mismatch for {locale!r}")
     if document.get("icu_version") != icu.ICU_VERSION:
         raise ValueError(
             f"fraction-rule bundle {locale!r} was built with ICU {document.get('icu_version')}, "
             f"not runtime ICU {icu.ICU_VERSION}"
         )
-    if (
-        document.get("normalization_sha256")
-        != hashlib.sha256(_canonical_bytes(normalization)).hexdigest()
-    ):
-        raise ValueError(f"fraction-rule bundle source-record drift for {locale!r}")
-    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
-    _validate_holes(declaration)
     raw_recipes = document.get("recipes")
     if not isinstance(raw_recipes, Mapping) or set(raw_recipes) != {
         "fraction",
@@ -196,15 +161,14 @@ def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
                 raise ValueError(f"fraction-rule bundle {locale!r} has invalid recipe provenance")
             compiled.append(FractionRuleRecipe(tuple(tokens), tuple(provenance)))
         recipes[kind] = tuple(compiled)
-    _validate_compiled_recipes(declaration, recipes, locale)
-    records = {
-        str(item["id"]): MappingProxyType(dict(item))
-        for section in ("resources", "rules")
-        for item in normalization.get(section, [])
-    }
+    raw_records = document.get("records")
+    if not isinstance(raw_records, list) or not all(
+        isinstance(item, Mapping) and isinstance(item.get("id"), str) for item in raw_records
+    ):
+        raise ValueError(f"fraction-rule bundle {locale!r} has invalid runtime records")
+    records = {str(item["id"]): MappingProxyType(dict(item)) for item in raw_records}
     return FractionRuleBundle(
         locale,
-        declaration,
         MappingProxyType(recipes),
         MappingProxyType(records),
     )
@@ -518,12 +482,12 @@ def _grammar_input(symbols: Sequence[tuple[str, tuple[Realization, ...]]]) -> Gr
 
 
 def _source_path_count(bundle: FractionRuleBundle, symbols: tuple[str, ...]) -> int:
-    return sum(
-        tuple(item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole))
-        == symbols
-        for rule in bundle.declaration.rules
-        if rule.left == bundle.declaration.start
-    )
+    kind = {
+        ("SIGN", "NUM", "DEN"): "fraction",
+        ("SIGN", "WHOLE", "NUM", "DEN"): "mixed",
+        ("SIGN", "AMOUNT"): "percent",
+    }.get(symbols)
+    return 0 if kind is None else len(bundle.recipes[kind])
 
 
 @cache

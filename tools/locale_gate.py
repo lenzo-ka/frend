@@ -20,6 +20,7 @@ import re
 import statistics
 import subprocess
 import sys
+import tempfile
 import time
 import unicodedata
 from collections import Counter, defaultdict
@@ -1816,9 +1817,6 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
         normalize("123", locale=item)
         sequential[item] = time.perf_counter_ns() - started
     sequential_total = time.perf_counter_ns() - started_total
-    for item in GATE_LOCALES:
-        _normalize_date_probe(item)
-        _normalize_fraction_probes(item)
     gc.collect()
     loaded = rss_bytes()
     samples: dict[str, list[int]] = {item: [] for item in GATE_LOCALES}
@@ -1858,6 +1856,12 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
 def _child_command(*arguments: str, repo: Path = REPO) -> dict:
     environment = dict(os.environ)
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    # -B prevents writes but Python still reads any worktree-local bytecode cache.
+    # Point both arms at the same deliberately absent namespace so RSS and cold
+    # timing do not depend on which checkout happened to have been imported before.
+    environment["PYTHONPYCACHEPREFIX"] = str(
+        Path(tempfile.gettempdir()) / f"frend-locale-gate-empty-pycache-{os.getpid()}"
+    )
     environment["PYTHONPATH"] = str(repo)
     command = [sys.executable, "-B", str(Path(__file__).resolve()), *arguments]
     result = subprocess.run(

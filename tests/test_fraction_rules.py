@@ -267,7 +267,11 @@ def test_runtime_uses_precompiled_recipes_without_tiergraph_generation():
 
 @pytest.mark.parametrize("field", ["tokens", "provenance"])
 def test_runtime_rejects_compiled_recipe_drift_from_grammar(field):
+    import tools.build_fraction_rules as builder
+
     bundle = load_fraction_rule_bundle("fr_FR")
+    source = json.loads((REPO / "frend/data/normalization/fr_FR.json").read_text(encoding="utf-8"))
+    declaration = builder.compile_grammar("fr_FR", source)
     recipes = {kind: list(items) for kind, items in bundle.recipes.items()}
     original = recipes["fraction"][0]
     recipes["fraction"][0] = replace(
@@ -275,7 +279,7 @@ def test_runtime_rejects_compiled_recipe_drift_from_grammar(field):
         **{field: (*getattr(original, field), "unbound-drift")},
     )
     with pytest.raises(ValueError, match="compiled recipes do not match grammar"):
-        _validate_compiled_recipes(bundle.declaration, recipes, "fr_FR")
+        _validate_compiled_recipes(declaration, recipes, "fr_FR")
 
 
 def test_generation_refuses_above_cap_before_generate(monkeypatch):
@@ -408,7 +412,9 @@ def test_manifest_builder_cannot_select_new_recoveries_from_head(tmp_path):
     assert [item["id"] for item in recoveries["rows"]] == ["first"]
 
 
-def test_prewarm_makes_all_generated_fraction_bundles_resident():
+def test_prewarm_leaves_generated_fraction_bundles_lazy_until_first_fraction():
     load_fraction_rule_bundle.cache_clear()
     prewarm(("en_US", *GENERATED_FRACTION_LOCALES))
-    assert load_fraction_rule_bundle.cache_info().currsize == 10
+    assert load_fraction_rule_bundle.cache_info().currsize == 0
+    normalize("3/7", locale="fr_FR")
+    assert load_fraction_rule_bundle.cache_info().currsize == 1

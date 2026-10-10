@@ -161,13 +161,13 @@ def build_bundle(locale: str) -> dict[str, object]:
     validate_bundle(document, receipt_index=_receipt_index(document))
     declaration = compile_grammar(locale, document)
     return {
-        "schema": 1,
+        "schema": 2,
         "provenance": {"source": "frend/curated"},
         "locale": locale,
         "icu_version": icu.ICU_VERSION,
         "normalization_sha256": hashlib.sha256(_canonical_bytes(document)).hexdigest(),
-        "grammar": declaration.to_data(),
         "recipes": compile_recipes(declaration),
+        "records": document["resources"],
     }
 
 

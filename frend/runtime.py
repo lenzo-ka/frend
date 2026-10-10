@@ -42,20 +42,15 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
     order = tuple(dict.fromkeys(canonical_locale(locale) for locale in locales))
     for locale in order:
         normalize(probe_text, locale=locale)
-        if date_probe := _DATE_PROBES.get(locale):
-            normalize(date_probe, locale=locale)
-            if locale != "en_US":
-                # Lowering is locale-bound and must be resident even when a caller's
-                # sentence breaker ranks a narrower numeric path for the written probe.
-                from frend.date_rules import load_date_rule_bundle
+        if locale == "en_US":
+            normalize(_DATE_PROBES[locale], locale=locale)
+        elif locale in _DATE_PROBES:
+            # Load the compiled date path directly. Several locale date probes use
+            # slashes and also form valid fraction candidates; normalizing them here
+            # would defeat the fraction path's first-use laziness.
+            from frend.date_rules import load_date_rule_bundle
 
-                load_date_rule_bundle(locale)
-        if locale != "en_US":
-            from frend.fraction_rules import GENERATED_FRACTION_LOCALES
-
-            if locale in GENERATED_FRACTION_LOCALES:
-                normalize("3/7", locale=locale)
-                normalize("45%", locale=locale)
+            load_date_rule_bundle(locale)
     return order
 
 
