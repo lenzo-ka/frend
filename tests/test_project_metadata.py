@@ -78,6 +78,19 @@ def test_project_metadata_names_phonetization_as_the_callers_step():
     assert "later phonetics (ipakit) into" not in package_docstring
 
 
+def test_readme_distinguishes_source_boundary_whitespace_from_spoken_spacing():
+    readme = " ".join(_README.read_text(encoding="utf-8").split())
+
+    assert "Leading and trailing source whitespace is discarded in both return forms" in readme
+    assert "inter-sentence source whitespace contributes one space" in readme
+    assert (
+        "Reader emissions can add spaces of their own, including at the edges of the returned "
+        "text and next to inter-sentence spacing" in readme
+    )
+    assert "offset units cover discarded boundary-whitespace spans explicitly" in readme
+    assert "leading and trailing whitespace is trimmed" not in readme
+
+
 def test_frend_modules_do_not_import_ipakit():
     imported_by = []
     for path in sorted(_FREND.rglob("*.py")):
