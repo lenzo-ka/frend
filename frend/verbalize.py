@@ -94,6 +94,7 @@ from frend.ranges import (
     range_sub_key,
     written_sub_key,
 )
+from frend.scientific import ScientificValue
 from frend.spacing import strip_soft_hyphens
 from frend.spoken_priors import measurement_sub_key, normalize_spoken, source_prior
 from frend.symbols import (
@@ -1056,6 +1057,18 @@ def _month_name(month: int, calendar: str, locale: str) -> SpokenAlternative:
 # A minus sign is spoken through the signed value, a plus sign as a leading "plus";
 # any other sign character is recorded as unspoken.
 _SPOKEN_CAPTURES = {
+    "scientific": frozenset(
+        {
+            "integer",
+            "mantissa",
+            "fraction",
+            "decimal-separator",
+            "sign",
+            "scientific-operator",
+            "exponent-sign",
+            "exponent",
+        }
+    ),
     "number": frozenset(
         {
             "integer",
@@ -2294,6 +2307,52 @@ def _spoken_number(
             return _ranked([*cardinals, *_spoken_digits(DigitsValue(written), locale)])
         return cardinals
     raise NotImplementedError(f"unsupported NumberValue reading class {type_!r}")
+
+
+def _spoken_scientific(
+    value: ScientificValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak an English mantissa followed by its signed power-of-ten exponent."""
+    if canonical_locale(locale) != "en_US":
+        raise NotImplementedError("scientific notation is currently US-English-only")
+    mantissas = _spoken_number(
+        "number:decimal",
+        NumberValue(value.mantissa),
+        detection,
+        locale,
+        preserve_negative_zero=value.mantissa.startswith(("-", "−")),
+    )
+    if value.mantissa.startswith("+"):
+        mantissas = tuple(
+            SpokenAlternative(f"plus {item.text}", f"rule:written-plus+{item.provenance}")
+            for item in mantissas
+        )
+    ordinals = _number_leaf(Decimal(abs(value.exponent)), "ordinal", locale)
+    sign = {"+": "", "⁺": "", "-": "minus ", "−": "minus ", "⁻": "minus "}.get(
+        value.exponent_sign, ""
+    )
+    unit = ""
+    unit_source = ""
+    if value.unit is not None:
+        amount = Decimal(value.mantissa.replace("−", "-")).copy_abs()
+        parts = amount.as_tuple()
+        digits = list(parts.digits)
+        removed = 0
+        while len(digits) > 1 and digits[-1] == 0:
+            digits.pop()
+            removed += 1
+        is_one = digits == [1] and parts.exponent + removed + value.exponent == 0
+        template = _measure_template(Decimal(1 if is_one else 2), value.unit, locale)
+        unit = " " + template.format("").strip()
+        unit_source = "+icu-measure:wide"
+    return tuple(
+        SpokenAlternative(
+            f"{mantissa.text} times ten to the {sign}{ordinal.text}{unit}",
+            f"{mantissa.provenance}+rule:scientific-notation:en_US+{ordinal.provenance}{unit_source}",
+        )
+        for mantissa in mantissas
+        for ordinal in ordinals
+    )
 
 
 def _has_leading_minus(detection: object, context: TextContext | None) -> bool:
@@ -3812,6 +3871,10 @@ def _verbalize_edge(
                 raise NotImplementedError(f"no spoken connector for {type_!r} in {locale!r}")
             key_value = str(detection.get("text", ""))
             path = "range"
+        elif isinstance(value, ScientificValue):
+            alternatives = _spoken_scientific(value, detection, locale)
+            key_value = (value.mantissa, value.exponent, value.exponent_sign, value.unit)
+            path = "scientific"
         elif isinstance(value, NumberValue) and type_.startswith("ordinal:"):
             alternatives = _spoken_ordinal(value, detection, locale)
             key_value: object = value.decimal

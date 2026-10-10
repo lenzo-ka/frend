@@ -49,6 +49,7 @@ from frend.letters import (
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GroupOrders, validate_groups, validate_profile
 from frend.ranges import RangeDetector, _date_interval_gang, icu_range_readers
+from frend.scientific import ScientificNotationDetector
 from frend.spacing import unit_gap
 from frend.symbols import (
     DEFAULT_SYMBOL_RUN_THRESHOLD,
@@ -216,6 +217,7 @@ def _reading_detectors(
         *(FlexibleMeasureDetector(locale, unit) for unit in _MEASURE_UNITS),
         *mixed_measures,
     )
+    scientific = ScientificNotationDetector(locale, measure_detectors=measures)
     money = tuple(
         detector
         for code in _CURRENCIES
@@ -225,6 +227,7 @@ def _reading_detectors(
         )
     )
     by_kind = (
+        (scientific,),
         (*cardinals, written, *icu_range_readers(locale, cardinals)),
         (number, written),
         (SymbolDetector(locale, run_threshold=symbol_run_threshold),),
