@@ -360,6 +360,24 @@ def test_bare_degree_range_does_not_invent_a_temperature_scale():
     assert {unit.reader for unit in normalized.units} == {"measure:range"}
 
 
+@pytest.mark.parametrize(
+    ("source", "spoken"),
+    [
+        ("45°N", " forty-five degrees north "),
+        ("122°W", " one hundred twenty-two degrees west "),
+        ("45° 30′ N", " forty-five degrees thirty minutes north "),
+        ("45°", " forty-five degrees "),
+    ],
+)
+def test_compass_coordinates_read_as_degrees_and_direction(source, spoken):
+    assert frend.normalize(source, locale="en_US") == spoken
+
+
+@pytest.mark.parametrize("locale", ["de_DE", "fr_FR", "ja_JP"])
+def test_compass_coordinate_is_not_invented_without_a_localized_reading(locale):
+    assert frend.normalize("45°N", locale=locale).rstrip().endswith("°N")
+
+
 def test_project_authored_typographic_sentences_have_exact_outputs():
     path = Path(__file__).parent / "data" / "typographic_fold_synthetic.json"
     document = json.loads(path.read_text(encoding="utf-8"))

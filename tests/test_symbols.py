@@ -443,6 +443,14 @@ def test_a_standalone_symbol_in_running_text_is_read():
     assert [(d["type"], d["text"]) for d in detections] == [("symbol:cldr", "&")]
 
 
+@pytest.mark.parametrize("text", ["45°\nN", "45°\n30′ N", "45° 30′\nN"])
+def test_coordinate_does_not_join_fields_across_lines(text):
+    assert not any(
+        detection["type"] == "measure:coordinate"
+        for detection in SymbolDetector("en_US").detect(text)
+    )
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [(f"&{sign}1", ("symbol:cldr", "&")) for sign in ("+", "-", "−")]
