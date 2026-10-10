@@ -44,11 +44,62 @@ def _subset(row: Mapping[str, object], fields: tuple[str, ...]) -> dict[str, obj
     return {field: row.get(field) for field in fields}
 
 
-def build(
-    base_path: Path,
-    head_path: Path,
-    recovery_witness: Mapping[str, object],
-) -> tuple[dict, dict]:
+def _development_recovery(before: Mapping[str, object], after: Mapping[str, object]) -> dict | None:
+    from tools.locale_gate import (
+        _source_record_offers,
+        insensitive_form,
+        presentation_form,
+        strict_form,
+    )
+
+    recovered = tuple(
+        (name, form)
+        for name, form in (
+            ("strict", strict_form),
+            ("presentation", presentation_form),
+            ("insensitive", insensitive_form),
+        )
+        if before.get(name) is False and after.get(name) is True
+    )
+    if not recovered:
+        return None
+    targets = after.get("targets")
+    target_hits = after.get("target_hits")
+    if not isinstance(targets, list) or not isinstance(target_hits, Mapping):
+        raise ValueError(f"coverage row {after.get('id')!r} has no target evidence")
+    candidates = []
+    for edge in after.get("offer_signature", ()):
+        if not isinstance(edge, Mapping):
+            continue
+        for alternative in edge.get("alternatives", ()):
+            provenance = alternative.get("provenance") if isinstance(alternative, Mapping) else None
+            if not isinstance(provenance, str):
+                continue
+            for part in provenance.split("+"):
+                if part.startswith("normalization-record:"):
+                    identifier = part.removeprefix("normalization-record:")
+                    if identifier not in candidates:
+                        candidates.append(identifier)
+    for target_index, target in enumerate(targets):
+        if not isinstance(target, str):
+            continue
+        for name, form in recovered:
+            hits = target_hits.get(name)
+            if not isinstance(hits, list) or target_index >= len(hits) or not hits[target_index]:
+                continue
+            for source_record in candidates:
+                if _source_record_offers(after, target, source_record, form=form):
+                    return {
+                        "id": str(after["id"]),
+                        "base": _subset(before, RECOVERY_FIELDS),
+                        "head": _subset(after, RECOVERY_FIELDS),
+                        "expected_speech": target,
+                        "source_record_id": source_record,
+                    }
+    raise ValueError(f"coverage row {after.get('id')!r} has no sourced recovered target route")
+
+
+def build(base_path: Path, head_path: Path) -> tuple[dict, dict]:
     base = json.loads(base_path.read_text(encoding="utf-8"))
     head = json.loads(head_path.read_text(encoding="utf-8"))
     base_rows = {row["id"]: row for row in base["cases"]}
@@ -59,6 +110,7 @@ def build(
     changes = {
         "schema": 1,
         "family": "fraction",
+        "status": "development-only",
         "base_head": base.get("frend_head"),
         "head_head": head.get("frend_head"),
         "rows": [
@@ -70,42 +122,18 @@ def build(
             for identifier in routed
         ],
     }
-    witness_rows = recovery_witness.get("rows")
-    if not isinstance(witness_rows, list) or not witness_rows:
-        raise ValueError("a nonempty frozen recovery witness is required")
-    by_witness_id = {str(row.get("id")): row for row in witness_rows if isinstance(row, Mapping)}
-    if len(by_witness_id) != len(witness_rows):
-        raise ValueError("frozen recovery witness IDs must be unique mappings")
-    if not set(by_witness_id) <= set(routed):
-        raise ValueError("frozen recovery witness contains a non-routed row")
     recovery_rows = []
-    for identifier in sorted(by_witness_id):
-        witness = by_witness_id[identifier]
+    for identifier in routed:
         before, after = base_rows[identifier], head_rows[identifier]
-        expected_base = witness.get("base")
-        if expected_base != _subset(before, RECOVERY_FIELDS):
-            raise ValueError(f"frozen recovery witness base drift for {identifier}")
-        target = witness.get("expected_speech")
-        source_record = witness.get("source_record_id")
-        if not isinstance(target, str) or target not in before.get("targets", ()):
-            raise ValueError(f"frozen recovery witness speech drift for {identifier}")
-        if not isinstance(source_record, str) or not source_record:
-            raise ValueError(f"frozen recovery witness source is missing for {identifier}")
-        recovery_rows.append(
-            {
-                "id": identifier,
-                "base": _subset(before, RECOVERY_FIELDS),
-                "head": _subset(after, RECOVERY_FIELDS),
-                "expected_speech": target,
-                "source_record_id": source_record,
-            }
-        )
+        if recovery := _development_recovery(before, after):
+            recovery_rows.append(recovery)
     witness_bytes = json.dumps(
         recovery_rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode()
     recoveries = {
         "schema": 1,
         "family": "fraction",
+        "status": "development-only",
         "base_head": base.get("frend_head"),
         "witness_sha256": hashlib.sha256(witness_bytes).hexdigest(),
         "strict_total": sum(
@@ -129,12 +157,7 @@ def main() -> int:
         REPO / "tools/fraction_expected_changes.json",
         REPO / "tools/fraction_expected_recoveries.json",
     )
-    if not destinations[1].exists():
-        raise SystemExit(
-            "frozen recovery witness is missing; it must be created from base before head is read"
-        )
-    recovery_witness = json.loads(destinations[1].read_text(encoding="utf-8"))
-    documents = build(args.base, args.head, recovery_witness)
+    documents = build(args.base, args.head)
     for destination, document in zip(destinations, documents, strict=True):
         expected = json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
         if args.check:

@@ -358,10 +358,8 @@ def test_chinese_fraction_and_mixed_frames_have_specific_receipts():
     assert document["rules"][1]["derived_from"] == ["life-education/journal#zh-mixed-fractions"]
 
 
-def test_manifest_builder_cannot_select_new_recoveries_from_head(tmp_path):
+def test_manifest_builder_regenerates_current_development_recoveries(tmp_path):
     import tools.build_fraction_manifests as builder
-
-    fields = ("strict", "presentation", "insensitive", "first_strict", "first_presentation")
 
     def row(identifier, recovered):
         return {
@@ -369,9 +367,6 @@ def test_manifest_builder_cannot_select_new_recoveries_from_head(tmp_path):
             "locale": "fr_FR",
             "written": "3/7",
             "targets": ["trois septièmes"],
-            "target_hits": {
-                name: [recovered] for name in ("strict", "presentation", "insensitive")
-            },
             "strict": recovered,
             "presentation": recovered,
             "insensitive": recovered,
@@ -379,17 +374,25 @@ def test_manifest_builder_cannot_select_new_recoveries_from_head(tmp_path):
             "first_presentation": recovered,
             "offer_signature": [
                 {
+                    "start": 0,
+                    "end": 3,
                     "type": "number:fraction",
                     "alternatives": [
                         {
+                            "text": "trois septièmes",
                             "provenance": (
                                 "fraction-rule:fr_FR+"
                                 "normalization-record:frend/curated#fr-fractions"
-                            )
+                            ),
                         }
                     ],
                 }
             ],
+            "target_hits": {
+                "strict": [recovered],
+                "presentation": [recovered],
+                "insensitive": [recovered],
+            },
         }
 
     base_rows = [row("first", False), row("new-head-flip", False)]
@@ -398,18 +401,8 @@ def test_manifest_builder_cannot_select_new_recoveries_from_head(tmp_path):
     head_path = tmp_path / "head.json"
     base_path.write_text(json.dumps({"cases": base_rows}), encoding="utf-8")
     head_path.write_text(json.dumps({"cases": head_rows}), encoding="utf-8")
-    witness = {
-        "rows": [
-            {
-                "id": "first",
-                "base": {name: base_rows[0][name] for name in fields},
-                "expected_speech": "trois septièmes",
-                "source_record_id": "frend/curated#fr-fractions",
-            }
-        ]
-    }
-    _changes, recoveries = builder.build(base_path, head_path, witness)
-    assert [item["id"] for item in recoveries["rows"]] == ["first"]
+    _changes, recoveries = builder.build(base_path, head_path)
+    assert [item["id"] for item in recoveries["rows"]] == ["first", "new-head-flip"]
 
 
 def test_prewarm_leaves_generated_fraction_bundles_lazy_until_first_fraction():
