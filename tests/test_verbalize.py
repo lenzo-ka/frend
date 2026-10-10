@@ -2232,6 +2232,42 @@ def test_digit_string_also_reads_digit_by_digit(written, digits):
     assert digits <= {normalize_spoken(a.text) for a in unit.alternatives}
 
 
+def test_number_before_detached_prime_keeps_cardinal_ahead_of_digit_reading():
+    text = "45° 30 ′ N"
+    detection = next(
+        item for item in FlexibleNumberDetector("en_US").detect(text) if item["text"] == "30"
+    )
+    lattice = resolve_lattice([detection], source_text=text)
+    edge = next(item for item in lattice.edges if item.kind == "reading")
+
+    assert verbalize_edge(edge, source_text=text).best.text == "thirty"
+
+
+def test_percent_before_detached_prime_still_uses_context_ranking(monkeypatch):
+    import frend.verbalize as verbalize
+
+    text = "30% ′"
+    detection = next(
+        item for item in FlexiblePercentDetector("en_US").detect(text) if item["text"] == "30%"
+    )
+    edge = next(
+        item
+        for item in resolve_lattice([detection], source_text=text).edges
+        if item.kind == "reading"
+    )
+    calls = []
+
+    def record_rerank(alternatives, *args, **kwargs):
+        calls.append((args, kwargs))
+        return tuple(alternatives), None
+
+    monkeypatch.setattr(verbalize, "rerank", record_rerank)
+
+    verbalize_edge(edge, source_text=text)
+
+    assert len(calls) == 1
+
+
 @pytest.mark.parametrize("written", ["7", "1,000", "-42", "3.14"])
 def test_single_grouped_signed_or_fractional_numbers_get_no_digit_reading(written):
     unit = _full_span_forms(written, [FlexibleNumberDetector("en_US")], "number:decimal")

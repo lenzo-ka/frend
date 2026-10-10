@@ -82,7 +82,8 @@ DEFAULT_SYMBOL_RUN_THRESHOLD = 3
 
 _COORDINATE_RE = re.compile(
     r"(?<![\w])(?P<degrees>[0-9]+(?:\.[0-9]+)?)°"
-    r"(?:[ \t]*(?P<minutes>[0-9]+(?:\.[0-9]+)?)′)?"
+    r"(?:[ \t]*(?P<minutes>[0-9]+(?:\.[0-9]+)?)[ \t]*′"
+    r"(?:[ \t]*(?P<seconds>[0-9]+(?:\.[0-9]+)?)[ \t]*″)?)?"
     r"[ \t]*(?P<direction>[NSEW])(?![\w])"
 )
 _COMPASS_WORDS = {
@@ -841,6 +842,17 @@ class SymbolDetector:
                         match.end("minutes"),
                         match.group("minutes"),
                         match.group("minutes"),
+                        "numeric",
+                    )
+                )
+            if match.group("seconds") is not None:
+                captures.append(
+                    Capture(
+                        "seconds",
+                        match.start("seconds"),
+                        match.end("seconds"),
+                        match.group("seconds"),
+                        match.group("seconds"),
                         "numeric",
                     )
                 )
