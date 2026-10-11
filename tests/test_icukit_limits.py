@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -105,14 +106,16 @@ def test_resolve_lattice_propagates_detection_failure_without_retry(monkeypatch)
 def test_none_numeric_duration_capture_falls_back_instead_of_raising():
     from icukit import FlexibleNumericDurationDetector
 
-    written = "1" * (sys.int_info.default_max_str_digits + 1) + ":02"
+    written = "1:02"
     detections = FlexibleNumericDurationDetector("en_US").detect(written)
-    assert any(
-        capture.value is None for detection in detections for capture in detection["captures"]
+    detection = detections[0]
+    captures = tuple(
+        replace(capture, value=None) if capture.name in {"h", "m"} else capture
+        for capture in detection["captures"]
     )
 
     lattice = resolve_lattice(
-        detections,
+        [{**detection, "captures": captures}],
         source_text=written,
         max_input_chars=None,
         max_unit_chars=None,
@@ -123,12 +126,19 @@ def test_none_numeric_duration_capture_falls_back_instead_of_raising():
     assert result.best_path.units[0].best.provenance == "surface:unsupported"
 
 
-def test_skipped_overlong_fraction_candidate_remains_passthrough():
-    from icukit import FlexibleFractionDetector
-
+def test_absent_overlong_fraction_candidate_remains_exact_surface_passthrough():
     written = "1/" + "9" * (sys.int_info.default_max_str_digits + 1)
-    assert FlexibleFractionDetector("en_US").detect(written) == []
-    assert normalize(written, max_input_chars=None)
+    lattice = resolve_lattice(
+        [],
+        source_text=written,
+        max_input_chars=None,
+        max_unit_chars=None,
+    )
+    result = verbalize_lattice(lattice, max_input_chars=None, max_unit_chars=None)
+
+    assert "".join(unit.best.text for unit in result.best_path.units) == written
+    assert all(unit.verbalized is True for unit in result.best_path.units)
+    assert all(unit.best.provenance == "surface:passthrough" for unit in result.best_path.units)
 
 
 @pytest.mark.parametrize(

@@ -34,7 +34,6 @@ _TIMES_TEN_SUPERSCRIPT = re.compile(
 _SIGNS = "+-−"
 _SUPERSCRIPT_SIGNS = "⁺⁻"
 _SUPERSCRIPT_TRANSLATION = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻", "0123456789+-")
-_MAX_EXPONENT_DIGITS = sys.get_int_max_str_digits() or sys.int_info.default_max_str_digits
 
 
 class _Detector(Protocol):
@@ -58,7 +57,8 @@ def _plain_exponent(exponent: str) -> str:
 def _exponent_value(exponent: str) -> int | None:
     plain = _plain_exponent(exponent)
     digits = plain[1:] if plain[:1] in "+-" else plain
-    if len(digits) > _MAX_EXPONENT_DIGITS:
+    limit = sys.get_int_max_str_digits()
+    if limit and len(digits) > limit:
         return None
     return int(plain)
 

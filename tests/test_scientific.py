@@ -140,3 +140,27 @@ def test_scientific_detector_skips_unrepresentable_exponents_atomically(written)
         ("4e5", len(text) + 5, len(text) + 8),
     ]
     assert [item["value"].exponent for item in detections] == [3, 5]
+
+
+def test_scientific_detector_uses_current_integer_conversion_limit():
+    original_limit = sys.get_int_max_str_digits()
+    try:
+        sys.set_int_max_str_digits(640)
+        text = "1e" + "9" * 641
+
+        assert ScientificNotationDetector().detect(text) == []
+    finally:
+        sys.set_int_max_str_digits(original_limit)
+
+
+def test_scientific_detector_honors_disabled_integer_conversion_limit():
+    original_limit = sys.get_int_max_str_digits()
+    try:
+        sys.set_int_max_str_digits(0)
+        text = "1e" + "9" * (sys.int_info.default_max_str_digits + 1)
+
+        detections = ScientificNotationDetector().detect(text)
+    finally:
+        sys.set_int_max_str_digits(original_limit)
+
+    assert [item["text"] for item in detections] == [text]
