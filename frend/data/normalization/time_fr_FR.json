@@ -11,6 +11,14 @@
     {
       "id": "icu/78.3/time",
       "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "academie-francaise/dictionnaire",
+      "receipt": "academie-clock.json"
+    },
+    {
+      "id": "academie-francaise/dictionnaire",
+      "receipt": "academie-clock-seconds.json"
     }
   ],
   "selectors": [
@@ -287,7 +295,7 @@
       ],
       "derived_from": [
         "time-composition-fr_FR",
-        "icu/78.3/time#fr_FR-composition"
+        "academie-francaise/dictionnaire#clock-construction"
       ]
     },
     {
@@ -310,7 +318,7 @@
       ],
       "derived_from": [
         "time-composition-fr_FR",
-        "icu/78.3/time#fr_FR-composition"
+        "academie-francaise/dictionnaire#clock-construction"
       ]
     },
     {
@@ -333,7 +341,7 @@
       ],
       "derived_from": [
         "time-composition-fr_FR",
-        "icu/78.3/time#fr_FR-composition"
+        "academie-francaise/dictionnaire#clock-construction"
       ]
     },
     {
@@ -359,7 +367,7 @@
       ],
       "derived_from": [
         "time-composition-fr_FR",
-        "icu/78.3/time#fr_FR-composition"
+        "academie-francaise/dictionnaire#clock-construction"
       ]
     },
     {
@@ -391,7 +399,8 @@
       ],
       "derived_from": [
         "time-composition-fr_FR",
-        "icu/78.3/time#fr_FR-composition"
+        "academie-francaise/dictionnaire#clock-construction",
+        "academie-francaise/dictionnaire#clock-seconds"
       ]
     },
     {
@@ -426,7 +435,8 @@
       ],
       "derived_from": [
         "time-composition-fr_FR",
-        "icu/78.3/time#fr_FR-composition"
+        "academie-francaise/dictionnaire#clock-construction",
+        "academie-francaise/dictionnaire#clock-seconds"
       ]
     }
   ],
@@ -434,7 +444,8 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-fr_FR": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+      "d7d82c06681545d683f633d442f5438b027c8a7568815085bba54290b11cb908",
+      "197ea1ce952bef9e38b024ffc6b98ce037983b2d6c728cb32e10a0e720dfb507"
     ],
     "icu/78.3/time#fr_FR-composition": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
@@ -480,6 +491,12 @@
     ],
     "icu/78.3/time#fr_FR-period-selector": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "academie-francaise/dictionnaire#clock-construction": [
+      "d7d82c06681545d683f633d442f5438b027c8a7568815085bba54290b11cb908"
+    ],
+    "academie-francaise/dictionnaire#clock-seconds": [
+      "197ea1ce952bef9e38b024ffc6b98ce037983b2d6c728cb32e10a0e720dfb507"
     ]
   }
 }

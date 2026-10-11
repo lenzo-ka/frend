@@ -11,6 +11,14 @@
     {
       "id": "icu/78.3/time",
       "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "accademia-crusca/consulenza",
+      "receipt": "crusca-clock.json"
+    },
+    {
+      "id": "treccani/vocabolario",
+      "receipt": "treccani-clock.json"
     }
   ],
   "selectors": [
@@ -296,7 +304,8 @@
       ],
       "derived_from": [
         "time-composition-it_IT",
-        "icu/78.3/time#it_IT-composition"
+        "accademia-crusca/consulenza#clock-construction",
+        "treccani/vocabolario#clock-day-periods"
       ]
     },
     {
@@ -316,7 +325,8 @@
       ],
       "derived_from": [
         "time-composition-it_IT",
-        "icu/78.3/time#it_IT-composition"
+        "accademia-crusca/consulenza#clock-construction",
+        "treccani/vocabolario#clock-day-periods"
       ]
     },
     {
@@ -324,22 +334,20 @@
       "shape": "HM",
       "fields": [
         "H",
-        "M",
-        "UM"
+        "M"
       ],
       "target": [
         "H",
         " e ",
-        "M",
-        " ",
-        "UM"
+        "M"
       ],
       "directions": [
         "tn"
       ],
       "derived_from": [
         "time-composition-it_IT",
-        "icu/78.3/time#it_IT-composition"
+        "accademia-crusca/consulenza#clock-construction",
+        "treccani/vocabolario#clock-day-periods"
       ]
     },
     {
@@ -348,15 +356,12 @@
       "fields": [
         "P",
         "H",
-        "M",
-        "UM"
+        "M"
       ],
       "target": [
         "H",
         " e ",
         "M",
-        " ",
-        "UM",
         " ",
         "P"
       ],
@@ -365,7 +370,8 @@
       ],
       "derived_from": [
         "time-composition-it_IT",
-        "icu/78.3/time#it_IT-composition"
+        "accademia-crusca/consulenza#clock-construction",
+        "treccani/vocabolario#clock-day-periods"
       ]
     }
   ],
@@ -373,7 +379,8 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-it_IT": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+      "01b180a9055f6cddb8ed0e764601cd043c600314a1ac39125c56581d90a728b0",
+      "7e40a97466595b256eb135b4c76eda29e849ee03154358f520d4198d1f03e16e"
     ],
     "icu/78.3/time#it_IT-composition": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
@@ -422,6 +429,12 @@
     ],
     "icu/78.3/time#it_IT-period-selector": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "accademia-crusca/consulenza#clock-construction": [
+      "01b180a9055f6cddb8ed0e764601cd043c600314a1ac39125c56581d90a728b0"
+    ],
+    "treccani/vocabolario#clock-day-periods": [
+      "7e40a97466595b256eb135b4c76eda29e849ee03154358f520d4198d1f03e16e"
     ]
   }
 }

@@ -1,7 +1,7 @@
 {
   "base_head": "2bec3140cfe8b535700b3e758c0b1d5d1953e947",
   "family": "time",
-  "insensitive_total": 32,
+  "insensitive_total": 20,
   "rows": [
     {
       "base": {
@@ -163,63 +163,6 @@
         "presentation": false,
         "strict": false
       },
-      "expected_speech": "dodici e trenta minuti",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "it_IT:test_cases_time.txt:1",
-      "source_record_id": "time-composition-it_IT"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "cinque e quindici minuti",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "it_IT:test_cases_time.txt:2",
-      "source_record_id": "time-composition-it_IT"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "tre e trentotto minuti",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "it_IT:test_cases_time.txt:5",
-      "source_record_id": "time-composition-it_IT"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
       "expected_speech": "십사시 오분",
       "head": {
         "first_presentation": false,
@@ -315,63 +258,6 @@
         "presentation": false,
         "strict": false
       },
-      "expected_speech": "catorze horas e trinta",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_BR:test_cases_time.txt:1",
-      "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "nove horas e trinta",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_BR:test_cases_time.txt:11",
-      "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "dez horas e dez",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_BR:test_cases_time.txt:15",
-      "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
       "expected_speech": "catorze horas e trinta minutos e cinco segundos",
       "head": {
         "first_presentation": true,
@@ -382,120 +268,6 @@
       },
       "id": "pt_BR:test_cases_time.txt:19",
       "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "três horas e trinta da tarde",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_BR:test_cases_time.txt:24",
-      "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "nove horas e cinco",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_BR:test_cases_time.txt:4",
-      "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "vinte e três horas e cinquenta e nove",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_BR:test_cases_time.txt:6",
-      "source_record_id": "time-composition-pt_BR"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "catorze horas e trinta",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_PT:checked.tsv:24",
-      "source_record_id": "time-composition-pt_PT"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "nove horas e quinze",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_PT:checked.tsv:25",
-      "source_record_id": "time-composition-pt_PT"
-    },
-    {
-      "base": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": false,
-        "presentation": false,
-        "strict": false
-      },
-      "expected_speech": "vinte e três horas e quarenta e cinco",
-      "head": {
-        "first_presentation": false,
-        "first_strict": false,
-        "insensitive": true,
-        "presentation": true,
-        "strict": true
-      },
-      "id": "pt_PT:checked.tsv:26",
-      "source_record_id": "time-composition-pt_PT"
     },
     {
       "base": {
@@ -614,6 +386,6 @@
   ],
   "schema": 1,
   "status": "development-only",
-  "strict_total": 29,
-  "witness_sha256": "81d450685a1cbab0a9fd4ae08be6a55e71c650936bba27c9228b1bede18c48c8"
+  "strict_total": 17,
+  "witness_sha256": "9fce28e0582929c876e3bff3f9d510c17b70ff097cba5ccfcf486a04d397ea79"
 }

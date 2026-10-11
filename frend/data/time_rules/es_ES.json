@@ -59,7 +59,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#es_ES-composition",
+            "lexical": "normalization-record:rae/dpd-2#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:es_ES"
@@ -127,7 +127,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#es_ES-composition",
+            "lexical": "normalization-record:rae/dpd-2#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:es_ES"
@@ -236,7 +236,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#es_ES-composition",
+            "lexical": "normalization-record:rae/dpd-2#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:es_ES"
@@ -345,7 +345,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#es_ES-composition",
+            "lexical": "normalization-record:rae/dpd-2#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:es_ES"
@@ -495,9 +495,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#es_ES-composition",
+            "lexical": "normalization-record:rae/dpd-2#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:es_ES"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:boe/gaceta#clock-seconds",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:es_ES"
             },
             "value_type": "string"
@@ -768,9 +776,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#es_ES-composition",
+            "lexical": "normalization-record:rae/dpd-2#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:es_ES"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:boe/gaceta#clock-seconds",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:es_ES"
             },
             "value_type": "string"
@@ -1360,7 +1376,7 @@
   },
   "icu_version": "78.3",
   "locale": "es_ES",
-  "normalization_sha256": "918ff836020d495402326d3d012956789f19585d184da8e98a4a5f87463f09b4",
+  "normalization_sha256": "9ba2f719505675a0f18bf7e9eb63498dd7ca040f4b879993de9266eb0d51343b",
   "periods": {
     "0": "de la madrugada",
     "1": "de la madrugada",
@@ -1387,7 +1403,7 @@
     "8": "de la mañana",
     "9": "de la mañana"
   },
-  "projection_sha256": "f49337e83ea5c803410d14653db8f46b76288fec84a4379cc4d4a7de46996cac",
+  "projection_sha256": "5df17b4547ac538a82ede0f1280cf5628eae3d4317e69a14f75d7611e7c263cb",
   "provenance": {
     "source": "frend/curated"
   },
@@ -1396,7 +1412,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-es_ES",
-          "normalization-record:icu/78.3/time#es_ES-composition"
+          "normalization-record:rae/dpd-2#clock-construction"
         ],
         "tokens": [
           "￰H￱"
@@ -1407,7 +1423,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-es_ES",
-          "normalization-record:icu/78.3/time#es_ES-composition"
+          "normalization-record:rae/dpd-2#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1420,7 +1436,8 @@
       {
         "provenance": [
           "normalization-record:time-composition-es_ES",
-          "normalization-record:icu/78.3/time#es_ES-composition"
+          "normalization-record:rae/dpd-2#clock-construction",
+          "normalization-record:boe/gaceta#clock-seconds"
         ],
         "tokens": [
           "￰H￱",
@@ -1441,7 +1458,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-es_ES",
-          "normalization-record:icu/78.3/time#es_ES-composition"
+          "normalization-record:rae/dpd-2#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1454,7 +1471,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-es_ES",
-          "normalization-record:icu/78.3/time#es_ES-composition"
+          "normalization-record:rae/dpd-2#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1469,7 +1486,8 @@
       {
         "provenance": [
           "normalization-record:time-composition-es_ES",
-          "normalization-record:icu/78.3/time#es_ES-composition"
+          "normalization-record:rae/dpd-2#clock-construction",
+          "normalization-record:boe/gaceta#clock-seconds"
         ],
         "tokens": [
           "￰H￱",

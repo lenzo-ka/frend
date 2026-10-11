@@ -11,6 +11,10 @@
     {
       "id": "icu/78.3/time",
       "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "mext/math-grade4",
+      "receipt": "mext-clock.json"
     }
   ],
   "selectors": [
@@ -229,7 +233,7 @@
       ],
       "derived_from": [
         "time-composition-ja_JP",
-        "icu/78.3/time#ja_JP-composition"
+        "mext/math-grade4#clock-construction"
       ]
     },
     {
@@ -251,7 +255,7 @@
       ],
       "derived_from": [
         "time-composition-ja_JP",
-        "icu/78.3/time#ja_JP-composition"
+        "mext/math-grade4#clock-construction"
       ]
     },
     {
@@ -274,7 +278,7 @@
       ],
       "derived_from": [
         "time-composition-ja_JP",
-        "icu/78.3/time#ja_JP-composition"
+        "mext/math-grade4#clock-construction"
       ]
     },
     {
@@ -300,7 +304,7 @@
       ],
       "derived_from": [
         "time-composition-ja_JP",
-        "icu/78.3/time#ja_JP-composition"
+        "mext/math-grade4#clock-construction"
       ]
     },
     {
@@ -327,7 +331,7 @@
       ],
       "derived_from": [
         "time-composition-ja_JP",
-        "icu/78.3/time#ja_JP-composition"
+        "mext/math-grade4#clock-construction"
       ]
     },
     {
@@ -357,7 +361,7 @@
       ],
       "derived_from": [
         "time-composition-ja_JP",
-        "icu/78.3/time#ja_JP-composition"
+        "mext/math-grade4#clock-construction"
       ]
     }
   ],
@@ -365,7 +369,7 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-ja_JP": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+      "c2d39005fed8a84ee2f73fe9029e11ec253f5348ced475b081e34829bb54dbaf"
     ],
     "icu/78.3/time#ja_JP-composition": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
@@ -399,6 +403,9 @@
     ],
     "icu/78.3/time#ja_JP-period-selector": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "mext/math-grade4#clock-construction": [
+      "c2d39005fed8a84ee2f73fe9029e11ec253f5348ced475b081e34829bb54dbaf"
     ]
   }
 }

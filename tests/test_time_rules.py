@@ -51,9 +51,10 @@ def test_generated_declaration_has_six_exact_unique_hole_paths(locale):
     declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
     rules = [rule for rule in declaration.rules if rule.left == declaration.start]
 
-    expected_shapes = (
-        {"H", "HM", "PH", "PHM"} if locale == "it_IT" else {"H", "HM", "HMS", "PH", "PHM", "PHMS"}
-    )
+    expected_shapes = {
+        "de_DE": {"H", "HM", "PH"},
+        "it_IT": {"H", "HM", "PH", "PHM"},
+    }.get(locale, {"H", "HM", "HMS", "PH", "PHM", "PHMS"})
     assert len(rules) == len(expected_shapes)
     assert {
         "".join(
@@ -143,6 +144,43 @@ def test_seconds_rules_realize_every_field_and_mark_s_spoken(
     assert unit.alternatives[0].text == spoken
     assert unit.alternatives[0].provenance.startswith(f"time-rule:{locale}+")
     assert "s" not in {capture.name for capture in unit.unspoken}
+
+
+def test_italian_clock_minutes_use_the_attested_elliptical_form():
+    unit = _time_unit(
+        "3:40",
+        (("H", 3), ("m", 40)),
+        (
+            ("H", 0, 1, "3", 3, "numeric"),
+            ("m", 2, 4, "40", 40, "numeric"),
+        ),
+        "it_IT",
+    )
+
+    assert "tre e quaranta" in {
+        alternative.text
+        for alternative in unit.alternatives
+        if alternative.provenance.startswith("time-rule:it_IT+")
+    }
+
+
+@pytest.mark.parametrize("locale", ["pt_BR", "pt_PT"])
+def test_portuguese_clock_minutes_keep_the_attested_unit(locale):
+    unit = _time_unit(
+        "6:30",
+        (("H", 6), ("m", 30)),
+        (
+            ("H", 0, 1, "6", 6, "numeric"),
+            ("m", 2, 4, "30", 30, "numeric"),
+        ),
+        locale,
+    )
+
+    assert "seis horas e trinta minutos" in {
+        alternative.text
+        for alternative in unit.alternatives
+        if alternative.provenance.startswith(f"time-rule:{locale}+")
+    }
 
 
 @pytest.mark.parametrize(

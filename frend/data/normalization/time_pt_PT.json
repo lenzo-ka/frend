@@ -11,6 +11,10 @@
     {
       "id": "icu/78.3/time",
       "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "ciberduvidas/consultorio",
+      "receipt": "ciberduvidas-clock.json"
     }
   ],
   "selectors": [
@@ -299,7 +303,7 @@
       ],
       "derived_from": [
         "time-composition-pt_PT",
-        "icu/78.3/time#pt_PT-composition"
+        "ciberduvidas/consultorio#clock-construction"
       ]
     },
     {
@@ -322,7 +326,7 @@
       ],
       "derived_from": [
         "time-composition-pt_PT",
-        "icu/78.3/time#pt_PT-composition"
+        "ciberduvidas/consultorio#clock-construction"
       ]
     },
     {
@@ -331,21 +335,24 @@
       "fields": [
         "H",
         "M",
-        "UH"
+        "UH",
+        "UM"
       ],
       "target": [
         "H",
         " ",
         "UH",
         " e ",
-        "M"
+        "M",
+        " ",
+        "UM"
       ],
       "directions": [
         "tn"
       ],
       "derived_from": [
         "time-composition-pt_PT",
-        "icu/78.3/time#pt_PT-composition"
+        "ciberduvidas/consultorio#clock-construction"
       ]
     },
     {
@@ -355,7 +362,8 @@
         "P",
         "H",
         "M",
-        "UH"
+        "UH",
+        "UM"
       ],
       "target": [
         "H",
@@ -364,6 +372,8 @@
         " e ",
         "M",
         " ",
+        "UM",
+        " ",
         "P"
       ],
       "directions": [
@@ -371,7 +381,7 @@
       ],
       "derived_from": [
         "time-composition-pt_PT",
-        "icu/78.3/time#pt_PT-composition"
+        "ciberduvidas/consultorio#clock-construction"
       ]
     },
     {
@@ -403,7 +413,7 @@
       ],
       "derived_from": [
         "time-composition-pt_PT",
-        "icu/78.3/time#pt_PT-composition"
+        "ciberduvidas/consultorio#clock-construction"
       ]
     },
     {
@@ -438,7 +448,7 @@
       ],
       "derived_from": [
         "time-composition-pt_PT",
-        "icu/78.3/time#pt_PT-composition"
+        "ciberduvidas/consultorio#clock-construction"
       ]
     }
   ],
@@ -446,7 +456,7 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-pt_PT": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+      "9db0a39c30b115e9fcf81b2695b5bd05c4e0f682d641dbbdbc48f7b8c298e0c9"
     ],
     "icu/78.3/time#pt_PT-composition": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
@@ -495,6 +505,9 @@
     ],
     "icu/78.3/time#pt_PT-period-selector": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "ciberduvidas/consultorio#clock-construction": [
+      "9db0a39c30b115e9fcf81b2695b5bd05c4e0f682d641dbbdbc48f7b8c298e0c9"
     ]
   }
 }

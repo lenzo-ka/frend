@@ -11,6 +11,10 @@
     {
       "id": "icu/78.3/time",
       "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "nikl/online-qna",
+      "receipt": "nikl-clock.json"
     }
   ],
   "selectors": [
@@ -229,7 +233,7 @@
       ],
       "derived_from": [
         "time-composition-ko_KR",
-        "icu/78.3/time#ko_KR-composition"
+        "nikl/online-qna#clock-construction"
       ]
     },
     {
@@ -251,7 +255,7 @@
       ],
       "derived_from": [
         "time-composition-ko_KR",
-        "icu/78.3/time#ko_KR-composition"
+        "nikl/online-qna#clock-construction"
       ]
     },
     {
@@ -275,7 +279,7 @@
       ],
       "derived_from": [
         "time-composition-ko_KR",
-        "icu/78.3/time#ko_KR-composition"
+        "nikl/online-qna#clock-construction"
       ]
     },
     {
@@ -302,7 +306,7 @@
       ],
       "derived_from": [
         "time-composition-ko_KR",
-        "icu/78.3/time#ko_KR-composition"
+        "nikl/online-qna#clock-construction"
       ]
     },
     {
@@ -331,7 +335,7 @@
       ],
       "derived_from": [
         "time-composition-ko_KR",
-        "icu/78.3/time#ko_KR-composition"
+        "nikl/online-qna#clock-construction"
       ]
     },
     {
@@ -363,7 +367,7 @@
       ],
       "derived_from": [
         "time-composition-ko_KR",
-        "icu/78.3/time#ko_KR-composition"
+        "nikl/online-qna#clock-construction"
       ]
     }
   ],
@@ -371,7 +375,7 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-ko_KR": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+      "df813289826b918e2f1659d4428d298a2c09e112f9bf3a10ee72db62bdf40ff9"
     ],
     "icu/78.3/time#ko_KR-composition": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
@@ -405,6 +409,9 @@
     ],
     "icu/78.3/time#ko_KR-period-selector": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "nikl/online-qna#clock-construction": [
+      "df813289826b918e2f1659d4428d298a2c09e112f9bf3a10ee72db62bdf40ff9"
     ]
   }
 }

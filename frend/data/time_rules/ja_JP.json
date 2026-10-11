@@ -59,7 +59,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ja_JP-composition",
+            "lexical": "normalization-record:mext/math-grade4#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ja_JP"
@@ -157,7 +157,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ja_JP-composition",
+            "lexical": "normalization-record:mext/math-grade4#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ja_JP"
@@ -204,333 +204,6 @@
             },
             "variable": {
               "lexical": "uh",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "P",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "p",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "H",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "h",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UH",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "uh",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "CLOCK",
-          "namespace": "urn:frend:time:v1:ja_JP"
-        },
-        "provenance": [
-          {
-            "lexical": "normalization-record:time-composition-ja_JP",
-            "name": {
-              "local_name": "source-1",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "value_type": "string"
-          },
-          {
-            "lexical": "normalization-record:icu/78.3/time#ja_JP-composition",
-            "name": {
-              "local_name": "source-2",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "value_type": "string"
-          }
-        ],
-        "source": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "H",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "h",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "M",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UH",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "uh",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "um",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "target": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "H",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "h",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UH",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "uh",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "M",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "um",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "CLOCK",
-          "namespace": "urn:frend:time:v1:ja_JP"
-        },
-        "provenance": [
-          {
-            "lexical": "normalization-record:time-composition-ja_JP",
-            "name": {
-              "local_name": "source-1",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "value_type": "string"
-          },
-          {
-            "lexical": "normalization-record:icu/78.3/time#ja_JP-composition",
-            "name": {
-              "local_name": "source-2",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "value_type": "string"
-          }
-        ],
-        "source": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "P",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "p",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "H",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "h",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "M",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UH",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "uh",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:ja_JP"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:ja_JP"
-            },
-            "variable": {
-              "lexical": "um",
               "name": {
                 "local_name": "variable",
                 "namespace": "urn:frend:time:v1:ja_JP"
@@ -595,6 +268,134 @@
               },
               "value_type": "string"
             }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:ja_JP"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-ja_JP",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:mext/math-grade4#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
           },
           {
             "kind": "hole",
@@ -653,7 +454,206 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ja_JP-composition",
+            "lexical": "normalization-record:mext/math-grade4#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:ja_JP"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:ja_JP"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-ja_JP",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:ja_JP"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:mext/math-grade4#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ja_JP"
@@ -871,7 +871,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ja_JP-composition",
+            "lexical": "normalization-record:mext/math-grade4#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ja_JP"
@@ -1408,7 +1408,7 @@
   },
   "icu_version": "78.3",
   "locale": "ja_JP",
-  "normalization_sha256": "929eae9c9adf2c69fbef6f22d184d559552fdc55f7d6dca72d416a96d991b079",
+  "normalization_sha256": "b0160b3f0cf581cb018843a145b8256bd518648f5f409bc7c4194b083ee5516e",
   "periods": {
     "0": "夜中",
     "1": "夜中",
@@ -1435,7 +1435,7 @@
     "8": "朝",
     "9": "朝"
   },
-  "projection_sha256": "6595ccc8ffc7bfd560bb29410872f9a301e30c58115c31b6ebeb9d8786abaf31",
+  "projection_sha256": "564a2502eed7cf37d825cd29d3c85937aca755b1027ff5aa4b05336ed9a28139",
   "provenance": {
     "source": "frend/curated"
   },
@@ -1444,7 +1444,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ja_JP",
-          "normalization-record:icu/78.3/time#ja_JP-composition"
+          "normalization-record:mext/math-grade4#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1456,7 +1456,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ja_JP",
-          "normalization-record:icu/78.3/time#ja_JP-composition"
+          "normalization-record:mext/math-grade4#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1470,7 +1470,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ja_JP",
-          "normalization-record:icu/78.3/time#ja_JP-composition"
+          "normalization-record:mext/math-grade4#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1486,7 +1486,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ja_JP",
-          "normalization-record:icu/78.3/time#ja_JP-composition"
+          "normalization-record:mext/math-grade4#clock-construction"
         ],
         "tokens": [
           "￰P￱",
@@ -1500,7 +1500,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ja_JP",
-          "normalization-record:icu/78.3/time#ja_JP-composition"
+          "normalization-record:mext/math-grade4#clock-construction"
         ],
         "tokens": [
           "￰P￱",
@@ -1516,7 +1516,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ja_JP",
-          "normalization-record:icu/78.3/time#ja_JP-composition"
+          "normalization-record:mext/math-grade4#clock-construction"
         ],
         "tokens": [
           "￰P￱",

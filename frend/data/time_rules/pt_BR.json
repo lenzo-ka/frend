@@ -59,7 +59,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#pt_BR-composition",
+            "lexical": "normalization-record:ciberduvidas/consultorio#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:pt_BR"
@@ -168,7 +168,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#pt_BR-composition",
+            "lexical": "normalization-record:ciberduvidas/consultorio#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:pt_BR"
@@ -318,7 +318,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#pt_BR-composition",
+            "lexical": "normalization-record:ciberduvidas/consultorio#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:pt_BR"
@@ -371,165 +371,15 @@
               },
               "value_type": "string"
             }
-          }
-        ],
-        "target": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "H",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "h",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
           },
           {
             "kind": "hole",
             "nonterminal": {
-              "local_name": "UH",
+              "local_name": "UM",
               "namespace": "urn:frend:time:v1:pt_BR"
             },
             "variable": {
-              "lexical": "uh",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " e ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "M",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          }
-        ],
-        "weight": null
-      },
-      {
-        "awaited_variables": [],
-        "boundary": {
-          "lexical": "complete",
-          "name": {
-            "local_name": "boundary",
-            "namespace": "urn:tiergraph:grammar"
-          },
-          "value_type": "string"
-        },
-        "left": {
-          "local_name": "CLOCK",
-          "namespace": "urn:frend:time:v1:pt_BR"
-        },
-        "provenance": [
-          {
-            "lexical": "normalization-record:time-composition-pt_BR",
-            "name": {
-              "local_name": "source-1",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "value_type": "string"
-          },
-          {
-            "lexical": "normalization-record:icu/78.3/time#pt_BR-composition",
-            "name": {
-              "local_name": "source-2",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "value_type": "string"
-          }
-        ],
-        "source": [
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "P",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "p",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "H",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "h",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "M",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:pt_BR"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UH",
-              "namespace": "urn:frend:time:v1:pt_BR"
-            },
-            "variable": {
-              "lexical": "uh",
+              "lexical": "um",
               "name": {
                 "local_name": "variable",
                 "namespace": "urn:frend:time:v1:pt_BR"
@@ -620,6 +470,238 @@
           {
             "kind": "hole",
             "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:pt_BR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-pt_BR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:ciberduvidas/consultorio#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " e ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
               "local_name": "P",
               "namespace": "urn:frend:time:v1:pt_BR"
             },
@@ -659,7 +741,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#pt_BR-composition",
+            "lexical": "normalization-record:ciberduvidas/consultorio#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:pt_BR"
@@ -932,7 +1014,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#pt_BR-composition",
+            "lexical": "normalization-record:ciberduvidas/consultorio#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:pt_BR"
@@ -1524,7 +1606,7 @@
   },
   "icu_version": "78.3",
   "locale": "pt_BR",
-  "normalization_sha256": "fe15b93ca9bf10a640119f063d5422cb6d8beeb283c4d2be7d43801003e9b496",
+  "normalization_sha256": "cd2e06d0b8f268c7e936ed8a39fbf69f72e1c3effe2983d354d9fdcc7e99e82e",
   "periods": {
     "0": "da madrugada",
     "1": "da madrugada",
@@ -1551,7 +1633,7 @@
     "8": "da manhã",
     "9": "da manhã"
   },
-  "projection_sha256": "908b588f11568f24af97188002451cf9d056ac20ea5fee501b1a2c22a27e2687",
+  "projection_sha256": "c16e802ff1fb0cec70453185bb352d2e63706dd300b6f9c382bc9510e0b0cd1f",
   "provenance": {
     "source": "frend/curated"
   },
@@ -1560,7 +1642,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-pt_BR",
-          "normalization-record:icu/78.3/time#pt_BR-composition"
+          "normalization-record:ciberduvidas/consultorio#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1573,14 +1655,16 @@
       {
         "provenance": [
           "normalization-record:time-composition-pt_BR",
-          "normalization-record:icu/78.3/time#pt_BR-composition"
+          "normalization-record:ciberduvidas/consultorio#clock-construction"
         ],
         "tokens": [
           "￰H￱",
           " ",
           "￰UH￱",
           " e ",
-          "￰M￱"
+          "￰M￱",
+          " ",
+          "￰UM￱"
         ]
       }
     ],
@@ -1588,7 +1672,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-pt_BR",
-          "normalization-record:icu/78.3/time#pt_BR-composition"
+          "normalization-record:ciberduvidas/consultorio#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1609,7 +1693,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-pt_BR",
-          "normalization-record:icu/78.3/time#pt_BR-composition"
+          "normalization-record:ciberduvidas/consultorio#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1624,7 +1708,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-pt_BR",
-          "normalization-record:icu/78.3/time#pt_BR-composition"
+          "normalization-record:ciberduvidas/consultorio#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1632,6 +1716,8 @@
           "￰UH￱",
           " e ",
           "￰M￱",
+          " ",
+          "￰UM￱",
           " ",
           "￰P￱"
         ]
@@ -1641,7 +1727,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-pt_BR",
-          "normalization-record:icu/78.3/time#pt_BR-composition"
+          "normalization-record:ciberduvidas/consultorio#clock-construction"
         ],
         "tokens": [
           "￰H￱",

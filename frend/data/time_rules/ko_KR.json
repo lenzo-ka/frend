@@ -59,7 +59,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ko_KR-composition",
+            "lexical": "normalization-record:nikl/online-qna#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ko_KR"
@@ -157,7 +157,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ko_KR-composition",
+            "lexical": "normalization-record:nikl/online-qna#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ko_KR"
@@ -296,7 +296,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ko_KR-composition",
+            "lexical": "normalization-record:nikl/online-qna#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ko_KR"
@@ -465,7 +465,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ko_KR-composition",
+            "lexical": "normalization-record:nikl/online-qna#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ko_KR"
@@ -675,7 +675,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ko_KR-composition",
+            "lexical": "normalization-record:nikl/online-qna#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ko_KR"
@@ -915,7 +915,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#ko_KR-composition",
+            "lexical": "normalization-record:nikl/online-qna#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:ko_KR"
@@ -1474,7 +1474,7 @@
   },
   "icu_version": "78.3",
   "locale": "ko_KR",
-  "normalization_sha256": "bf283384b08b170e6330d12435a874e2f1bfae66c9816d526c509475f55f4b0d",
+  "normalization_sha256": "c2b3500e3ea43c171ddee0f4cbe46067f3898f58e8a89294d072e7a1c3120f4c",
   "periods": {
     "0": "밤",
     "1": "밤",
@@ -1501,7 +1501,7 @@
     "8": "오전",
     "9": "오전"
   },
-  "projection_sha256": "b97d0c54bdd0b4f3d1b5965d462d0a69d91d86756998199191c107f527920aa7",
+  "projection_sha256": "741eec2ee59876f406417f49096090a711e85880f27e076159d3ae0902ca5484",
   "provenance": {
     "source": "frend/curated"
   },
@@ -1510,7 +1510,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ko_KR",
-          "normalization-record:icu/78.3/time#ko_KR-composition"
+          "normalization-record:nikl/online-qna#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1522,7 +1522,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ko_KR",
-          "normalization-record:icu/78.3/time#ko_KR-composition"
+          "normalization-record:nikl/online-qna#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1537,7 +1537,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ko_KR",
-          "normalization-record:icu/78.3/time#ko_KR-composition"
+          "normalization-record:nikl/online-qna#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1555,7 +1555,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ko_KR",
-          "normalization-record:icu/78.3/time#ko_KR-composition"
+          "normalization-record:nikl/online-qna#clock-construction"
         ],
         "tokens": [
           "￰P￱",
@@ -1569,7 +1569,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ko_KR",
-          "normalization-record:icu/78.3/time#ko_KR-composition"
+          "normalization-record:nikl/online-qna#clock-construction"
         ],
         "tokens": [
           "￰P￱",
@@ -1586,7 +1586,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-ko_KR",
-          "normalization-record:icu/78.3/time#ko_KR-composition"
+          "normalization-record:nikl/online-qna#clock-construction"
         ],
         "tokens": [
           "￰P￱",

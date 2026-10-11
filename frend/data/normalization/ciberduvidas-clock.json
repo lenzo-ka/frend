@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation; direct and reader fetches timed out in the build environment",
+  "fetched_at": "2026-10-11T02:40:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://ciberduvidas.iscte-iul.pt/consultorio/perguntas/sobre-o-simbolo-de-hora-h/30030",
+  "manual_citation": true,
+  "revision": "Ciberduvidas, Sobre o simbolo de hora (h), note updated 2023-03-31",
+  "sha256": "2d9b7506eb90a33da4fdb4993fa99350c6b6ba2b490442b31b7cdbec2a01fe6d",
+  "source": "ciberduvidas/consultorio",
+  "transform_command": "manual citation of the 23:30 and 23:30:30 spoken forms"
+}

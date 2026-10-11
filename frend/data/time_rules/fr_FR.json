@@ -59,7 +59,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#fr_FR-composition",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:fr_FR"
@@ -168,7 +168,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#fr_FR-composition",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:fr_FR"
@@ -318,7 +318,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#fr_FR-composition",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:fr_FR"
@@ -468,7 +468,7 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#fr_FR-composition",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
             "name": {
               "local_name": "source-2",
               "namespace": "urn:frend:time:v1:fr_FR"
@@ -659,9 +659,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#fr_FR-composition",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-seconds",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:fr_FR"
             },
             "value_type": "string"
@@ -932,9 +940,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#fr_FR-composition",
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-seconds",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:fr_FR"
             },
             "value_type": "string"
@@ -1524,7 +1540,7 @@
   },
   "icu_version": "78.3",
   "locale": "fr_FR",
-  "normalization_sha256": "4c9d0b7699ee8c305667ba62841585c260d5ee5bba0e3ad2f4f9c29533c0c4a7",
+  "normalization_sha256": "59392a44da06105b30a015c17212920247d7ca6182d1d3273ba8b060193937c6",
   "periods": {
     "0": "matin",
     "1": "matin",
@@ -1551,7 +1567,7 @@
     "8": "matin",
     "9": "matin"
   },
-  "projection_sha256": "e79d1b6d1987ca489538f7c7967fbfa3abb89ee3cab6ad4b234a709056a68725",
+  "projection_sha256": "d8ba173f1b28a6007581540d555a65ee1c62c838e070cece9c002b44e3bbedf3",
   "provenance": {
     "source": "frend/curated"
   },
@@ -1560,7 +1576,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-fr_FR",
-          "normalization-record:icu/78.3/time#fr_FR-composition"
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1573,7 +1589,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-fr_FR",
-          "normalization-record:icu/78.3/time#fr_FR-composition"
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1588,7 +1604,8 @@
       {
         "provenance": [
           "normalization-record:time-composition-fr_FR",
-          "normalization-record:icu/78.3/time#fr_FR-composition"
+          "normalization-record:academie-francaise/dictionnaire#clock-construction",
+          "normalization-record:academie-francaise/dictionnaire#clock-seconds"
         ],
         "tokens": [
           "￰H￱",
@@ -1609,7 +1626,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-fr_FR",
-          "normalization-record:icu/78.3/time#fr_FR-composition"
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1624,7 +1641,7 @@
       {
         "provenance": [
           "normalization-record:time-composition-fr_FR",
-          "normalization-record:icu/78.3/time#fr_FR-composition"
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
         ],
         "tokens": [
           "￰H￱",
@@ -1641,7 +1658,8 @@
       {
         "provenance": [
           "normalization-record:time-composition-fr_FR",
-          "normalization-record:icu/78.3/time#fr_FR-composition"
+          "normalization-record:academie-francaise/dictionnaire#clock-construction",
+          "normalization-record:academie-francaise/dictionnaire#clock-seconds"
         ],
         "tokens": [
           "￰H￱",

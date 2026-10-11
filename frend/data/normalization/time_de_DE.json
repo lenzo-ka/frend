@@ -276,8 +276,7 @@
       ],
       "derived_from": [
         "time-composition-de_DE",
-        "duden/online#de_DE-clock",
-        "icu/78.3/time#de_DE-composition"
+        "duden/online#de_DE-clock"
       ]
     },
     {
@@ -300,8 +299,7 @@
       ],
       "derived_from": [
         "time-composition-de_DE",
-        "duden/online#de_DE-clock",
-        "icu/78.3/time#de_DE-composition"
+        "duden/online#de_DE-clock"
       ]
     },
     {
@@ -324,104 +322,7 @@
       ],
       "derived_from": [
         "time-composition-de_DE",
-        "duden/online#de_DE-clock",
-        "icu/78.3/time#de_DE-composition"
-      ]
-    },
-    {
-      "id": "time-PHM",
-      "shape": "PHM",
-      "fields": [
-        "P",
-        "H",
-        "M",
-        "UH"
-      ],
-      "target": [
-        "H",
-        " ",
-        "UH",
-        " ",
-        "M",
-        " ",
-        "P"
-      ],
-      "directions": [
-        "tn"
-      ],
-      "derived_from": [
-        "time-composition-de_DE",
-        "duden/online#de_DE-clock",
-        "icu/78.3/time#de_DE-composition"
-      ]
-    },
-    {
-      "id": "time-HMS",
-      "shape": "HMS",
-      "fields": [
-        "H",
-        "M",
-        "S",
-        "UH",
-        "UM",
-        "US"
-      ],
-      "target": [
-        "H",
-        " ",
-        "UH",
-        " ",
-        "M",
-        " ",
-        "UM",
-        " ",
-        "S",
-        " ",
-        "US"
-      ],
-      "directions": [
-        "tn"
-      ],
-      "derived_from": [
-        "time-composition-de_DE",
-        "duden/online#de_DE-clock",
-        "icu/78.3/time#de_DE-composition"
-      ]
-    },
-    {
-      "id": "time-PHMS",
-      "shape": "PHMS",
-      "fields": [
-        "P",
-        "H",
-        "M",
-        "S",
-        "UH",
-        "UM",
-        "US"
-      ],
-      "target": [
-        "H",
-        " ",
-        "UH",
-        " ",
-        "M",
-        " ",
-        "UM",
-        " ",
-        "S",
-        " ",
-        "US",
-        " ",
-        "P"
-      ],
-      "directions": [
-        "tn"
-      ],
-      "derived_from": [
-        "time-composition-de_DE",
-        "duden/online#de_DE-clock",
-        "icu/78.3/time#de_DE-composition"
+        "duden/online#de_DE-clock"
       ]
     }
   ],
@@ -429,7 +330,6 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-de_DE": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7",
       "de279fb46326d77776a077e6550fcbf212bdc0b977bf5300d4dc4a76348c6fb6"
     ],
     "icu/78.3/time#de_DE-composition": [

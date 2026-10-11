@@ -59,9 +59,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#it_IT-composition",
+            "lexical": "normalization-record:accademia-crusca/consulenza#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:it_IT"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:treccani/vocabolario#clock-day-periods",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:it_IT"
             },
             "value_type": "string"
@@ -127,9 +135,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#it_IT-composition",
+            "lexical": "normalization-record:accademia-crusca/consulenza#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:it_IT"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:treccani/vocabolario#clock-day-periods",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:it_IT"
             },
             "value_type": "string"
@@ -236,9 +252,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#it_IT-composition",
+            "lexical": "normalization-record:accademia-crusca/consulenza#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:it_IT"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:treccani/vocabolario#clock-day-periods",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:it_IT"
             },
             "value_type": "string"
@@ -268,21 +292,6 @@
             },
             "variable": {
               "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:it_IT"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:it_IT"
-            },
-            "variable": {
-              "lexical": "um",
               "name": {
                 "local_name": "variable",
                 "namespace": "urn:frend:time:v1:it_IT"
@@ -332,32 +341,6 @@
               },
               "value_type": "string"
             }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:time:v1:it_IT"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:it_IT"
-            },
-            "variable": {
-              "lexical": "um",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:it_IT"
-              },
-              "value_type": "string"
-            }
           }
         ],
         "weight": null
@@ -386,9 +369,17 @@
             "value_type": "string"
           },
           {
-            "lexical": "normalization-record:icu/78.3/time#it_IT-composition",
+            "lexical": "normalization-record:accademia-crusca/consulenza#clock-construction",
             "name": {
               "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:it_IT"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:treccani/vocabolario#clock-day-periods",
+            "name": {
+              "local_name": "source-3",
               "namespace": "urn:frend:time:v1:it_IT"
             },
             "value_type": "string"
@@ -439,21 +430,6 @@
               },
               "value_type": "string"
             }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:it_IT"
-            },
-            "variable": {
-              "lexical": "um",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:it_IT"
-              },
-              "value_type": "string"
-            }
           }
         ],
         "target": [
@@ -491,32 +467,6 @@
             },
             "variable": {
               "lexical": "m",
-              "name": {
-                "local_name": "variable",
-                "namespace": "urn:frend:time:v1:it_IT"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "terminal",
-            "text": {
-              "lexical": " ",
-              "name": {
-                "local_name": "text",
-                "namespace": "urn:frend:time:v1:it_IT"
-              },
-              "value_type": "string"
-            }
-          },
-          {
-            "kind": "hole",
-            "nonterminal": {
-              "local_name": "UM",
-              "namespace": "urn:frend:time:v1:it_IT"
-            },
-            "variable": {
-              "lexical": "um",
               "name": {
                 "local_name": "variable",
                 "namespace": "urn:frend:time:v1:it_IT"
@@ -855,7 +805,7 @@
   },
   "icu_version": "78.3",
   "locale": "it_IT",
-  "normalization_sha256": "54f1dd1ed1a95dd5fa52bc0c562d1844b0d35e924b72cd2b618c69dd48f79021",
+  "normalization_sha256": "74936b9be72e2f5b8c9bbccbc949d610999c726171b79cba5d6cb9e57bb39e65",
   "periods": {
     "0": "di notte",
     "1": "di notte",
@@ -882,7 +832,7 @@
     "8": "di mattina",
     "9": "di mattina"
   },
-  "projection_sha256": "a1a5c75cdc977a2239220dcad30a6693a453f6eebdf20f6c137f46501f562157",
+  "projection_sha256": "c6f18eb682252cf4c83bf216cb83486112604b4abae2882b9af470090bd990f1",
   "provenance": {
     "source": "frend/curated"
   },
@@ -891,7 +841,8 @@
       {
         "provenance": [
           "normalization-record:time-composition-it_IT",
-          "normalization-record:icu/78.3/time#it_IT-composition"
+          "normalization-record:accademia-crusca/consulenza#clock-construction",
+          "normalization-record:treccani/vocabolario#clock-day-periods"
         ],
         "tokens": [
           "￰H￱"
@@ -902,14 +853,13 @@
       {
         "provenance": [
           "normalization-record:time-composition-it_IT",
-          "normalization-record:icu/78.3/time#it_IT-composition"
+          "normalization-record:accademia-crusca/consulenza#clock-construction",
+          "normalization-record:treccani/vocabolario#clock-day-periods"
         ],
         "tokens": [
           "￰H￱",
           " e ",
-          "￰M￱",
-          " ",
-          "￰UM￱"
+          "￰M￱"
         ]
       }
     ],
@@ -918,7 +868,8 @@
       {
         "provenance": [
           "normalization-record:time-composition-it_IT",
-          "normalization-record:icu/78.3/time#it_IT-composition"
+          "normalization-record:accademia-crusca/consulenza#clock-construction",
+          "normalization-record:treccani/vocabolario#clock-day-periods"
         ],
         "tokens": [
           "￰H￱",
@@ -931,14 +882,13 @@
       {
         "provenance": [
           "normalization-record:time-composition-it_IT",
-          "normalization-record:icu/78.3/time#it_IT-composition"
+          "normalization-record:accademia-crusca/consulenza#clock-construction",
+          "normalization-record:treccani/vocabolario#clock-day-periods"
         ],
         "tokens": [
           "￰H￱",
           " e ",
           "￰M￱",
-          " ",
-          "￰UM￱",
           " ",
           "￰P￱"
         ]

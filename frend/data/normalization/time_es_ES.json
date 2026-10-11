@@ -11,6 +11,14 @@
     {
       "id": "icu/78.3/time",
       "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "rae/dpd-2",
+      "receipt": "rae-clock.json"
+    },
+    {
+      "id": "boe/gaceta",
+      "receipt": "boe-clock-seconds.json"
     }
   ],
   "selectors": [
@@ -296,7 +304,7 @@
       ],
       "derived_from": [
         "time-composition-es_ES",
-        "icu/78.3/time#es_ES-composition"
+        "rae/dpd-2#clock-construction"
       ]
     },
     {
@@ -316,7 +324,7 @@
       ],
       "derived_from": [
         "time-composition-es_ES",
-        "icu/78.3/time#es_ES-composition"
+        "rae/dpd-2#clock-construction"
       ]
     },
     {
@@ -336,7 +344,7 @@
       ],
       "derived_from": [
         "time-composition-es_ES",
-        "icu/78.3/time#es_ES-composition"
+        "rae/dpd-2#clock-construction"
       ]
     },
     {
@@ -359,7 +367,7 @@
       ],
       "derived_from": [
         "time-composition-es_ES",
-        "icu/78.3/time#es_ES-composition"
+        "rae/dpd-2#clock-construction"
       ]
     },
     {
@@ -391,7 +399,8 @@
       ],
       "derived_from": [
         "time-composition-es_ES",
-        "icu/78.3/time#es_ES-composition"
+        "rae/dpd-2#clock-construction",
+        "boe/gaceta#clock-seconds"
       ]
     },
     {
@@ -426,7 +435,8 @@
       ],
       "derived_from": [
         "time-composition-es_ES",
-        "icu/78.3/time#es_ES-composition"
+        "rae/dpd-2#clock-construction",
+        "boe/gaceta#clock-seconds"
       ]
     }
   ],
@@ -434,7 +444,8 @@
   "curated_rows": [],
   "ancestry": {
     "time-composition-es_ES": [
-      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+      "e16cad2ca389c225c1fe9e87f91692933f277bf7a46c62b72b24770ff24ccbcf",
+      "7a673c0d714034858b03c7e9ced1b3de5eccf5446728dd198f06a08cd08e08eb"
     ],
     "icu/78.3/time#es_ES-composition": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
@@ -483,6 +494,12 @@
     ],
     "icu/78.3/time#es_ES-period-selector": [
       "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "rae/dpd-2#clock-construction": [
+      "e16cad2ca389c225c1fe9e87f91692933f277bf7a46c62b72b24770ff24ccbcf"
+    ],
+    "boe/gaceta#clock-seconds": [
+      "7a673c0d714034858b03c7e9ced1b3de5eccf5446728dd198f06a08cd08e08eb"
     ]
   }
 }

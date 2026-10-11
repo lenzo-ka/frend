@@ -1,7 +1,7 @@
 {
   "base_head": "2bec3140cfe8b535700b3e758c0b1d5d1953e947",
   "family": "time",
-  "head_head": "2bec3140cfe8b535700b3e758c0b1d5d1953e947",
+  "head_head": "50fdc7f2e8c8ab164f8831da4fac87738677265b",
   "rows": [
     {
       "base": {
@@ -311,7 +311,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "cinco y dos",
                 "weight": null
@@ -871,7 +871,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "cinco y dos",
                 "weight": null
@@ -1401,7 +1401,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-period-3",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-period-3",
                 "surface": false,
                 "text": "cinco y dos de la tarde",
                 "weight": null
@@ -2049,7 +2049,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf-fallback:es+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf-fallback:es+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "una y cero",
                 "weight": null
@@ -2514,7 +2514,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+normalization-record:boe/gaceta#clock-seconds+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "tres horas dos minutos y treinta y dos segundos",
                 "weight": null
@@ -3041,7 +3041,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "cero y cincuenta y dos",
                 "weight": null
@@ -3432,7 +3432,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "cero y cincuenta y dos",
                 "weight": null
@@ -3898,7 +3898,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-period-3",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-period-3",
                 "surface": false,
                 "text": "tres y cero de la tarde",
                 "weight": null
@@ -4591,7 +4591,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "veinte y cero",
                 "weight": null
@@ -5271,7 +5271,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf-fallback:es+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf-fallback:es+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "una y cero",
                 "weight": null
@@ -5818,7 +5818,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "tres y cero",
                 "weight": null
@@ -6624,7 +6624,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "dos y cero",
                 "weight": null
@@ -6751,7 +6751,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "cuatro y treinta",
                 "weight": null
@@ -7701,7 +7701,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf-fallback:es+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf-fallback:es+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es",
                 "surface": false,
                 "text": "una y treinta",
                 "weight": null
@@ -8303,7 +8303,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:icu/78.3/time#es_ES-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:es_ES+normalization-record:time-composition-es_ES+normalization-record:rae/dpd-2#clock-construction+normalization-record:boe/gaceta#clock-seconds+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:es+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "doce horas cero minutos y cero segundos",
                 "weight": null
@@ -8894,7 +8894,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "cinco y dos",
                 "weight": null
@@ -9454,7 +9454,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "cinco y dos",
                 "weight": null
@@ -9984,7 +9984,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
                 "surface": false,
                 "text": "cinco y dos de la tarde",
                 "weight": null
@@ -10632,7 +10632,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "una y cero",
                 "weight": null
@@ -11097,7 +11097,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+normalization-record:boe/gaceta#clock-seconds+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "tres horas dos minutos y treinta y dos segundos",
                 "weight": null
@@ -11624,7 +11624,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "cero y cincuenta y dos",
                 "weight": null
@@ -12015,7 +12015,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "cero y cincuenta y dos",
                 "weight": null
@@ -12481,7 +12481,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-period-3",
                 "surface": false,
                 "text": "tres y cero de la tarde",
                 "weight": null
@@ -13174,7 +13174,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "veinte y cero",
                 "weight": null
@@ -13854,7 +13854,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "una y cero",
                 "weight": null
@@ -14401,7 +14401,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "tres y cero",
                 "weight": null
@@ -15207,7 +15207,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "dos y cero",
                 "weight": null
@@ -15334,7 +15334,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "cuatro y treinta",
                 "weight": null
@@ -16284,7 +16284,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+icu-rbnf:%spellout-cardinal-feminine+icu-rbnf:%spellout-numbering",
                 "surface": false,
                 "text": "una y treinta",
                 "weight": null
@@ -16886,7 +16886,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:icu/78.3/time#es_MX-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:es_MX+normalization-record:time-composition-es_MX+normalization-record:rae/dpd-2#clock-construction+normalization-record:boe/gaceta#clock-seconds+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "doce horas cero minutos y cero segundos",
                 "weight": null
@@ -17377,7 +17377,7 @@
         "first": " dodici trenta ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -17435,10 +17435,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:icu/78.3/time#it_IT-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it+normalization-record:time-unit-um-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:accademia-crusca/consulenza#clock-construction+normalization-record:treccani/vocabolario#clock-day-periods+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it",
                 "surface": false,
-                "text": "dodici e trenta minuti",
+                "text": "dodici e trenta",
                 "weight": null
               }
             ],
@@ -17578,8 +17578,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "it_IT:test_cases_time.txt:1"
     },
@@ -17791,7 +17791,7 @@
         "first": " cinque quindici ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -17849,10 +17849,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:icu/78.3/time#it_IT-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it+normalization-record:time-unit-um-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:accademia-crusca/consulenza#clock-construction+normalization-record:treccani/vocabolario#clock-day-periods+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it",
                 "surface": false,
-                "text": "cinque e quindici minuti",
+                "text": "cinque e quindici",
                 "weight": null
               }
             ],
@@ -17992,8 +17992,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "it_IT:test_cases_time.txt:2"
     },
@@ -18263,10 +18263,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:icu/78.3/time#it_IT-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it+normalization-record:time-unit-um-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:accademia-crusca/consulenza#clock-construction+normalization-record:treccani/vocabolario#clock-day-periods+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it",
                 "surface": false,
-                "text": "ventitré e quarantacinque minuti",
+                "text": "ventitré e quarantacinque",
                 "weight": null
               }
             ],
@@ -18619,7 +18619,7 @@
         "first": " tre trentotto ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -18677,10 +18677,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:icu/78.3/time#it_IT-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it+normalization-record:time-unit-um-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:accademia-crusca/consulenza#clock-construction+normalization-record:treccani/vocabolario#clock-day-periods+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it",
                 "surface": false,
-                "text": "tre e trentotto minuti",
+                "text": "tre e trentotto",
                 "weight": null
               }
             ],
@@ -18820,8 +18820,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "it_IT:test_cases_time.txt:5"
     },
@@ -19427,10 +19427,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:icu/78.3/time#it_IT-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it+normalization-record:time-unit-um-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering",
+                "provenance": "time-rule:it_IT+normalization-record:time-composition-it_IT+normalization-record:accademia-crusca/consulenza#clock-construction+normalization-record:treccani/vocabolario#clock-day-periods+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:it",
                 "surface": false,
-                "text": "sedici e zero minuti",
+                "text": "sedici e zero",
                 "weight": null
               }
             ],
@@ -20684,7 +20684,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "십일시 오십분 오초",
                 "weight": null
@@ -21755,7 +21755,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "십사시 오분",
                 "weight": null
@@ -22715,7 +22715,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "십팔시 오분",
                 "weight": null
@@ -23486,7 +23486,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "이십삼시 공분",
                 "weight": null
@@ -24157,7 +24157,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "공시 삼십분 공초",
                 "weight": null
@@ -25307,7 +25307,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "삼시 삼십팔분",
                 "weight": null
@@ -26023,7 +26023,7 @@
               },
               {
                 "prior_provenance": "normalization-record:time-period-2+icu-rbnf:%spellout-cardinal-native-attributive+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+normalization-record:time-period-2+icu-rbnf:%spellout-cardinal-native-attributive+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+normalization-record:time-period-2+icu-rbnf:%spellout-cardinal-native-attributive+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "오전 열시 삼십분",
                 "weight": null
@@ -26918,7 +26918,7 @@
             "alternatives": [
               {
                 "prior_provenance": "normalization-record:time-period-2+icu-rbnf:%spellout-cardinal-native-attributive+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+normalization-record:time-period-2+icu-rbnf:%spellout-cardinal-native-attributive+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+normalization-record:time-period-2+icu-rbnf:%spellout-cardinal-native-attributive+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "오전 열시 삼십분 오초",
                 "weight": null
@@ -27890,7 +27890,7 @@
               },
               {
                 "prior_provenance": "normalization-record:time-period-4+icu-rbnf:%spellout-cardinal-native-attributive+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+normalization-record:time-period-4+icu-rbnf:%spellout-cardinal-native-attributive+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+normalization-record:time-period-4+icu-rbnf:%spellout-cardinal-native-attributive+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "오후 세시 삼십분",
                 "weight": null
@@ -28978,7 +28978,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
-                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:icu/78.3/time#ko_KR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:ko_KR+normalization-record:time-composition-ko_KR+normalization-record:nikl/online-qna#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:ko+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
                 "text": "사시 오분",
                 "weight": null
@@ -29402,7 +29402,7 @@
         "first": " catorze trinta ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -29460,10 +29460,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "catorze horas e trinta",
+                "text": "catorze horas e trinta minutos",
                 "weight": null
               }
             ],
@@ -29603,8 +29603,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_BR:test_cases_time.txt:1"
     },
@@ -29874,10 +29874,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-one",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-one",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-one+normalization-record:time-unit-um-one",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-one+normalization-record:time-unit-um-one",
                 "surface": false,
-                "text": "zero hora e zero",
+                "text": "zero hora e zero minuto",
                 "weight": null
               }
             ],
@@ -30207,7 +30207,7 @@
         "first": " nove trinta ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -30265,10 +30265,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "nove horas e trinta",
+                "text": "nove horas e trinta minutos",
                 "weight": null
               }
             ],
@@ -30385,8 +30385,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_BR:test_cases_time.txt:11"
     },
@@ -30656,10 +30656,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one",
                 "surface": false,
-                "text": "vinte e três horas e zero",
+                "text": "vinte e três horas e zero minuto",
                 "weight": null
               }
             ],
@@ -31012,7 +31012,7 @@
         "first": " dez dez ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -31070,10 +31070,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "dez horas e dez",
+                "text": "dez horas e dez minutos",
                 "weight": null
               }
             ],
@@ -31213,8 +31213,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_BR:test_cases_time.txt:15"
     },
@@ -31504,7 +31504,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "catorze horas e trinta minutos e cinco segundos",
                 "weight": null
@@ -32044,7 +32044,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-unit-us-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-unit-us-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-unit-us-other",
                 "surface": false,
                 "text": "nove horas e zero minuto e trinta e um segundos",
                 "weight": null
@@ -32556,7 +32556,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-one",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-one",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-unit-us-one",
                 "surface": false,
                 "text": "catorze horas e trinta minutos e zero segundo",
                 "weight": null
@@ -33061,7 +33061,7 @@
             "alternatives": [
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-unit-us-one",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-unit-us-one",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-unit-us-one",
                 "surface": false,
                 "text": "nove horas e zero minuto e zero segundo",
                 "weight": null
@@ -33644,10 +33644,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-period-1",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-period-1",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-period-1",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one+normalization-record:time-period-1",
                 "surface": false,
-                "text": "onze horas e zero da manhã",
+                "text": "onze horas e zero minuto da manhã",
                 "weight": null
               }
             ],
@@ -34311,7 +34311,7 @@
         "first": " três trinta da tarde ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -34323,10 +34323,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-period-3",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-period-3",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-period-3",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other+normalization-record:time-period-3",
                 "surface": false,
-                "text": "três horas e trinta da tarde",
+                "text": "três horas e trinta minutos da tarde",
                 "weight": null
               }
             ],
@@ -34633,8 +34633,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_BR:test_cases_time.txt:24"
     },
@@ -35119,7 +35119,7 @@
               },
               {
                 "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-period-3",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-period-3",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-period-3",
                 "surface": false,
                 "text": "cinco horas da tarde",
                 "weight": null
@@ -35642,7 +35642,7 @@
         "first": " nove cinco ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -35700,10 +35700,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "nove horas e cinco",
+                "text": "nove horas e cinco minutos",
                 "weight": null
               }
             ],
@@ -35843,8 +35843,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_BR:test_cases_time.txt:4"
     },
@@ -36114,10 +36114,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-one",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-one",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-one+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-one+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "zero hora e quinze",
+                "text": "zero hora e quinze minutos",
                 "weight": null
               }
             ],
@@ -36470,7 +36470,7 @@
         "first": " vinte e três cinquenta e nove ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -36528,10 +36528,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "vinte e três horas e cinquenta e nove",
+                "text": "vinte e três horas e cinquenta e nove minutos",
                 "weight": null
               }
             ],
@@ -36671,8 +36671,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_BR:test_cases_time.txt:6"
     },
@@ -36942,10 +36942,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one",
                 "surface": false,
-                "text": "doze horas e zero",
+                "text": "doze horas e zero minuto",
                 "weight": null
               }
             ],
@@ -37356,10 +37356,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:icu/78.3/time#pt_BR-composition+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one",
+                "provenance": "time-rule:pt_BR+normalization-record:time-composition-pt_BR+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+icu-rbnf-fallback:pt+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-one",
                 "surface": false,
-                "text": "oito horas e zero",
+                "text": "oito horas e zero minuto",
                 "weight": null
               }
             ],
@@ -37742,10 +37742,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:icu/78.3/time#pt_PT-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "catorze horas e zero",
+                "text": "catorze horas e zero minutos",
                 "weight": null
               }
             ],
@@ -38128,10 +38128,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:icu/78.3/time#pt_PT-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "catorze horas e trinta",
+                "text": "catorze horas e trinta minutos",
                 "weight": null
               }
             ],
@@ -38470,7 +38470,7 @@
         "first": " catorze trinta ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -38514,10 +38514,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:icu/78.3/time#pt_PT-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "catorze horas e trinta",
+                "text": "catorze horas e trinta minutos",
                 "weight": null
               }
             ],
@@ -38657,8 +38657,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_PT:checked.tsv:24"
     },
@@ -38856,7 +38856,7 @@
         "first": " nove quinze ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -38900,10 +38900,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:icu/78.3/time#pt_PT-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "nove horas e quinze",
+                "text": "nove horas e quinze minutos",
                 "weight": null
               }
             ],
@@ -39043,8 +39043,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_PT:checked.tsv:25"
     },
@@ -39242,7 +39242,7 @@
         "first": " vinte e três quarenta e cinco ",
         "first_presentation": false,
         "first_strict": false,
-        "insensitive": true,
+        "insensitive": false,
         "offer_signature": [
           {
             "alternatives": [
@@ -39286,10 +39286,10 @@
                 "weight": null
               },
               {
-                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
-                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:icu/78.3/time#pt_PT-composition+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other",
+                "prior_provenance": "icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
+                "provenance": "time-rule:pt_PT+normalization-record:time-composition-pt_PT+normalization-record:ciberduvidas/consultorio#clock-construction+icu-rbnf:%spellout-numbering+normalization-record:time-unit-uh-other+normalization-record:time-unit-um-other",
                 "surface": false,
-                "text": "vinte e três horas e quarenta e cinco",
+                "text": "vinte e três horas e quarenta e cinco minutos",
                 "weight": null
               }
             ],
@@ -39429,8 +39429,8 @@
             "type": null
           }
         ],
-        "presentation": true,
-        "strict": true
+        "presentation": false,
+        "strict": false
       },
       "id": "pt_PT:checked.tsv:26"
     },
