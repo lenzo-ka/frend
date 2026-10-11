@@ -217,6 +217,7 @@ def test_unseen_soak_keeps_two_thousand_dates_per_locale_per_pass(monkeypatch):
     monkeypatch.setattr(gate, "GATE_LOCALES", ("en_US",))
     monkeypatch.setattr(gate, "_unseen_inputs", dates)
     monkeypatch.setattr(gate, "_unseen_fraction_inputs", lambda *_args: ["not-a-fraction"])
+    monkeypatch.setattr(gate, "_unseen_time_inputs", lambda *_args: ["not-a-time"])
     monkeypatch.setattr(gate, "_reading_detectors", lambda _locale: ())
     monkeypatch.setattr(gate, "detect", lambda *_args: ())
     monkeypatch.setattr(
@@ -239,6 +240,11 @@ def test_first_hit_times_only_the_lazy_default_request(monkeypatch):
         gate,
         "_normalize_fraction_probes",
         lambda _locale: (20_000, {"fraction": True}),
+    )
+    monkeypatch.setattr(
+        gate,
+        "_normalize_time_probe",
+        lambda _locale: (30_000, {"time": True}),
     )
     result = gate._runtime_child("first", "fr_FR", Path("unused"), Path("unused"))
     assert result["first_hit_ns"] == 150
@@ -304,6 +310,14 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                         "bundle_available": True,
                     }
                 },
+                "time_probes": {
+                    "en_US": {
+                        "units": 1,
+                        "selected_generated": False,
+                        "events": {"load": 0, "lower": 0, "generate": 0},
+                        "bundle_available": True,
+                    }
+                },
             }
         ],
     }
@@ -333,6 +347,16 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                         "count": 1,
                         "successful_fraction_detections": 1,
                         "selected_generated": 0 if row["locale"] == "en_US" else 1,
+                    }
+                    for row in soak_receipts
+                ],
+                "time_receipts": [
+                    {
+                        "locale": row["locale"],
+                        "pass": row["pass"],
+                        "count": 1,
+                        "successful_time_detections": 1,
+                        "selected_generated": 0 if row["locale"] in {"en_US", "de_DE"} else 1,
                     }
                     for row in soak_receipts
                 ],

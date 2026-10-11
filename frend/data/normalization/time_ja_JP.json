@@ -1,0 +1,404 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "ja_JP",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "versions": {
+    "icu": "78.3"
+  },
+  "sources": [
+    {
+      "id": "icu/78.3/time",
+      "receipt": "icu-78.3-time.json"
+    }
+  ],
+  "selectors": [
+    {
+      "id": "time-period-semantic-hour",
+      "inputs": [
+        "hour"
+      ],
+      "reachable": {
+        "hour": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23"
+        ]
+      },
+      "mapping": {
+        "0": "time-period-0",
+        "1": "time-period-0",
+        "2": "time-period-0",
+        "3": "time-period-0",
+        "23": "time-period-0",
+        "4": "time-period-1",
+        "5": "time-period-1",
+        "6": "time-period-1",
+        "7": "time-period-1",
+        "8": "time-period-1",
+        "9": "time-period-1",
+        "10": "time-period-1",
+        "11": "time-period-1",
+        "12": "time-period-2",
+        "13": "time-period-3",
+        "14": "time-period-3",
+        "15": "time-period-3",
+        "16": "time-period-4",
+        "17": "time-period-4",
+        "18": "time-period-4",
+        "19": "time-period-5",
+        "20": "time-period-5",
+        "21": "time-period-5",
+        "22": "time-period-5"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-selector"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "time-unit-uh-other",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "other",
+      "forms": {
+        "default": "時"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-uh-other"
+      ]
+    },
+    {
+      "id": "time-unit-um-other",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "other",
+      "forms": {
+        "default": "分"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-um-other"
+      ]
+    },
+    {
+      "id": "time-unit-us-other",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "other",
+      "forms": {
+        "default": "秒"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-us-other"
+      ]
+    },
+    {
+      "id": "time-period-0",
+      "kind": "time-period",
+      "hours": [
+        0,
+        1,
+        2,
+        3,
+        23
+      ],
+      "forms": {
+        "default": "夜中"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-0"
+      ]
+    },
+    {
+      "id": "time-period-1",
+      "kind": "time-period",
+      "hours": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "forms": {
+        "default": "朝"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-1"
+      ]
+    },
+    {
+      "id": "time-period-2",
+      "kind": "time-period",
+      "hours": [
+        12
+      ],
+      "forms": {
+        "default": "正午"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-2"
+      ]
+    },
+    {
+      "id": "time-period-3",
+      "kind": "time-period",
+      "hours": [
+        13,
+        14,
+        15
+      ],
+      "forms": {
+        "default": "昼"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-3"
+      ]
+    },
+    {
+      "id": "time-period-4",
+      "kind": "time-period",
+      "hours": [
+        16,
+        17,
+        18
+      ],
+      "forms": {
+        "default": "夕方"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-4"
+      ]
+    },
+    {
+      "id": "time-period-5",
+      "kind": "time-period",
+      "hours": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "forms": {
+        "default": "夜"
+      },
+      "derived_from": [
+        "icu/78.3/time#ja_JP-period-5"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "time-H",
+      "shape": "H",
+      "fields": [
+        "H",
+        "UH"
+      ],
+      "target": [
+        "H",
+        "UH"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-ja_JP",
+        "icu/78.3/time#ja_JP-composition"
+      ]
+    },
+    {
+      "id": "time-PH",
+      "shape": "PH",
+      "fields": [
+        "P",
+        "H",
+        "UH"
+      ],
+      "target": [
+        "P",
+        " ",
+        "H",
+        "UH"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-ja_JP",
+        "icu/78.3/time#ja_JP-composition"
+      ]
+    },
+    {
+      "id": "time-HM",
+      "shape": "HM",
+      "fields": [
+        "H",
+        "M",
+        "UH",
+        "UM"
+      ],
+      "target": [
+        "H",
+        "UH",
+        "M",
+        "UM"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-ja_JP",
+        "icu/78.3/time#ja_JP-composition"
+      ]
+    },
+    {
+      "id": "time-PHM",
+      "shape": "PHM",
+      "fields": [
+        "P",
+        "H",
+        "M",
+        "UH",
+        "UM"
+      ],
+      "target": [
+        "P",
+        " ",
+        "H",
+        "UH",
+        "M",
+        "UM"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-ja_JP",
+        "icu/78.3/time#ja_JP-composition"
+      ]
+    },
+    {
+      "id": "time-HMS",
+      "shape": "HMS",
+      "fields": [
+        "H",
+        "M",
+        "S",
+        "UH",
+        "UM",
+        "US"
+      ],
+      "target": [
+        "H",
+        "UH",
+        "M",
+        "UM",
+        "S",
+        "US"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-ja_JP",
+        "icu/78.3/time#ja_JP-composition"
+      ]
+    },
+    {
+      "id": "time-PHMS",
+      "shape": "PHMS",
+      "fields": [
+        "P",
+        "H",
+        "M",
+        "S",
+        "UH",
+        "UM",
+        "US"
+      ],
+      "target": [
+        "P",
+        " ",
+        "H",
+        "UH",
+        "M",
+        "UM",
+        "S",
+        "US"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-ja_JP",
+        "icu/78.3/time#ja_JP-composition"
+      ]
+    }
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "time-composition-ja_JP": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-composition": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-uh-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-um-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-us-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-0": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-1": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-2": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-3": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-4": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-5": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#ja_JP-period-selector": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ]
+  }
+}

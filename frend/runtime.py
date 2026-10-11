@@ -49,8 +49,10 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
             # slashes and also form valid fraction candidates; normalizing them here
             # would defeat the fraction path's first-use laziness.
             from frend.date_rules import load_date_rule_bundle
+            from frend.time_rules import load_time_rule_bundle
 
             load_date_rule_bundle(locale)
+            load_time_rule_bundle(locale)
     return order
 
 

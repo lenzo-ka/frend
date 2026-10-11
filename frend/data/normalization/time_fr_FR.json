@@ -1,0 +1,485 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "fr_FR",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "versions": {
+    "icu": "78.3"
+  },
+  "sources": [
+    {
+      "id": "icu/78.3/time",
+      "receipt": "icu-78.3-time.json"
+    }
+  ],
+  "selectors": [
+    {
+      "id": "time-period-semantic-hour",
+      "inputs": [
+        "hour"
+      ],
+      "reachable": {
+        "hour": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23"
+        ]
+      },
+      "mapping": {
+        "0": "time-period-0",
+        "1": "time-period-0",
+        "2": "time-period-0",
+        "3": "time-period-0",
+        "4": "time-period-0",
+        "5": "time-period-0",
+        "6": "time-period-0",
+        "7": "time-period-0",
+        "8": "time-period-0",
+        "9": "time-period-0",
+        "10": "time-period-0",
+        "11": "time-period-0",
+        "12": "time-period-1",
+        "13": "time-period-2",
+        "14": "time-period-2",
+        "15": "time-period-2",
+        "16": "time-period-2",
+        "17": "time-period-2",
+        "18": "time-period-3",
+        "19": "time-period-3",
+        "20": "time-period-3",
+        "21": "time-period-3",
+        "22": "time-period-3",
+        "23": "time-period-3"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-selector"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "time-unit-uh-many",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "many",
+      "forms": {
+        "default": "heures"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-uh-many"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-uh-one",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "one",
+      "forms": {
+        "default": "heure"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-uh-one"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-uh-other",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "other",
+      "forms": {
+        "default": "heures"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-uh-other"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-um-many",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "many",
+      "forms": {
+        "default": "minutes"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-um-many"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-um-one",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "one",
+      "forms": {
+        "default": "minute"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-um-one"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-um-other",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "other",
+      "forms": {
+        "default": "minutes"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-um-other"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-us-many",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "many",
+      "forms": {
+        "default": "secondes"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-us-many"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-us-one",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "one",
+      "forms": {
+        "default": "seconde"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-us-one"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-us-other",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "other",
+      "forms": {
+        "default": "secondes"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-us-other"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-period-0",
+      "kind": "time-period",
+      "hours": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "forms": {
+        "default": "matin"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-0"
+      ]
+    },
+    {
+      "id": "time-period-1",
+      "kind": "time-period",
+      "hours": [
+        12
+      ],
+      "forms": {
+        "default": "midi"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-1"
+      ]
+    },
+    {
+      "id": "time-period-2",
+      "kind": "time-period",
+      "hours": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "forms": {
+        "default": "après-midi"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-2"
+      ]
+    },
+    {
+      "id": "time-period-3",
+      "kind": "time-period",
+      "hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "forms": {
+        "default": "soir"
+      },
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-3"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "time-H",
+      "shape": "H",
+      "fields": [
+        "H",
+        "UH"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-fr_FR",
+        "icu/78.3/time#fr_FR-composition"
+      ]
+    },
+    {
+      "id": "time-PH",
+      "shape": "PH",
+      "fields": [
+        "P",
+        "H",
+        "UH"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "P"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-fr_FR",
+        "icu/78.3/time#fr_FR-composition"
+      ]
+    },
+    {
+      "id": "time-HM",
+      "shape": "HM",
+      "fields": [
+        "H",
+        "M",
+        "UH"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "M"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-fr_FR",
+        "icu/78.3/time#fr_FR-composition"
+      ]
+    },
+    {
+      "id": "time-PHM",
+      "shape": "PHM",
+      "fields": [
+        "P",
+        "H",
+        "M",
+        "UH"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "M",
+        " ",
+        "P"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-fr_FR",
+        "icu/78.3/time#fr_FR-composition"
+      ]
+    },
+    {
+      "id": "time-HMS",
+      "shape": "HMS",
+      "fields": [
+        "H",
+        "M",
+        "S",
+        "UH",
+        "UM",
+        "US"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "M",
+        " ",
+        "UM",
+        " ",
+        "S",
+        " ",
+        "US"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-fr_FR",
+        "icu/78.3/time#fr_FR-composition"
+      ]
+    },
+    {
+      "id": "time-PHMS",
+      "shape": "PHMS",
+      "fields": [
+        "P",
+        "H",
+        "M",
+        "S",
+        "UH",
+        "UM",
+        "US"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "M",
+        " ",
+        "UM",
+        " ",
+        "S",
+        " ",
+        "US",
+        " ",
+        "P"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-fr_FR",
+        "icu/78.3/time#fr_FR-composition"
+      ]
+    }
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "time-composition-fr_FR": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-composition": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-uh-many": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-uh-one": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-uh-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-um-many": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-um-one": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-um-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-us-many": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-us-one": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-us-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-period-0": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-period-1": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-period-2": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-period-3": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#fr_FR-period-selector": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ]
+  }
+}

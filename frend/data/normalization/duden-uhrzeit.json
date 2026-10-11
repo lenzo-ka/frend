@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public Duden clock examples",
+  "fetched_at": "2026-10-10T18:05:00-04:00",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.duden.de/rechtschreibung/Uhr",
+  "revision": "Duden online, Uhr, time-of-day examples",
+  "sha256": "f639fc705399411a699ff820b68ab55ba3a23eeef99bf41a3faf5e5f436369e8",
+  "manual_citation": true,
+  "source": "duden/online",
+  "transform_command": "manual source-claim transcription"
+}
