@@ -11,7 +11,14 @@ from icukit.detectors import detect
 from icukit.recognize import FlexibleNumberDetector
 
 from frend import normalize, resolve_lattice
-from frend.letters import LettersDetector, cv_pattern, is_roman, is_spelled_token, numeral_share
+from frend.letters import (
+    HyphenatedSerialDetector,
+    LettersDetector,
+    cv_pattern,
+    is_roman,
+    is_spelled_token,
+    numeral_share,
+)
 from frend.verbalize import verbalize_lattice
 
 _DETECTORS = (FlexibleNumberDetector("en_US"), AbbreviationDetector("en_US"), LettersDetector())
@@ -81,6 +88,63 @@ def test_uppercase_contractions_are_not_acronym_possessives(stem, apostrophe):
 @pytest.mark.parametrize("text", ["A&I", "I saw it", "McDonald", "ATMs2", "U.S.A", "GRA-B", "II"])
 def test_leaves_mixed_single_and_numeral_runs(text):
     assert _spans(text) == []
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [("AB-123-CD", "a b one two three c d"), ("ZX-007-Q", "z x zero zero seven q")],
+)
+def test_hyphenated_serial_is_one_identifier_of_letter_and_digit_names(written, spoken):
+    detections = HyphenatedSerialDetector().detect(written)
+    serials = [item for item in detections if item["type"] == "identifier:serial"]
+
+    assert [(item["start"], item["end"], item["text"]) for item in serials] == [
+        (0, len(written), written)
+    ]
+    normalized = normalize(written, offsets=True)
+    assert normalized.text.strip() == spoken
+    assert [(unit.source_span, unit.reader) for unit in normalized.units] == [
+        ((0, len(written)), "identifier:serial")
+    ]
+    assert not {"minus", "to", "-"} & set(normalized.text.split())
+
+
+@pytest.mark.parametrize(
+    "written",
+    ["xAB-123-CD", "AB-123-CDy", "AB-123-CD-EF", "AB-123-CD\u0301"],
+)
+def test_hyphenated_serial_requires_token_boundaries(written):
+    assert HyphenatedSerialDetector().detect(written) == []
+
+
+@pytest.mark.parametrize(
+    ("written", "reader"),
+    [
+        ("4-2024", "range:dash"),
+        ("978-1-234-56789-7", "identifier:grouped-digits"),
+        ("212-868-4444", "telephone:number"),
+    ],
+)
+def test_hyphenated_serial_does_not_replace_existing_structured_readers(written, reader):
+    assert HyphenatedSerialDetector().detect(written) == []
+    assert [unit.reader for unit in normalize(written, offsets=True).units] == [reader]
+
+
+@pytest.mark.parametrize("written", ["well-known", "COVID-19-RELATED"])
+def test_hyphenated_serial_does_not_replace_an_ordinary_hyphenated_word(written):
+    normalized = normalize(written, offsets=True)
+
+    assert HyphenatedSerialDetector().detect(written) == []
+    assert all(unit.reader != "identifier:serial" for unit in normalized.units)
+
+
+def test_hyphenated_serial_requires_authoritative_locale_letter_names():
+    written = "AB-123-CD"
+    normalized = normalize(written, locale="fr_FR", offsets=True)
+
+    assert HyphenatedSerialDetector("fr_FR").detect(written) == []
+    assert "number:decimal" in {unit.reader for unit in normalized.units}
+    assert all(unit.reader != "identifier:serial" for unit in normalized.units)
 
 
 @pytest.mark.parametrize("text", ["pdf", "pc", "fMRI", "Meic"])
