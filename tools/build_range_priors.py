@@ -130,7 +130,11 @@ def _duration_outcome(written: str, spoken: str) -> str:
 
     target = normalize_spoken(spoken)
     matched = set()
-    for detection in FlexibleNumericDurationDetector(LOCALE).detect(written):
+    try:
+        detections = FlexibleNumericDurationDetector(LOCALE).detect(written)
+    except Exception as exc:
+        raise RuntimeError("failed to detect numeric duration with icukit") from exc
+    for detection in detections:
         if detection["start"] != 0 or detection["end"] != len(written):
             continue
         lattice = resolve_lattice([detection], source_text=written)

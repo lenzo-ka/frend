@@ -2551,10 +2551,16 @@ def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative,
     milliseconds after "and" ("... seconds and twenty two milliseconds"); that reading
     is the corpus's, so it is lexical over ICU's unit forms.
     """
-    fields = [
-        (Decimal(str(capture.value)), _DURATION_UNITS[capture.name])
+    duration_captures = [
+        capture
         for capture in detection.get("captures", ())  # type: ignore[union-attr]
         if capture.name in _DURATION_UNITS
+    ]
+    if any(capture.value is None for capture in duration_captures):
+        raise NotImplementedError("duration has an unrepresentable captured field")
+    fields = [
+        (Decimal(str(capture.value)), _DURATION_UNITS[capture.name])
+        for capture in duration_captures
     ]
     if not fields:
         raise NotImplementedError("duration without a captured field")

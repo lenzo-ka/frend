@@ -108,11 +108,11 @@ def _joined(texts_and_passthrough) -> str:
 
 def _score(
     item: tuple[tuple[str, str, str], str, str, str, str | None, str | None],
-) -> tuple[str, bool, bool]:
+) -> tuple[str, bool, bool, str | None]:
     (corpus_class, written, spoken), before, after, locale, profile, fold, case_variant_lookup = (
         item
     )
-    first, any_ = _score_text(
+    first, any_, exception_type = _score_text_status(
         written,
         _expected(corpus_class, written, spoken),
         before,
@@ -122,7 +122,7 @@ def _score(
         fold,
         case_variant_lookup,
     )
-    return corpus_class, first, any_
+    return corpus_class, first, any_, exception_type
 
 
 def _in_context(written: str, before: str, after: str):
@@ -150,6 +150,30 @@ def _score_text(
     ``written`` is read alone, as a token of its sentence, and ``before`` and ``after``
     (the sentence's written text either side) are its context.
     """
+    first, any_, _exception_type = _score_text_status(
+        written,
+        target,
+        before,
+        after,
+        locale,
+        profile,
+        fold,
+        case_variant_lookup,
+    )
+    return first, any_
+
+
+def _score_text_status(
+    written: str,
+    target: str,
+    before: str = "",
+    after: str = "",
+    locale: str = "en_US",
+    profile: str | None = None,
+    fold: str | None = "typographic",
+    case_variant_lookup: bool = False,
+) -> tuple[bool, bool, str | None]:
+    """Score one token and retain the class of a counted runtime failure."""
     from frend import apply_input_fold, resolve_lattice
     from frend.spoken_priors import normalize_spoken
     from frend.verbalize import verbalize_lattice
@@ -175,8 +199,8 @@ def _score_text(
         )
     except FileNotFoundError:
         raise
-    except Exception:  # noqa: BLE001 - a crash is a miss, counted, not hidden
-        return False, False
+    except Exception as exc:  # noqa: BLE001 - a crash is a recorded miss
+        return False, False, type(exc).__name__
 
     def passthrough(alternative) -> bool:
         return alternative.provenance == "surface:passthrough"
@@ -186,13 +210,13 @@ def _score_text(
         _joined((unit.best.text, passthrough(unit.best)) for unit in best.units)
     )
     if first == target:
-        return True, True
+        return True, True, None
     for path in verbalized.paths:
         options = [[(a.text, passthrough(a)) for a in unit.alternatives] for unit in path.units]
         for combination in islice(product(*options), _ANY_CAP):
             if normalize_spoken(_joined(combination)) == target:
-                return False, True
-    return False, False
+                return False, True, None
+    return False, False, None
 
 
 # The number, separator, number predicate is shared with the builders (one definition);
@@ -203,7 +227,7 @@ _range_denominators = google_tn_rows.range_candidate_denominators
 
 def _score_joined(
     item: tuple[tuple[str, str, str, str], tuple[str, str], str, str | None, str | None],
-) -> tuple[str, str, bool, bool]:
+) -> tuple[str, str, bool, bool, str | None]:
     (
         (separator, middle, written, target),
         (before, after),
@@ -215,7 +239,9 @@ def _score_joined(
     return (
         separator,
         middle,
-        *_score_text(written, target, before, after, locale, profile, fold, case_variant_lookup),
+        *_score_text_status(
+            written, target, before, after, locale, profile, fold, case_variant_lookup
+        ),
     )
 
 
@@ -276,12 +302,16 @@ def _per_token(
         for sentence in sentences
         for index, row in enumerate(sentence)
     ]
-    results = _map(_score, rows, workers, 256)
+    raw_results = _map(_score, rows, workers, 256)
+    results = [(*result, None) if len(result) == 3 else result for result in raw_results]
     by_class: dict[str, Counter] = defaultdict(Counter)
-    for corpus_class, first, any_ in results:
+    exception_counts: Counter[str] = Counter()
+    for corpus_class, first, any_, exception_type in results:
         by_class[corpus_class]["tokens"] += 1
         by_class[corpus_class]["first"] += first
         by_class[corpus_class]["any"] += any_
+        if exception_type is not None:
+            exception_counts[exception_type] += 1
     total = Counter()
     for counts in by_class.values():
         total.update(counts)
@@ -290,20 +320,24 @@ def _per_token(
     for sentence_index, sentence in enumerate(sentences):
         outcome = results[at : at + len(sentence)]
         at += len(sentence)
-        first_count = sum(first for _, first, _ in outcome)
-        any_count = sum(any_ for _, _, any_ in outcome)
+        first_count = sum(first for _, first, _, _ in outcome)
+        any_count = sum(any_ for _, _, any_, _ in outcome)
+        sentence_exceptions = Counter(
+            exception_type for *_score, exception_type in outcome if exception_type is not None
+        )
         sentence_first = first_count == len(sentence)
         correct_sentences += sentence_first
-        sentence_records.append(
-            {
-                "id": f"{record_prefix}:{sentence_index}",
-                "fold": fold,
-                "tokens": len(sentence),
-                "first": first_count,
-                "any": any_count,
-                "sentence_first": sentence_first,
-            }
-        )
+        record = {
+            "id": f"{record_prefix}:{sentence_index}",
+            "fold": fold,
+            "tokens": len(sentence),
+            "first": first_count,
+            "any": any_count,
+            "sentence_first": sentence_first,
+        }
+        if sentence_exceptions:
+            record["exception_counts"] = dict(sorted(sentence_exceptions.items()))
+        sentence_records.append(record)
     tokens, count = total["tokens"], len(sentences)
     report = {
         "tokens": tokens,
@@ -320,6 +354,8 @@ def _per_token(
             for name, counts in sorted(by_class.items(), key=lambda kv: -kv[1]["tokens"])
         },
     }
+    if exception_counts:
+        report["exception_counts"] = dict(sorted(exception_counts.items()))
     if strata_seen is None:
         if intervals:
             _add_evaluation_intervals(report, sentence_records, intervals, interval_seed)
@@ -331,7 +367,7 @@ def _per_token(
     class_strata: dict[str, dict[str, Counter]] = defaultdict(
         lambda: {name: Counter() for name in STRATA}
     )
-    for row, (corpus_class, first, any_) in zip(rows, results, strict=True):
+    for row, (corpus_class, first, any_, _exception_type) in zip(rows, results, strict=True):
         stratum = "SEEN" if row[0][1] in strata_seen else "UNSEEN"
         counts = by_stratum[stratum]
         counts["tokens"] += 1
@@ -372,12 +408,12 @@ def _per_token(
                     "tokens": sum(value == name for value in token_strata),
                     "first": sum(
                         first
-                        for value, (_, first, _) in zip(token_strata, outcome, strict=True)
+                        for value, (_, first, _, _) in zip(token_strata, outcome, strict=True)
                         if value == name
                     ),
                     "any": sum(
                         any_
-                        for value, (_, _, any_) in zip(token_strata, outcome, strict=True)
+                        for value, (_, _, any_, _) in zip(token_strata, outcome, strict=True)
                         if value == name
                     ),
                 }
@@ -387,7 +423,7 @@ def _per_token(
         }
         for stratum in record["strata"]["sentences"]:
             sentence_counts[stratum]["sentences"] += 1
-            sentence_counts[stratum]["first"] += all(first for _, first, _ in outcome)
+            sentence_counts[stratum]["first"] += all(first for _, first, _, _ in outcome)
     report["strata"]["sentences"] = {
         name: {
             "sentences": sentence_counts[name]["sentences"],
@@ -498,12 +534,15 @@ def _running_text_rows(
             )
         )
     )
-    joined_results = _map(_score_joined, items, workers, 16)
+    raw_results = _map(_score_joined, items, workers, 16)
+    joined_results = [(*result, None) if len(result) == 4 else result for result in raw_results]
     by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
-    for separator, middle, first, any_ in joined_results:
+    for separator, middle, first, any_, exception_type in joined_results:
         by_joint[(separator, middle)]["n"] += 1
         by_joint[(separator, middle)]["first"] += first
         by_joint[(separator, middle)]["any"] += any_
+        if exception_type is not None:
+            by_joint[(separator, middle)][f"exception:{exception_type}"] += 1
     return [
         {
             "separator": separator,
@@ -511,6 +550,17 @@ def _running_text_rows(
             "count": counts["n"],
             "first_choice": counts["first"] / counts["n"],
             "any_reading": counts["any"] / counts["n"],
+            **(
+                {
+                    "exception_counts": {
+                        key.removeprefix("exception:"): value
+                        for key, value in sorted(counts.items())
+                        if key.startswith("exception:")
+                    }
+                }
+                if any(key.startswith("exception:") for key in counts)
+                else {}
+            ),
         }
         for (separator, middle), counts in sorted(by_joint.items(), key=lambda kv: -kv[1]["n"])
     ]

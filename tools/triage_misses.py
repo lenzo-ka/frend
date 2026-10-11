@@ -297,7 +297,7 @@ def _score_token(
     classify_misses: bool = True,
     strip_embedded_sil: bool = False,
     case_variant_lookup: bool = False,
-) -> tuple[bool, bool, bool, Classification | None]:
+) -> tuple[bool, bool, bool, Classification | None, str | None]:
     from icukit.detectors import detect
 
     from frend import resolve_lattice
@@ -315,6 +315,7 @@ def _score_token(
     readings: tuple[str, ...] = ()
     capped = False
     verbalizer_exception = False
+    exception_type = None
     try:
         detections = list(detect(written, _detectors(LOCALE))) if written.strip() else []
         verbalized = verbalize_lattice(
@@ -325,7 +326,7 @@ def _score_token(
         )
         first = normalize_spoken(_joined_reading(verbalized.best_path, alternatives=False)[0])
         if first == target:
-            return True, True, False, None
+            return True, True, False, None, None
         normalized = []
         for path in verbalized.paths:
             path_readings, path_capped = _bounded_readings(path)
@@ -334,11 +335,12 @@ def _score_token(
         readings = tuple(normalized)
     except FileNotFoundError:
         raise
-    except Exception:  # noqa: BLE001 - evaluator semantics count a crash as a miss
+    except Exception as exc:  # noqa: BLE001 - evaluator semantics record a crash as a miss
         verbalizer_exception = True
+        exception_type = type(exc).__name__
 
     if not classify_misses:
-        return False, target in readings, capped, None
+        return False, target in readings, capped, None, exception_type
 
     spans = tuple(
         (int(detection.get("start", 0)), int(detection.get("end", 0))) for detection in detections
@@ -363,10 +365,11 @@ def _score_token(
             evidence = replace(evidence, leaf_texts=_leaf_texts(detections, written))
         except FileNotFoundError:
             raise
-        except Exception:  # noqa: BLE001 - diagnostic resolution failures are E misses
+        except Exception as exc:  # noqa: BLE001 - diagnostic failures are recorded E misses
             evidence = replace(evidence, verbalizer_exception=True)
+            exception_type = type(exc).__name__
     classification = classify_miss(evidence)
-    return False, target in readings, capped, classification
+    return False, target in readings, capped, classification, exception_type
 
 
 def _score_sentence(item) -> dict[str, object]:
@@ -381,6 +384,7 @@ def _score_sentence(item) -> dict[str, object]:
     family_counts: Counter[str] = Counter()
     fix_counts: Counter[str] = Counter()
     cross_counts: Counter[str] = Counter()
+    exception_counts: Counter[str] = Counter()
     strata_counts = {
         name: {
             "tokens": 0,
@@ -402,7 +406,7 @@ def _score_sentence(item) -> dict[str, object]:
         if case_variant_lookup:
             target_options["case_variant_lookup"] = True
         if classify_misses:
-            first, any_, capped, classification = _score_token(
+            score = _score_token(
                 row,
                 before,
                 after,
@@ -410,7 +414,7 @@ def _score_sentence(item) -> dict[str, object]:
                 **target_options,
             )
         else:
-            first, any_, capped, classification = _score_token(
+            score = _score_token(
                 row,
                 before,
                 after,
@@ -418,6 +422,11 @@ def _score_sentence(item) -> dict[str, object]:
                 False,
                 **target_options,
             )
+        first, any_, capped, classification, exception_type = (
+            (*score, None) if len(score) == 4 else score
+        )
+        if exception_type is not None:
+            exception_counts[exception_type] += 1
         first_count += first
         any_count += any_
         capped_count += capped
@@ -460,6 +469,8 @@ def _score_sentence(item) -> dict[str, object]:
         "cross_counts": dict(cross_counts),
         "cross_sentences": sorted(cross_counts),
     }
+    if exception_counts:
+        result["exception_counts"] = dict(sorted(exception_counts.items()))
     if token_strata is not None:
         result["strata"] = {}
         for name in STRATA:
@@ -594,6 +605,7 @@ def _aggregate(
     fix_sentences: Counter[str] = Counter()
     cross_tokens: Counter[str] = Counter()
     cross_sentences: Counter[str] = Counter()
+    exception_counts: Counter[str] = Counter()
     strata_totals = {name: _stratum_total() for name in STRATA}
     sentence_strata = {name: Counter() for name in SENTENCE_STRATA}
     has_strata = False
@@ -619,6 +631,7 @@ def _aggregate(
         fix_sentences.update(result["fix_sentences"])
         cross_tokens.update(result["cross_counts"])
         cross_sentences.update(result["cross_sentences"])
+        exception_counts.update(result.get("exception_counts", {}))
         if "strata" in result:
             has_strata = True
             for sentence_name in result["sentence_strata"]:
@@ -670,6 +683,8 @@ def _aggregate(
             for family in FAMILIES
         },
     }
+    if exception_counts:
+        report["exception_counts"] = dict(sorted(exception_counts.items()))
     if not classify_misses:
         for key in ("by_class", "v_by_family", "v_by_fix_kind", "v_family_by_fix_kind"):
             report.pop(key)
@@ -834,6 +849,8 @@ def _per_sentence_payload(
 
 def _per_sentence_record(result: dict) -> dict[str, object]:
     record = {key: result[key] for key in ("id", "tokens", "first", "any", "sentence_first")}
+    if "exception_counts" in result:
+        record["exception_counts"] = result["exception_counts"]
     if "strata" in result:
         record["strata"] = _per_sentence_strata(result)
     return record

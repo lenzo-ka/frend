@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- Keep icukit resource-limit failures visible at every runtime seam. Offline builders
+  abort with the failed detection operation, while evaluators that count a failure as a
+  miss record its exception class. Scientific notation skips exponents beyond Python's
+  bounded integer conversion, and numeric-duration readings with an unrepresentable
+  capture fall back to their written surface instead of raising.
 - Require icukit 0.9.1, whose detectors decline candidates ending inside a grapheme
   cluster instead of refusing the scan. Keycaps now read as their digit, number sign,
   or asterisk does in the requested locale, without speaking the variation selector or

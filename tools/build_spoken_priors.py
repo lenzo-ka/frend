@@ -233,7 +233,11 @@ def _alternatives(
     recognized = False
     seen_detections: set[tuple[str, str]] = set()
     for detector in detectors[kind]:
-        for detection in detector.detect(written):
+        try:
+            detections = detector.detect(written)
+        except Exception as exc:
+            raise RuntimeError(f"failed to detect {kind} alternatives with icukit") from exc
+        for detection in detections:
             if int(detection["start"]) != 0 or int(detection["end"]) != len(written):
                 continue
             recognized = True
