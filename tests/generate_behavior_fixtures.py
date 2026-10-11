@@ -153,10 +153,9 @@ def main():
             sections={
                 "icukit": {
                     "schema_version": 1,
-                    "pipeline": [
-                        {"type": "sentence", "options": {"base": "en-tn@1"}},
-                        {"type": "words", "options": {"locale": "en"}},
-                    ],
+                    "sentence": {"base": "en-tn@1"},
+                    "detection": {"guarded": True},
+                    "stream": {"max_pending_chars": 4096, "boundary": "paragraph"},
                 }
             },
         ),

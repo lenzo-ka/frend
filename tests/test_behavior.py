@@ -424,6 +424,13 @@ def test_c10_conformance_manifests(owner):
             assert _error([path]).refusals[0].code == contract["expected"]
 
 
+def test_c10_icukit_conformance_fixture_matches_the_accepted_proposal():
+    path = DATA / "conformance/envelope/valid/icukit.json"
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == (
+        "ff061cac5b243f4480007e274e58b5c0db7048f529ccb6a4383a72e8108ab4c3"
+    )
+
+
 @pytest.mark.parametrize(
     ("groups", "message"),
     [
