@@ -400,6 +400,15 @@ def test_english_prewarm_loads_no_time_bundle():
     assert time_rule_events()["load"] == before
 
 
+@pytest.mark.parametrize("locale", GENERATED_TIME_LOCALES)
+def test_direct_time_benchmark_probe_executes_a_sourced_rule(locale):
+    from tools.bench_time_compose import _one
+
+    result = _one(locale, iterations=1)
+
+    assert result["returned_count"] >= 1
+
+
 def test_direct_generator_refuses_more_than_the_declared_cap():
     detection = {
         "captures": (
