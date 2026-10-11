@@ -41,6 +41,7 @@ from frend.input_limits import (
 )
 from frend.lattice import ReadingEdge, _resolve_lattice_validated
 from frend.letters import (
+    HyphenatedSerialDetector,
     LettersDetector,
     _dotted_acronym_suffix_spans,
     _dotted_plural_acronym_period_spans,
@@ -250,6 +251,7 @@ def _reading_detectors(
     detectors.extend(
         (
             AbbreviationDetector(locale),
+            HyphenatedSerialDetector(locale),
             LettersDetector(locale),
             AbbreviationVariantDetector(locale),
         )

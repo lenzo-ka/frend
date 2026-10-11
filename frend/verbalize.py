@@ -63,6 +63,7 @@ from frend.input_limits import (
 )
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import (
+    HyphenatedSerialValue,
     LettersValue,
     cv_pattern,
     is_letter_run,
@@ -1105,6 +1106,7 @@ _SPOKEN_CAPTURES = {
     "time": frozenset({"H", "m", "day-period", "time-zone"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
+    "serial": frozenset({"prefix", "digits", "suffix"}),
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
     "telephone": frozenset({"telephone"}),
@@ -1312,6 +1314,26 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
     if not parts:
         raise NotImplementedError("alphanumeric token has no speakable run")
     return _compose(parts, " ".join("{}" for _ in parts))
+
+
+def _spoken_hyphenated_serial(
+    value: HyphenatedSerialValue, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Speak every character of a serial and leave its structural hyphens silent."""
+    letter_parts = []
+    for letters in (value.prefix, value.suffix):
+        form = spelled(letters, locale)
+        if form is None:
+            raise NotImplementedError(f"no authoritative letter names for {locale}")
+        letter_parts.append(
+            SpokenAlternative(form.text, "surface:letters") if locale == "en_US" else form
+        )
+    digits = _spoken_digits(DigitsValue(value.digits), locale)
+    if not digits:
+        return ()
+    # A serial names the digit zero; the alternate telephone-like "o" form is not a
+    # digit name and must not outrank it through general spoken-source priors.
+    return _compose((letter_parts[:1], digits[:1], letter_parts[1:]), "{} {} {}")
 
 
 def _roman_readings(
@@ -4051,6 +4073,10 @@ def _verbalize_edge(
                     )
             key_value = value.surface
             path = "letters"
+        elif isinstance(value, HyphenatedSerialValue):
+            alternatives = _spoken_hyphenated_serial(value, locale)
+            key_value = (value.prefix, value.digits, value.suffix)
+            path = "serial"
         elif isinstance(value, GroupedDigitsValue):
             alternatives = _spoken_grouped_id(value, locale)
             key_value = value.groups
