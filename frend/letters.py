@@ -45,6 +45,8 @@ __all__ = [
     "LetterNames",
     "LettersDetector",
     "LettersValue",
+    "HyphenatedSerialDetector",
+    "HyphenatedSerialValue",
     "capital_script",
     "capitals",
     "cv_pattern",
@@ -102,6 +104,15 @@ _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(s['’]?|['’][sS])?(?![
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
 _DOTTED_RUN = re.compile(rf"(?:{_CAPITAL}\.){{2,}}")
 _SHORT_TOKEN = re.compile(rf"{_BEFORE}((?:{_L}{_M}*){{2,6}})(?![\w&'’{_MARK_RANGES}]|-\w|\.\w)")
+# Three-part serials are distinct from two-part model names ("F-16") and from
+# all-numeric ranges, ISBNs, and telephone numbers. Keep the letter groups to the
+# one- or two-letter shape established by the supported serials so uppercase
+# compounds such as "COVID-19-RELATED" retain their ordinary readers. ASCII is
+# deliberate: these groups are spoken with authoritative locale letter names.
+_HYPHENATED_SERIAL = re.compile(
+    rf"(?<![\w\-{_MARK_RANGES}])([A-Z]{{1,2}})-([0-9]+)-([A-Z]{{1,2}})"
+    rf"(?![\w\-{_MARK_RANGES}])"
+)
 # Uppercase apostrophe-S is ambiguous with an uppercase English contraction. Preserve
 # the ordinary closed-class contractions that the previous suffix grammar left alone.
 _EN_UPPERCASE_S_CONTRACTION_STEMS = frozenset(
@@ -371,6 +382,48 @@ class LettersValue:
     surface: str
     letters: str
     suffix: str
+
+
+@dataclass(frozen=True)
+class HyphenatedSerialValue:
+    """A bounded ``letters-digits-letters`` serial, with silent hyphens."""
+
+    prefix: str
+    digits: str
+    suffix: str
+
+
+class HyphenatedSerialDetector:
+    """Detect a bounded uppercase ASCII serial such as ``AB-123-CD``."""
+
+    def __init__(self, locale: str = "en_US") -> None:
+        self.locale = locale
+
+    def detect(self, text: str) -> list[dict]:
+        detections = []
+        for match in _HYPHENATED_SERIAL.finditer(text):
+            start, end = match.span()
+            prefix, digits, suffix = match.groups()
+            if (
+                letter_names(prefix, self.locale) is None
+                or letter_names(suffix, self.locale) is None
+            ):
+                continue
+            detections.append(
+                {
+                    "text": text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": "identifier:serial",
+                    "value": HyphenatedSerialValue(prefix, digits, suffix),
+                    "captures": (
+                        Capture("prefix", *match.span(1), prefix, prefix, None),
+                        Capture("digits", *match.span(2), digits, digits, None),
+                        Capture("suffix", *match.span(3), suffix, suffix, None),
+                    ),
+                }
+            )
+        return detections
 
 
 def cv_pattern(letters: str, locale: str = "en_US") -> str | None:

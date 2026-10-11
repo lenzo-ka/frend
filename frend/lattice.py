@@ -779,6 +779,7 @@ def _resolve_lattice_validated(
             sources,
             context,
             output_cap,
+            locale=canonical,
             projection_probe=True,
             collect_edge_priors=True,
             work_budget=meter,

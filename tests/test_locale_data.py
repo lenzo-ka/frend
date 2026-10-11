@@ -25,6 +25,7 @@ _MEASURED = (
     "electronic_priors",
     "electronic_span_priors",
     "grouped_id_priors",
+    "inch_context_priors",
     "number_priors",
     "range_priors",
     "spellout_dictionary",
@@ -269,6 +270,14 @@ def test_every_table_names_locale_and_corpus():
     assert type_provenance["generated"] == "2026-09-28"
     spoken = json.loads(tables["spoken_priors"].read_text(encoding="utf-8"))["provenance"]
     assert spoken["sample_rule"]["shards"]
+
+
+def test_inch_context_priors_name_only_training_shards():
+    from frend.locale_data import measured_table
+
+    table = measured_table("inch_context_priors", "en_US")
+    assert table is not None
+    assert table["provenance"]["shards"] == [f"output-{index:05d}-of-00100" for index in range(90)]
 
 
 def test_every_table_loads_from_package_resources():
