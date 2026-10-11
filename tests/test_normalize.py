@@ -456,6 +456,36 @@ def test_public_normalize_reads_common_english_unit_abbreviations(source, spoken
 
 
 @pytest.mark.parametrize(
+    ("source", "spoken"),
+    [
+        ("chapter 3 in the book", "chapter three in the book"),
+        ("chapter 3 in this book", "chapter three in this book"),
+        ("chapter 3 in my book", "chapter three in my book"),
+        ("won 2 in a row", "won two in a row"),
+        ("Symphony No. 5 in C minor", "Symphony Number five in C minor"),
+        ("Symphony No. 5 in D minor", "Symphony Number five in D minor"),
+        ("page 4 in this", "page four in this"),
+    ],
+)
+def test_bare_number_before_english_in_does_not_invent_inches(source, spoken):
+    assert " ".join(frend.normalize(source, locale="en_US").split()) == spoken
+
+
+@pytest.mark.parametrize(
+    ("source", "spoken"),
+    [
+        ("a 5 in. board", "a five inches . board"),
+        ("it is 12 in long", "it is twelve inches long"),
+        ("a 2 in pipe", "a two inches pipe"),
+        ("3 in x 4 in", "three inches x four inches"),
+        ("6 in²", "six square inches"),
+    ],
+)
+def test_context_keeps_genuine_english_inches(source, spoken):
+    assert " ".join(frend.normalize(source, locale="en_US").split()) == spoken
+
+
+@pytest.mark.parametrize(
     ("source", "reader", "spoken"),
     [
         ("1 sq yd", "measure:square-yard", " one square yard "),

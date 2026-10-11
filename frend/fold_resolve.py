@@ -54,9 +54,9 @@ from tiergraph import (
 from tiergraph.build import document, item
 from tiergraph.semiring import COUNTING, DECIMAL_TROPICAL, PATH, LexicographicSemiring
 
-from frend.context import is_roman_title_context
+from frend.context import EOS, _word_class, context_model, is_roman_title_context, neighbor_words
 from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
-from frend.locale_data import LOCALE_CACHE, canonical_locale
+from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 from frend.shape import shape
 from frend.type_priors import (
     LOCALE_NEUTRAL,
@@ -880,6 +880,51 @@ class _RomanTitleCue:
         )
 
 
+@lru_cache(maxsize=LOCALE_CACHE)
+def _inch_context_counts(locale: str) -> tuple[Mapping[str, int], Mapping[str, int]] | None:
+    """Measured following-word counts for measures and numeric ``in`` phrases."""
+    document = measured_table("inch_context_priors", locale)
+    if document is None:
+        return None
+    counts = document["counts"]
+    return counts["measure"], counts["preposition"]
+
+
+def _bare_inch_is_measure(detection: Detection, source_text: str | None, locale: str) -> bool:
+    """Whether a bare ``N in`` measure has contextual support to keep its long span.
+
+    ICU necessarily offers ``N in`` as inches, which otherwise wins geometrically over
+    the separate number and word detections.  The shipped counts compare S0's MEASURE
+    tokens with numeric tokens followed by the as-written token ``in``, using the same
+    learned following-word classes as the spoken-form reranker.  Where the observed
+    context favors (or ties in favor of) the preposition, withholding only this measure
+    candidate lets the existing number and word readings cover the text.  A context
+    needs positive, specific measure evidence: zero/zero classes and the heterogeneous
+    ``other`` bucket cannot turn an otherwise ambiguous ``in`` into inches.  Terminal
+    measures, including one trailing modifier, remain available without a word list.
+    """
+    if source_text is None or detection.get("type") != "measure:inch":
+        return True
+    written = str(detection.get("text", ""))
+    if not written.casefold().endswith(" in"):
+        return True
+    canonical = canonical_locale(locale)
+    model = context_model(canonical)
+    counts = _inch_context_counts(canonical)
+    if model is None or counts is None:
+        return True
+    start, end = _detection_span(detection)
+    _, following = neighbor_words(source_text, start, end, locale=canonical)
+    word_class = _word_class(following[0], canonical, model.frequent)
+    if word_class == EOS:
+        return True
+    if word_class == "other":
+        return following[1] == EOS
+    measure, preposition = counts
+    measure_count = measure.get(word_class, 0)
+    return measure_count > 0 and measure_count > preposition.get(word_class, 0)
+
+
 def _validated_sources(
     canonical: str, sources: tuple[FeatureSource, ...]
 ) -> tuple[FeatureSource, ...]:
@@ -1112,6 +1157,7 @@ def _select(
     context: ResolveContext,
     n: int,
     *,
+    locale: str | None = None,
     projection_probe: bool = False,
     collect_edge_priors: bool = False,
     work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
@@ -1129,7 +1175,16 @@ def _select(
     geometry level, so they do not depend on ``n``; ``n`` only caps the legacy
     ``covers`` list, which additionally ranks the lower geometry levels."""
     corpus = _corpus_source(sources)
-    candidates = _candidates(detections)[0]
+    geometric_detections = (
+        detections
+        if locale is None
+        else [
+            detection
+            for detection in detections
+            if _bare_inch_is_measure(detection, context.source_text, locale)
+        ]
+    )
+    candidates = _candidates(geometric_detections)[0]
     if not candidates:
         # No valid candidates: the sole reading is the empty cover.
         return _Selection(
@@ -1329,7 +1384,14 @@ def resolve_cover(
         return Cover(best=(), score=CoverScore(0, 0, 0))
     unique = _dedupe(detections)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
-    selection = _select(unique, sources, context, n=1, work_budget=work_budget)
+    selection = _select(
+        unique,
+        sources,
+        context,
+        n=1,
+        locale=canonical_locale(locale),
+        work_budget=work_budget,
+    )
     return Cover(
         best=selection.best,
         score=_cover_score(selection.best),
@@ -1379,7 +1441,14 @@ def resolve(
         return Resolution(best=(), covers=((),), margin=CoverMargin(0, 0, 0), ambiguous=False)
     unique = _dedupe(detections)
     context = ResolveContext(source_text=source_text, all_detections=tuple(unique))
-    selection = _select(unique, sources, context, n=n, work_budget=work_budget)
+    selection = _select(
+        unique,
+        sources,
+        context,
+        n=n,
+        locale=canonical_locale(locale),
+        work_budget=work_budget,
+    )
     return Resolution(
         best=selection.best,
         covers=selection.covers,
