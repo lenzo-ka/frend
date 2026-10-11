@@ -474,7 +474,7 @@ def test_bare_number_before_english_in_does_not_invent_inches(source, spoken):
 @pytest.mark.parametrize(
     ("source", "spoken"),
     [
-        ("a 5 in. board", "a five inches . board"),
+        ("a 5 in. board", "a five inches board"),
         ("it is 12 in long", "it is twelve inches long"),
         ("a 2 in pipe", "a two inches pipe"),
         ("3 in x 4 in", "three inches x four inches"),
@@ -482,7 +482,10 @@ def test_bare_number_before_english_in_does_not_invent_inches(source, spoken):
     ],
 )
 def test_context_keeps_genuine_english_inches(source, spoken):
-    assert " ".join(frend.normalize(source, locale="en_US").split()) == spoken
+    # Released icukit leaves the abbreviation period of "in." as its own token; icukit
+    # main absorbs it. Either way the unit must read as inches.
+    words = [w for w in frend.normalize(source, locale="en_US").split() if w != "."]
+    assert " ".join(words) == spoken
 
 
 @pytest.mark.parametrize(
