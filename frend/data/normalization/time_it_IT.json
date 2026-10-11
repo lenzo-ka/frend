@@ -216,10 +216,11 @@
         5
       ],
       "forms": {
-        "default": "di notte"
+        "default": "della notte"
       },
       "derived_from": [
-        "icu/78.3/time#it_IT-period-0"
+        "icu/78.3/time#it_IT-period-0",
+        "treccani/vocabolario#clock-day-periods"
       ]
     },
     {
@@ -234,10 +235,11 @@
         11
       ],
       "forms": {
-        "default": "di mattina"
+        "default": "del mattino"
       },
       "derived_from": [
-        "icu/78.3/time#it_IT-period-1"
+        "icu/78.3/time#it_IT-period-1",
+        "treccani/vocabolario#clock-day-periods"
       ]
     },
     {
@@ -264,10 +266,11 @@
         17
       ],
       "forms": {
-        "default": "di pomeriggio"
+        "default": "del pomeriggio"
       },
       "derived_from": [
-        "icu/78.3/time#it_IT-period-3"
+        "icu/78.3/time#it_IT-period-3",
+        "treccani/vocabolario#clock-day-periods"
       ]
     },
     {
@@ -282,10 +285,11 @@
         23
       ],
       "forms": {
-        "default": "di sera"
+        "default": "della sera"
       },
       "derived_from": [
-        "icu/78.3/time#it_IT-period-4"
+        "icu/78.3/time#it_IT-period-4",
+        "treccani/vocabolario#clock-day-periods"
       ]
     }
   ],

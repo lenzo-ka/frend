@@ -164,6 +164,44 @@ def test_italian_clock_minutes_use_the_attested_elliptical_form():
     }
 
 
+@pytest.mark.parametrize(
+    ("written", "semantic_hour", "written_hour", "period"),
+    [
+        ("3:40 a.m.", 3, 3, "della notte"),
+        ("8:40 a.m.", 8, 8, "del mattino"),
+        ("3:40 p.m.", 15, 3, "del pomeriggio"),
+        ("8:40 p.m.", 20, 8, "della sera"),
+    ],
+)
+def test_italian_day_periods_match_the_cited_clock_forms(
+    written, semantic_hour, written_hour, period
+):
+    hour_width = len(str(written_hour))
+    unit = _time_unit(
+        written,
+        (("H", semantic_hour), ("m", 40)),
+        (
+            ("H", 0, hour_width, str(written_hour), written_hour, "numeric"),
+            ("m", hour_width + 1, hour_width + 3, "40", 40, "numeric"),
+            (
+                "day-period",
+                hour_width + 3,
+                len(written),
+                written[hour_width + 3 :],
+                None,
+                "symbol",
+            ),
+        ),
+        "it_IT",
+    )
+
+    assert f"{'tre' if written_hour == 3 else 'otto'} e quaranta {period}" in {
+        alternative.text
+        for alternative in unit.alternatives
+        if alternative.provenance.startswith("time-rule:it_IT+")
+    }
+
+
 @pytest.mark.parametrize("locale", ["pt_BR", "pt_PT"])
 def test_portuguese_clock_minutes_keep_the_attested_unit(locale):
     unit = _time_unit(
