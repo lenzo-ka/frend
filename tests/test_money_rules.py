@@ -10,7 +10,7 @@ from tiergraph import Realization
 
 from frend import resolve_lattice, verbalize_edge
 from frend.normalization_schema import validate_bundle
-from frend.normalize import _currencies, _reading_detectors
+from frend.normalize import _reading_detectors
 
 try:
     from frend import money_rules as money_rules_module
@@ -99,6 +99,8 @@ def test_negative_major_minor_amount_is_negated_once():
 
 
 def test_locale_currency_inventory_is_narrow_and_stably_deduped():
+    from frend.normalize import _currencies
+
     assert _currencies("es_MX").count("MXN") == 1
     assert _currencies("pt_BR").count("BRL") == 1
     assert "MXN" not in _currencies("en_US")
