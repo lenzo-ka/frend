@@ -426,8 +426,24 @@ def test_c10_conformance_manifests(owner):
 
 def test_c10_icukit_conformance_fixture_matches_the_accepted_proposal():
     path = DATA / "conformance/envelope/valid/icukit.json"
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    assert raw["sections"]["icukit"] == {
+        "schema_version": 1,
+        "sentence": {
+            "base": "en-tn@1",
+            "max_sentence_chars": 512,
+            "reflow": "lines",
+        },
+        "detection": {"guarded": True},
+        "stream": {
+            "max_pending_chars": 4096,
+            "boundary": "paragraph",
+            "reflow": "paragraphs",
+        },
+        "regex": {"time_limit": 5000, "stack_limit": 4_000_000},
+    }
     assert hashlib.sha256(path.read_bytes()).hexdigest() == (
-        "ff061cac5b243f4480007e274e58b5c0db7048f529ccb6a4383a72e8108ab4c3"
+        "09fa575642cfa8e8354b6d88a4a31aa7d837fec331d839017aa1415cc22ef5ff"
     )
 
 

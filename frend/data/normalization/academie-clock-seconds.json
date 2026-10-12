@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation; the dictionary page was reviewed in a browser after source search",
+  "fetched_at": "2026-10-11T02:40:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.dictionnaire-academie.fr/article/A9S0977",
+  "manual_citation": true,
+  "revision": "Dictionnaire de l'Academie francaise, 9e ed., seconde sense 1",
+  "sha256": "3bc30d2a7c09f913043795b2c1891293cfd29fb042edb0add8cf4eb10f766bcb",
+  "source": "academie-francaise/dictionnaire",
+  "transform_command": "manual citation of the hours-minutes-seconds example"
+}

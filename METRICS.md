@@ -170,6 +170,23 @@ Sources: `typographic-fold/results.md`, `ranges-ids/results.md`, and
 
 ## Latency and robustness
 
+PR7 clock composition is evaluated against the immediate base with released
+dependencies. `tools/time_expected_changes.json` closes every routed non-English edge,
+and `tools/time_expected_recoveries.json` records development-only source-linked flips.
+The separately frozen opaque witness is `tools/time_recovery_witness.json`; it is not a
+rule oracle. English requires exact token and reconstructed-sentence identity on shards
+90--94 through `tools/diff_candidates.py --family time`; shard 99 is refused.
+
+`tools/bench_time_compose.py` runs five fresh processes per generated locale and requires
+cold <= 10 ms, warm p50 <= 0.3 ms, and warm p95 <= 1 ms. Detection precedes timing and
+the selected alternatives must prove `time-rule:<locale>` execution. Runtime loads only
+the requested locale's deterministic projection and performs no tiergraph lowering or
+generation. `tools/sweep_time_normalization.py` exhaustively checks every H:MM and
+H:MM:SS value in 24-hour, ICU 12-hour, and ICU flexible-period spellings across all
+eleven locales. The paired locale gate adds 2,000 disjoint unseen clocks per locale to
+each memory-soak pass. Its loaded RSS allowance is the smaller of 8 MiB and the sum of
+`max(256 KiB, 4 * bundle bytes)`; the workload allowance adds 2 MiB.
+
 PR6 fraction and percent composition uses the same paired immediate-base discipline.
 `tools/fraction_expected_changes.json` closes the routed non-English fixture scope and
 `tools/fraction_expected_recoveries.json` pins its source-linked positive witnesses;

@@ -1,0 +1,505 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "es_MX",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "versions": {
+    "icu": "78.3"
+  },
+  "sources": [
+    {
+      "id": "icu/78.3/time",
+      "receipt": "icu-78.3-time.json"
+    },
+    {
+      "id": "rae/dpd-2",
+      "receipt": "rae-clock.json"
+    },
+    {
+      "id": "boe/gaceta",
+      "receipt": "boe-clock-seconds.json"
+    }
+  ],
+  "selectors": [
+    {
+      "id": "time-period-semantic-hour",
+      "inputs": [
+        "hour"
+      ],
+      "reachable": {
+        "hour": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23"
+        ]
+      },
+      "mapping": {
+        "0": "time-period-0",
+        "1": "time-period-0",
+        "2": "time-period-0",
+        "3": "time-period-0",
+        "4": "time-period-0",
+        "5": "time-period-0",
+        "6": "time-period-1",
+        "7": "time-period-1",
+        "8": "time-period-1",
+        "9": "time-period-1",
+        "10": "time-period-1",
+        "11": "time-period-1",
+        "12": "time-period-2",
+        "13": "time-period-3",
+        "14": "time-period-3",
+        "15": "time-period-3",
+        "16": "time-period-3",
+        "17": "time-period-3",
+        "18": "time-period-3",
+        "19": "time-period-3",
+        "20": "time-period-4",
+        "21": "time-period-4",
+        "22": "time-period-4",
+        "23": "time-period-4"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-period-selector"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "time-unit-uh-many",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "many",
+      "forms": {
+        "default": "horas"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-uh-many"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-uh-one",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "one",
+      "forms": {
+        "default": "hora"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-uh-one"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-uh-other",
+      "kind": "time-unit",
+      "field": "UH",
+      "number": "other",
+      "forms": {
+        "default": "horas"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-uh-other"
+      ],
+      "gender": "feminine"
+    },
+    {
+      "id": "time-unit-um-many",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "many",
+      "forms": {
+        "default": "minutos"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-um-many"
+      ],
+      "gender": "masculine"
+    },
+    {
+      "id": "time-unit-um-one",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "one",
+      "forms": {
+        "default": "minuto"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-um-one"
+      ],
+      "gender": "masculine"
+    },
+    {
+      "id": "time-unit-um-other",
+      "kind": "time-unit",
+      "field": "UM",
+      "number": "other",
+      "forms": {
+        "default": "minutos"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-um-other"
+      ],
+      "gender": "masculine"
+    },
+    {
+      "id": "time-unit-us-many",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "many",
+      "forms": {
+        "default": "segundos"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-us-many"
+      ],
+      "gender": "masculine"
+    },
+    {
+      "id": "time-unit-us-one",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "one",
+      "forms": {
+        "default": "segundo"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-us-one"
+      ],
+      "gender": "masculine"
+    },
+    {
+      "id": "time-unit-us-other",
+      "kind": "time-unit",
+      "field": "US",
+      "number": "other",
+      "forms": {
+        "default": "segundos"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-us-other"
+      ],
+      "gender": "masculine"
+    },
+    {
+      "id": "time-period-0",
+      "kind": "time-period",
+      "hours": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forms": {
+        "default": "de la madrugada"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-period-0"
+      ]
+    },
+    {
+      "id": "time-period-1",
+      "kind": "time-period",
+      "hours": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "forms": {
+        "default": "de la mañana"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-period-1"
+      ]
+    },
+    {
+      "id": "time-period-2",
+      "kind": "time-period",
+      "hours": [
+        12
+      ],
+      "forms": {
+        "default": "del mediodía"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-period-2"
+      ]
+    },
+    {
+      "id": "time-period-3",
+      "kind": "time-period",
+      "hours": [
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "forms": {
+        "default": "de la tarde"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-period-3"
+      ]
+    },
+    {
+      "id": "time-period-4",
+      "kind": "time-period",
+      "hours": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "forms": {
+        "default": "de la noche"
+      },
+      "derived_from": [
+        "icu/78.3/time#es_MX-period-4"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "time-H",
+      "shape": "H",
+      "fields": [
+        "H"
+      ],
+      "target": [
+        "H"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-es_MX",
+        "rae/dpd-2#clock-construction"
+      ]
+    },
+    {
+      "id": "time-PH",
+      "shape": "PH",
+      "fields": [
+        "P",
+        "H"
+      ],
+      "target": [
+        "H",
+        " ",
+        "P"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-es_MX",
+        "rae/dpd-2#clock-construction"
+      ]
+    },
+    {
+      "id": "time-HM",
+      "shape": "HM",
+      "fields": [
+        "H",
+        "M"
+      ],
+      "target": [
+        "H",
+        " y ",
+        "M"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-es_MX",
+        "rae/dpd-2#clock-construction"
+      ]
+    },
+    {
+      "id": "time-PHM",
+      "shape": "PHM",
+      "fields": [
+        "P",
+        "H",
+        "M"
+      ],
+      "target": [
+        "H",
+        " y ",
+        "M",
+        " ",
+        "P"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-es_MX",
+        "rae/dpd-2#clock-construction"
+      ]
+    },
+    {
+      "id": "time-HMS",
+      "shape": "HMS",
+      "fields": [
+        "H",
+        "M",
+        "S",
+        "UH",
+        "UM",
+        "US"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "M",
+        " ",
+        "UM",
+        " y ",
+        "S",
+        " ",
+        "US"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-es_MX",
+        "rae/dpd-2#clock-construction",
+        "boe/gaceta#clock-seconds"
+      ]
+    },
+    {
+      "id": "time-PHMS",
+      "shape": "PHMS",
+      "fields": [
+        "P",
+        "H",
+        "M",
+        "S",
+        "UH",
+        "UM",
+        "US"
+      ],
+      "target": [
+        "H",
+        " ",
+        "UH",
+        " ",
+        "M",
+        " ",
+        "UM",
+        " y ",
+        "S",
+        " ",
+        "US",
+        " ",
+        "P"
+      ],
+      "directions": [
+        "tn"
+      ],
+      "derived_from": [
+        "time-composition-es_MX",
+        "rae/dpd-2#clock-construction",
+        "boe/gaceta#clock-seconds"
+      ]
+    }
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "time-composition-es_MX": [
+      "e16cad2ca389c225c1fe9e87f91692933f277bf7a46c62b72b24770ff24ccbcf",
+      "7a673c0d714034858b03c7e9ced1b3de5eccf5446728dd198f06a08cd08e08eb"
+    ],
+    "icu/78.3/time#es_MX-composition": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-uh-many": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-uh-one": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-uh-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-um-many": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-um-one": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-um-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-us-many": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-us-one": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-us-other": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-period-0": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-period-1": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-period-2": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-period-3": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-period-4": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "icu/78.3/time#es_MX-period-selector": [
+      "b93b613b46d442d85e3950695f424542df0e582986bfccf4db9844eaee678fc7"
+    ],
+    "rae/dpd-2#clock-construction": [
+      "e16cad2ca389c225c1fe9e87f91692933f277bf7a46c62b72b24770ff24ccbcf"
+    ],
+    "boe/gaceta#clock-seconds": [
+      "7a673c0d714034858b03c7e9ced1b3de5eccf5446728dd198f06a08cd08e08eb"
+    ]
+  }
+}

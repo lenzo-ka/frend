@@ -189,7 +189,8 @@ class VerbalizedUnit:
 
     ``unspoken`` holds every capture of the reading that no alternative speaks, so
     written material the verbalizer does not say is known here rather than lost. A
-    surface fallback speaks the whole span and so leaves nothing unspoken.
+    A surface fallback normally speaks the whole span; an unsupported clock second
+    remains explicit in ``unspoken`` because its digits were not normalized as speech.
     ``context`` is what the context tree said about the alternatives' order
     (``frend.context``), or ``None`` where no tree applies.
     """
@@ -1153,7 +1154,57 @@ def _zone_expansions(locale: str) -> dict[str, tuple[SpokenAlternative, ...]]:
     return {surface: tuple(items) for surface, items in names.items()}
 
 
-def _spoken_time(
+def _time_tail_groups(
+    detection: object, locale: str, *, include_period: bool
+) -> tuple[tuple[SpokenAlternative, ...], ...]:
+    """Return written period/zone groups used by the legacy and generated clocks."""
+    period = _capture(detection, "day-period")
+    tail = []
+    captures = (
+        (period, _capture(detection, "time-zone"))
+        if include_period
+        else (_capture(detection, "time-zone"),)
+    )
+    for capture in captures:
+        words = str(getattr(capture, "text", "")).split()
+        if len(words) > 1:
+            tail.append((SpokenAlternative(" ".join(words), "surface:words"),))
+            continue
+        letters = "".join(ch for ch in "".join(words) if ch.isalpha()).lower()
+        if letters:
+            spelled = SpokenAlternative(" ".join(letters), "surface:letters")
+            expansions = (
+                _zone_expansions(locale).get("".join(words), ()) if capture is not period else ()
+            )
+            zone = str(getattr(capture, "value", "") or "")
+            if expansions and "/" in zone:
+                named = _zone_display_names(zone, locale)
+                expansions = tuple(item for item in expansions if item.text in named) or expansions
+            tail.append((spelled, *expansions))
+    return tuple(tail)
+
+
+def _time_tail(
+    detection: object, locale: str, *, include_period: bool = False
+) -> tuple[tuple[tuple[str, ...], tuple[str, ...], Decimal | None], ...]:
+    """Return every post-clock tail without retaining a detection or source string."""
+    groups = _time_tail_groups(detection, locale, include_period=include_period)
+    if not groups:
+        return ()
+    result = []
+    for selected in product(*groups):
+        weights = tuple(item.weight for item in selected)
+        result.append(
+            (
+                tuple(item.text for item in selected),
+                tuple(item.provenance for item in selected),
+                sum(weights, Decimal(0)) if all(item is not None for item in weights) else None,
+            )
+        )
+    return tuple(result)
+
+
+def _legacy_spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
     """Speak an hour, optional minutes and a written day period ("5pm" -> "five p m").
@@ -1175,28 +1226,7 @@ def _spoken_time(
     written_hour = _capture_integer(detection, "H")
     hour = written_hour if period is not None and written_hour is not None else Decimal(fields["H"])
     hours = _number_leaf(hour, "cardinal", locale)
-    tail = []
-    for capture in (period, _capture(detection, "time-zone")):
-        words = str(getattr(capture, "text", "")).split()
-        if len(words) > 1:
-            tail.append((SpokenAlternative(" ".join(words), "surface:words"),))
-            continue
-        letters = "".join(ch for ch in "".join(words) if ch.isalpha()).lower()
-        if letters:
-            spelled = SpokenAlternative(" ".join(letters), "surface:letters")
-            expansions = (
-                _zone_expansions(locale).get("".join(words), ()) if capture is not period else ()
-            )
-            zone = str(getattr(capture, "value", "") or "")
-            if expansions and "/" in zone:
-                # icukit 0.7 captures the zone's IANA ID ("IST" read as Asia/Kolkata and
-                # as Europe/Dublin): keep the names ICU gives that zone. Where none of the
-                # listed names matches ICU's display names literally (CLDR's metazone
-                # "Saint-Pierre-et-Miquelon Daylight Time" against the zone's "St. Pierre
-                # & Miquelon Daylight Time"), every listed name is kept rather than none.
-                named = _zone_display_names(zone, locale)
-                expansions = tuple(item for item in expansions if item.text in named) or expansions
-            tail.append((spelled, *expansions))
+    tail = list(_time_tail_groups(detection, locale, include_period=True))
     minute = fields.get("m")
     forms: list[SpokenAlternative] = []
     zeros = _lexical("zero.minute", locale)
@@ -1229,6 +1259,26 @@ def _spoken_time(
             parts = [hours, (SpokenAlternative(hundred, lexical_source(locale)),), *tail]
             forms.extend(_compose(parts, " ".join("{}" for _ in parts)))
     return _ranked(forms)
+
+
+def _spoken_time(
+    value: DateTimeValue, detection: object, locale: str
+) -> tuple[SpokenAlternative, ...]:
+    """Keep English legacy-first; route supported non-English clocks to PR7 rules."""
+    from frend.time_rules import (
+        _WRITTEN_UHR_MARKER,
+        GENERATED_TIME_LOCALES,
+        generate_time_alternatives,
+    )
+
+    if locale.startswith("en") or (
+        locale == "de_DE" and detection.get(_WRITTEN_UHR_MARKER) is not True
+    ):
+        return _legacy_spoken_time(value, detection, locale)
+
+    if locale in GENERATED_TIME_LOCALES:
+        return generate_time_alternatives(value, detection, locale)
+    return _legacy_spoken_time(value, detection, locale)
 
 
 def _plural_word(word: str, rules: Sequence[Mapping]) -> str:
@@ -1838,8 +1888,10 @@ def _abbreviation_ranked(
     return tuple(weighted[index] for index in order)
 
 
-def _unspoken(detection: object, path: str) -> tuple[object, ...]:
-    spoken = _SPOKEN_CAPTURES[path]
+def _unspoken(
+    detection: object, path: str, *, additionally_spoken: frozenset[str] = frozenset()
+) -> tuple[object, ...]:
+    spoken = _SPOKEN_CAPTURES[path] | additionally_spoken
     return tuple(
         capture
         for capture in detection.get("captures", ())  # type: ignore[union-attr]
@@ -2050,8 +2102,14 @@ def _spoken_date_parts(
             if "G" in fields:
                 pieces.append((start("era", first + 1), _era_names(fields["G"], detection, locale)))
     if "H" in fields:
+        # English has always treated seconds on a combined date-time as unspoken:
+        # compose the date with its H/m clock exactly as before PR7, and leave the
+        # ``s`` capture visible in ``VerbalizedUnit.unspoken``.  Generated locale
+        # rules receive seconds only where a sourced HMS recipe exists.
+        time_fields = ("H", "m") if locale.startswith("en") else ("H", "m", "s")
         time_value = DateTimeValue(
-            tuple((key, item) for key, item in value.fields if key in ("H", "m")), value.calendar
+            tuple((key, item) for key, item in value.fields if key in time_fields),
+            value.calendar,
         )
         glue = str(getattr(_capture(detection, "datetime-glue"), "text", "")).strip(" ,")
         times = _spoken_time(time_value, detection, locale)
@@ -2119,7 +2177,7 @@ def _spoken_date(
         }
         and set(fields) in ({"M", "d"}, {"y", "M", "d"})
         and isinstance(detected_value, DateTimeValue)
-        and detected_value.fields == value.fields
+        and all(dict(detected_value.fields).get(key) == item for key, item in value.fields)
     ):
         from frend.date_rules import generate_date_alternatives
 
@@ -4135,7 +4193,25 @@ def _verbalize_edge(
             raise NotImplementedError(f"unsupported value struct {type(value).__name__}")
     except NotImplementedError:
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
-        return VerbalizedUnit(edge.id, _finish((fallback,)), tier, provenance, False)
+        fallback_unspoken = (
+            _unspoken(
+                detection,
+                "time" if type_.startswith("time:") else "date",
+            )
+            if isinstance(value, DateTimeValue)
+            and "s" in dict(value.fields)
+            and type_.startswith(("time:", "date:"))
+            and not locale.startswith("en")
+            else ()
+        )
+        return VerbalizedUnit(
+            edge.id,
+            _finish((fallback,)),
+            tier,
+            provenance,
+            False,
+            fallback_unspoken,
+        )
     alternatives = _with_curated(alternatives, type_, key_value, supplements)
     if not alternatives:
         fallback = SpokenAlternative(_surface(edge, source_text), "surface:unsupported")
@@ -4246,13 +4322,18 @@ def _verbalize_edge(
         alternatives = _digit_like_cldr_name_first(alternatives, value)
     if path == "date":
         alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text, locale)
+    additionally_spoken = (
+        frozenset({"s"})
+        if any("time-rule:" in item.provenance for item in alternatives)
+        else frozenset()
+    )
     return VerbalizedUnit(
         edge.id,
         _finish(alternatives),
         tier,
         provenance,
         True,
-        _unspoken(detection, path),
+        _unspoken(detection, path, additionally_spoken=additionally_spoken),
         choice,
     )
 

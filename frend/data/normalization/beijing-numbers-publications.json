@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation to the published national-language standard",
+  "fetched_at": "2026-10-10T18:00:00-04:00",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://jw.beijing.gov.cn/language/bzgf/201606/t20160623_1165759.html",
+  "revision": "GB/T 15835-1995, section 5 time examples",
+  "sha256": "64eaa71be80cdbb9cc05068b2371da0fe401ac5c777eb25be7d918e44da939f8",
+  "manual_citation": true,
+  "source": "beijing-language/numbers-publications",
+  "transform_command": "manual source-claim transcription"
+}

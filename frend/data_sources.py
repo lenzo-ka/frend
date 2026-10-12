@@ -156,6 +156,8 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
             "Rat fuer deutsche Rechtschreibung"
         ),
         "duden/online": _citation_source("Duden online"),
+        "boe/gaceta": _citation_source("Boletin Oficial del Estado, Gaceta de Madrid"),
+        "accademia-crusca/consulenza": _citation_source("Accademia della Crusca"),
         "rae/dpd-2": _citation_source("RAE and ASALE, Diccionario panhispanico de dudas"),
         "rae/gramatica-basica": _citation_source("RAE and ASALE, Nueva gramatica basica"),
         "rae/brae": _citation_source("Real Academia Espanola, BRAE"),
@@ -190,6 +192,9 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
         "jixi/education-cloud": _citation_source("Jixi Education Cloud"),
         "life-education/journal": _citation_source("Life Education journal"),
         "urumqi/government": _citation_source("Urumqi Municipal People's Government"),
+        "beijing-language/numbers-publications": _citation_source(
+            "Beijing Language and Writing Committee Office"
+        ),
         # Festival's hand-curated word lists (github.com/festvox/festival): free to use
         # and distribute with its notice kept and changes marked, which
         # en/context/festival_classes.json carries.
