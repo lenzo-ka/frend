@@ -76,24 +76,21 @@ def test_learned_label_context_vetoes_a_shipped_shape(monkeypatch):
     "written",
     [
         "000-000-0000",
-        "112-868-4444",  # area code must begin 2--9
-        "212-168-4444",  # exchange must begin 2--9
-        "211-868-4444",  # N11 area codes are excluded
-        "212-911-4444",  # N11 exchanges are excluded
+        "112-868-4444",
     ],
 )
-def test_invalid_nanp_numbers_do_not_use_a_shipped_shape(written, monkeypatch):
-    detector = TelephoneDetector("en_US")
-    assert detector.detect(written) == []
+def test_numbers_outside_libphonenumber_general_metadata_are_not_telephone(written):
+    assert TelephoneDetector("en_US").detect(written) == []
 
-    monkeypatch.setattr(telephone_module, "_valid_nanp", lambda _groups: True)
-    assert detector.detect(written)
+
+@pytest.mark.parametrize("written", ["555-123-4567", "(555) 123-4567", "212-168-4444"])
+def test_possible_us_numbers_do_not_require_an_assigned_exchange(written):
+    assert TelephoneDetector("en_US").detect(written)
 
 
 @pytest.mark.parametrize(
     "text",
     [
-        "+1-888-237-2834",
         "$212-868-4444",
         "€212-868-4444",
         "±212-868-4444",
@@ -108,8 +105,16 @@ def test_prefixed_number_does_not_use_a_shipped_shape(text, monkeypatch):
     assert detector.detect(text)
 
 
+def test_explicit_plus_country_code_is_outside_the_trained_surface_shapes():
+    assert TelephoneDetector("en_US").detect("+1-888-237-2834") == []
+
+
 def test_number_embedded_directly_after_a_digit_is_not_telephone():
     assert TelephoneDetector("en_US").detect("9(212) 868-4444") == []
+
+
+def test_number_embedded_directly_before_letters_is_not_telephone():
+    assert TelephoneDetector("en_US").detect("212-868-4444abc") == []
 
 
 @pytest.mark.parametrize("written", ["٢١٢-٨٦٨-٤٤٤٤", "212–868–4444"])

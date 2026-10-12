@@ -112,6 +112,29 @@ def test_leading_negative_and_numeric_range_keep_their_readings():
     assert frend.normalize("1-2-3") == " one  minus two  minus three "
 
 
+@pytest.mark.parametrize("written", ["call 555-123-4567", "call (555) 123-4567"])
+def test_us_telephone_numbers_read_digits_with_group_pauses(written):
+    assert frend.normalize(written) == (
+        " call   five five five sil one two three sil four five six seven "
+    )
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("pages 12-15", " pages   twelve to fifteen "),
+        ("-19", " minus nineteen "),
+        (
+            "ISBN 978-0-306-40615-7",
+            " i s b n   nine seven eight sil o sil three o six sil four o six one five sil seven ",
+        ),
+        ("on 2026-10-11", " on   the eleventh of October twenty twenty-six "),
+    ],
+)
+def test_telephone_detection_keeps_other_hyphenated_numeric_readings(written, spoken):
+    assert frend.normalize(written) == spoken
+
+
 @pytest.mark.parametrize("separator", ["-", "–"])
 def test_period_bearing_month_abbreviations_normalize_like_periodless_twins(separator):
     periodless = frend.normalize(f"Dec 31{separator}Jan 2")
