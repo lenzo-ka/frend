@@ -153,9 +153,18 @@ def main():
             sections={
                 "icukit": {
                     "schema_version": 1,
-                    "sentence": {"base": "en-tn@1"},
+                    "sentence": {
+                        "base": "en-tn@1",
+                        "max_sentence_chars": 512,
+                        "reflow": "lines",
+                    },
                     "detection": {"guarded": True},
-                    "stream": {"max_pending_chars": 4096, "boundary": "paragraph"},
+                    "stream": {
+                        "max_pending_chars": 4096,
+                        "boundary": "paragraph",
+                        "reflow": "paragraphs",
+                    },
+                    "regex": {"time_limit": 5000, "stack_limit": 4_000_000},
                 }
             },
         ),

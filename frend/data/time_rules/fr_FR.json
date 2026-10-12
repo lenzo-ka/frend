@@ -1,0 +1,1874 @@
+{
+  "grammar": {
+    "nonterminals": [
+      {
+        "local_name": "CLOCK",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "P",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "H",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "M",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "S",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "UH",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "UM",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      },
+      {
+        "local_name": "US",
+        "namespace": "urn:frend:time:v1:fr_FR"
+      }
+    ],
+    "rules": [
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-fr_FR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-fr_FR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-fr_FR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-fr_FR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-fr_FR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-seconds",
+            "name": {
+              "local_name": "source-3",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "S",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "s",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "US",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "us",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "S",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "s",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "US",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "us",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CLOCK",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "provenance": [
+          {
+            "lexical": "normalization-record:time-composition-fr_FR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-construction",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:academie-francaise/dictionnaire#clock-seconds",
+            "name": {
+              "local_name": "source-3",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "S",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "s",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "US",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "us",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "H",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "h",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UH",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "uh",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "M",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "m",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "UM",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "um",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "S",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "s",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "US",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "us",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "P",
+              "namespace": "urn:frend:time:v1:fr_FR"
+            },
+            "variable": {
+              "lexical": "p",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "P",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:P",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:P",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "H",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:H",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:H",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "M",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:M",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:M",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "S",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:S",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:S",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "UH",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:UH",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:UH",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "UM",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:UM",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:UM",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "US",
+          "namespace": "urn:frend:time:v1:fr_FR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:US",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:US",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:time:v1:fr_FR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      }
+    ],
+    "start": {
+      "local_name": "CLOCK",
+      "namespace": "urn:frend:time:v1:fr_FR"
+    }
+  },
+  "icu_version": "78.3",
+  "locale": "fr_FR",
+  "normalization_sha256": "59392a44da06105b30a015c17212920247d7ca6182d1d3273ba8b060193937c6",
+  "periods": {
+    "0": "matin",
+    "1": "matin",
+    "10": "matin",
+    "11": "matin",
+    "12": "midi",
+    "13": "après-midi",
+    "14": "après-midi",
+    "15": "après-midi",
+    "16": "après-midi",
+    "17": "après-midi",
+    "18": "soir",
+    "19": "soir",
+    "2": "matin",
+    "20": "soir",
+    "21": "soir",
+    "22": "soir",
+    "23": "soir",
+    "3": "matin",
+    "4": "matin",
+    "5": "matin",
+    "6": "matin",
+    "7": "matin",
+    "8": "matin",
+    "9": "matin"
+  },
+  "projection_sha256": "d8ba173f1b28a6007581540d555a65ee1c62c838e070cece9c002b44e3bbedf3",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "H": [
+      {
+        "provenance": [
+          "normalization-record:time-composition-fr_FR",
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
+        ],
+        "tokens": [
+          "￰H￱",
+          " ",
+          "￰UH￱"
+        ]
+      }
+    ],
+    "HM": [
+      {
+        "provenance": [
+          "normalization-record:time-composition-fr_FR",
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
+        ],
+        "tokens": [
+          "￰H￱",
+          " ",
+          "￰UH￱",
+          " ",
+          "￰M￱"
+        ]
+      }
+    ],
+    "HMS": [
+      {
+        "provenance": [
+          "normalization-record:time-composition-fr_FR",
+          "normalization-record:academie-francaise/dictionnaire#clock-construction",
+          "normalization-record:academie-francaise/dictionnaire#clock-seconds"
+        ],
+        "tokens": [
+          "￰H￱",
+          " ",
+          "￰UH￱",
+          " ",
+          "￰M￱",
+          " ",
+          "￰UM￱",
+          " ",
+          "￰S￱",
+          " ",
+          "￰US￱"
+        ]
+      }
+    ],
+    "PH": [
+      {
+        "provenance": [
+          "normalization-record:time-composition-fr_FR",
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
+        ],
+        "tokens": [
+          "￰H￱",
+          " ",
+          "￰UH￱",
+          " ",
+          "￰P￱"
+        ]
+      }
+    ],
+    "PHM": [
+      {
+        "provenance": [
+          "normalization-record:time-composition-fr_FR",
+          "normalization-record:academie-francaise/dictionnaire#clock-construction"
+        ],
+        "tokens": [
+          "￰H￱",
+          " ",
+          "￰UH￱",
+          " ",
+          "￰M￱",
+          " ",
+          "￰P￱"
+        ]
+      }
+    ],
+    "PHMS": [
+      {
+        "provenance": [
+          "normalization-record:time-composition-fr_FR",
+          "normalization-record:academie-francaise/dictionnaire#clock-construction",
+          "normalization-record:academie-francaise/dictionnaire#clock-seconds"
+        ],
+        "tokens": [
+          "￰H￱",
+          " ",
+          "￰UH￱",
+          " ",
+          "￰M￱",
+          " ",
+          "￰UM￱",
+          " ",
+          "￰S￱",
+          " ",
+          "￰US￱",
+          " ",
+          "￰P￱"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-uh-many"
+      ],
+      "field": "UH",
+      "forms": {
+        "default": "heures"
+      },
+      "gender": "feminine",
+      "id": "time-unit-uh-many",
+      "kind": "time-unit",
+      "number": "many"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-uh-one"
+      ],
+      "field": "UH",
+      "forms": {
+        "default": "heure"
+      },
+      "gender": "feminine",
+      "id": "time-unit-uh-one",
+      "kind": "time-unit",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-uh-other"
+      ],
+      "field": "UH",
+      "forms": {
+        "default": "heures"
+      },
+      "gender": "feminine",
+      "id": "time-unit-uh-other",
+      "kind": "time-unit",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-um-many"
+      ],
+      "field": "UM",
+      "forms": {
+        "default": "minutes"
+      },
+      "gender": "feminine",
+      "id": "time-unit-um-many",
+      "kind": "time-unit",
+      "number": "many"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-um-one"
+      ],
+      "field": "UM",
+      "forms": {
+        "default": "minute"
+      },
+      "gender": "feminine",
+      "id": "time-unit-um-one",
+      "kind": "time-unit",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-um-other"
+      ],
+      "field": "UM",
+      "forms": {
+        "default": "minutes"
+      },
+      "gender": "feminine",
+      "id": "time-unit-um-other",
+      "kind": "time-unit",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-us-many"
+      ],
+      "field": "US",
+      "forms": {
+        "default": "secondes"
+      },
+      "gender": "feminine",
+      "id": "time-unit-us-many",
+      "kind": "time-unit",
+      "number": "many"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-us-one"
+      ],
+      "field": "US",
+      "forms": {
+        "default": "seconde"
+      },
+      "gender": "feminine",
+      "id": "time-unit-us-one",
+      "kind": "time-unit",
+      "number": "one"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-us-other"
+      ],
+      "field": "US",
+      "forms": {
+        "default": "secondes"
+      },
+      "gender": "feminine",
+      "id": "time-unit-us-other",
+      "kind": "time-unit",
+      "number": "other"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-0"
+      ],
+      "forms": {
+        "default": "matin"
+      },
+      "hours": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "id": "time-period-0",
+      "kind": "time-period"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-1"
+      ],
+      "forms": {
+        "default": "midi"
+      },
+      "hours": [
+        12
+      ],
+      "id": "time-period-1",
+      "kind": "time-period"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-2"
+      ],
+      "forms": {
+        "default": "après-midi"
+      },
+      "hours": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "id": "time-period-2",
+      "kind": "time-period"
+    },
+    {
+      "derived_from": [
+        "icu/78.3/time#fr_FR-period-3"
+      ],
+      "forms": {
+        "default": "soir"
+      },
+      "hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "id": "time-period-3",
+      "kind": "time-period"
+    }
+  ],
+  "schema": 2
+}

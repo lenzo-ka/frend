@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-11T02:39:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://accademiadellacrusca.it/it/consulenza/mezzo--mezza/48",
+  "revision": "Accademia della Crusca, Mezzo / mezza, 2002-09-30",
+  "sha256": "f243eef5ff4605b4731cb7557c4d4ada65732876af8df402623b07b3839d7f7e",
+  "source": "accademia-crusca/consulenza",
+  "transform_command": "manual transcription of le tre e quaranta and related clock examples"
+}
