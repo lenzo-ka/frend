@@ -33,6 +33,36 @@ GENERATED_TIME_LOCALES = (
 )
 _SHAPES = ("H", "HM", "HMS", "PH", "PHM", "PHMS")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
+_WRITTEN_UHR_MARKER = "_frend_written_uhr"
+
+
+def compose_german_written_uhr(detections, source_text: str, locale: str) -> list:
+    """Extend a German hour-minute reading across its following written ``Uhr``."""
+    detections = list(detections)
+    if canonical_locale(locale) != "de_DE":
+        return detections
+    composed = []
+    suffix = " Uhr"
+    for detection in detections:
+        value = detection.get("value")
+        if (
+            detection.get("type") != "time:flexible"
+            or not isinstance(value, DateTimeValue)
+            or tuple(name for name, _ in value.fields) != ("H", "m")
+        ):
+            continue
+        end = int(detection["end"])
+        extended_end = end + len(suffix)
+        if source_text[end:extended_end] != suffix or (
+            extended_end < len(source_text) and source_text[extended_end].isalnum()
+        ):
+            continue
+        extended = dict(detection)
+        extended["end"] = extended_end
+        extended["text"] = source_text[int(detection["start"]) : extended_end]
+        extended[_WRITTEN_UHR_MARKER] = True
+        composed.append(extended)
+    return [*detections, *composed]
 
 
 def _canonical_bytes(document: object) -> bytes:
@@ -304,7 +334,10 @@ def generate_time_alternatives(
     realized = dict(normalized)
     realized["H"] = realized_hour
     shape = ("P" if has_period else "") + "H"
-    if "m" in values:
+    written_uhr = detection.get(_WRITTEN_UHR_MARKER) is True
+    if written_uhr and bundle.locale != "de_DE":
+        raise NotImplementedError("written Uhr composition is German-only")
+    if "m" in values and not (written_uhr and normalized["M"] == 0):
         shape += "M"
     if "s" in values:
         shape += "S"
@@ -360,6 +393,8 @@ def generate_time_alternatives(
                     prior_provenance="+".join(dict.fromkeys(prior)) or None,
                 )
             )
+    if written_uhr:
+        return tuple(alternatives)
     try:
         previous = _legacy_spoken_time(value, detection, bundle.locale)
     except NotImplementedError:
