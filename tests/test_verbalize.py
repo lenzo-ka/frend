@@ -1634,9 +1634,7 @@ def test_cldr_literal_hour_is_spoken_from_locale_data(locale, written, spoken):
     ],
 )
 def test_flexible_time_speaks_its_captured_cldr_hour_unit(locale, written, spoken):
-    unit = _full_span_forms(
-        written, [FlexibleTimeDetector(locale)], "time:flexible", locale=locale
-    )
+    unit = _full_span_forms(written, [FlexibleTimeDetector(locale)], "time:flexible", locale=locale)
 
     assert normalize_spoken(unit.alternatives[0].text) == normalize_spoken(spoken)
     assert unit.unspoken == ()

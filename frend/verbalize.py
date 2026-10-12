@@ -1338,8 +1338,10 @@ def _time_literal(
         amount = Decimal(fields["H"])
         for width in (WIDTH_SHORT, WIDTH_NARROW):
             unit = _unit_text(amount, "hour", locale, width)
-            normalized = "" if unit is None else "".join(
-                character for character in unit.casefold() if character.isalnum()
+            normalized = (
+                ""
+                if unit is None
+                else "".join(character for character in unit.casefold() if character.isalnum())
             )
             if compact and compact == normalized:
                 proved_unit = True
