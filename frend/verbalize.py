@@ -2924,8 +2924,22 @@ def _telephone_group(digits: str, mode: str, locale: str) -> tuple[SpokenAlterna
 
 
 def _spoken_telephone(value: TelephoneValue, locale: str) -> tuple[SpokenAlternative, ...]:
-    """Render measured group modes; Google-TN's embedded ``sil`` is load-bearing."""
+    """Render telephone groups; Google-TN's embedded ``sil`` is load-bearing."""
     total = sum(count for _modes, count in value.readings)
+    prefix: tuple[SpokenAlternative, ...] = ()
+    source = "measured:telephone"
+    if value.country_code is not None:
+        country_codes = _telephone_group(value.country_code, "digits", locale)
+        plus = _lexical("sign.plus", locale)
+        if not country_codes or plus is None:
+            return ()
+        prefix = (
+            SpokenAlternative(
+                plus.format(country_codes[0].text),
+                f"{lexical_source(locale)}+{country_codes[0].provenance}",
+            ),
+        )
+        source = "rule:explicit-country-code+libphonenumber"
     alternatives = []
     for modes, count in value.readings:
         groups = [
@@ -2933,10 +2947,11 @@ def _spoken_telephone(value: TelephoneValue, locale: str) -> tuple[SpokenAlterna
             for digits, mode in zip(value.groups, modes, strict=True)
         ]
         for combination in product(*groups):
+            spoken_groups = (*prefix, *combination)
             alternatives.append(
                 SpokenAlternative(
-                    " sil ".join(item.text for item in combination),
-                    "+".join(item.provenance for item in combination) + "+measured:telephone",
+                    " sil ".join(item.text for item in spoken_groups),
+                    "+".join(item.provenance for item in spoken_groups) + f"+{source}",
                     Decimal(count) / Decimal(total),
                 )
             )

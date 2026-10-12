@@ -11,9 +11,12 @@ from icukit import add_likely_subtags, parse_locale
 from icukit.detectors import Capture
 from phonenumbers import (
     Leniency,
+    NumberParseException,
     PhoneMetadata,
     PhoneNumberMatcher,
+    is_valid_number,
     national_significant_number,
+    parse,
 )
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
@@ -94,6 +97,17 @@ def _phone_groups(text: str) -> tuple[str, ...] | None:
         if text.count("(") != 1 or text.count(")") != 1:
             return None
     return groups
+
+
+def _international_phone_groups(text: str, country_code: str) -> tuple[str, ...] | None:
+    """Return the national digit runs written after an explicit ``+CC`` prefix."""
+    prefix = f"+{country_code}"
+    if not text.startswith(prefix) or len(text) == len(prefix):
+        return None
+    if re.fullmatch(r"\+[0-9() .-]+", text) is None:
+        return None
+    groups = tuple(re.findall(r"[0-9]+", text[len(prefix) :]))
+    return groups or None
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
@@ -213,10 +227,11 @@ def _left_context(text: str, start: int) -> str | None:
 
 @dataclass(frozen=True)
 class TelephoneValue:
-    """Digit groups and their measured whole-reading signatures."""
+    """Digit groups, reading signatures, and an optional explicit country code."""
 
     groups: tuple[str, ...]
     readings: tuple[tuple[tuple[str, ...], int], ...]
+    country_code: str | None = None
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
@@ -289,7 +304,7 @@ def _prior(
 
 
 class TelephoneDetector:
-    """Detect trained NANP shapes using only ASCII digits and ``- .()`` separators.
+    """Detect trained NANP shapes and valid explicit international numbers.
 
     Wider digit scripts and Unicode separator support require separately measured priors.
     """
@@ -313,15 +328,34 @@ class TelephoneDetector:
             ):
                 continue
             surface = match.raw_string
-            groups = _phone_groups(surface)
+            number = match.number
+            country_code = None
+            if surface.startswith("+"):
+                try:
+                    number = parse(surface, None)
+                except NumberParseException:
+                    continue
+                country_code = str(number.country_code)
+            groups = (
+                _international_phone_groups(surface, country_code)
+                if country_code is not None
+                else _phone_groups(surface)
+            )
             readings = None
-            national = national_significant_number(match.number)
-            if groups is not None and general_pattern.fullmatch(national) is not None:
-                shape = telephone_shape(surface)
-                pattern = telephone_reading_key(groups)
-                readings = table.get(f"{shape}|{pattern}")
-                if readings is None and "r" in pattern:
-                    readings = table.get(f"{shape}|{pattern.replace('r', 'n')}")
+            national = national_significant_number(number)
+            if groups is not None:
+                if (
+                    country_code is not None
+                    and "".join(groups) == national
+                    and is_valid_number(number)
+                ):
+                    readings = ((tuple("digits" for _group in groups), 1),)
+                elif country_code is None and general_pattern.fullmatch(national) is not None:
+                    shape = telephone_shape(surface)
+                    pattern = telephone_reading_key(groups)
+                    readings = table.get(f"{shape}|{pattern}")
+                    if readings is None and "r" in pattern:
+                        readings = table.get(f"{shape}|{pattern.replace('r', 'n')}")
             if groups is None or readings is None:
                 continue
             if _left_context(text, match.start) in left_context_vetoes:
@@ -332,14 +366,14 @@ class TelephoneDetector:
                     "start": match.start,
                     "end": match.end,
                     "type": "telephone:number",
-                    "value": TelephoneValue(groups, readings),
+                    "value": TelephoneValue(groups, readings, country_code),
                     "captures": (
                         Capture(
                             "telephone",
                             match.start,
                             match.end,
                             surface,
-                            groups,
+                            ((f"+{country_code}", *groups) if country_code is not None else groups),
                             "numeric",
                         ),
                     ),
