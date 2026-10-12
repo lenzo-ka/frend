@@ -3,17 +3,14 @@
 from __future__ import annotations
 
 import importlib
-import importlib.util
 import sys
 from dataclasses import replace
-from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from icukit import RegexLimitError
 
 from frend import normalize, resolve_lattice, verbalize_lattice
-
-_TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
 class _FailingDetector:
@@ -27,13 +24,7 @@ class _FailingDetector:
 
 
 def _tool(name: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, register=True)
 
 
 def test_normalize_propagates_sentence_break_failure_without_retry(monkeypatch):
