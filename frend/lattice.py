@@ -675,6 +675,9 @@ def resolve_lattice(
             else _reading_detectors(canonical, symbol_run_threshold)
         )
         detections = list(detect(source_text, detectors))
+        from frend.time_rules import compose_german_written_uhr
+
+        detections = compose_german_written_uhr(detections, source_text, canonical)
     return _resolve_lattice_validated(
         detections,
         locale=locale,

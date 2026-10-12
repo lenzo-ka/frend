@@ -64,6 +64,7 @@ from frend.symbols import (
 from frend.symbols import (
     _overlaps as _symbol_overlaps,
 )
+from frend.time_rules import compose_german_written_uhr
 from frend.verbalize import SpokenAlternative, VerbalizedUnit, _verbalize_lattice_validated
 from frend.work_budgets import (
     DEFAULT_TIERGRAPH_WORK_BUDGET,
@@ -456,6 +457,7 @@ def _sentence(
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
     if detections is None:
         detections = _reading_detectors(locale, symbol_run_threshold).detect(text)
+    detections = compose_german_written_uhr(detections, text, locale)
     plural_period_spans = _dotted_plural_acronym_period_spans(text)
     detections = [
         detection

@@ -1298,12 +1298,16 @@ def _spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
     """Keep English legacy-first; route supported non-English clocks to PR7 rules."""
-    # German clock speech that requires written ``Uhr`` remains an icukit span
-    # prerequisite: the current time edge excludes that adjacent token, and this
-    # layer neither extends the span nor inspects neighboring text.
-    if locale.startswith("en") or locale == "de_DE":
+    from frend.time_rules import (
+        _WRITTEN_UHR_MARKER,
+        GENERATED_TIME_LOCALES,
+        generate_time_alternatives,
+    )
+
+    if locale.startswith("en") or (
+        locale == "de_DE" and detection.get(_WRITTEN_UHR_MARKER) is not True
+    ):
         return _legacy_spoken_time(value, detection, locale)
-    from frend.time_rules import GENERATED_TIME_LOCALES, generate_time_alternatives
 
     if locale in GENERATED_TIME_LOCALES:
         return generate_time_alternatives(value, detection, locale)

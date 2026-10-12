@@ -62,8 +62,8 @@ def test_cldr_literal_hour_uses_the_new_strict_hour_reader():
     detections = normalize_module._reading_detectors("de_DE").detect("8 Uhr")
 
     assert any(item["type"] == "date:H" and item["text"] == "8 Uhr" for item in detections)
-    assert frend.normalize("8 Uhr", locale="de_DE") == " acht "
-    assert frend.normalize("08:00 Uhr", locale="de_DE") == " acht  Uhr"
+    assert " ".join(frend.normalize("8 Uhr", locale="de_DE").split()) == "acht Uhr"
+    assert " ".join(frend.normalize("08:00 Uhr", locale="de_DE").split()) == "acht Uhr"
 
 
 @pytest.mark.parametrize(
