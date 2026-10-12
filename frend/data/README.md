@@ -90,10 +90,12 @@ The shared attribution above applies to this table. The corpus is not shipped he
 Grouped readings for conservative North American telephone shapes, counted from all
 Google-TN training shards (00--89) by `tools/build_telephone_priors.py`. The detector
 requires an observed exact punctuation shape, a strict TELEPHONE majority over every
-corpus class with that shape, and at least three TELEPHONE rows. It accepts only the
-trained ASCII digit/separator alphabet, requires the NANP `NXX-NXX-XXXX` structure (with
-N11 excluded), and rejects a candidate directly after an alphanumeric or symbol. The
-table also counts the immediately preceding corpus token by its own gold class and ships
+corpus class with that shape, and at least three TELEPHONE rows. Separately, an explicit
+international `+CC` number is accepted when libphonenumber validates it, with each
+written national digit run retained as a reading group. It accepts only the trained ASCII
+digit/separator alphabet, requires the NANP `NXX-NXX-XXXX` structure (with N11 excluded)
+for measured domestic shapes, and rejects a candidate directly after an alphanumeric or
+symbol. The table also counts the immediately preceding corpus token by its own gold class and ships
 only its surface-free character-class shape (case/run kind, length bucket, punctuation
 or symbol class) for typed strict-majority non-TELEPHONE contexts with at least three
 observations; ordinary PLAIN words and punctuation do not veto. Reading counts are
