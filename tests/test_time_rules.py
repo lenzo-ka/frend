@@ -9,7 +9,7 @@ import pytest
 from icukit.detectors import Capture, DateTimeValue
 from tiergraph import GrammarHole, grammar_loads
 
-from frend import resolve_lattice, verbalize_edge
+from frend import normalize, resolve_lattice, verbalize_edge
 from frend.normalization_schema import validate_bundle
 from frend.runtime import prewarm
 from frend.time_rules import (
@@ -20,6 +20,38 @@ from frend.time_rules import (
 )
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+_DE_WRITTEN_UHR_RELAY_CASES = (
+    (1, "08:00 Uhr", "acht Uhr"),
+    (2, "08:00 Uhr", "acht Uhr"),
+    (3, "00:00 Uhr", "null Uhr"),
+    (4, "00:15 Uhr", "null Uhr fünfzehn"),
+    (5, "08:00 Uhr", "acht Uhr"),
+    (6, "20:00 Uhr", "zwanzig Uhr"),
+    (7, "24:00 Uhr", None),
+    (8, "14:00 Uhr", "vierzehn Uhr"),
+    (9, "12:00 Uhr", "zwölf Uhr"),
+    (10, "11:30 Uhr", "elf Uhr dreißig"),
+    (11, "18:00 Uhr", "achtzehn Uhr"),
+    (12, "08:07 Uhr", "acht Uhr sieben"),
+    (13, "00:17 Uhr", "null Uhr siebzehn"),
+    (14, "12:00 Uhr", "zwölf Uhr"),
+    (15, "11:45 Uhr", "elf Uhr fünfundvierzig"),
+    (16, "11:57 Uhr", "elf Uhr siebenundfünfzig"),
+    (17, "12:03 Uhr", "zwölf Uhr drei"),
+    (18, "12:10 Uhr", "zwölf Uhr zehn"),
+    (19, "11:50 Uhr", "elf Uhr fünfzig"),
+    (20, "23:30 Uhr", "dreiundzwanzig Uhr dreißig"),
+    (21, "23:15 Uhr", "dreiundzwanzig Uhr fünfzehn"),
+    (22, "24:45 Uhr", None),
+    (23, "24:15 Uhr", None),
+    (24, "00:00:00 Uhr", None),
+    (25, "01:01:01 Uhr est", None),
+    (26, "02:02:23 Uhr", None),
+    (27, "2.30 Uhr", None),
+    (28, "02.30 Uhr", None),
+)
 
 
 def _time_unit(
@@ -41,6 +73,47 @@ def _time_unit(
     lattice = resolve_lattice([detection], source_text=written)
     edge = next(item for item in lattice.edges if item.kind == "reading")
     return verbalize_edge(edge, source_text=written, locale=locale)
+
+
+@pytest.mark.parametrize(
+    ("relay_line", "written", "spoken"),
+    _DE_WRITTEN_UHR_RELAY_CASES,
+    ids=[f"relay-{relay_line}" for relay_line, _, _ in _DE_WRITTEN_UHR_RELAY_CASES],
+)
+def test_german_written_uhr_relay_cases_compose_only_valid_hour_minute_times(
+    relay_line, written, spoken
+):
+    result = normalize(written, locale="de_DE", offsets=True)
+    whole_times = [
+        unit
+        for unit in result.units
+        if unit.reader == "time:flexible" and unit.source_span == (0, len(written))
+    ]
+
+    if spoken is None:
+        assert whole_times == [], f"relay line {relay_line} must remain outside this composition"
+        uhr_start = written.index("Uhr")
+        assert all(
+            unit.reader is None
+            for unit in result.units
+            if unit.source_span[0] < uhr_start + len("Uhr") and uhr_start < unit.source_span[1]
+        ), f"relay line {relay_line} must not create a stray reading over Uhr"
+    else:
+        assert result.text.strip() == spoken
+        assert len(whole_times) == 1
+
+
+def test_public_lattice_recognition_composes_german_written_uhr():
+    written = "08:00 Uhr"
+    lattice = resolve_lattice(source_text=written, locale="de_DE")
+
+    assert any(
+        edge.kind == "reading"
+        and edge.start == 0
+        and edge.end == len(written)
+        and edge.detection["type"] == "time:flexible"
+        for edge in lattice.edges
+    )
 
 
 @pytest.mark.parametrize("locale", GENERATED_TIME_LOCALES)
