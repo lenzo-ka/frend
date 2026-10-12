@@ -400,7 +400,7 @@
   },
   "icu_version": "78.3",
   "locale": "fr_FR",
-  "normalization_sha256": "a92571e77c6925f504209ba90a4781f39205866a4a3cd05b386a366b3a9287b3",
+  "normalization_sha256": "778bd1e98cd0da76f64cba12803f27e35d8c7daaf4bc2eb37bf26cf35a873b77",
   "projection_sha256": "51c83214187de557ee9f25a1573eb1d3b764c12c2b62a59363584b2f9be8ebb0",
   "provenance": {
     "source": "frend/curated"

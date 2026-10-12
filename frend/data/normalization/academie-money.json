@@ -4,7 +4,7 @@
   "license_sha256": "85890e4dd16f2bd1c7478f4b9be885c297b19127d64af101ae74a919d990e104",
   "locator": "https://www.academie-francaise.fr/absence-de-liaisons-apres-les-adjectifs-numeraux-cardinaux",
   "manual_citation": true,
-  "revision": "Academie francaise euro pronunciation table",
+  "revision": "Academie francaise supporting prose and On dit euro examples",
   "sha256": "2386d7e3ed2638c7b21d6fd404db35da15051a59593733a4f30fc606145e1e82",
   "source": "academie-francaise/questions-de-langue",
   "transform_command": "manual source-claim transcription"

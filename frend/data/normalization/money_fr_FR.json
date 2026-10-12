@@ -6,5 +6,5 @@
   "resources": [{"id": "currency-major-EUR", "kind": "currency", "code": "EUR", "gender": "masculine", "forms": {"one": "euro", "other": "euros"}, "derived_from": ["academie-francaise/questions-de-langue#euro-amounts"]}],
   "rules": [{"id": "money-major-EUR", "kind": "money-rule", "shape": "major", "fields": ["amount", "currency"], "target": ["AMOUNT", " ", "CURRENCY"], "currency": "EUR", "directions": ["tn"], "derived_from": ["academie-francaise/questions-de-langue#euro-amounts"]}],
   "weights": [], "curated_rows": [],
-  "ancestry": {"academie-francaise/questions-de-langue#euro-amounts": ["47783b19a06e7370cc91e75941861960c026dec11ff5a58b72e4df77af4f9de3"]}
+  "ancestry": {"academie-francaise/questions-de-langue#euro-amounts": ["23addb705cb3da1e9daa5d50f09cf98327d8f9a0659aa64c4639df9859858e08"]}
 }
