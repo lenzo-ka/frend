@@ -30,8 +30,6 @@ shard (90-99) is ever opened.
 
 from __future__ import annotations
 
-import argparse
-import json
 import re
 import sys
 from collections import Counter
@@ -44,13 +42,17 @@ for _path in (_REPO, _TOOLS):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
+from corpus_builder import (  # noqa: E402
+    corpus_provenance,
+    open_corpus_input,
+    render_document,
+    run_builder,
+    training_inputs,
+)
 from google_tn_rows import (  # noqa: E402
-    corpus_label,
     expected,
-    full_training_set,
     range_candidate_denominators,
     range_triples,
-    training_shards,
 )
 
 from frend.durations import fractional_duration_shape  # noqa: E402
@@ -68,37 +70,9 @@ def _default_corpus_dir() -> Path:
     return spoken_default()
 
 
-def _shards(corpus_dir: Path, inputs=None) -> tuple[list, list]:
-    """(E's shards, J's shards): the 90 training shards and every tenth of them for the
-    full corpus; for another (a fixture), its shards less any held-out one, and every
-    tenth of those by position."""
-    if inputs is not None:
-        available = sorted(inputs, key=lambda item: item.relative_path)
-        if not available:
-            raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
-        return available, available[::_SAMPLE_STEP]
-    available = sorted(Path(corpus_dir).glob("output-*-of-*"))
-    if not available:
-        raise FileNotFoundError(f"no corpus shards under {corpus_dir}")
-    full = full_training_set(available)
-    if full is not None:
-        return full, full[::_SAMPLE_STEP]
-    emit = training_shards(available)
-    sample = training_shards(available[::_SAMPLE_STEP])
-    if not emit or not sample:
-        raise FileNotFoundError(f"no training shards under {corpus_dir} (only held-out ones)")
-    return emit, sample
-
-
 def _sentences(path: Path):
     sentences, current = [], []
-    if hasattr(path, "relative_path"):
-        from corpus_inputs import open_verified
-
-        handle_context = open_verified(path)
-    else:
-        handle_context = Path(path).open(encoding="utf-8")
-    with handle_context as handle:
+    with open_corpus_input(path) as handle:
         for line in handle:
             parts = line.rstrip("\n").split("\t")
             if parts[0] == "<eos>":
@@ -261,7 +235,8 @@ def _map(function, paths, jobs: int):
 def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     from frend.ranges import RANGE_TYPES, range_class_key
 
-    emit_paths, sample_paths = _shards(Path(corpus_dir), inputs)
+    emit_paths = training_inputs(Path(corpus_dir), inputs)
+    sample_paths = emit_paths[::_SAMPLE_STEP]
     emission: Counter = Counter()
     for counts in _map(emission_counts, emit_paths, jobs):
         emission.update(counts)
@@ -341,23 +316,19 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 preferred_unit = None
     total_duration = duration_outcomes.total()
     other_count = total_duration - preferred_count if preferred_unit is not None else total_duration
+    emit_source = corpus_provenance(corpus_dir, emit_paths)
+    sample_source = corpus_provenance(corpus_dir, sample_paths)
     return {
         "locale": "en",
         "schema_version": 1,
         "provenance": {
             "locale": "en",
-            "corpus": corpus_label(Path(corpus_dir)),
-            "shards": [
-                path.relative_path if inputs is not None else path.name for path in sample_paths
-            ],
-            "emit_shards": [
-                path.relative_path if inputs is not None else path.name for path in emit_paths
-            ],
+            "corpus": emit_source.corpus,
+            "shards": sample_source.shards,
+            "emit_shards": emit_source.shards,
             "sample_rule": {
                 "rule": "full_training_set(corpus)[::10], as tools/build_spoken_priors.py",
-                "shards": [
-                    path.relative_path if inputs is not None else path.name for path in sample_paths
-                ],
+                "shards": sample_source.shards,
             },
             "unit": (
                 "tools/google_tn_rows.range_triples: a written token ending in an ASCII "
@@ -420,44 +391,17 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     }
 
 
-def render(document: dict) -> str:
-    return json.dumps(document, indent=1, ensure_ascii=False) + "\n"
+render = render_document
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--corpus-dir", type=Path, default=None)
-    parser.add_argument("--locale", required=True)
-    parser.add_argument("--source-id", required=True)
-    parser.add_argument("--pool", action="append", required=True, dest="pools")
-    parser.add_argument("--receipt", type=Path, required=True)
-    parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    parser.add_argument("--jobs", type=int, default=1)
-    parser.add_argument("--check", action="store_true", help="rebuild and compare byte for byte")
-    args = parser.parse_args(argv)
-    corpus_dir = args.corpus_dir or _default_corpus_dir()
-    from corpus_inputs import verified_inputs, write_verification_receipt
-
-    emit_paths, _sample_paths = _shards(corpus_dir)
-    verified = verified_inputs(
-        args.source_id,
-        emit_paths,
-        locale=args.locale,
-        pools=tuple(args.pools),
-        root=corpus_dir,
+    return run_builder(
+        argv,
+        description=__doc__.splitlines()[0],
+        default_out=DEFAULT_OUT,
+        default_corpus_dir=_default_corpus_dir,
+        build=lambda corpus, jobs, inputs, _locale: build_document(corpus, jobs, inputs=inputs),
     )
-    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
-    text = render(build_document(corpus_dir, args.jobs, inputs=verified))
-    if args.check:
-        shipped = args.out.read_text(encoding="utf-8") if args.out.exists() else None
-        if shipped != text:
-            print(f"--check: {args.out} differs from a rebuild")
-            return 1
-        print(f"--check: {args.out} matches a rebuild byte for byte")
-        return 0
-    args.out.write_text(text, encoding="utf-8")
-    print(f"wrote {args.out}")
-    return 0
 
 
 if __name__ == "__main__":

@@ -8,8 +8,6 @@ all-century row.  Held-out shards are never opened.
 
 from __future__ import annotations
 
-import argparse
-import json
 import sys
 from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
@@ -21,7 +19,13 @@ for _path in (_REPO, _TOOLS):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
-from google_tn_rows import corpus_label, full_training_set, training_shards  # noqa: E402
+from corpus_builder import (  # noqa: E402
+    corpus_provenance,
+    open_corpus_input,
+    render_document,
+    run_builder,
+    training_inputs,
+)
 
 DEFAULT_OUT = _REPO / "frend" / "data" / "en" / "number_priors.json"
 CLASSES = frozenset({"DATE", "CARDINAL", "DIGIT"})
@@ -33,27 +37,10 @@ def _default_corpus_dir() -> Path:
     return spoken_default()
 
 
-def _shards(corpus_dir: Path, inputs=None) -> list:
-    if inputs is not None:
-        paths = sorted(inputs, key=lambda item: item.relative_path)
-    else:
-        available = sorted(Path(corpus_dir).glob("output-*-of-*"))
-        paths = full_training_set(available) or training_shards(available)
-    if not paths:
-        raise FileNotFoundError(f"no training shards under {corpus_dir}")
-    return paths
-
-
 def _counts(path) -> tuple[Counter, dict[str, Counter]]:
-    if hasattr(path, "relative_path"):
-        from corpus_inputs import open_verified
-
-        context = open_verified(path)
-    else:
-        context = Path(path).open(encoding="utf-8")
     total: Counter = Counter()
     buckets: dict[str, Counter] = defaultdict(Counter)
-    with context as handle:
+    with open_corpus_input(path) as handle:
         for line in handle:
             parts = line.rstrip("\n").split("\t")
             if len(parts) < 3 or parts[0] not in CLASSES:
@@ -68,7 +55,7 @@ def _counts(path) -> tuple[Counter, dict[str, Counter]]:
 
 
 def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
-    paths = _shards(Path(corpus_dir), inputs)
+    paths = training_inputs(Path(corpus_dir), inputs)
     if jobs <= 1:
         pieces = map(_counts, paths)
     else:
@@ -85,13 +72,14 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     def row(counts: Counter) -> dict[str, int]:
         return {name: counts[name] for name in names if counts[name]}
 
+    source = corpus_provenance(corpus_dir, paths)
     return {
         "locale": "en",
         "schema_version": 1,
         "provenance": {
             "locale": "en",
-            "corpus": corpus_label(Path(corpus_dir)),
-            "shards": [p.relative_path if inputs is not None else p.name for p in paths],
+            "corpus": source.corpus,
+            "shards": source.shards,
             "unit": (
                 "Google TN rows whose written token is exactly four ASCII digits and "
                 "whose corpus class is DATE, CARDINAL, or DIGIT"
@@ -104,44 +92,17 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     }
 
 
-def render(document: dict) -> str:
-    return json.dumps(document, indent=1, ensure_ascii=False) + "\n"
+render = render_document
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--corpus-dir", type=Path, default=None)
-    parser.add_argument("--locale", required=True)
-    parser.add_argument("--source-id", required=True)
-    parser.add_argument("--pool", action="append", required=True, dest="pools")
-    parser.add_argument("--receipt", type=Path, required=True)
-    parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    parser.add_argument("--jobs", type=int, default=1)
-    parser.add_argument("--check", action="store_true")
-    args = parser.parse_args(argv)
-    corpus_dir = args.corpus_dir or _default_corpus_dir()
-    from corpus_inputs import verified_inputs, write_verification_receipt
-
-    paths = _shards(corpus_dir)
-    verified = verified_inputs(
-        args.source_id,
-        paths,
-        locale=args.locale,
-        pools=tuple(args.pools),
-        root=corpus_dir,
+    return run_builder(
+        argv,
+        description=__doc__.splitlines()[0],
+        default_out=DEFAULT_OUT,
+        default_corpus_dir=_default_corpus_dir,
+        build=lambda corpus, jobs, inputs, _locale: build_document(corpus, jobs, inputs=inputs),
     )
-    write_verification_receipt(args.receipt, verified, locale=args.locale, pools=tuple(args.pools))
-    text = render(build_document(corpus_dir, args.jobs, inputs=verified))
-    if args.check:
-        shipped = args.out.read_text(encoding="utf-8") if args.out.exists() else None
-        if shipped != text:
-            print(f"--check: {args.out} differs from a rebuild")
-            return 1
-        print(f"--check: {args.out} matches a rebuild byte for byte")
-        return 0
-    args.out.write_text(text, encoding="utf-8")
-    print(f"wrote {args.out}")
-    return 0
 
 
 if __name__ == "__main__":
