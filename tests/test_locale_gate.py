@@ -314,6 +314,9 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                     "en_US": {
                         "units": 1,
                         "selected_generated": False,
+                        "offered_generated": False,
+                        "expected_selected_generated": False,
+                        "candidates": [],
                         "events": {"load": 0, "lower": 0, "generate": 0},
                         "bundle_available": True,
                     }
@@ -356,7 +359,9 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                         "pass": row["pass"],
                         "count": 1,
                         "successful_time_detections": 1,
-                        "selected_generated": 0 if row["locale"] in {"en_US", "de_DE"} else 1,
+                        "selected_generated": (
+                            0 if row["locale"] in {"en_US", "de_DE", "it_IT"} else 1
+                        ),
                     }
                     for row in soak_receipts
                 ],
@@ -460,6 +465,67 @@ def test_soak_gate_rejects_empty_date_receipts():
 
     failures = {item["metric"] for item in result["resources"]["failures"]}
     assert "soak.date_probe.receipt_contract.run1" in failures
+
+
+@pytest.mark.parametrize(
+    ("locale", "probe"),
+    [
+        ("es_MX", "3:30 p.m."),
+        ("es_ES", "3:30 p.m."),
+        ("pt_BR", "3:30 da tarde"),
+        ("it_IT", "17:15"),
+    ],
+)
+def test_runtime_time_probe_accepts_the_binding_legacy_winner(locale, probe):
+    runtime_base, runtime_head, _soak, _fold = _resource_documents(100, 100)
+    runtime_base["summary"]["first_hit_ns"] = {locale: {"median": 1, "min": 1, "max": 1}}
+    runtime_head["summary"]["first_hit_ns"] = {locale: {"median": 1, "min": 1, "max": 1}}
+    runtime_head["runs"][0]["time_probes"] = {
+        locale: {
+            "probe": probe,
+            "units": 1,
+            "selected_generated": False,
+            "selected_provenance": "icu-rbnf:test",
+            "offered_generated": True,
+            "expected_selected_generated": False,
+            "candidates": [
+                {
+                    "rank": 0,
+                    "text": "legacy",
+                    "provenance": "icu-rbnf:test",
+                    "prior_provenance": None,
+                    "weight": None,
+                },
+                {
+                    "rank": 1,
+                    "text": "generated",
+                    "provenance": f"time-rule:{locale}+normalization-record:test",
+                    "prior_provenance": "icu-rbnf:test",
+                    "weight": None,
+                },
+            ],
+            "events": {"load": 1, "lower": 0, "generate": 0},
+            "bundle_available": True,
+        }
+    }
+
+    checks = gate._runtime_comparisons(runtime_base, runtime_head, gate.GateBudget())
+    check = next(item for item in checks if item["metric"] == f"runtime.time_probe.{locale}.run1")
+
+    assert check["passed"]
+
+
+def test_soak_time_probe_accepts_italian_binding_legacy_winners():
+    _runtime_base, _runtime_head, soak, _fold = _resource_documents(100, 100)
+    for receipt in soak["runs"][0]["time_receipts"]:
+        if receipt["locale"] == "it_IT":
+            receipt["selected_generated"] = 0
+
+    checks = gate._soak_comparisons(soak, soak, gate.GateBudget())
+    italian = [item for item in checks if item["metric"].startswith("soak.time_probe.it_IT.")]
+
+    assert italian
+    assert all(item["passed"] for item in italian)
 
 
 def test_require_identical_checks_first_choice_and_all_offers():

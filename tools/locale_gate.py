@@ -62,6 +62,42 @@ LOCALES: dict[str, tuple[str, ...]] = {
 GATE_LOCALES = tuple(locale for locales in LOCALES.values() for locale in locales) + ("pt_PT",)
 _ALL_GATE_LOCALES = GATE_LOCALES
 
+# These public probes have a sourced legacy reading at rank 0 and a distinct sourced
+# PR7 reading at rank 1.  The PR6 rank amendment preserves the shared legacy reading's
+# order, weight, and effective prior; PR7 also excludes rank tuning.  The semantic
+# receipt therefore requires the generated reading to be offered, not selected.
+_TIME_PROBE_LEGACY_WINNERS = frozenset(
+    {
+        ("es_MX", "3:30 p.m."),
+        ("es_ES", "3:30 p.m."),
+        ("pt_BR", "3:30 da tarde"),
+        ("it_IT", "17:15"),
+    }
+)
+_TIME_SOAK_LEGACY_WINNER_LOCALES = frozenset({"it_IT"})
+
+
+def _binding_legacy_time_winner(candidates: object, locale: str) -> bool:
+    """Whether the receipt proves a sourced legacy rank ahead of the PR7 reading."""
+    if not isinstance(candidates, list) or len(candidates) < 2:
+        return False
+    first = candidates[0]
+    if not isinstance(first, Mapping) or first.get("rank") != 0:
+        return False
+    first_sources = str(first.get("provenance", "")).split("+")
+    if f"time-rule:{locale}" in first_sources or not any(
+        source.startswith(("icu-", "lexical:", "curated:", "normalization-record:"))
+        for source in first_sources
+    ):
+        return False
+    return any(
+        isinstance(candidate, Mapping)
+        and isinstance(candidate.get("rank"), int)
+        and candidate["rank"] > 0
+        and f"time-rule:{locale}" in str(candidate.get("provenance", "")).split("+")
+        for candidate in candidates[1:]
+    )
+
 
 @dataclass(frozen=True)
 class GateBudget:
@@ -939,16 +975,34 @@ def _runtime_comparisons(
             }
         )
         for locale, receipt in time_probes.items():
-            generated_locale = locale not in {"en_US", "de_DE"}
+            routed_locale = locale not in {"en_US", "de_DE"}
+            expected_selected = (
+                routed_locale
+                and (
+                    locale,
+                    receipt.get("probe"),
+                )
+                not in _TIME_PROBE_LEGACY_WINNERS
+            )
+            binding_legacy_winner = _binding_legacy_time_winner(receipt.get("candidates"), locale)
             events = receipt.get("events", {})
             passed = (
                 receipt.get("units", 0) >= 1
-                and receipt.get("selected_generated") is generated_locale
+                and receipt.get("selected_generated") is expected_selected
+                and receipt.get("expected_selected_generated") is expected_selected
+                and receipt.get("offered_generated") is routed_locale
+                and (
+                    expected_selected
+                    or not routed_locale
+                    or binding_legacy_winner
+                    and receipt.get("selected_provenance")
+                    == receipt.get("candidates", [{}])[0].get("provenance")
+                )
                 and receipt.get("bundle_available") is True
                 and (
-                    generated_locale
+                    routed_locale
                     and events == {"load": 1, "lower": 0, "generate": 0}
-                    or not generated_locale
+                    or not routed_locale
                     and events == {"load": 0, "lower": 0, "generate": 0}
                 )
             )
@@ -960,8 +1014,9 @@ def _runtime_comparisons(
                     "breached": not passed,
                     "outside_base_range": False,
                     "budget": (
-                        "selected time-rule provenance for routed locales; compiled recipes "
-                        "avoid runtime lower/generate; English and German zero bundle calls"
+                        "generated time-rule offered for routed locales and selected except "
+                        "where the binding legacy rank wins; compiled recipes avoid runtime "
+                        "lower/generate; English and German zero bundle calls"
                     ),
                 }
             )
@@ -1171,7 +1226,9 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
         )
         for receipt in time_receipts:
             count = receipt.get("count", 0)
-            generated_expected = receipt.get("locale") not in {"en_US", "de_DE"}
+            generated_expected = receipt.get("locale") not in (
+                {"en_US", "de_DE"} | _TIME_SOAK_LEGACY_WINNER_LOCALES
+            )
             passed = receipt.get("successful_time_detections") == count and (
                 receipt.get("selected_generated") == count
                 if generated_expected
@@ -1187,7 +1244,10 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
                     "passed": passed,
                     "breached": not passed,
                     "outside_base_range": False,
-                    "budget": "full-span detection and selected time-rule provenance",
+                    "budget": (
+                        "full-span detection and binding-rank selected provenance; Italian "
+                        "keeps its sourced legacy HM reading ahead of the generated reading"
+                    ),
                 }
             )
     return checks
@@ -1892,12 +1952,56 @@ def _normalize_time_probe(locale: str) -> tuple[int, dict]:
     elapsed = time.perf_counter_ns() - started
     units = [unit for unit in result.units if str(unit.reader or "").startswith("time:")]
     after = before if time_rule_events is None else dict(time_rule_events())
+    recognition_text = apply_input_fold(probe, "typographic")
+    detections = list(detect(recognition_text, _reading_detectors(locale)))
+    graph = compose_choices(
+        resolve_choices(detections, source_text=recognition_text, locale=locale)
+    )
+    candidates = []
+    for edge, unit in zip(graph.lattice.edges, graph.units, strict=True):
+        detection = edge.detection or {}
+        if (
+            edge.start != 0
+            or edge.end != len(recognition_text)
+            or not str(detection.get("type", "")).startswith("time:")
+        ):
+            continue
+        if locale not in {"en_US", "de_DE"} and not any(
+            f"time-rule:{locale}" in item.provenance.split("+") for item in unit.alternatives
+        ):
+            continue
+        candidates = [
+            {
+                "rank": rank,
+                "text": item.text,
+                "provenance": item.provenance,
+                "prior_provenance": item.prior_provenance,
+                "weight": None if item.weight is None else str(item.weight),
+            }
+            for rank, item in enumerate(unit.alternatives)
+        ]
+        break
+    offered_generated = any(
+        f"time-rule:{locale}" in str(item["provenance"]).split("+") for item in candidates
+    )
+    expected_selected = (
+        locale not in {"en_US", "de_DE"}
+        and (
+            locale,
+            probe,
+        )
+        not in _TIME_PROBE_LEGACY_WINNERS
+    )
     return elapsed, {
         "probe": probe,
         "units": len(units),
         "selected_generated": any(
             f"time-rule:{locale}" in unit.provenance.split("+") for unit in units
         ),
+        "selected_provenance": None if not units else units[0].provenance,
+        "offered_generated": offered_generated,
+        "expected_selected_generated": expected_selected,
+        "candidates": candidates,
         "events": {key: after[key] - before[key] for key in before},
         "bundle_available": time_rule_events is not None,
     }
