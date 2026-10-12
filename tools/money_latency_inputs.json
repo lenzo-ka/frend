@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "locales": {
+    "es_MX": "MXN 2",
+    "fr_FR": "2 EUR",
+    "pt_BR": "R$ 1,09",
+    "it_IT": "2 EUR",
+    "ko_KR": "₩2000"
+  }
+}
