@@ -1,0 +1,3069 @@
+{
+  "audit": {
+    "coverage_sha256": "c3827041c48599e8e7d8700b8b2f7ce6c58f29d231fd248c315009b915a0fa55",
+    "prior_artifacts": [
+      {
+        "name": "pr8-plan-r2.md",
+        "sha256": "558250b192c9f7902e142601d5ac8d031a2a9b559e91e740525c1e141cf34e21"
+      },
+      {
+        "name": "source-claims.tsv",
+        "sha256": "b8c912d4564076140629bcc2a7290f581588f9c47a622091b5b96a1d0d52f081"
+      }
+    ],
+    "source_files": [
+      {
+        "path": "de/data_inverse_text_normalization/test_cases_money.txt",
+        "sha256": "3487df3d7a46ec1bd7c653cc5a1f9551194cd407a2f063aea03ce52c0c41b9fc"
+      },
+      {
+        "path": "es/data_inverse_text_normalization/test_cases_money.txt",
+        "sha256": "ac231e3dd82b87ab25d175f858bb5173e3ea9506294d33aef257beb72df6dece"
+      },
+      {
+        "path": "fr/data_inverse_text_normalization/test_cases_money.txt",
+        "sha256": "77860ee2601e5fa1eab32ea822c0a34029b7059494670477c29dc1f026173f9a"
+      },
+      {
+        "path": "pt/data_inverse_text_normalization/test_cases_money.txt",
+        "sha256": "5674b23877341b218852f1977cad39ca6c23e8a183888ac5c2effaa98bb07081"
+      },
+      {
+        "path": "zh/data_inverse_text_normalization/test_cases_money.txt",
+        "sha256": "9e46815e930c30cc28c9e754ed28869356bbcb4f2f22c3d640d1209d9983d2e5"
+      },
+      {
+        "path": "ko/data_inverse_text_normalization/test_cases_money.txt",
+        "sha256": "b13c5c41de8a8126647242dc5000e87aadcfc8961590a9939dca0a414921aed3"
+      }
+    ],
+    "source_revision": "acacc21b1cb7916b10558855bc4f85957a0b2fde"
+  },
+  "base_head": "6129f8311c04943b7ea4c951304d3ae53144c350",
+  "family": "money-heldout",
+  "rows": [
+    {
+      "base": {
+        "error": null,
+        "first": " null Komma zwei zwei Euro ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "59b3d144d69aaf83fad4a1d58199233e68a2545ba20b9a138691e19215eabf20",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "zweiundzwanzig cent",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:10",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 10,
+      "written": "€0,22"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " einhundert  cent",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "88e487e034ca8308527e80b7b679ede9eda10b93e854825a51f21819140e9fc6",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "einhundert cent",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:11",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 11,
+      "written": "100 cent"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "zweidollarzwanzig",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "1580be02715af4366d871d4bc0a96c5b72af082494d25879b35582cb95783919",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "zweidollarzwanzig",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:13",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 13,
+      "written": "zweidollarzwanzig"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zwei Millionen Euro ",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "c31958479d6d8c2d676b27101033964caaec097c63511ed59ace9eb9139f3043",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "zwei millionen euro",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "€2 millionen"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zwei Britische Pfund  und  einhundert  penny",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a26c918c016fd3bf4db04d6e2990cf5b34cafe86f4201eac7b8e610d324ef655",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "zwei pfund und ein hundert penny",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "£2 und 100 penny"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " eins Million US-Dollar ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bf96b0f597d576e815aed86cc191fe9ada4654c7a4c10068c333a526f5aa5e86",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "eine million dollar",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:3",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 3,
+      "written": "$1 million"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zwei Komma null eins US-Dollar ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bef723b5fa1f4fcbec0ca5fbfd11c8b62e80c65ed952d90ad94051683dea7b80",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "zwei komma null eins dollar",
+      "id": "de_DE:de/data_inverse_text_normalization/test_cases_money.txt:5",
+      "language": "de",
+      "locale": "de_DE",
+      "source": "de/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 5,
+      "written": "$2,01"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ doce coma cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5ce153c4d49d527dc9d352ea9a1e869bef8c6237c2a9260d3fe812877ae928be",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares y cinco centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:1",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 1,
+      "written": "$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " cero coma dos cinco euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4d189d6b5ca82de98279aaca9152bb88e717035c96c54c6651e3e31a1bf88a8c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "veinticinco céntimos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:10",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 10,
+      "written": "€0,25"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " doce coma cero cinco euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "26bfb3ad34bfa5307dac1130f20ef99996e3bdf24257c9bb1e0aa11bae3c2444",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce euros y cinco centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:11",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 11,
+      "written": "€12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " doce coma cero cinco dólares estadounidenses ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "76ee838d4e846ccc1da08fa49234ff45e028cc2c165f4398738018a46bc3b437",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares estadounidenses y cinco centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:12",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 12,
+      "written": "US$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " doce coma cero cinco dólares estadounidenses ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "76ee838d4e846ccc1da08fa49234ff45e028cc2c165f4398738018a46bc3b437",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares americanos y cinco centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:13",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 13,
+      "written": "US$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ doce coma cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5ce153c4d49d527dc9d352ea9a1e869bef8c6237c2a9260d3fe812877ae928be",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce pesos y cinco centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:14",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 14,
+      "written": "$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ dos  y $ sesenta y tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d07c17392f462e3e3f5f442324e297b7390d87c5bf017927574749ac0ab28320",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos dólares y sesenta y tres dólares",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:16",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 16,
+      "written": "$2 y $63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₧ diez ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3883fb38b2a9afefecc610f1ff1d7e00a813fa01ae1798fab9a741a11a470075",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "diez pesetas",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:17",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 17,
+      "written": "₧10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₡ uno ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "aed079ce4ab63d0d1043952da60d4d45ff10538f70b3b321500b5550a9c56ab6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un colón",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "₡1"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₩ cero coma cero uno ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c8d58ce259718904c68096c07532130c6ee962c09d2dee83daca249e8b551f92",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un chon",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:19",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 19,
+      "written": "₩0,01"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ doce coma cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5ce153c4d49d527dc9d352ea9a1e869bef8c6237c2a9260d3fe812877ae928be",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares y cinco céntimos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:2",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 2,
+      "written": "$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₩ tres coma dos cero ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f486333e8f9ea2c10bdd22d124d0871e73f6f08143c483bc032cf35fa0c3bfb5",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "tres wones con veinte",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "₩3,20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " q100 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "51821550ab90f28c9448c78f48e12b0115272f352ece4b22db19fede52044d2e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "cien quetzales",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:21",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 21,
+      "written": "q100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ nueve coma cinco  millones",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3b70a2b0ae9606ae092a4eef25832571f32b62253ded079fe18e770d873b2da0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "nueve punto cinco millones de pesos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "$9.5 millones"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "Mex$ catorce millones quinientos mil ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "04ba39be7caf124ea425cc804c73f091cfc8114df7cd7cccda5638d21ef3c388",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "catorce millones quinientos mil pesos mexicanos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "Mex$14500000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "Mex$ diez ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f652e4a745840d8f29a4c5d406a8ef627119c7941cc7a3198905f56143287977",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "diez pesos mexicanos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:24",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 24,
+      "written": "Mex$10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco coma seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b24d2c1fc56a6869339b7ca4e92f6d86f4a307c5fc7aed375ab63ccac8ad99d1",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares sesenta y tres",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:3",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 3,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco coma seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b24d2c1fc56a6869339b7ca4e92f6d86f4a307c5fc7aed375ab63ccac8ad99d1",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares y sesenta y tres centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:4",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 4,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco coma seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b24d2c1fc56a6869339b7ca4e92f6d86f4a307c5fc7aed375ab63ccac8ad99d1",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares con sesenta y tres centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:5",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 5,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco coma seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b24d2c1fc56a6869339b7ca4e92f6d86f4a307c5fc7aed375ab63ccac8ad99d1",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares con sesenta y tres",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:6",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 6,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ veintinueve coma cinco cero ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d10b218ccb8f060d798a6324d1143ccb480ab6c70b8348c61916523e42e06944",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "veintinueve dólares cincuenta centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:7",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 7,
+      "written": "$29,50"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ cero coma dos cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "887ca0c81ee01ebc65b970494e6ebe6b5c246797d1e6fb374a8344f7b8602076",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "veinticinco centavos",
+      "id": "es_ES:es/data_inverse_text_normalization/test_cases_money.txt:9",
+      "language": "es",
+      "locale": "es_ES",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 9,
+      "written": "$0,25"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ doce punto cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2c36acba2f77ad8467cea7de11e28cc6685b81c1023f2b3613f26db6d2e08465",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares y cinco centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:1",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 1,
+      "written": "$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "€ cero punto dos cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2d44ef27468692a046155200d694550b52491246693397df83b4e98f666de0f5",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "veinticinco céntimos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:10",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 10,
+      "written": "€0,25"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "€ doce punto cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9cce6fd1e05f60b03ac15f8c88da33cafe499d84b5314e0fd5cfee19518dc15f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce euros y cinco centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:11",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 11,
+      "written": "€12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " US $ doce punto cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "60c5b844980282f1d440c05e399bbfa757ecacc120bb5cd17122a34568a27221",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares estadounidenses y cinco centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:12",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 12,
+      "written": "US$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " US $ doce punto cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "60c5b844980282f1d440c05e399bbfa757ecacc120bb5cd17122a34568a27221",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares americanos y cinco centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:13",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 13,
+      "written": "US$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ doce punto cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2c36acba2f77ad8467cea7de11e28cc6685b81c1023f2b3613f26db6d2e08465",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce pesos y cinco centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:14",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 14,
+      "written": "$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ dos  y $ sesenta y tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "961b4b37c9be930f8e11fc7f6977036471417a37088106f73fd9dc052656963a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dos dólares y sesenta y tres dólares",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:16",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 16,
+      "written": "$2 y $63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₧ diez ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "12409e4cf0aefa3b96ca98fe2c02dad877dd70081e554d5018084ec15c1fc7b3",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "diez pesetas",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:17",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 17,
+      "written": "₧10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₡ uno ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "66dccb3f39efb1edca5f6125e598cbdf3b2718d6d07fecdbb81e5b5e11345361",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un colón",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "₡1"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₩ cero punto cero uno ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e9a70f8d7061ad0044730361c93538a3b77d1f9bbc2fb4e2233cec4c922b0b42",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un chon",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:19",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 19,
+      "written": "₩0,01"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ doce punto cero cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2c36acba2f77ad8467cea7de11e28cc6685b81c1023f2b3613f26db6d2e08465",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doce dólares y cinco céntimos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:2",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 2,
+      "written": "$12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "₩ tres punto dos cero ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7f3e0888f42c0c41eb30cfa97af203376b9ffa0a48c451de81a52c917bfbabc6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "tres wones con veinte",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "₩3,20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " q100 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "51821550ab90f28c9448c78f48e12b0115272f352ece4b22db19fede52044d2e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "cien quetzales",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:21",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 21,
+      "written": "q100"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ nueve punto cinco millones ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c0312bc6064d2ad6be3e006ee418365cce473ccbf36d2faaa333077668657faf",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "nueve punto cinco millones de pesos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "$9.5 millones"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "Mex$ catorce millones quinientos mil ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "910fb41ae6b13066538c06d38e47f4cd1f9a1a34ef0cbf7c00ab64bba6999d0f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "catorce millones quinientos mil pesos mexicanos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "Mex$14500000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "Mex$ diez ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7f8a8d28d34372c4965a53931bd56d7f0d49c9e635ca9b9c797b6cfac66d53d4",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "diez pesos mexicanos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:24",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 24,
+      "written": "Mex$10"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco punto seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "63a86ae9522857a29fac79aaf731c2deff1445bcecfa6efed85485c8a929e130",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares sesenta y tres",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:3",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 3,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco punto seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "63a86ae9522857a29fac79aaf731c2deff1445bcecfa6efed85485c8a929e130",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares y sesenta y tres centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:4",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 4,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco punto seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "63a86ae9522857a29fac79aaf731c2deff1445bcecfa6efed85485c8a929e130",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares con sesenta y tres centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:5",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 5,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ setenta y cinco punto seis tres ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "63a86ae9522857a29fac79aaf731c2deff1445bcecfa6efed85485c8a929e130",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "setenta y cinco dólares con sesenta y tres",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:6",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 6,
+      "written": "$75,63"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ veintinueve punto cinco cero ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "63cf694c76dc5175607552c9ffe19934acb80c87bbbf722dad123c5eaec76e8e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "veintinueve dólares cincuenta centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:7",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 7,
+      "written": "$29,50"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ cero punto dos cinco ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7a806b47954d450c6f3b28bf1fff37caf567451dd535419f8131a73b73fe64cf",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "veinticinco centavos",
+      "id": "es_MX:es/data_inverse_text_normalization/test_cases_money.txt:9",
+      "language": "es",
+      "locale": "es_MX",
+      "source": "es/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 9,
+      "written": "$0,25"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " deux   dollar ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "1a2f73b98a8e102e85e12a07e1b68c714e6953369d23bb53c4028b7eb4ecb94c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "deux dollars",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:1",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 1,
+      "written": "2 $"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " cinq virgule six zéro euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "99a83bbec0269749ca8b5d5df5b373c7031de64c6f6b3a32f009bcc2dba9efef",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "cinq euro et soixante",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:12",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 12,
+      "written": "5,60 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zéro virgule cinq zéro euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a674ab5c2f3b9898fa1532f030174d0626824823799bbfd5445135ee8ab17e36",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "cinquante centimes",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:13",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 13,
+      "written": "0,50 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " quatre vingt mille wons sud-coréens ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "9b7d241763c12b4a55fdf09ce50aa56fbb180704bb9893099c3b7071873b4420",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "quatre-vingt mille won",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:14",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 14,
+      "written": "80 000 ₩"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " quatre vingt mille wons sud-coréens ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "9b7d241763c12b4a55fdf09ce50aa56fbb180704bb9893099c3b7071873b4420",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "quatre-vingt-mille won",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:15",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 15,
+      "written": "80 000 ₩"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " quatre-vingts millions  de wons",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2d27eef9cd9ffe14368934f3c671d1332b790d3e0a1c07a23993c8b9e558af9e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quatre-vingt-millions de wons",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:16",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 16,
+      "written": "80 millions de wons"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " trois   livre ",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "336bd2d663011ca0f90f3d60e481109bcabe11c345f590cb45b2ed98906207e7",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "trois livre",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:17",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 17,
+      "written": "3 £"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zéro virgule zéro trois   livre ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a986769799247451fa7f4732fd941a8eb88e61eed9ac85be0e048e313c351173",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "trois pence",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "0,03 £"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zéro euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "8bf6c2d06ea520c703a927df25b8f2bd2bf384c4def2ce61dac877e2cd103b59",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "zéro euro",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:19",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 19,
+      "written": "0 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zéro virgule huit zéro euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "21135713fdedc9d7ee11a517a1a2c20b706173b0816454f408cdbd7d699812e0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "zéro euro quatre-vingt",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "0,80 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " deux millions  de dollars",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "b28859ada786aa373180e7f8cd1e09a97c67f30ce2b895e281ca5df6bb256349",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "deux-millions de dollars",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:21",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 21,
+      "written": "2 millions de dollars"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " quatre virgule huit zéro milliards  d'euros",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "457981e60b9de0b3b6f2571a27c35539380142e5cbcaa3161fac5e6a3cd321fc",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quatre virgule quatre-vingt milliards d'euros",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "4,80 milliards d'euros"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zéro virgule deux zéro euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c647801196754c7a28b2314d5e80b84d767dd5ab9f59e0f3bf01d9be19b706d5",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "vingt centimes",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:3",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 3,
+      "written": "0,20 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zéro virgule deux deux euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e5e50d0652b036c0582929fbd4911d0b7cc0fe8402fbafc303cbe1e5199198a6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "vingt-deux centimes",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:4",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 4,
+      "written": "0,22 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " deux virgule deux zéro   dollar ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "8095e199ccb4826136831857d47ab818b23c69eafca9a63f3d9972c0533a02eb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "deux dollars vingt",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:5",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 5,
+      "written": "2,20 $"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " deux virgule deux zéro euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "641a4ed6d0c2733a793cf8def72e35b307438504f8a506872a91beb3e6d31931",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "deux euros et vingt centimes",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:6",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 6,
+      "written": "2,20 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " vingt euros ",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "45ec048a57f48487c38d1282d5d4531b17251201c26a46a1693ec467c29edd67",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "vingt euros",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:7",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 7,
+      "written": "20 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " un   CHF ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "25de6e51a24e50881e89d65819c61e4480c76a65d4f0c653e86bdb968960274e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "un franc suisse",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:8",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 8,
+      "written": "1 CHF"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " vingt virgule zéro cinq euros ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b93bedd5fdeeb79e7627d7a5d414f445081dd2a478a44ca16991a862e93d5d94",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "vingt euro cinq",
+      "id": "fr_FR:fr/data_inverse_text_normalization/test_cases_money.txt:9",
+      "language": "fr",
+      "locale": "fr_FR",
+      "source": "fr/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 9,
+      "written": "20,05 €"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 오천 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "1fb6e44e726399df040d57e65b11a6292e6f40edc820c55d4691f514dba941de",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "오천 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:1",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 1,
+      "written": "₩5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 일억 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bcf74359d1e938ced23e78ca2f90022f47dcd210cf8849279e09b12bb514bf32",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "일억 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:10",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 10,
+      "written": "₩100000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 십이억 오천만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "fd11903e0153a175f6e0fafd54afafa747d558ae11a331ccf971bbe99ad1894a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십이억오천만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:11",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 11,
+      "written": "₩1250000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 백억 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f879673cc866a1e9a949bde2cdc866968e3272e234a3e73c94973ae26012ad91",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백억 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:12",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 12,
+      "written": "₩10000000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 오천억 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e32dc6a8a359b564d764250d1fe7b8caa0b95ddd4aa5cf1a535ac8d092ed512b",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "오천억원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:13",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 13,
+      "written": "₩500000000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 일조 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "206ef1cb2fcfb248514c3de505779b873da122fa9e8cd7b8de0847e0327d8358",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "일조 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:14",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 14,
+      "written": "₩1000000000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 삼조 오천억 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b8be13efc9ecbe822d1516105f35f76bc5b49491d9de7010c1f6ed4d86f672f3",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "삼조오천억 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:15",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 15,
+      "written": "₩3500000000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "92fe80f18332fcdfe728445d13bf8b8cd2c0a5eb9697b8f40843bdf553c727ee",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "₩10000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "92fe80f18332fcdfe728445d13bf8b8cd2c0a5eb9697b8f40843bdf553c727ee",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "일만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:19",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 19,
+      "written": "₩10000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ 십오 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "22cf67127c18d52291c01ccd87d1da6f95d60bc4a91c8373c46dc82d1aace3c9",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십오 달러",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "$15"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ 천오백 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c03873803ed63019f8c7ef8d5f913e21aabf3fa564ac63824a7bfaa0716580dc",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "천오백 불",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "$1500"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "$ 백만 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "72401ef3ff8fe07ea6a3433a16d7ed88f0ec694b2dffdcf35059ca1dbfd515ed",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백만 달러",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "$1000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 오십 유로 ",
+        "first_presentation": true,
+        "first_strict": true,
+        "insensitive": true,
+        "offer_signature_sha256": "ab88fdc98695ef95658321527bef580974e95646542e7c0d6e10b512d6f4c60b",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "오십 유로",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:24",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 24,
+      "written": "€50"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "¥ 천 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "96247c91c9de37ad5e356bb1bd79cdbd5cf12ce2c48aba09855d16d1dc848aaf",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "천 엔",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:25",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 25,
+      "written": "¥1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "¥ 만 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "380a6c772c4640e1491f6b13cf6406fb91ca68da12a2c34113528b294e4b1ed0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "만 엔",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:26",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 26,
+      "written": "¥10000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "¥ 이십 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5a0537ee7c3264556e62d75c95363e790fb650515f433e54045afd55316747f0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "이십 위안",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:28",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 28,
+      "written": "¥20"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 구천구백구십구 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d4ce5a4f0da83480e60f7a7d89c436e59725802e2bd807c416e6d247f9900c9d",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "구천구백구십구원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:29",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 29,
+      "written": "₩9999"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 십이만 삼천 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "05d9f0a6dbcd539b47f8bd0cdbc38e8005d78c5b93a0e46aa135a3260ba4265a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "십이만삼천 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:3",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 3,
+      "written": "₩123000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 천백십일 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "fab97f6e69b340bca7f62e4379fc2c8ff31ba922536295d212a6cad27475976a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "천백십일 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:5",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 5,
+      "written": "₩1111"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 육십만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6525764283f1d33f7d65f160a3952639fd1dacd6074528a59cffb03a86e0c180",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "육십만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:6",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 6,
+      "written": "₩600000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 백만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "52086d325cfe217eea8b9aaec970baa2639e447cfb5cfa4894f49ef46cf8939a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "백만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:7",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 7,
+      "written": "₩1000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 삼백오십만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a970701074d2d08c21bea5108ae368ca5c9d3b45a862623999b6cd49fcf63917",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "삼백오십만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:8",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 8,
+      "written": "₩3500000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 천이백만 대한민국 원 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f82a03dad10b0f268c9a40aa357d5bf5b70f0eb0b79a11179175868290993bf4",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "천이백만 원",
+      "id": "ko_KR:ko/data_inverse_text_normalization/test_cases_money.txt:9",
+      "language": "ko",
+      "locale": "ko_KR",
+      "source": "ko/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 9,
+      "written": "₩12000000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " doze vírgula zero cinco Dólares americanos ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "74c67e8966f2b2a99e8080fba4cdd43274b4abe158be5406adbdab98391560ba",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doze dólares americanos e cinco centavos",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:17",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 17,
+      "written": "US$ 12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " dois Libras esterlinas ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "baa9719fedf9b0f8c912c317ad4e86998b17ec4549ac90dcbb9e5172594c6ba4",
+        "presentation": true,
+        "strict": true
+      },
+      "expected_speech": "duas libras esterlinas",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "£ 2"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "pagamos R$  cento e quinze  por uma bala",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "37b8f04f57ecceb0ac818f57c3da4e997ad1b9aad8f476da56189ae16798098a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "pagamos cento e quinze reais por uma bala",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "pagamos R$ 115 por uma bala"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  quinze mil ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5a2a2b4244da226cdb6b502943a78037647fa9f6d70ef9e5371100070b257237",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quinze mil reais",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:21",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 21,
+      "written": "R$ 15000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  dois bilhões ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "eb9859492e23808e3ff13e2628ce10ca0baf38448761450cbda3dceb4751867f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dois bilhões de reais",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "R$ 2 bilhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  dois milhões ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3aad47dfc82f65817d5d0fca2da7857c8281f466e1cd05203009718d1f1d5fda",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dois milhões de reais",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "R$ 2 milhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  três vírgula sete milhões ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "57ee852f1a1fefa6640aae0701c8b4824490b8804ca6b91d97f8568855144c7c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "três vírgula sete milhões de reais",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:24",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 24,
+      "written": "R$ 3,7 milhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " dólar  4.8 milhões",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "539ded7ded874aa7e1cf908dff50a0a22dd45ecc51ff3cf31bf6e902ae30126f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quatro ponto oito milhões de dólares",
+      "id": "pt_BR:pt/data_inverse_text_normalization/test_cases_money.txt:25",
+      "language": "pt",
+      "locale": "pt_BR",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 25,
+      "written": "$ 4.8 milhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " doze vírgula zero cinco dólares dos Estados Unidos ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a77e4b839e46bd95602325344535fd5fa9237679e62508fa1bf8758b16e332bb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "doze dólares americanos e cinco centavos",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:17",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 17,
+      "written": "US$ 12,05"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " dois libras esterlinas britânicas ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6eacb23b37f1178a268b482ce1e378340418a11ca259470a460bafc697eb711f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "duas libras esterlinas",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "£ 2"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "pagamos R$  cento e quinze  por uma bala",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6ae04ba6da9fa1bffe2c9d5dd0eea6c4bc39dbfebf6fd3f592cb023c94eadd94",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "pagamos cento e quinze reais por uma bala",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "pagamos R$ 115 por uma bala"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  quinze mil ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b92dea2b9919cd150ecb190dc712e640f14ba83e3e76fe15aae1caaae8065302",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quinze mil reais",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:21",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 21,
+      "written": "R$ 15000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  dois  bilhões",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e721f2601d3987e4bc61b6133e940467aa4fa30e9c37f0651887077b7dc789f6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dois bilhões de reais",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "R$ 2 bilhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  dois milhões ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2b97eddb28394c71037e9094dcb37aa012dd52b26bf2a6b1a99a1b7c13465e41",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "dois milhões de reais",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "R$ 2 milhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": "R$  três vírgula sete milhões ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "fdd75e3c6dc2d4212ea51b9b29983f7b757c163a20195a012dbd42928106ff90",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "três vírgula sete milhões de reais",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:24",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 24,
+      "written": "R$ 3,7 milhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " dólar  4.8 milhões",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "61a9bd2a3bcce39fe99dbb77df4db1a56a972fe7a9bec14ec889e5dba2d87dba",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "quatro ponto oito milhões de dólares",
+      "id": "pt_PT:pt/data_inverse_text_normalization/test_cases_money.txt:25",
+      "language": "pt",
+      "locale": "pt_PT",
+      "source": "pt/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 25,
+      "written": "$ 4.8 milhões"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "ae0df9ddd02941f07b7470bf47b6122f8017c8703f4bf02bbd4575251d244b03",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:1",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 1,
+      "written": "US$1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一 万 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e6b1207006c6f357fe886c51bc51d74bdea80df8ddc21a3a35190fd9ef1f6a10",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一万元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:10",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 10,
+      "written": "¥1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千〇五 万 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "1e8489ebc9207f8dab5216d5976030bb834a81f60df977f371f8e3bdccb01329",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千五万元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:11",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 11,
+      "written": "¥1005万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十 万 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3eea49814171f2511409eaa0888ed862ef5a889974f028b5e6f4555a733f67b0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五十万元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:12",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 12,
+      "written": "¥50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一百 万 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "56dd451d85f04337526d10d3fead7dd648a2f547ed5779cc7bdb4a945c1b4235",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一百万元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:13",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 13,
+      "written": "¥100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 万 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5556705b077e80efb3fc696be5715c17fb3beea99da4166e3e54208472f495bd",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千万元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:14",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 14,
+      "written": "¥1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "b12ed6d7f7359a370efaa9f0e5e134c944b4d662f5ea9cb1d46dede2ed97ca62",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:15",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 15,
+      "written": "€1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五千 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "240db22e852a1351892421757dec132aef691926170f450dd0c7b5a61344bbae",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五千欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:16",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 16,
+      "written": "€5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一 万 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "504990992fa6942d481b6dede73803c27777b7439cc7773128e76898c17639f8",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一万欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:17",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 17,
+      "written": "€1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一点五 万 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "c91d3c39288a9dd768636975eecf823b3cb4e8305e592b1243d54a763d876bf3",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一点五万欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:18",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 18,
+      "written": "€1.5万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十 万 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "ae6e056b62714d0cda1927a2ef8479d88923aaa0fc460fcd44dedfcdeed65e22",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五十万欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:19",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 19,
+      "written": "€50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五千 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "efeb5e0186f52640279b4e25b80e778738608690dc202c95374a7ed35926f4ee",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五千美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:2",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 2,
+      "written": "US$5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一百 万 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "a88a4d9232f780e61dbbc7d9226461687f56aac4828e6de3b62fe9ba5a50933a",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一百万欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:20",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 20,
+      "written": "€100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 万 欧元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "a5c768384443ce923f556d0c0f8aae50d33a927a31ff096ac611152b547713f8",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千万欧元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:21",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 21,
+      "written": "€1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "21325d726d6f1bb9c98f1d22c99e1354b424f5038558e7b9ca8c0ed8e20ce150",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:22",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 22,
+      "written": "£1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五千 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "9219cac963809b599f7f141fad4a69bceb5f50f53f0eb22380ba43cea74fa980",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五千英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:23",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 23,
+      "written": "£5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一 万 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "c90efc57762ef053f4745e8bcd4ca2fb5bee7157d9ad88ccefb01315d10a3af1",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一万英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:24",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 24,
+      "written": "£1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一点五 万 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "bfc29cb0d9dfc8ae819399b29593e1154a47b0ec955dd4daa88bfc0bf43edb28",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一点五万英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:25",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 25,
+      "written": "£1.5万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十 万 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "5ff49314da057751e7144eb749f0a13c85b9e000388aa9b781a6538c35c39caa",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五十万英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:26",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 26,
+      "written": "£50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一百 万 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "0aeeb85ffb30b9a5b4684622ddf689cf2589606bd3e424a7df836443d4cc9c0d",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一百万英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:27",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 27,
+      "written": "£100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 万 英镑 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "99cb2f32736ce68d9939b1f572bc11375d2af9dca29bb9e289dbdb87df995ed2",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千万英镑",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:28",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 28,
+      "written": "£1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "c26e838d9e9420a6e51ae8e6c99239d1e7bd4b71fa1f085ce35fde9e47f09cf0",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:29",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 29,
+      "written": "₩1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一 万 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "496671b444260b2250cdb4bbce9c2a9d49df9370d2461db50dfdfe28103264b8",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一万美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:3",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 3,
+      "written": "US$1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五千 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "f977ce1e6b25bf07d28db42b45cdb13704f3e8b7dcdf03b7434d77706b00c0f4",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五千韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:30",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 30,
+      "written": "₩5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一 万 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "f934bdfd88d99c6713bc3150f5144dc8309d728280c341d511b240a41f418ac0",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一万韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:31",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 31,
+      "written": "₩1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一点五 万 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "5c0e112794e954cb96c65206febe66ca1ab40513d6d168c298683837e276ae06",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一点五万韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:32",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 32,
+      "written": "₩1.5万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十 万 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "eee2a7280453242f36c2298e133324455f33756334c96d60a6e8372488f9bbf1",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五十万韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:33",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 33,
+      "written": "₩50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一百 万 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "9cdd5c19618385a7cc8a7c07913ae944a285418c89b62e8143a1760767657028",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一百万韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:34",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 34,
+      "written": "₩100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 万 韩元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "b75b9f2d629735cfb4ba2c51ee803a6abeefadc0870ad6feaee2b436a7963b11",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千万韩元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:35",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 35,
+      "written": "₩1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "10be807754915a44fc2aa9108888c8034f09dc1a8e5264530ae4b33828f69299",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:36",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 36,
+      "written": "₹1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五千 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "10b217424c1e821f77f543a758981a1c13d4ba1dd51a1c2eda30c35d85a2c733",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五千印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:37",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 37,
+      "written": "₹5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一 万 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "e7730831f7caf9b70083324f20498ca22f0259ac555e69be2f0c33b85b719d10",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一万印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:38",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 38,
+      "written": "₹1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一点五 万 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7143130956b41cebd13aeaaae05dfdce7d8b2f152e95d322a7021ecffcc72eca",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一点五万印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:39",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 39,
+      "written": "₹1.5万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一点五 万 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "02eedf0643719b05e56284d310e26aedd79029173bef2224f3ca9d199cff92fe",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一点五万美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:4",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 4,
+      "written": "US$1.5万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十 万 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b73cd8738ed92e5fc0f527694c10d2c9595e51a08fb1cc3252e37ae66ec7a2d6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五十万印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:40",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 40,
+      "written": "₹50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一百 万 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "441fec6273a6a2e822a53d0564599cb468b049927b645e257f099e6e0d044e12",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一百万印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:41",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 41,
+      "written": "₹100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 万 印度卢比 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "801d4eedcdfbb4532005c478380869b6fec1c704d99a18ed00365cfb2e62e063",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千万印度卢布",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:42",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 42,
+      "written": "₹1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 一千 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9dbcf6b6892a268c5b697b854991e2132f593f7b2d3c7180c05edd9d7bd02947",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:43",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 43,
+      "written": "JPY¥1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 五千 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6c0ed1b9eb26e26f86e3ad050e08b066ad115797926749ec4a0c09f628fc73bb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五千日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:44",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 44,
+      "written": "JPY¥5000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 一 万 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9eacece941309577532242b028387af18e989a6039619ea05217b71f3772684e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一万日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:45",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 45,
+      "written": "JPY¥1万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 一点五 万 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "dbb676da43e2d973b1ec5c57019345c0bc428604a9c3460423fefc2eee16e22d",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一点五万日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:46",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 46,
+      "written": "JPY¥1.5万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 五十 万 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "993934cc8d1003cdd1a1cfebf37e1f36b8ed9181b0d742fa9c9b818c94a86e93",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五十万日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:47",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 47,
+      "written": "JPY¥50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 一百 万 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ab47c647ee8cfac9827470ae1241bdd1a439085bc6f84ab3c79a534e9c67e9ad",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一百万日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:48",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 48,
+      "written": "JPY¥100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " JPY ¥ 一千 万 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "23420e940f95b3e00912f369ceef0d86014ae7ef94c40921a76901e4562986db",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千万日元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:49",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 49,
+      "written": "JPY¥1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五十 万 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "7896da5bb110e4425a377ab6bbb5928ca51ee8c06e6b3f09636503b8ae2e2b14",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "五十万美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:5",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 5,
+      "written": "US$50万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一百 万 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "1ef243d9609ae8d7283c2a8eac7bc572727983099e17c7002236aa6d7764e34b",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一百万美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:6",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 6,
+      "written": "US$100万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 万 美元 ",
+        "first_presentation": true,
+        "first_strict": false,
+        "insensitive": true,
+        "offer_signature_sha256": "dba3bba1c5416a58d6e7e64812d709f8b4b81f49e36f236fae5c1a398094d10c",
+        "presentation": true,
+        "strict": false
+      },
+      "expected_speech": "一千万美元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:7",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 7,
+      "written": "US$1000万"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 一千 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9636742a72ff3e179c02a2a0c2b43d81e9ffba8c26be3a9858ecfacb85f6608c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "一千元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:8",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 8,
+      "written": "¥1000"
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " 五千 人民币 ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ad75cc78cdd1d2490abf47df5bd37edb40c0a2569f822303324e6931df613322",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech": "五千元",
+      "id": "zh_CN:zh/data_inverse_text_normalization/test_cases_money.txt:9",
+      "language": "zh",
+      "locale": "zh_CN",
+      "source": "zh/data_inverse_text_normalization/test_cases_money.txt",
+      "source_line": 9,
+      "written": "¥5000"
+    }
+  ],
+  "rows_sha256": "8968e48a64a65bd85cdf25d4d431a46f841809ee2245fa3d2f7e505912cbdd75",
+  "schema": 1,
+  "selection": {
+    "candidate_rows": 221,
+    "excluded_occurrences": {
+      "coverage-pair": 45,
+      "coverage-written": 63,
+      "prior-artifact-literal": 8
+    },
+    "selected_by_locale": {
+      "de_DE": 7,
+      "es_ES": 22,
+      "es_MX": 22,
+      "fr_FR": 19,
+      "ko_KR": 23,
+      "pt_BR": 8,
+      "pt_PT": 8,
+      "zh_CN": 49
+    },
+    "selected_rows": 158
+  }
+}
