@@ -105,8 +105,35 @@ def test_prefixed_number_does_not_use_a_shipped_shape(text, monkeypatch):
     assert detector.detect(text)
 
 
-def test_explicit_plus_country_code_is_outside_the_trained_surface_shapes():
-    assert TelephoneDetector("en_US").detect("+1-888-237-2834") == []
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        (
+            "+1-888-237-2834",
+            "plus one sil eight eight eight sil two three seven sil two eight three four",
+        ),
+        ("+1 415 555 2671", "plus one sil four one five sil five five five sil two six seven one"),
+        (
+            "+44 20 7946 0958",
+            "plus four four sil two zero sil seven nine four six sil zero nine five eight",
+        ),
+        ("+49 30 901820", "plus four nine sil three zero sil nine zero one eight two zero"),
+        (
+            "+81 3 1234 5678",
+            "plus eight one sil three sil one two three four sil five six seven eight",
+        ),
+        (
+            "+33 1 42 68 53 00",
+            "plus three three sil one sil four two sil six eight sil five three sil zero zero",
+        ),
+    ],
+)
+def test_explicit_plus_country_code_extends_the_telephone_span(written, spoken):
+    assert _forms(written)[0] == spoken
+
+
+def test_possible_but_invalid_international_number_is_not_telephone():
+    assert TelephoneDetector("en_US").detect("+81 3 0000 0000") == []
 
 
 def test_number_embedded_directly_after_a_digit_is_not_telephone():
