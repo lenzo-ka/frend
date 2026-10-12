@@ -33,7 +33,9 @@ from frend.electronic import ElectronicDetector
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
+    _datetime_formatter,
     _decimal_separator_rules,
+    _measure_template,
     _quarter_names,
     _spellout_rule_sets,
     _weekday_name,
@@ -1152,6 +1154,13 @@ def test_every_icu_weekday_number_and_name_is_spoken():
             _weekday_name(SimpleNamespace(value=bad), "gregorian", "en_US")
 
 
+def test_datetime_formatter_is_reused_without_changing_weekday_output():
+    _datetime_formatter.cache_clear()
+
+    assert _datetime_formatter("en_US", "gregorian") is _datetime_formatter("en_US", "gregorian")
+    assert _weekday_name(SimpleNamespace(value=1), "gregorian", "en_US").text == "Sunday"
+
+
 def test_written_plus_sign_leads_with_plus_and_keeps_the_unsigned_form():
     number = [FlexibleNumberDetector("en_US")]
     (plus,) = [u for u in _units("+5", number) if u.verbalized]
@@ -1702,6 +1711,14 @@ def test_measure_speaks_the_amount_and_icus_wide_unit(written, unit, spoken):
     )
     assert spoken in forms
     assert detection_unit.unspoken == ()
+
+
+def test_measure_template_reuses_the_locale_formatter_without_changing_output():
+    _measure_template.cache_clear()
+
+    assert _measure_template(Decimal(25), "kilogram", "en_US") == "{} kilograms"
+    assert _measure_template(Decimal(25), "kilogram", "en_US") == "{} kilograms"
+    assert _measure_template.cache_info().hits == 1
 
 
 def test_measured_rate_ranks_the_corpus_plural_after_per_first():

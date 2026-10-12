@@ -714,7 +714,7 @@ def test_document_input_is_validated_once(monkeypatch):
     assert len(calls) == 1
 
 
-def test_sentence_range_protection_is_passed_to_one_upstream_segmentation(monkeypatch):
+def test_sentence_range_protection_is_passed_to_one_upstream_span_pass(monkeypatch):
     import importlib
 
     normalize_module = importlib.import_module("frend.normalize")
@@ -724,12 +724,9 @@ def test_sentence_range_protection_is_passed_to_one_upstream_segmentation(monkey
         def __init__(self, locale, **kwargs):
             calls.append((locale, kwargs))
 
-        def segmentations(self, text, *, protected):
+        def spans(self, text, *, protected):
             calls.append((text, tuple(protected)))
-            return {
-                "spans": [{"text": text, "start": 0, "end": len(text)}],
-                "boundaries": [],
-            }
+            return [{"text": text, "start": 0, "end": len(text)}]
 
     normalize_module._sentence_override.cache_clear()
     monkeypatch.setattr(normalize_module, "SentenceOverride", Override)
@@ -755,6 +752,18 @@ def test_sentence_range_protection_is_passed_to_one_upstream_segmentation(monkey
         )
     finally:
         normalize_module._sentence_override.cache_clear()
+
+
+def test_normalize_skips_public_detection_snapshot_for_fresh_private_detections(monkeypatch):
+    import frend.lattice as lattice_module
+
+    def unexpected_snapshot(_detection):
+        raise AssertionError("normalize must not snapshot its private detections")
+
+    monkeypatch.setattr(lattice_module, "_snapshot", unexpected_snapshot)
+    monkeypatch.setattr(lattice_module, "_snapshot_spelled_token", unexpected_snapshot)
+
+    assert frend.normalize("The total is 25 kg.") == " the   total   is   twenty-five kilograms "
 
 
 def test_text_mode_skips_offset_record_construction(monkeypatch):

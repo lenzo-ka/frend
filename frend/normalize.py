@@ -43,9 +43,9 @@ from frend.input_limits import (
 from frend.lattice import ReadingEdge, _resolve_lattice_validated
 from frend.letters import (
     HyphenatedSerialDetector,
-    LettersDetector,
     _dotted_acronym_suffix_spans,
     _dotted_plural_acronym_period_spans,
+    _letters_detector,
     _uppercase_abbreviation_period_spans,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale
@@ -282,7 +282,7 @@ def _reading_detectors(
         (
             AbbreviationDetector(locale),
             HyphenatedSerialDetector(locale),
-            LettersDetector(locale),
+            _letters_detector(locale),
             AbbreviationVariantDetector(locale),
         )
     )
@@ -345,14 +345,14 @@ def _sentence_ranges(
     reflow: ReflowMode = "none",
 ) -> list[tuple[int, int]]:
     """Return nonempty sentence ranges from one attributed icukit segmentation."""
-    segmentation = _sentence_override(
+    spans = _sentence_override(
         locale,
         sentence_base,
         max_sentence_chars,
         reflow,
-    ).segmentations(text, protected=_protected_sentence_spans(text, locale))
+    ).spans(text, protected=_protected_sentence_spans(text, locale))
     ranges: list[tuple[int, int]] = []
-    for span in segmentation["spans"]:
+    for span in spans:
         surface = span["text"]
         if not surface.strip():
             continue
@@ -481,6 +481,7 @@ def _sentence(
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
         work_budget=work_budget,
+        snapshot_detections=False,
     )
     edges = {edge.id: edge for edge in lattice.edges} if offsets else None
     verbalized = _verbalize_lattice_validated(

@@ -138,6 +138,24 @@ def test_cldr_named_digit_like_symbols_are_read_but_decimal_digits_are_not(text,
         assert SymbolDetector().detect(decimal_digit) == []
 
 
+def test_symbol_detector_reuses_one_grapheme_pass(monkeypatch):
+    import frend.symbols as symbols_module
+
+    calls = []
+    original = symbols_module._GRAPHEME_BREAKER.break_grapheme_spans
+
+    def counted(text):
+        calls.append(text)
+        return original(text)
+
+    monkeypatch.setattr(symbols_module._GRAPHEME_BREAKER, "break_grapheme_spans", counted)
+
+    detections = SymbolDetector().detect("alpha **** beta")
+
+    assert calls == ["alpha **** beta"]
+    assert any(item["type"] == "symbol:run" for item in detections)
+
+
 @pytest.mark.parametrize(
     ("text", "spoken"),
     [("x¹", "superscript one"), ("x²", "superscript two")],

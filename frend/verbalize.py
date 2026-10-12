@@ -18,9 +18,9 @@ from pathlib import Path
 from types import MappingProxyType
 
 import icu
-from icukit import AbbreviationValue, DateTimeFormatter, break_grapheme_spans
+from icukit import AbbreviationValue, Breaker, DateTimeFormatter
 from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
-from icukit.measure import WIDTH_WIDE, format_measure
+from icukit.measure import WIDTH_WIDE, MeasureFormatter
 
 from frend.abbreviation_variants import (
     AS_WRITTEN_SOURCE,
@@ -125,6 +125,7 @@ __all__ = [
 LEXICAL_SOURCE = "lexical:en_US"
 _DATE_MONTH_FIRST_KEYS = ("Mdy", "Md")
 _PLURAL_ONE = "one"
+_GRAPHEME_BREAKER = Breaker("root")
 
 
 def lexical_source(locale: str) -> str:
@@ -1047,10 +1048,16 @@ def _spoken_money(value: Decimal, currency: str, locale: str) -> tuple[SpokenAlt
     return _ranked(alternatives)
 
 
+@lru_cache(maxsize=LOCALE_CACHE * 4)
+def _datetime_formatter(locale: str, calendar: str | None) -> DateTimeFormatter:
+    """Retain icukit's formatter and its per-pattern ICU formatter cache."""
+    return DateTimeFormatter(locale, calendar=calendar)
+
+
 def _month_name(month: int, calendar: str, locale: str) -> SpokenAlternative:
     if not 1 <= month <= 12:
         raise ValueError(f"invalid month {month!r}")
-    text = DateTimeFormatter(locale, calendar=calendar).format(date(2000, month, 1), pattern="LLLL")
+    text = _datetime_formatter(locale, calendar).format(date(2000, month, 1), pattern="LLLL")
     return SpokenAlternative(text, "icu-datetime:LLLL")
 
 
@@ -1905,7 +1912,7 @@ _ICU_FIRST_WEEKDAY = date(2000, 1, 2)
 
 def _weekday_name(capture: object, calendar: str, locale: str) -> SpokenAlternative:
     """Speak a weekday capture, which icukit encodes as ICU's number or as a name."""
-    formatter = DateTimeFormatter(locale, calendar=calendar)
+    formatter = _datetime_formatter(locale, calendar)
     names = [
         formatter.format(_ICU_FIRST_WEEKDAY + timedelta(days=offset), pattern="EEEE")
         for offset in range(7)
@@ -2018,7 +2025,7 @@ def _quarter_names(quarter: int, calendar: str, locale: str) -> tuple[SpokenAlte
     "first quarter"), and the short name spelled ("Q1" -> "q one")."""
     if not 1 <= quarter <= 4:
         raise ValueError(f"invalid quarter {quarter!r}")
-    formatter = DateTimeFormatter(locale, calendar=calendar)
+    formatter = _datetime_formatter(locale, calendar)
     day = date(2000, 3 * quarter - 2, 1)
     wide = formatter.format(day, pattern="QQQQ")
     short = formatter.format(day, pattern="QQQ")
@@ -2502,6 +2509,7 @@ def _number_precedes_detached_prime(
     return re.match(r"[ \t]+′", after) is not None
 
 
+@lru_cache(maxsize=4096)
 def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     """ICU's wide measure form for an amount, with ICU's own formatted number cut out.
 
@@ -2510,11 +2518,22 @@ def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     states it. Nothing about the unit is written here.
     """
     number = float(amount)
-    formatted = format_measure(number, unit, locale, WIDTH_WIDE)
-    written = icu.NumberFormat.createInstance(icu.Locale(locale)).format(number)
+    formatted = _measure_api(locale).format(number, unit)
+    written = _number_formatter(locale).format(number)
     if formatted.count(written) != 1:
         raise NotImplementedError(f"cannot locate the amount in {formatted!r}")
     return formatted.replace(written, "{}", 1)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _measure_api(locale: str) -> MeasureFormatter:
+    """Retain icukit's formatter and its ICU formatter cache per locale."""
+    return MeasureFormatter(locale, WIDTH_WIDE)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _number_formatter(locale: str) -> icu.NumberFormat:
+    return icu.NumberFormat.createInstance(icu.Locale(locale))
 
 
 def _spoken_measure(
@@ -3530,7 +3549,9 @@ def _char_detail(
 ) -> tuple[SpokenAlternative, ...]:
     """Render named and spelled slots from one unit's raw graphemes."""
     graphemes = [
-        span["text"] for span in break_grapheme_spans(surface, "root") if not span["text"].isspace()
+        span["text"]
+        for span in _GRAPHEME_BREAKER.break_grapheme_spans(surface)
+        if not span["text"].isspace()
     ]
 
     def kind(grapheme: str) -> str:

@@ -330,7 +330,7 @@ def letter_names(letters: str, locale: str) -> LetterNames | None:
     if not units:
         return None
     canonical = canonical_locale(locale)
-    detector = LetterNameDetector(canonical)
+    detector = _letter_name_detector(canonical)
     # icukit's English inventory is authoritative for the locale.  Its detector is
     # intentionally ASCII-only, while frend's established English run spelling also
     # covers same-script accented and non-Latin capitals.  Preserve that evaluator
@@ -443,6 +443,16 @@ def _roman_reader(locale: str):
     return FlexibleNumberDetector(locale)
 
 
+@lru_cache(maxsize=LOCALE_CACHE)
+def _letter_name_detector(locale: str) -> LetterNameDetector:
+    return LetterNameDetector(locale)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _letters_detector(locale: str) -> LettersDetector:
+    return LettersDetector(locale)
+
+
 def is_roman(surface: str, locale: str = "en_US") -> bool:
     """Whether icukit reads the whole surface as a Roman numeral ("II", "CD", not "ATM")."""
     return any(
@@ -501,7 +511,7 @@ def _uppercase_abbreviation_period_spans(
 ) -> tuple[tuple[int, int], ...]:
     """Spans that keep a consumed uppercase abbreviation period with its next word."""
     spans = []
-    for detection in LettersDetector(locale).detect(text):
+    for detection in _letters_detector(locale).detect(text):
         if detection["type"] != "letters:run" or not detection["text"].endswith("."):
             continue
         next_word = detection["end"]
