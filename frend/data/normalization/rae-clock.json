@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed https://r.jina.ai/http://www.rae.es/dpd/hora (plain rae.es fetch is not reproducible in the build environment)",
+  "fetched_at": "2026-10-11T02:39:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.rae.es/dpd/hora",
+  "revision": "Diccionario panhispanico de dudas, 2nd ed., hora sections 2.1-3",
+  "sha256": "17902e3c91e2c69acc5789a2f8c6fb621b73cb57ca43d9e7fcd023564e320489",
+  "source": "rae/dpd-2",
+  "transform_command": "manual transcription of the cited spoken clock constructions"
+}

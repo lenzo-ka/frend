@@ -8,6 +8,9 @@ import json
 import os
 import subprocess
 import sys
+from dataclasses import fields as dataclass_fields
+from dataclasses import is_dataclass
+from decimal import Decimal
 from pathlib import Path
 
 from icukit.detectors import detect
@@ -16,6 +19,33 @@ from frend import compose_choices, normalize, resolve_choices
 from frend.normalize import _reading_detectors, _sentence_ranges
 
 SHARDS = tuple(f"output-{number:05d}-of-00100" for number in range(90, 95))
+
+
+def _identity_value(value: object) -> object:
+    """Return a stable JSON identity for typed detector values and captures."""
+    if value is None or isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, (float, Decimal)):
+        return {"type": type(value).__qualname__, "value": str(value)}
+    if isinstance(value, dict):
+        return {str(key): _identity_value(item) for key, item in sorted(value.items())}
+    if is_dataclass(value) and not isinstance(value, type):
+        return {
+            "type": f"{type(value).__module__}.{type(value).__qualname__}",
+            "fields": {
+                field.name: _identity_value(getattr(value, field.name))
+                for field in dataclass_fields(value)
+            },
+        }
+    if isinstance(value, (list, tuple)):
+        fields = getattr(value, "_fields", None)
+        if fields is not None:
+            return {
+                "type": f"{type(value).__module__}.{type(value).__qualname__}",
+                "fields": {name: _identity_value(getattr(value, name)) for name in fields},
+            }
+        return [_identity_value(item) for item in value]
+    raise TypeError(f"unsupported detector identity value {type(value).__qualname__}")
 
 
 def _graph_signature(text: str, locale: str) -> list[dict]:
@@ -29,6 +59,14 @@ def _graph_signature(text: str, locale: str) -> list[dict]:
                 "span": [edge.start, edge.end],
                 "kind": edge.kind,
                 "type": None if edge.detection is None else edge.detection.get("type"),
+                "value": (
+                    None if edge.detection is None else _identity_value(edge.detection.get("value"))
+                ),
+                "captures": (
+                    []
+                    if edge.detection is None
+                    else [_identity_value(item) for item in edge.detection.get("captures", ())]
+                ),
                 "alternatives": [
                     {
                         "text": item.text,
@@ -46,6 +84,8 @@ def _graph_signature(text: str, locale: str) -> list[dict]:
 def _candidate_type(type_name: str, family: str) -> bool:
     if family == "date":
         return type_name.startswith("date:")
+    if family == "time":
+        return type_name.startswith("time:") or type_name.startswith("date:")
     return (
         type_name.startswith("fraction:")
         or type_name.startswith("number:fraction")
@@ -113,6 +153,27 @@ def _rows(corpus_dir: Path, sentence_cap: int | None, shards: tuple[str, ...] = 
                 yield shard, line_number, written
 
 
+def _sentences(corpus_dir: Path, sentence_cap: int | None, shards: tuple[str, ...] = SHARDS):
+    """Reconstruct corpus sentences with the evaluator's deterministic one-space join."""
+    for shard in shards:
+        path = corpus_dir / shard
+        sentence_number = 0
+        tokens: list[str] = []
+        with path.open(encoding="utf-8") as handle:
+            for line in handle:
+                columns = line.rstrip("\n").split("\t")
+                if columns[0] == "<eos>":
+                    if tokens:
+                        sentence_number += 1
+                        yield shard, sentence_number, " ".join(tokens)
+                        tokens.clear()
+                        if sentence_cap is not None and sentence_number >= sentence_cap:
+                            break
+                    continue
+                if len(columns) >= 3:
+                    tokens.append(columns[1])
+
+
 def _signature_digest(signature: dict) -> str:
     payload = json.dumps(
         signature, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -129,25 +190,42 @@ def _child(
 ) -> int:
     if shard is not None and shard not in SHARDS:
         raise ValueError(f"refusing non-development shard {shard!r}")
-    cases = {}
-    scanned = 0
+    token_cases = {}
+    sentence_cases = {}
+    scanned_tokens = 0
+    scanned_sentences = 0
     selected_shards = SHARDS if shard is None else (shard,)
     for shard_name, line_number, written in _rows(corpus_dir, sentence_cap, selected_shards):
-        scanned += 1
+        scanned_tokens += 1
         found, signature = _offer_signature(written, "en_US", family)
         if not found:
             continue
         identifier = hashlib.sha256(f"{shard_name}:{line_number}:{written}".encode()).hexdigest()
-        cases[identifier] = _signature_digest(signature)
+        token_cases[identifier] = _signature_digest(signature)
+    for shard_name, sentence_number, written in _sentences(
+        corpus_dir, sentence_cap, selected_shards
+    ):
+        scanned_sentences += 1
+        found, signature = _offer_signature(written, "en_US", family)
+        if not found:
+            continue
+        identifier = hashlib.sha256(
+            f"sentence:{shard_name}:{sentence_number}:{written}".encode()
+        ).hexdigest()
+        sentence_cases[identifier] = _signature_digest(signature)
     out.write_text(
         json.dumps(
             {
-                "schema": 1,
+                "schema": 2,
                 "family": family,
                 "shards": list(selected_shards),
-                "scanned": scanned,
+                "scanned": scanned_tokens,
+                "scanned_tokens": scanned_tokens,
+                "scanned_sentences": scanned_sentences,
                 "signature_encoding": "sha256-canonical-json",
-                "cases": cases,
+                "cases": token_cases,
+                "token_cases": token_cases,
+                "sentence_cases": sentence_cases,
             },
             sort_keys=True,
         )
@@ -198,8 +276,8 @@ def compare(
                 raise subprocess.CalledProcessError(process.returncode, process.args)
 
     scanned = {"base": 0, "head": 0}
-    candidate_union = 0
-    changed = []
+    candidate_union = {"tokens": 0, "sentences": 0}
+    changed = {"tokens": [], "sentences": []}
     for shard in SHARDS:
         documents = {
             side: json.loads(destinations[side][shard].read_text(encoding="utf-8"))
@@ -207,23 +285,24 @@ def compare(
         }
         for side in scanned:
             scanned[side] += documents[side]["scanned"]
-        base_cases = documents["base"]["cases"]
-        head_cases = documents["head"]["cases"]
-        identifiers = sorted(set(base_cases) | set(head_cases))
-        candidate_union += len(identifiers)
-        changed.extend(
-            identifier
-            for identifier in identifiers
-            if base_cases.get(identifier) != head_cases.get(identifier)
-        )
+        for label, key in (("tokens", "token_cases"), ("sentences", "sentence_cases")):
+            base_cases = documents["base"][key]
+            head_cases = documents["head"][key]
+            identifiers = sorted(set(base_cases) | set(head_cases))
+            candidate_union[label] += len(identifiers)
+            changed[label].extend(
+                identifier
+                for identifier in identifiers
+                if base_cases.get(identifier) != head_cases.get(identifier)
+            )
     report = {
-        "schema": 1,
+        "schema": 2,
         "family": family,
         "scanned": scanned,
         "candidate_union": candidate_union,
         "signature_encoding": "sha256-canonical-json",
         "changed": changed,
-        "empty_diff": not changed,
+        "empty_diff": not changed["tokens"] and not changed["sentences"],
     }
     (out_dir / "diff.json").write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -233,7 +312,7 @@ def compare(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--family", choices=("date", "fraction"), default="date")
+    parser.add_argument("--family", choices=("date", "fraction", "time"), default="date")
     parser.add_argument("--base-repo", type=Path)
     parser.add_argument("--head-repo", type=Path)
     parser.add_argument("--corpus-dir", type=Path, required=True)

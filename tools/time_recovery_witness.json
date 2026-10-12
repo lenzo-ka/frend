@@ -1,0 +1,971 @@
+{
+  "schema": 1,
+  "base": "2bec3140cfe8b535700b3e758c0b1d5d1953e947",
+  "icu_version": "78.3",
+  "population": "unseen NeMo inverse-TN time rows; fixture offer-check only",
+  "counts": {
+    "de_DE": 3,
+    "es_ES": 28,
+    "es_MX": 28,
+    "fr_FR": 9,
+    "ko_KR": 12,
+    "pt_BR": 15,
+    "pt_PT": 15,
+    "zh_CN": 9
+  },
+  "rows": [
+    {
+      "id": "1cbbc27596d5b22cb2e54f29685c7884acabcf6f60de69b7d556835cf6756959",
+      "locale": "de_DE",
+      "source_locator": "nemo-inverse-time:de:test_cases_time.txt:20",
+      "base_signature_sha256": "93d66fe21afa6bc544d70ba3d57cf5bf5fea3e36e9f2dd65024b5c67248b09f1",
+      "expected_speech_sha256": "f9e85e235e2b298a86bacf779d3fbb1336157e3b07c1af6381be1350149b208a",
+      "source_record_id": "time-composition-de_DE"
+    },
+    {
+      "id": "5842f13c819b62da52cb2709f9b0355e6f196be5b6f203ae91e81575cc315f59",
+      "locale": "de_DE",
+      "source_locator": "nemo-inverse-time:de:test_cases_time.txt:15",
+      "base_signature_sha256": "aad8daf0a7a64c88ad68e28faa7d8565d6b4de10b21c6d1f54ca4a48b82cb5d5",
+      "expected_speech_sha256": "c902256781f98bca25edf86d5e548caf1664f3d3b5ca34b53f2d4b0bd190d7d2",
+      "source_record_id": "time-composition-de_DE"
+    },
+    {
+      "id": "7601ad577c3544aaee88a7775fb4103022afa9897b82d37fda7d08fabcf971c6",
+      "locale": "de_DE",
+      "source_locator": "nemo-inverse-time:de:test_cases_time.txt:14",
+      "base_signature_sha256": "aad8daf0a7a64c88ad68e28faa7d8565d6b4de10b21c6d1f54ca4a48b82cb5d5",
+      "expected_speech_sha256": "fdd11d516ba9e81d61a5328c8cd862dea9e0e91787d2ba2e4bbfcda3b69f1896",
+      "source_record_id": "time-composition-de_DE"
+    },
+    {
+      "id": "0728f8bad5cc2aa251f91efbf7a7bd1d2167c51f229de44f1e2305b4131d2aa6",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:17",
+      "base_signature_sha256": "347ebaf4706219381a890b5142678eb29ca2821c31fa85d6c7b12faa3c6925f1",
+      "expected_speech_sha256": "dc9e4c35d73119158e8f0fb0f6536867e11c52d43b18c5440094645f6710cab7",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "24547f92752d08c66116dbd3aeb05b9e7cb0f656e7d0336401651bf414128123",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:9",
+      "base_signature_sha256": "e5cf1512cd23cd251635137cfe62ba9445be77a2f79505d07437e3566c09fea4",
+      "expected_speech_sha256": "687af7684afc3f5e79b5a01b0172992e0dcc5e5d22e531125b6884db2f237981",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "3974f2a7fe54bb3eda27c3e3c9d0faeea34c7385cfd049a5f59b588decec958d",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:12",
+      "base_signature_sha256": "e0736d13ed0a7f90d99a60aabfdf7ad1deb694da8a64991dddee3ee57df84dd4",
+      "expected_speech_sha256": "9218fc02854dba283d667debf3d27c3965daf0675d34543e2d4f4f6534083782",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "405a8c5e22f4d784e0dbca8187a52173b1633f691c3114e273add291196cdca8",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:25",
+      "base_signature_sha256": "3c554da9708d6b35a2076a6a66b81ce616b446685d54c9a3e99aad8a7e925711",
+      "expected_speech_sha256": "d290df5d84013cbc3232b058f4c3b6cc94977154453dbd4f9c45ad9218103279",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "4fcdc3c52e1a3ec5a659b7bee700539309337146d18cc17b20629171faa3b6c0",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:16",
+      "base_signature_sha256": "347ebaf4706219381a890b5142678eb29ca2821c31fa85d6c7b12faa3c6925f1",
+      "expected_speech_sha256": "ca5de946ddf63d7707824c399999d0fc2fefdb14cfa0eaa5fa9ba3ad6c3bbb35",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "59c4aeb02538e8a1c52fb44bd0d6799e6ecea31091d25c3942ebac7af86d33d8",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:14",
+      "base_signature_sha256": "12e5fa2bc92d6af6fa7c7fd385d961317c774953ee1ae00ee91807e29c5d251c",
+      "expected_speech_sha256": "2b650da7e48f11b865d630b7ea20218405cccebf5f8f3294eeeab2b873535bce",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "5d48daf5fc1afe63e33e253c53ffcbf97afab08bc54018ea245014664e174b3b",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:18",
+      "base_signature_sha256": "42f3442c7fdd56b888f2790a67986c6ab8d0751535517ad51be5028c3bf7ed0a",
+      "expected_speech_sha256": "f66b5597c7a189701c45fb621ee6b20e9ec300e798b964f420730ab2b64e6f8f",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "62e1e3def9a097fb41f25893fdf18909539c57d339c9277963992aeb670820c8",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:10",
+      "base_signature_sha256": "cec0677e5ba42e6b26f6c795bb52d1d67cb1614afec681b1c18a3cebde561586",
+      "expected_speech_sha256": "3a8d8a967612aebfb89215a1ccd0c9e3dd873b683f139d1c6a4b428764de1af7",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "68449d76365ccba13427288da90e31cd7927dbe85cc52382b4d8dd4fb4c4a854",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:24",
+      "base_signature_sha256": "40db46397a6d02f68ca9b9863e74d7fbe354c485486472844b659c600d914bd9",
+      "expected_speech_sha256": "6ff3986da9fcbcec9004bd97ee2436e81693837376bab70a8a580e72a12824f4",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "69d2f7cfd57408d0637cbbc9a1aa318f56dc32aafc6f4dc5cef06f15f7a19a75",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:8",
+      "base_signature_sha256": "00998709dcf22566441843c2d3ce6c64ea7b06f06683e0c40616d8d657f4e07c",
+      "expected_speech_sha256": "aa974cd1739cef70dc95a7115847212b8b25246136267fa0036effe4fe403ace",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "72c679f1db9b72bff4d06e932f650cde6baecc1550c016d7b27dcfcc147ccff2",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:5",
+      "base_signature_sha256": "f8ca3678209eea5d6f01460a2d1bb4a6cb3fc683bc91b5693b23502759fbe133",
+      "expected_speech_sha256": "924b5f54af189c6c6d642bb9c21eb5399808ca3dd4977a708773301a457e67a7",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "79fe4cacc8df91703d7c92c2181cee1dd2f08f181c6daf1fbc1823353d231a50",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:8",
+      "base_signature_sha256": "00998709dcf22566441843c2d3ce6c64ea7b06f06683e0c40616d8d657f4e07c",
+      "expected_speech_sha256": "31695676b1b5dead7fb9bfe82d0ecd79fc89d0299c8fd24a045310ce576bcc3b",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "7a9e62cff4422e3183bd0d390e595528f087f45d68c2698ff601053dea276280",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:23",
+      "base_signature_sha256": "47d7c881a49a170a699992aab7bb7c0c326d69e10fd2bfbe0ffa2b502d7b9996",
+      "expected_speech_sha256": "b7a4ae5b41b05f94195af471e162e8a7feb2f8bf41659e4a8eff66c2f64050f2",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "826cdf1e4166b8e56a02358616791ac122de0c4e35b40ae707b66ecb67735741",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:13",
+      "base_signature_sha256": "5cbb5091bc2ec293d9f2b09272c534f7f68b8b5268f3a9d699647bdaedcc0864",
+      "expected_speech_sha256": "fa8e3c8a2c7b50d6f5ef43aaef3af9993aa1b5822eace142bb011b2793be12b2",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "95a77aca603f81749881214b447ea0ef4817266d98426500ac70b7bf9856eb48",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:22",
+      "base_signature_sha256": "ed5a508d9ec3bd56011458e28ae625f119d6673c91283e1678e42f3637401106",
+      "expected_speech_sha256": "2ab0a54c0b6d8fc1fb808309ffffc91dd864f3df38d22f6b2996190792402510",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "9febf1749cc65b78a3dbd1e41866178e585650230d0c957d79bef9cf85a8ebcb",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:15",
+      "base_signature_sha256": "347ebaf4706219381a890b5142678eb29ca2821c31fa85d6c7b12faa3c6925f1",
+      "expected_speech_sha256": "3675e2dfb39ed4433d89e61163c79335d71eda03b0e561aed52f93496b927b05",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "a4cf89c4797aa5b6a181b5e28f1c7eb97d8e8e11a4d7be78aeecd3a4e348bfde",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:21",
+      "base_signature_sha256": "ed5a508d9ec3bd56011458e28ae625f119d6673c91283e1678e42f3637401106",
+      "expected_speech_sha256": "6f43d017ff06ace270489f0a865d846a858bf6a49db0916f774fe59839bad8e1",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "add5fc8caaada8f27e84b50e064fb88dcd1fe268d6c8a059846de3821836ee3e",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:9",
+      "base_signature_sha256": "7975ca6eb01437420fe99ac33290d40d403a44faa0e009f978333d38fdc01191",
+      "expected_speech_sha256": "9a871b9383ea96dac5348c9500a5d32446a7c6b6de18019429478e7247dffb52",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "ae67b22c400d0380f771fc863b51760f10013d11229ee2fd62f02a458f1429db",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:1",
+      "base_signature_sha256": "395be0ba78f4cd3e3583d86865ff882614b7b129b34d266e976037eacf573050",
+      "expected_speech_sha256": "8851800d5272386cf69cebacdaafddcc093f642d2f81c72bf5cdd4d6f9150b3e",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "b436017b1d6859fa6b093a2a0d7c445eae2b80887d112cbaaacb4836198ab271",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:7",
+      "base_signature_sha256": "357a1eea0d610e8a8acc7e55fb717c010c1a6b9ec83753e85cf2748b0688db8f",
+      "expected_speech_sha256": "d159393fcccd189d406aaf5e343a22fefc927b752a3d0020faa114a5a7dd1283",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "bae3d2f3b21b2ce575d58c5f1f6e4157317ba830037d4dd1a6d8d0043ae3ce93",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:7",
+      "base_signature_sha256": "357a1eea0d610e8a8acc7e55fb717c010c1a6b9ec83753e85cf2748b0688db8f",
+      "expected_speech_sha256": "d159393fcccd189d406aaf5e343a22fefc927b752a3d0020faa114a5a7dd1283",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "c70e276720e6e05ab60569faf4f9c64a39aa39632eccc666040d0f0d4892563e",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:11",
+      "base_signature_sha256": "357a1eea0d610e8a8acc7e55fb717c010c1a6b9ec83753e85cf2748b0688db8f",
+      "expected_speech_sha256": "06c30007def3c144f0b147a4f8f137bccb0dcac65057279d555557f408b94b48",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "d939c48f8dca436427d10d08d00f057f3e13b801c1db623c8c709ba7a424215c",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:5",
+      "base_signature_sha256": "c8fd15c5a0256f469180e8ffacdf12429ca7b42851f47b5c52ec5e749a6841d9",
+      "expected_speech_sha256": "d8e0beebf34480f1664fc1fc1bd3b1524d47adbff55693f9ef325b3588976a2a",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "e7800e2b9cbeca1da4cdb87c2b74b8102215e5d120b346805606c92a03df1928",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:1",
+      "base_signature_sha256": "395be0ba78f4cd3e3583d86865ff882614b7b129b34d266e976037eacf573050",
+      "expected_speech_sha256": "8851800d5272386cf69cebacdaafddcc093f642d2f81c72bf5cdd4d6f9150b3e",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "ed331311151b8d009725c2c3675d616b0962c0fe6309a8e5c1a66d4e5362bd67",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:20",
+      "base_signature_sha256": "de6344c490b20b0b5c1649cd4c237b986cffef9629ff01d8ec8c0269e7d5062a",
+      "expected_speech_sha256": "8aae4976c858957c80098d151e3629a094a87aae5ef3ea62b8e1abd2a61dcc82",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "ee7f22f1be355fedfa45382448f9d733aceabf4173be6f283f24c1900082cc08",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:6",
+      "base_signature_sha256": "58161bcb2b52d5f841a58a496a26daced31c5f1555338b26795ee84e22fb8f55",
+      "expected_speech_sha256": "d2617ac5e92779ff545bd07d6f1df353b2190579338d4609188160f92c36ebc1",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "f9b0e4b2a70df60c8fae7dcd671a0b914a5d80cee08dace0d879480130f2fd63",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:19",
+      "base_signature_sha256": "754658d2a1015f7bc8459084efc1539dca363631ce256a462d8afc2bc8109fc6",
+      "expected_speech_sha256": "c2bb0b0f41d8d3d264dd2b16d835d2b64f2d2b7a86e4135ea7c9b6cfe5297244",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "ff82259dd900af48ae41c9cb82c1c585e01684d4f6144078c4ec1d05f9f57f13",
+      "locale": "es_ES",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:6",
+      "base_signature_sha256": "180574fcfd098719b80caa95298691567297c828e347ec8fa917ca39141a9808",
+      "expected_speech_sha256": "460e328ac3a6c435b3147fb251098a297907e317b62ed75ca53336812215d62f",
+      "source_record_id": "time-composition-es_ES"
+    },
+    {
+      "id": "01231f0d168bccf4b58364a077c495dc6d079b0e9499367662693c14396645bb",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:25",
+      "base_signature_sha256": "6271a239a32083fcd1133f62bc10166e4875716a52b52a2039989bb9d3589d9e",
+      "expected_speech_sha256": "d290df5d84013cbc3232b058f4c3b6cc94977154453dbd4f9c45ad9218103279",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "03eea05f5d42d844d683d70843d7ec7ce2b73ef670ce6f1aad3676af497dc865",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:12",
+      "base_signature_sha256": "c4ea4a9c4828102a1794d4277725eaba6eef2d45bba5620fbdd2a3fbcafd16aa",
+      "expected_speech_sha256": "9218fc02854dba283d667debf3d27c3965daf0675d34543e2d4f4f6534083782",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "0a733691ecf6cf8b7416953ab42db02a33f7733b64fcff7aa4398c50db827709",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:20",
+      "base_signature_sha256": "0fc220f3efc161eba6ac830e25e1a7229b3f1c057c8529ee0149abaa3a118d19",
+      "expected_speech_sha256": "8aae4976c858957c80098d151e3629a094a87aae5ef3ea62b8e1abd2a61dcc82",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "128d2a3361361397e75df5ef24d855a2e1b698cc4ffaf4a88d2c3d444f422281",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:24",
+      "base_signature_sha256": "416a347f043f26388250d27da68f235d00b1d7439308c6a1d39c31a5fef14901",
+      "expected_speech_sha256": "6ff3986da9fcbcec9004bd97ee2436e81693837376bab70a8a580e72a12824f4",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "1b6c5ffa7990dc3f7d95bc9a728afba066330776118d8bf2dc8f6051653fc84f",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:8",
+      "base_signature_sha256": "05e96bc52d4c850498968d428339c740c9d96edbb30cd9be7b0d7cc04b497c95",
+      "expected_speech_sha256": "31695676b1b5dead7fb9bfe82d0ecd79fc89d0299c8fd24a045310ce576bcc3b",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "1eaa49e0e64a7349d7e270dcf7babbabec8c8e503f93554442e25e50861cd590",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:5",
+      "base_signature_sha256": "550233a64056a3e92752da8535ec45ac97da48a696d3399ce58639f0b94076fa",
+      "expected_speech_sha256": "d8e0beebf34480f1664fc1fc1bd3b1524d47adbff55693f9ef325b3588976a2a",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "237fba7d7ef952e881c8281ab0c0e0e5349b6559318f38ed31703deeecd3dd68",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:10",
+      "base_signature_sha256": "0836e905298ba8179f8a71cc94c7524174e16633f4dc4cf0f2cd9ba7246cdf9f",
+      "expected_speech_sha256": "3a8d8a967612aebfb89215a1ccd0c9e3dd873b683f139d1c6a4b428764de1af7",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "29ea6263e755396055c98c46f4423aef065a531ce63eec913abcf818c929bad6",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:1",
+      "base_signature_sha256": "0c314d390ad41f6144a502f6488a9bfbf29d9d42c473b6829b9a727bb47da410",
+      "expected_speech_sha256": "8851800d5272386cf69cebacdaafddcc093f642d2f81c72bf5cdd4d6f9150b3e",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "2cdbdf538b431746ab725579f5145d3f3629861554c26843fc9b2ee9318724a8",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:23",
+      "base_signature_sha256": "46e57e6389b082cdde24712df8e24811b505bbe30652dbd76d1d2e41c646b5e9",
+      "expected_speech_sha256": "b7a4ae5b41b05f94195af471e162e8a7feb2f8bf41659e4a8eff66c2f64050f2",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "341153e15c0b6add1ed042dad6ff6e927394397938b5bf3446daafba70a7b975",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:17",
+      "base_signature_sha256": "6a9af5e1d5e5cac6631968d85015c9e13e9ad23c91f6625367de72502a1beea8",
+      "expected_speech_sha256": "dc9e4c35d73119158e8f0fb0f6536867e11c52d43b18c5440094645f6710cab7",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "45f131cdfbd81e9cf8f25aa5b68fcbb1bb418dc50b557a456d450737d5ad93e4",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:9",
+      "base_signature_sha256": "90a6d8d81bb19d17e414ca4ab6b4e77b68e5b8e1dd35e2c295b3f591fff1f950",
+      "expected_speech_sha256": "9a871b9383ea96dac5348c9500a5d32446a7c6b6de18019429478e7247dffb52",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "822979a85cd15f43fb5f4a02e936a7eaece8a13e26baceecff181bc4d9ce7d09",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:6",
+      "base_signature_sha256": "a917a2a9c486ca1cc4864dadc48b0bad4973e6fd567f1f3d8d0faa5c3cbc92e6",
+      "expected_speech_sha256": "460e328ac3a6c435b3147fb251098a297907e317b62ed75ca53336812215d62f",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "9e1d5a986e0cb30c620a6831c6177d802a9c4d4eb923f9fd4aeef86f91f96970",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:18",
+      "base_signature_sha256": "ef83c8c91242f885a09b2f9871f7ac7f5ebd156acb3dc6d7503f7869649386fc",
+      "expected_speech_sha256": "f66b5597c7a189701c45fb621ee6b20e9ec300e798b964f420730ab2b64e6f8f",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "a089c34200d48e7e404a066260059e4e665ea5de7176e64e5cd3395b9434c741",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:16",
+      "base_signature_sha256": "6a9af5e1d5e5cac6631968d85015c9e13e9ad23c91f6625367de72502a1beea8",
+      "expected_speech_sha256": "ca5de946ddf63d7707824c399999d0fc2fefdb14cfa0eaa5fa9ba3ad6c3bbb35",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "a18b459c9910793a8ce4d24dc84412b1fa03a439126d2a17d9c7149f114cdfae",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:13",
+      "base_signature_sha256": "2e04bc392eb79724c85a75cddf31ff38ae3992f24507f7c41ff175cd6bb00266",
+      "expected_speech_sha256": "fa8e3c8a2c7b50d6f5ef43aaef3af9993aa1b5822eace142bb011b2793be12b2",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "a901a02aed77dcc8027cbfb287ba218f08ffa5b126040ecbefffd2a5440afd5a",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:1",
+      "base_signature_sha256": "0c314d390ad41f6144a502f6488a9bfbf29d9d42c473b6829b9a727bb47da410",
+      "expected_speech_sha256": "8851800d5272386cf69cebacdaafddcc093f642d2f81c72bf5cdd4d6f9150b3e",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "a9a66449a99e0ff93f3d21a0d351a7f9d596c1c1deb59781a3b67f4aa3164d60",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:5",
+      "base_signature_sha256": "d869e2ef0c5b6042a2098e6f90ab83efd06931597310c1248808c19f714e857b",
+      "expected_speech_sha256": "924b5f54af189c6c6d642bb9c21eb5399808ca3dd4977a708773301a457e67a7",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "b4cbf49e36b84a81d1361b098071bf39a691d13945c804c976e3d1022365c8c2",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:6",
+      "base_signature_sha256": "51827f0db20cad4976eb73e9d61d5147b05448fa04c98ee247120a907ffb8cd8",
+      "expected_speech_sha256": "d2617ac5e92779ff545bd07d6f1df353b2190579338d4609188160f92c36ebc1",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "bf899b63dd97978eb59e0fdc48796c7eeec1191b9818a49ef20b4a69f641528b",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:19",
+      "base_signature_sha256": "78fe847748e6c614598950aeca30d2565a3d6afc483cc5ba7d1478c71c545ea2",
+      "expected_speech_sha256": "c2bb0b0f41d8d3d264dd2b16d835d2b64f2d2b7a86e4135ea7c9b6cfe5297244",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "c7ed60dbda1b349befeb4a2c312a01db992be613160c48b4f93ec2491f13e420",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:7",
+      "base_signature_sha256": "23597c6d6957f9eff8ac832de558d7808f82c12dc5c1cb85280930d3cfabe523",
+      "expected_speech_sha256": "d159393fcccd189d406aaf5e343a22fefc927b752a3d0020faa114a5a7dd1283",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "c8510d8eb275a98bcf64d487cd898866de716aa7d21895057c4e439cc73a07a3",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:15",
+      "base_signature_sha256": "6a9af5e1d5e5cac6631968d85015c9e13e9ad23c91f6625367de72502a1beea8",
+      "expected_speech_sha256": "3675e2dfb39ed4433d89e61163c79335d71eda03b0e561aed52f93496b927b05",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "caac860781b7cda393f3e137d6ec86cadb169c7d1517f7f1f2756a4ca18ef363",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:14",
+      "base_signature_sha256": "1aea34544a19820aaece4a6b6030fe49383a3e5d622fe732f8858426b412f8a3",
+      "expected_speech_sha256": "2b650da7e48f11b865d630b7ea20218405cccebf5f8f3294eeeab2b873535bce",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "d3cdde676b1e8de36699f7092d8e9924026e0b8921e650b667e2e03921f183ea",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time_cased.txt:8",
+      "base_signature_sha256": "05e96bc52d4c850498968d428339c740c9d96edbb30cd9be7b0d7cc04b497c95",
+      "expected_speech_sha256": "aa974cd1739cef70dc95a7115847212b8b25246136267fa0036effe4fe403ace",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "d5c65bc833d8655769aece3c1a4c9dd05319538b579dfc5cc4790aa8a31459b2",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:7",
+      "base_signature_sha256": "23597c6d6957f9eff8ac832de558d7808f82c12dc5c1cb85280930d3cfabe523",
+      "expected_speech_sha256": "d159393fcccd189d406aaf5e343a22fefc927b752a3d0020faa114a5a7dd1283",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "e210f1e44f4a8f9d55176825e284c12a3b1dcfa3f8f7b52348aead1f2304c959",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:22",
+      "base_signature_sha256": "da1cacabb13ca5400a595733c045db30d18ac7729610910536147648e9ae549c",
+      "expected_speech_sha256": "2ab0a54c0b6d8fc1fb808309ffffc91dd864f3df38d22f6b2996190792402510",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "f5b1c96625375d536af3f2fd7a30d2cee3804caa4f6d1ea160b3399f06c80441",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:11",
+      "base_signature_sha256": "23597c6d6957f9eff8ac832de558d7808f82c12dc5c1cb85280930d3cfabe523",
+      "expected_speech_sha256": "06c30007def3c144f0b147a4f8f137bccb0dcac65057279d555557f408b94b48",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "fa6c5eaa3e5767694b0d0b9c624d3ac5435f562188de75a4dc306f43b4631231",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:21",
+      "base_signature_sha256": "da1cacabb13ca5400a595733c045db30d18ac7729610910536147648e9ae549c",
+      "expected_speech_sha256": "6f43d017ff06ace270489f0a865d846a858bf6a49db0916f774fe59839bad8e1",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "fd2c3c202ce01939b9b7c089db22dd7f2bfb1520ee89c1fb50329176a3164139",
+      "locale": "es_MX",
+      "source_locator": "nemo-inverse-time:es:test_cases_time.txt:9",
+      "base_signature_sha256": "4d55bf453b0b2142bdc6ff8c65aa8c2f769ab478ff1f2bf1aeec0a3ecea45cfd",
+      "expected_speech_sha256": "687af7684afc3f5e79b5a01b0172992e0dcc5e5d22e531125b6884db2f237981",
+      "source_record_id": "time-composition-es_MX"
+    },
+    {
+      "id": "15c63312f0ee39970bdb5bf4e47e6b0dfe3257603cf7dc032824731a1c955a9f",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:18",
+      "base_signature_sha256": "fe916088c18beefa286a059233dcda47e96dc36eed0dee8b1d22eeeaa0ae43a9",
+      "expected_speech_sha256": "d9c8cac8fc9c0f6077a55cdc8d78f49c8457f9a12996f87dffdd49c8ffc93450",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "6f62a3aee0cb1374e090762affe60b2a2bd5ab99e5d6fc3b926040245e42d475",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:16",
+      "base_signature_sha256": "7470480b1f5b2edd1a0bc5aa4e193cab730294267c59a95cd9540950d2539e78",
+      "expected_speech_sha256": "43403ac3651a1ebd5476ab465fe223be4b211cf7bcec0aa9e97083f854f94e14",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "7d36c555d496a941e31ba8ae66a41634c3c0e385df84dcc14798bf746b22349e",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:10",
+      "base_signature_sha256": "4355d42825818db54ab59cd57bb62e21a39abad0026887738e6d1e4cc1b9e1d0",
+      "expected_speech_sha256": "c3cba0bc843b9b22d3294fc5870730cc599191248dbad36c3bf479bee0d16344",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "b745a04132f597742f5e592e51b7c8548d2c932409e33439a1d4ef4c15e037e3",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:14",
+      "base_signature_sha256": "4d8761a3b1621f7f766978d357699c4743827ebc432e7cb83b9bc655f4d3768f",
+      "expected_speech_sha256": "6bb938c81389d7eed4b0baab89a3fa3ba26b6c731dbba6798054baf48e2f775e",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "c716578823d109eccbd6a4a4360cbd92517f04f4c95931be7b6d557aad116743",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:17",
+      "base_signature_sha256": "d8ad651162de709ea968645254246fec6ed213cf4fa99ff85191daf3f7399552",
+      "expected_speech_sha256": "d77e044e81de8274820bd8ae6e49a0e4a3f71c85afd1215530224e9837c0f1e6",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "e10c1371df5e2b50d43817a942c49771a8570d35a57e70420d1537f0e4b75ade",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:13",
+      "base_signature_sha256": "4d8761a3b1621f7f766978d357699c4743827ebc432e7cb83b9bc655f4d3768f",
+      "expected_speech_sha256": "c8a4949fdd505a7eb9419c9542d8db2d5a08c6000a89c6c225d9c3b78eb0119b",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "ea0f6f2e82d517c89fec8fc78d68f87fdd3b2de31198e63de00e9f1d6f7f356b",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:12",
+      "base_signature_sha256": "635c70a6856a39521e68c1c0a586d60fd582616d0abc10a3147990599470ed8e",
+      "expected_speech_sha256": "f3effe2a55f3729fd36c831ef14da834a7cb2280174003c434218ee01126d78d",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "fa69aebc90a9dd82e92cafe5898c4ced5a794e993b28f7e5d2ceb26814835941",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:9",
+      "base_signature_sha256": "059d4a7504a871115ca3622ebd08c240a08a142d395908db0c8c7f52cd802045",
+      "expected_speech_sha256": "7372300acc3a719813297af5838cdcf9f4d16c96c703ea973ee09e1777eaeded",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "fd61f8ba939a338a40d58617535386db581499690453fc65426bca95179833d7",
+      "locale": "fr_FR",
+      "source_locator": "nemo-inverse-time:fr:test_cases_time.txt:15",
+      "base_signature_sha256": "1709eb817966939bc6ab6dfa037e69c7e87cc3d7c40975b6d3025ff21273d82f",
+      "expected_speech_sha256": "07b5520cb35a12b208f35c7c2cb13c5e76af60e690cb145fdf6a50f48e8237f6",
+      "source_record_id": "time-composition-fr_FR"
+    },
+    {
+      "id": "0bb17cb43548d2bd9d532c5b6e949c31384bfd258c92386aa4a82b4e192dec1a",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:7",
+      "base_signature_sha256": "af6120adbe6b8a1a08fe43f70855656abbb8c3fe5e4b31b50b34968a9e7974c9",
+      "expected_speech_sha256": "d79dacf4e8b0312c6e1c1624dce86976bb03769506fb4e594eb1be7d17986943",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "123000a3ff0c95b5835c6355a75cc24e2cbf1c28896173342ebb8faa62268cfa",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:9",
+      "base_signature_sha256": "56c05e2dda901e322cf40df536237ce90a2c59ee8ca47858196ad448b75a9cc3",
+      "expected_speech_sha256": "89fc6c63d7621c8f45a5d6cbd4cd4c7c6baa7e5f8e9f2c8e9680a8a44544b73a",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "212bff1e867473e390808e27500debf888975b4e8c3ab3ccbc59d6a6ac148dd3",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:12",
+      "base_signature_sha256": "af439a1e15ada6d28b1990cbb86c06488f444ee7e4494bd68f9f214536dc922e",
+      "expected_speech_sha256": "3d53ca723f0dbe3c60e7afa500d68bd4fbb648ef8324213be70b2eb346ae5b75",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "359f6fa968205ae48bb5e40e355d656174d72bc0d6e27aa86db37883a2e57ed2",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:14",
+      "base_signature_sha256": "a4e8a514a1354c1fd43739e2c1fd9706a71b02a78f3a78dab135da55dedc2bca",
+      "expected_speech_sha256": "ec30c737adef60fb8f34ac9b9489f5a69777be5c095247b8a1331d9adec1578a",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "72ec185bf7865d26cc535fd26c1c1f477464737cf1da9df33252cbb15df15cf5",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:5",
+      "base_signature_sha256": "8c7f8d38530ef66ef20769200335234af93130310241d99cb43eb3230a70b4c0",
+      "expected_speech_sha256": "598a00f5cf4012c1d8c2df15bff300fa0935360499568a389299c3bc69618b63",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "74a4da0bb0a91ba18b0144baeae36d8ad1afaf1d25993492018391fac8756ace",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:15",
+      "base_signature_sha256": "bdd72b5f89abb7a2bf03396fab18dda9d08aaf70a95f3c08d7fee0cfd2381130",
+      "expected_speech_sha256": "0ef67e33e06840f408c41abbf7d9c1db7e39b72d8a87629dfece5a8e8d4fe618",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "8dc5e751fd70b9b7c99b4bdafbb87f1ebb3a5854d197e2d1712a7c345d5c3d59",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:8",
+      "base_signature_sha256": "f285c58209d41833dd67b12dddc3dd0e34505035593ac7f1ced10d099ebd5a07",
+      "expected_speech_sha256": "a736ab18fd8bc445a5fa24b237a546718106501e578b290caa788df0748a566a",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "b83534c26ee1ed4f479be30b0476acc7f959374e50c0a8206fdce258e82086f9",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:4",
+      "base_signature_sha256": "270d3259ccb1dc9b02b2ed3ca08ba357ddc53a177f6eb6c8716f73a3df0b8082",
+      "expected_speech_sha256": "855f81b49e730d0d9d7f2025ec5ee08165e093ef04b87f8767e2d56960af220c",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "c4a46c63237f8029aa651e96032377ce4e0a10541154c28c911648f2b69419f2",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:13",
+      "base_signature_sha256": "221d55d19c50de1a109792e3e0336f9d20b59f538993c1e842c4de9ebc22ef25",
+      "expected_speech_sha256": "b29c4c9c3010a79c1c353845d2d12e77d78c5db3bad241d85958e5c979f351f2",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "d57b24db09b6f1b34c397bfdad515216d91a280827fc68eb1839e7169bffcf68",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:10",
+      "base_signature_sha256": "3e8b614d5d295496edbf510e1fc1ba9b668671ff23d48acce1663ab498a2a6af",
+      "expected_speech_sha256": "863c6b73d0a733096f60ca56e8dc91261e62322f602311bd691641dcc0f22e1d",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "dcc3fa1fbaafd33dd4f1ccd14b41fd4210ca939d3bdcbcfa8a62c579c1462560",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:11",
+      "base_signature_sha256": "729d51c5ae57fc4c17a191c3a75a2aaef6d3c5cb88b5955e4b585c1780cb8d8a",
+      "expected_speech_sha256": "095fc5cd7df7dabbd8b1b232d635c3c35dad197da6154140c488ef000b39a48e",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "eafb693d664a20225e12cff4f233a94d9d3bd0eeb97bd517bae3cab9a124283c",
+      "locale": "ko_KR",
+      "source_locator": "nemo-inverse-time:ko:test_cases_time.txt:3",
+      "base_signature_sha256": "8c7f8d38530ef66ef20769200335234af93130310241d99cb43eb3230a70b4c0",
+      "expected_speech_sha256": "98b6582ea8318c04a16c027eccf90fc5d12ff3ffc0d3d0f8dc4d70d126407260",
+      "source_record_id": "time-composition-ko_KR"
+    },
+    {
+      "id": "0e54f029b4f41cd62aabad103f939cb7df5232a3e4f73405bac478dfa05994ef",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:16",
+      "base_signature_sha256": "82be55bc0c7d95e285d009b0fcea166dda06961785821ab356ec914c31ca3b9f",
+      "expected_speech_sha256": "e48371b22e8ed7e68c61ae79d92ea192b9f014439ad3a60e1da703fdb6ae0c6c",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "3e62b166ee964d6ad5e50cecb9b362d10abfe9e9a148fc646b17be0c2cf140ee",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:5",
+      "base_signature_sha256": "cd7cb974ce090007092e65366c0d2c20309d2a3e57b94ed842b697e442ff649d",
+      "expected_speech_sha256": "2361481edbeabd89f22cf6e03bd22d0545040f6cb8ac3df9f26a0f015376a75c",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "3f91d410d06b90cbfcaaeb23b57c1b88b4a394692163ad96f044d66c0f9c8cd7",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:1",
+      "base_signature_sha256": "8d0b81930e37fd564d271e8c11dbf19ae2b69cbdfb6e78d8e695d6b4449a9408",
+      "expected_speech_sha256": "286d14b077d735c2836ae6e3941705abe11f930dbd6de06ac4ca0b1cb0476263",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "51d2041d813d306b89f2dc7b6be6211a838a2d84adac088f6b79df99be01c1d0",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:11",
+      "base_signature_sha256": "b6980b4837ac4df03dde4302ab86f7e298e5d084fc4f904f0a186eda4586b5ec",
+      "expected_speech_sha256": "af07b04bc58aa9ee37cfff04f6e433c618dac045a1fc6cbb0365f4b0002310c0",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "683a0e0c4dc3b01f5e66001426e173e70458d336ed300ff93184bfb960b7886b",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:17",
+      "base_signature_sha256": "00a1b4e98318697ae2df99ad54e5167237db6ba04b3ea19d75b6cff837f3294a",
+      "expected_speech_sha256": "bd3aa10bfa7465bcec091b4b6c7d8742c4329197607156a4a93a9b6f6aaf27ec",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "69599210fe285c48a1131fc30b4065e3cfbfbeef0acf80b35cd03a64fe08b5a4",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:3",
+      "base_signature_sha256": "28bc32165fec0ba4b1a698fbf03f79f463d988e0740ded80d01323a5e188aba0",
+      "expected_speech_sha256": "671bb981b0e83bdf7150615235a346fef5dd451d3999615ce3c44aae01777db5",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "6b5a7172f372a596729d803230babd2cd31c4b4cc112c20fac2b90cf07133c98",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:18",
+      "base_signature_sha256": "d1fd7323509b16aeae0f86c5788535a654c6fe1439a8326b985b7031c118bddc",
+      "expected_speech_sha256": "52ac1050c9039a5de9a48fcc41528e14abbbd1a30b7d5c7f0c065fe1100bedc5",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "74da645c4c2fe45e046c418498cb9d45a0cbe10356a02eff3b8d51aba921db52",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:14",
+      "base_signature_sha256": "e7ab562481d6325d9a9d7d274bee5c236520b23d66cd6c35f5f8c61eb4a292a0",
+      "expected_speech_sha256": "0a9b7a511dfa09fcfa6f19b0e15d6c53753f80afbd2bd39c67640d713f0aea54",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "a87004ab76d07b37c62c0bcd13b3d7cdf1c6276296fd29f41d28a2a98efa19b1",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:6",
+      "base_signature_sha256": "3d58deed9e6482ec254152d21394cefee08897e7038f2be958a1452ac745ab7d",
+      "expected_speech_sha256": "1674b303d7d1cd9e2b6ad621e22286aa16f26146d94556a111d214ec09775f75",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "adbe2bb46c48c481c495a5036fe5ee02b1f92353eff672a1a3270b7d93448df0",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:10",
+      "base_signature_sha256": "b6980b4837ac4df03dde4302ab86f7e298e5d084fc4f904f0a186eda4586b5ec",
+      "expected_speech_sha256": "e226f6a44d5b0f9707a6796869a10a0c1ea84ec177449d6027b92d525838e41e",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "bd3a9dc0e344fc5e686a8ca16dfedf341028a924cb17f39397a012550486ef0c",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:7",
+      "base_signature_sha256": "43ca3574d48206824cf8c5267b1332742e804cc1bdac6c8696a3addd31d61b17",
+      "expected_speech_sha256": "46fe7e555a6660cfc4a97707b6683541d1e86494f45f7c6995172eb8e4ae18b0",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "bf4026deddc9f6eaccbcb5bd523c495311a5dcc7a131f31bcc66a79999515358",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:2",
+      "base_signature_sha256": "28bc32165fec0ba4b1a698fbf03f79f463d988e0740ded80d01323a5e188aba0",
+      "expected_speech_sha256": "60ebd5f136556c218f01782801c4e8c26ee522f610ae365b07fc1450e61afffa",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "c4a201e0f5071574854fa88ff5cb318d50bf893a855739af639a8c0ba795636b",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:19",
+      "base_signature_sha256": "aef3c599ecd5de768aff04d5c709aa2d752d91e9c18f114beffeabf109a882e0",
+      "expected_speech_sha256": "eb4527133d7f9ba717001e3413c23a866cf9758432fcab6c8bf9539897c301f5",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "cd9468367115f6baead46366e0d10a454b08f74b4f745570827768798279a8f5",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:4",
+      "base_signature_sha256": "3d58deed9e6482ec254152d21394cefee08897e7038f2be958a1452ac745ab7d",
+      "expected_speech_sha256": "1674b303d7d1cd9e2b6ad621e22286aa16f26146d94556a111d214ec09775f75",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "eb8d9e1b6cafae0115f1a2a83f652e8ec4301419bad371670f81a02550be017e",
+      "locale": "pt_BR",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:9",
+      "base_signature_sha256": "b6980b4837ac4df03dde4302ab86f7e298e5d084fc4f904f0a186eda4586b5ec",
+      "expected_speech_sha256": "6c8b17a44749dc1d05c154830382504fae0837059166bc67fdd905632e4e1654",
+      "source_record_id": "time-composition-pt_BR"
+    },
+    {
+      "id": "0c28c76ee1265c0a2d35d2939dc580f362cfabff297ccbd81d6f7251f01dce63",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:3",
+      "base_signature_sha256": "cd4a1f8954cc494a3a738c23840a70b496edd9de0646508feed74458fbcac6df",
+      "expected_speech_sha256": "671bb981b0e83bdf7150615235a346fef5dd451d3999615ce3c44aae01777db5",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "1e737fb2c1d4a8183b65d746064ad9ee41e67b7b2f0ab72623512ef4d5158494",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:16",
+      "base_signature_sha256": "4f1223776f3ae431cce4a7a87b5bf25dca872254410c02c40edf32e2746c1287",
+      "expected_speech_sha256": "e48371b22e8ed7e68c61ae79d92ea192b9f014439ad3a60e1da703fdb6ae0c6c",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "221b17fc5f9ca24c65db77a462132e2801a9f578a8ca25b44e13f2a49bb667c4",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:5",
+      "base_signature_sha256": "4b87b6fbbee1e698a862ced9dd5f61a15485664560dba584d8519e14dff2890a",
+      "expected_speech_sha256": "2361481edbeabd89f22cf6e03bd22d0545040f6cb8ac3df9f26a0f015376a75c",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "3b1a6eb1d258187b8a1a42a507148c5754fbfe22687c371bf030ecd18e6d1c1c",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:17",
+      "base_signature_sha256": "44e7adb1707480fc6e66f0c4e8db2fd7f4e3170ea704419744afa6fbbbeb9424",
+      "expected_speech_sha256": "bd3aa10bfa7465bcec091b4b6c7d8742c4329197607156a4a93a9b6f6aaf27ec",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "5964214b13c28950a35e67c8b82f5076c8de354f27f34025445298c556b44b69",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:11",
+      "base_signature_sha256": "b03a5bf495ec5f4130f4f7c60978cd3397517430221e3f8f5853e884ce262697",
+      "expected_speech_sha256": "af07b04bc58aa9ee37cfff04f6e433c618dac045a1fc6cbb0365f4b0002310c0",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "6464b405216fa1f582a8131027ed74815fae5979d518a958e623486d5d0f0500",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:1",
+      "base_signature_sha256": "1950f070bb22fbb0d83a6ba6b557a932513a9b2ec54ae9f68d3aa83ff3f79048",
+      "expected_speech_sha256": "286d14b077d735c2836ae6e3941705abe11f930dbd6de06ac4ca0b1cb0476263",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "6e6e6687b88bef675eb8ab1c1a874e5b155745e26223ce54c9158eb21dabb81d",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:7",
+      "base_signature_sha256": "a2825337aa81c2d81eb1202d5e624fcb7779b5e3dacf602cc8b251393df45a3e",
+      "expected_speech_sha256": "46fe7e555a6660cfc4a97707b6683541d1e86494f45f7c6995172eb8e4ae18b0",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "7d8d7c37df2c0eea0a5cfd52e782da5eef0e8c90292a0807f2390b9a343f4e3b",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:2",
+      "base_signature_sha256": "cd4a1f8954cc494a3a738c23840a70b496edd9de0646508feed74458fbcac6df",
+      "expected_speech_sha256": "60ebd5f136556c218f01782801c4e8c26ee522f610ae365b07fc1450e61afffa",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "91deb19c3025da4f599a5ebc4e946d68b7f252b91e42c3baa8315458d0c9f6bc",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:4",
+      "base_signature_sha256": "3fffc3cdf61ea86173a8926b608da5ec0d527159a69952aa4d2f3ed1ad41d198",
+      "expected_speech_sha256": "1674b303d7d1cd9e2b6ad621e22286aa16f26146d94556a111d214ec09775f75",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "a18d33ddb8a60ef5c4cb4181a649c29d36e9f4bbdf5888202d6668c0de5d161a",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:14",
+      "base_signature_sha256": "4a5adbe4f61ed57f0072b9f8f84fe855b9428bf011be48f5bfaa78e0b8bd08b3",
+      "expected_speech_sha256": "0a9b7a511dfa09fcfa6f19b0e15d6c53753f80afbd2bd39c67640d713f0aea54",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "b1869eb33f02da5f4b0a594a458157614cbcf4fa57eaac2ac6782f81b685a1dd",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:6",
+      "base_signature_sha256": "3fffc3cdf61ea86173a8926b608da5ec0d527159a69952aa4d2f3ed1ad41d198",
+      "expected_speech_sha256": "1674b303d7d1cd9e2b6ad621e22286aa16f26146d94556a111d214ec09775f75",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "cd45757e477b2fa0b783982878ae4519ee9b7ade2a70249e1b8d9fab0d2e749f",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:10",
+      "base_signature_sha256": "b03a5bf495ec5f4130f4f7c60978cd3397517430221e3f8f5853e884ce262697",
+      "expected_speech_sha256": "e226f6a44d5b0f9707a6796869a10a0c1ea84ec177449d6027b92d525838e41e",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "d164e141d44b7386678efc31f695448cbdb172b80232cae6e71ab427a14042f0",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:19",
+      "base_signature_sha256": "3d6bd590aecf6a0c04de44aa4a1d480e53ba1dc9d3cf96f4c293d3443b664f95",
+      "expected_speech_sha256": "eb4527133d7f9ba717001e3413c23a866cf9758432fcab6c8bf9539897c301f5",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "fa6f0e46d1aa2680d9d1b5c9cee0d7f10be65543ef1745a3fe7133c547c2488d",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:9",
+      "base_signature_sha256": "b03a5bf495ec5f4130f4f7c60978cd3397517430221e3f8f5853e884ce262697",
+      "expected_speech_sha256": "6c8b17a44749dc1d05c154830382504fae0837059166bc67fdd905632e4e1654",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "fb4e5125bb1b50312363395c3acde86fbccd005c68dbe1a53c12420eca24d514",
+      "locale": "pt_PT",
+      "source_locator": "nemo-inverse-time:pt:test_cases_time.txt:18",
+      "base_signature_sha256": "910f0285044355896458ce372043891fb732c8db6317e75f4a306997801ca74a",
+      "expected_speech_sha256": "52ac1050c9039a5de9a48fcc41528e14abbbd1a30b7d5c7f0c065fe1100bedc5",
+      "source_record_id": "time-composition-pt_PT"
+    },
+    {
+      "id": "25536d82de9c0870d68a68b44547b7f974e1c081cc2db6c0a7c12f1ee29ca406",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:23",
+      "base_signature_sha256": "ebf386250cfd89832f29869c745d3b968ad05255687a57e54b9fe1f9ed961ab7",
+      "expected_speech_sha256": "e60159dad9fde61e4fab92d812d68fe4ae7b3e1ad5b65d052d556fe09591d90c",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "28fd5ea6a948315cb96007fbb7bee9e41f5ca229b8fe039ec1bb9728cd7c213f",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:22",
+      "base_signature_sha256": "9504113bec7c8894a485825ad7992cde1aab491490a1ba3ce75445540608a661",
+      "expected_speech_sha256": "629ab7ba0d22a3b2bfdecabb3776f314f85a0176218aacfcb508e302e23ec87d",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "3cb2ce5d9d455d5b313534ff95fe9184d356f44d59012f6507a7423fc1746522",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:21",
+      "base_signature_sha256": "9e666f784ea11ad182311ff0128c3356da1c6a9cb97fd39afb06e7219014c859",
+      "expected_speech_sha256": "6db4ee458ac44e53b6f6f9fd22566530cdf2065b723e546a1aa9a7c2926bab2d",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "3d2aac1f85860f91e782c139884593a897dddb3533c0a810e19d388f07300421",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:20",
+      "base_signature_sha256": "9e666f784ea11ad182311ff0128c3356da1c6a9cb97fd39afb06e7219014c859",
+      "expected_speech_sha256": "8c1d855e6d37c40a28d7409f65d003a28ddc6ff557312a88c87b31fc22a2a3a0",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "54cbf5e36ce9b4af88395131e5b83f84ae14a3796cfe2cea37faea52e2f80775",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:15",
+      "base_signature_sha256": "fb19b677d9a11d65155afd8927af8ff5f892f4115a8039d78fd92f882905ee7c",
+      "expected_speech_sha256": "7b4bf2ff4062cd8e0c646b4ba355b180790ffa9132a34646e7f955f6e7922f47",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "89fc4f1d95e1a2723cbc60539c646dbf7860ad3ebe1c658326a18cb9f5aa1a1b",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:11",
+      "base_signature_sha256": "538aeba5b54104f6a6b14a991736491eeb49dee70fb0b7f10d8083584375ec62",
+      "expected_speech_sha256": "0d584a085a17375bc549d53d72c28ead0325551b50281cae0f33a4c1a73a189f",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "b1e0a0c396b442626eca2f0e05052ce4365a6db4d8ba42b78f4a858905ac2231",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:1",
+      "base_signature_sha256": "538aeba5b54104f6a6b14a991736491eeb49dee70fb0b7f10d8083584375ec62",
+      "expected_speech_sha256": "0d584a085a17375bc549d53d72c28ead0325551b50281cae0f33a4c1a73a189f",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "cf74f53e7acf5770fcd4f2efa1af0fa42d311cc25126fa9729a63e2025901dde",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:16",
+      "base_signature_sha256": "249c333abbd1364b7e96f58fe03e6c04b0f69eba8eb2cb52412890d0d1100282",
+      "expected_speech_sha256": "74ccc1cc93d33c31463301fc032b4d6d4d77f3b09c24fe1fa4d4257c67f555d3",
+      "source_record_id": "time-composition-zh_CN"
+    },
+    {
+      "id": "fb7ae921af1fad32f6fa9c7bcf63d4e368224c452ee0bbb808459c0299a8c99d",
+      "locale": "zh_CN",
+      "source_locator": "nemo-inverse-time:zh:test_cases_time.txt:6",
+      "base_signature_sha256": "538aeba5b54104f6a6b14a991736491eeb49dee70fb0b7f10d8083584375ec62",
+      "expected_speech_sha256": "0d584a085a17375bc549d53d72c28ead0325551b50281cae0f33a4c1a73a189f",
+      "source_record_id": "time-composition-zh_CN"
+    }
+  ],
+  "rows_sha256": "344055de9d0da745dba2b0ff9f1ea3d240ea9f4e6f848e2d4e7706e6ae25c6c5"
+}

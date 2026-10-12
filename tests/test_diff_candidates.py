@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from icukit.detectors import DateTimeValue
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -22,6 +23,20 @@ def _module():
 
 
 diff = _module()
+
+
+def _assert_tiled_offsets(signature, source):
+    output_spans = [unit["output_span"] for unit in signature["units"]]
+    source_spans = [unit["source_span"] for unit in signature["units"]]
+    assert output_spans[0][0] == source_spans[0][0] == 0
+    assert all(
+        left[1] == right[0] for left, right in zip(output_spans, output_spans[1:], strict=False)
+    )
+    assert all(
+        left[1] == right[0] for left, right in zip(source_spans, source_spans[1:], strict=False)
+    )
+    assert output_spans[-1][1] == len(signature["text"])
+    assert source_spans[-1][1] == len(source)
 
 
 def test_date_signature_includes_provenance_prior_and_exact_weight():
@@ -75,6 +90,73 @@ def test_fraction_family_selects_fraction_and_percent_only():
         assert signature["sentences"]
     found, _signature = diff._offer_signature("March 3, 2020", "en_US", "fraction")
     assert not found
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Meet me at 5pm, please.",
+        "At 10:05 we leave.",
+        "Call at 5pm, then again at 6:30.",
+        "March 3, 2020 at 2:07 PM.",
+        "The window is 18:00 UTC.",
+    ],
+)
+def test_time_family_sentence_signature_keeps_prose_offsets_and_alternatives(text):
+    found, signature = diff._offer_signature(text, "en_US", "time")
+
+    assert found
+    _assert_tiled_offsets(signature, text)
+    assert signature["sentences"]
+    assert any(
+        str(edge["type"] or "").startswith(("time:", "date:"))
+        for sentence in signature["sentences"]
+        for edge in sentence["offers"]
+    )
+
+
+def test_time_signature_changes_when_only_a_typed_second_field_changes(monkeypatch):
+    text = "03:04:05"
+    before = diff._graph_signature(text, "en_US")
+    original_detect = diff.detect
+
+    def changed_seconds(source, detectors):
+        for detection in original_detect(source, detectors):
+            if str(detection.get("type", "")).startswith("time:"):
+                detection = dict(detection)
+                value = detection["value"]
+                detection["value"] = DateTimeValue(
+                    tuple((name, 6 if name == "s" else item) for name, item in value.fields),
+                    value.calendar,
+                )
+            yield detection
+
+    monkeypatch.setattr(diff, "detect", changed_seconds)
+    after = diff._graph_signature(text, "en_US")
+
+    assert before != after
+    time_edges = [edge for edge in after if str(edge["type"] or "").startswith("time:")]
+    assert time_edges[0]["value"]["fields"]["fields"][-1] == ["s", 6]
+
+
+def test_time_prose_offset_guard_rejects_a_corrupt_unit_boundary():
+    text = "Meet me at 5pm, please."
+    found, signature = diff._offer_signature(text, "en_US", "time")
+    assert found
+    signature["units"][1]["output_span"][0] += 1
+
+    with pytest.raises(AssertionError):
+        _assert_tiled_offsets(signature, text)
+
+
+def test_sentence_reader_joins_tokens_with_deterministic_spacing(tmp_path):
+    shard = diff.SHARDS[0]
+    (tmp_path / shard).write_text(
+        "PLAIN\tMeet\t<self>\nTIME\t5pm\tfive p m\n<eos>\t<eos>\n",
+        encoding="utf-8",
+    )
+
+    assert list(diff._sentences(tmp_path, None, (shard,))) == [(shard, 1, "Meet 5pm")]
 
 
 def test_child_refuses_report_shard_99(tmp_path):

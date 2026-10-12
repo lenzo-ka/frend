@@ -1604,6 +1604,27 @@ def test_time_with_seconds_stays_unverbalized():
     assert unit.verbalized is False
 
 
+def test_english_datetime_with_seconds_keeps_legacy_date_and_clock_composition():
+    fields = (*_DATETIME, ("s", 9))
+    captures = [
+        *_DATETIME_CAPTURES,
+        ("s", "09", 9, "numeric"),
+        ("datetime-glue", " at ", None, None),
+    ]
+    unit = _date_unit(
+        "March 5, 2024 at 2:07:09 PM",
+        "date:datetime-flexible",
+        fields,
+        captures,
+    )
+
+    assert unit.verbalized is True
+    assert normalize_spoken(unit.alternatives[0].text) == (
+        "march fifth twenty twenty four at two o seven p m"
+    )
+    assert {capture.name for capture in unit.unspoken} == {"s"}
+
+
 def test_measured_time_ranks_the_corpus_form_first():
     """With TIME measured, "five p m" outranks the lexical "o'clock" form."""
     unit = _full_span_forms("5pm", [FlexibleTimeDetector("en_US")], "time:flexible")

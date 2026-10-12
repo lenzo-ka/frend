@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed direct HTML fetch",
+  "fetched_at": "2026-10-11T02:39:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.korean.go.kr/front/mcfaq/mcfaqView.do?mcfaq_seq=6073&mn_id=217&pageIndex=217",
+  "revision": "NIKL counseling cases, 자정에 대한 표현, 2019-12-06",
+  "sha256": "b65d93e66c2f1dd056c6e046bf7069c42b77fe9173070aefae02e3f98dac8933",
+  "source": "nikl/online-qna",
+  "transform_command": "manual transcription of 오전 12시 O분 O초 and 새벽 영시 O분 O초"
+}

@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-11T02:39:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.dictionnaire-academie.fr/article/A9H0629",
+  "revision": "Dictionnaire de l'Academie francaise, 9e ed., heure II.2",
+  "sha256": "b8e71696d7868e131aef7a9a02944a975a590f74b58cef198ae79ac59c9b597e",
+  "source": "academie-francaise/dictionnaire",
+  "transform_command": "manual transcription of the cited spoken clock constructions"
+}

@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation; direct TLS fetch was not reproducible in the build environment",
+  "fetched_at": "2026-10-11T02:40:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.mext.go.jp/content/20210601-mxt_tokubetu01-000015473_1.pdf#page=31",
+  "manual_citation": true,
+  "revision": "MEXT 国語編集資料, clock expression spacing example",
+  "sha256": "18e5f10149f36b6490e35df2271903ab3833a66a7197fe4dd76e1b83fa1127dd",
+  "source": "mext/math-grade4",
+  "transform_command": "manual citation and transcription of 午前1時23分56秒"
+}

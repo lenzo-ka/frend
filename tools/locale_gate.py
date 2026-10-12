@@ -46,6 +46,7 @@ EXCLUSIONS_PATH = Path(__file__).with_name("nemo_exclusions.tsv")
 CONVENTIONS_PATH = Path(__file__).with_name("locale_conventions.json")
 DATE_LATENCY_INPUTS = Path(__file__).with_name("date_latency_inputs.json")
 FRACTION_LATENCY_INPUTS = Path(__file__).with_name("fraction_latency_inputs.json")
+TIME_LATENCY_INPUTS = Path(__file__).with_name("time_latency_inputs.json")
 
 LOCALES: dict[str, tuple[str, ...]] = {
     "en": ("en_US",),
@@ -60,6 +61,42 @@ LOCALES: dict[str, tuple[str, ...]] = {
 }
 GATE_LOCALES = tuple(locale for locales in LOCALES.values() for locale in locales) + ("pt_PT",)
 _ALL_GATE_LOCALES = GATE_LOCALES
+
+# These public probes have a sourced legacy reading at rank 0 and a distinct sourced
+# PR7 reading at rank 1.  The PR6 rank amendment preserves the shared legacy reading's
+# order, weight, and effective prior; PR7 also excludes rank tuning.  The semantic
+# receipt therefore requires the generated reading to be offered, not selected.
+_TIME_PROBE_LEGACY_WINNERS = frozenset(
+    {
+        ("es_MX", "3:30 p.m."),
+        ("es_ES", "3:30 p.m."),
+        ("pt_BR", "3:30 da tarde"),
+        ("it_IT", "17:15"),
+    }
+)
+_TIME_SOAK_LEGACY_WINNER_LOCALES = frozenset({"it_IT"})
+
+
+def _binding_legacy_time_winner(candidates: object, locale: str) -> bool:
+    """Whether the receipt proves a sourced legacy rank ahead of the PR7 reading."""
+    if not isinstance(candidates, list) or len(candidates) < 2:
+        return False
+    first = candidates[0]
+    if not isinstance(first, Mapping) or first.get("rank") != 0:
+        return False
+    first_sources = str(first.get("provenance", "")).split("+")
+    if f"time-rule:{locale}" in first_sources or not any(
+        source.startswith(("icu-", "lexical:", "curated:", "normalization-record:"))
+        for source in first_sources
+    ):
+        return False
+    return any(
+        isinstance(candidate, Mapping)
+        and isinstance(candidate.get("rank"), int)
+        and candidate["rank"] > 0
+        and f"time-rule:{locale}" in str(candidate.get("provenance", "")).split("+")
+        for candidate in candidates[1:]
+    )
 
 
 @dataclass(frozen=True)
@@ -923,6 +960,66 @@ def _runtime_comparisons(
                     ),
                 }
             )
+        time_probes = run.get("time_probes", {})
+        observed_time_locales = set(time_probes)
+        time_contract = observed_time_locales == expected_date_locales
+        checks.append(
+            {
+                "metric": f"runtime.time_probe.receipt_contract.run{run.get('run', 0)}",
+                "expected_locales": sorted(expected_date_locales),
+                "observed_locales": sorted(observed_time_locales),
+                "passed": time_contract,
+                "breached": not time_contract,
+                "outside_base_range": False,
+                "budget": "one clock receipt per measured locale",
+            }
+        )
+        for locale, receipt in time_probes.items():
+            routed_locale = locale not in {"en_US", "de_DE"}
+            expected_selected = (
+                routed_locale
+                and (
+                    locale,
+                    receipt.get("probe"),
+                )
+                not in _TIME_PROBE_LEGACY_WINNERS
+            )
+            binding_legacy_winner = _binding_legacy_time_winner(receipt.get("candidates"), locale)
+            events = receipt.get("events", {})
+            passed = (
+                receipt.get("units", 0) >= 1
+                and receipt.get("selected_generated") is expected_selected
+                and receipt.get("expected_selected_generated") is expected_selected
+                and receipt.get("offered_generated") is routed_locale
+                and (
+                    expected_selected
+                    or not routed_locale
+                    or binding_legacy_winner
+                    and receipt.get("selected_provenance")
+                    == receipt.get("candidates", [{}])[0].get("provenance")
+                )
+                and receipt.get("bundle_available") is True
+                and (
+                    routed_locale
+                    and events == {"load": 1, "lower": 0, "generate": 0}
+                    or not routed_locale
+                    and events == {"load": 0, "lower": 0, "generate": 0}
+                )
+            )
+            checks.append(
+                {
+                    "metric": f"runtime.time_probe.{locale}.run{run.get('run', 0)}",
+                    "receipt": receipt,
+                    "passed": passed,
+                    "breached": not passed,
+                    "outside_base_range": False,
+                    "budget": (
+                        "generated time-rule offered for routed locales and selected except "
+                        "where the binding legacy rank wins; compiled recipes avoid runtime "
+                        "lower/generate; English and German zero bundle calls"
+                    ),
+                }
+            )
     for locale in sorted(set(base_summary["first_hit_ns"]) & set(head_summary["first_hit_ns"])):
         checks.append(
             _ratio_comparison(
@@ -1107,6 +1204,50 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
                     "breached": not passed,
                     "outside_base_range": False,
                     "budget": "full-span detection and selected fraction-rule provenance",
+                }
+            )
+        time_receipts = run.get("time_receipts", ())
+        observed_time_receipts = {
+            (receipt.get("locale"), receipt.get("pass")) for receipt in time_receipts
+        }
+        time_contract = observed_time_receipts == expected_receipts and len(time_receipts) == len(
+            expected_receipts
+        )
+        checks.append(
+            {
+                "metric": f"soak.time_probe.receipt_contract.run{run.get('run', 0)}",
+                "expected": sorted(expected_receipts),
+                "observed": sorted(observed_time_receipts),
+                "passed": time_contract,
+                "breached": not time_contract,
+                "outside_base_range": False,
+                "budget": "one unseen clock receipt per locale and pass",
+            }
+        )
+        for receipt in time_receipts:
+            count = receipt.get("count", 0)
+            generated_expected = receipt.get("locale") not in (
+                {"en_US", "de_DE"} | _TIME_SOAK_LEGACY_WINNER_LOCALES
+            )
+            passed = receipt.get("successful_time_detections") == count and (
+                receipt.get("selected_generated") == count
+                if generated_expected
+                else receipt.get("selected_generated") == 0
+            )
+            checks.append(
+                {
+                    "metric": (
+                        f"soak.time_probe.{receipt.get('locale')}."
+                        f"pass{receipt.get('pass')}.run{run.get('run', 0)}"
+                    ),
+                    "receipt": receipt,
+                    "passed": passed,
+                    "breached": not passed,
+                    "outside_base_range": False,
+                    "budget": (
+                        "full-span detection and binding-rank selected provenance; Italian "
+                        "keeps its sourced legacy HM reading ahead of the generated reading"
+                    ),
                 }
             )
     return checks
@@ -1311,15 +1452,22 @@ def compare(
                     or type_name.startswith("number:fraction")
                     or type_name == "number:percent"
                 )
+            if manifest_family == "time":
+                return any(
+                    "time-rule:" in str(alternative.get("provenance", ""))
+                    for alternative in edge.get("alternatives", ())
+                    if isinstance(alternative, Mapping)
+                )
             return False
 
-        if manifest_family not in {"date", "fraction"}:
+        if manifest_family not in {"date", "fraction", "time"}:
             correctness_failures.append(
                 {"kind": "allowed-changes-family", "family": manifest_family}
             )
+        routing_rows = head_rows if manifest_family == "time" else base_rows
         routed_ids = {
             identifier
-            for identifier, row in base_rows.items()
+            for identifier, row in routing_rows.items()
             if row.get("locale") != "en_US"
             and any(
                 routed(edge) for edge in row.get("offer_signature", ()) if isinstance(edge, Mapping)
@@ -1352,7 +1500,7 @@ def compare(
                                 "observed": observed,
                             }
                         )
-                if manifest_family == "fraction":
+                if manifest_family in {"fraction", "time"}:
                     base_edges = {
                         (edge.get("start"), edge.get("end"), edge.get("type")): edge
                         for edge in before.get("offer_signature", ())
@@ -1591,13 +1739,15 @@ def compare(
             {"kind": "row-set", "base_only": base_only, "head_only": head_only}
         )
     budget = GateBudget()
-    if isinstance(allowed_changes, dict) and allowed_changes.get("family") == "fraction":
-        generated_bytes = sum(
-            path.stat().st_size for path in (REPO / "frend/data/fraction_rules").glob("*.json")
-        )
+    if isinstance(allowed_changes, dict) and allowed_changes.get("family") in {
+        "fraction",
+        "time",
+    }:
+        family = str(allowed_changes["family"])
+        directory = REPO / f"frend/data/{family}_rules"
+        generated_bytes = sum(path.stat().st_size for path in directory.glob("*.json"))
         allocation_bytes = sum(
-            max(256 * 2**10, 4 * path.stat().st_size)
-            for path in (REPO / "frend/data/fraction_rules").glob("*.json")
+            max(256 * 2**10, 4 * path.stat().st_size) for path in directory.glob("*.json")
         )
         loaded_mib = min(8.0, allocation_bytes / 2**20)
         budget = replace(
@@ -1606,7 +1756,7 @@ def compare(
             rss_workload_delta_mib=loaded_mib + 2.0,
         )
         if generated_bytes == 0:
-            correctness_failures.append({"kind": "fraction-bundle-size-empty"})
+            correctness_failures.append({"kind": f"{family}-bundle-size-empty"})
     if pr4_improvement:
         budget = replace(
             budget,
@@ -1780,6 +1930,83 @@ def _normalize_fraction_probes(locale: str) -> tuple[int, dict]:
     }
 
 
+@cache
+def _time_latency_probes() -> dict[str, str]:
+    document = json.loads(TIME_LATENCY_INPUTS.read_text(encoding="utf-8"))
+    if document.get("schema") != 1 or set(document.get("locales", ())) != set(_ALL_GATE_LOCALES):
+        raise ValueError("time latency manifest must name exactly the eleven gate locales")
+    return document["locales"]
+
+
+def _normalize_time_probe(locale: str) -> tuple[int, dict]:
+    probe = _time_latency_probes()[locale]
+    before = {"load": 0, "lower": 0, "generate": 0}
+    try:
+        from frend.time_rules import time_rule_events
+    except ImportError:
+        time_rule_events = None
+    if time_rule_events is not None:
+        before = dict(time_rule_events())
+    started = time.perf_counter_ns()
+    result = normalize(probe, locale=locale, offsets=True)
+    elapsed = time.perf_counter_ns() - started
+    units = [unit for unit in result.units if str(unit.reader or "").startswith("time:")]
+    after = before if time_rule_events is None else dict(time_rule_events())
+    recognition_text = apply_input_fold(probe, "typographic")
+    detections = list(detect(recognition_text, _reading_detectors(locale)))
+    graph = compose_choices(
+        resolve_choices(detections, source_text=recognition_text, locale=locale)
+    )
+    candidates = []
+    for edge, unit in zip(graph.lattice.edges, graph.units, strict=True):
+        detection = edge.detection or {}
+        if (
+            edge.start != 0
+            or edge.end != len(recognition_text)
+            or not str(detection.get("type", "")).startswith("time:")
+        ):
+            continue
+        if locale not in {"en_US", "de_DE"} and not any(
+            f"time-rule:{locale}" in item.provenance.split("+") for item in unit.alternatives
+        ):
+            continue
+        candidates = [
+            {
+                "rank": rank,
+                "text": item.text,
+                "provenance": item.provenance,
+                "prior_provenance": item.prior_provenance,
+                "weight": None if item.weight is None else str(item.weight),
+            }
+            for rank, item in enumerate(unit.alternatives)
+        ]
+        break
+    offered_generated = any(
+        f"time-rule:{locale}" in str(item["provenance"]).split("+") for item in candidates
+    )
+    expected_selected = (
+        locale not in {"en_US", "de_DE"}
+        and (
+            locale,
+            probe,
+        )
+        not in _TIME_PROBE_LEGACY_WINNERS
+    )
+    return elapsed, {
+        "probe": probe,
+        "units": len(units),
+        "selected_generated": any(
+            f"time-rule:{locale}" in unit.provenance.split("+") for unit in units
+        ),
+        "selected_provenance": None if not units else units[0].provenance,
+        "offered_generated": offered_generated,
+        "expected_selected_generated": expected_selected,
+        "candidates": candidates,
+        "events": {key: after[key] - before[key] for key in before},
+        "bundle_available": time_rule_events is not None,
+    }
+
+
 def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path: Path) -> dict:
     _refuse_tracemalloc()
     if kind == "first":
@@ -1789,12 +2016,14 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
         elapsed = time.perf_counter_ns() - started
         date_elapsed, date_receipt = _normalize_date_probe(locale)
         fraction_elapsed, fraction_receipt = _normalize_fraction_probes(locale)
-        del date_elapsed, fraction_elapsed
+        time_elapsed, time_receipt = _normalize_time_probe(locale)
+        del date_elapsed, fraction_elapsed, time_elapsed
         return {
             "locale": locale,
             "first_hit_ns": elapsed,
             "date_probe": date_receipt,
             "fraction_probe": fraction_receipt,
+            "time_probe": time_receipt,
         }
     if kind == "prewarm":
         try:
@@ -1889,6 +2118,7 @@ def _runtime_once(
     first_hits = {}
     date_probes = {}
     fraction_probes = {}
+    time_probes = {}
     for locale in GATE_LOCALES:
         payload = _child_command(
             "_runtime-child",
@@ -1905,6 +2135,7 @@ def _runtime_once(
         first_hits[locale] = payload["first_hit_ns"]
         date_probes[locale] = payload["date_probe"]
         fraction_probes[locale] = payload["fraction_probe"]
+        time_probes[locale] = payload["time_probe"]
     combined = _child_command(
         "_runtime-child",
         "--kind",
@@ -1918,6 +2149,7 @@ def _runtime_once(
     combined["first_hit_ns"] = first_hits
     combined["date_probes"] = date_probes
     combined["fraction_probes"] = fraction_probes
+    combined["time_probes"] = time_probes
     if include_prewarm:
         prewarm_result = _child_command(
             "_runtime-child",
@@ -2059,6 +2291,18 @@ def _unseen_fraction_inputs(locale: str, pass_index: int, count: int = 2000) -> 
     return result
 
 
+def _unseen_time_inputs(locale: str, pass_index: int, count: int = 2000) -> list[str]:
+    locale_index = GATE_LOCALES.index(locale)
+    offset = (locale_index * 3 + pass_index) * count
+    result = []
+    for index in range(count):
+        value = (offset + index) % (24 * 60 * 60)
+        hour, remainder = divmod(value, 60 * 60)
+        minute, second = divmod(remainder, 60)
+        result.append(f"{hour:02d}:{minute:02d}:{second:02d}")
+    return result
+
+
 def _soak_child() -> dict:
     _refuse_tracemalloc()
     for locale in GATE_LOCALES:
@@ -2066,6 +2310,7 @@ def _soak_child() -> dict:
     rss_passes = []
     receipts = []
     fraction_receipts = []
+    time_receipts = []
     for pass_index in range(3):
         for locale in GATE_LOCALES:
             inputs = _unseen_inputs(locale, pass_index)
@@ -2131,6 +2376,32 @@ def _soak_child() -> dict:
                     "selected_generated": fraction_selected,
                 }
             )
+            time_inputs = _unseen_time_inputs(locale, pass_index)
+            time_detections = 0
+            time_selected = 0
+            for text in time_inputs:
+                rows = [
+                    row
+                    for row in detect(text, _reading_detectors(locale))
+                    if str(row.get("type", "")).startswith("time:")
+                    and row["start"] == 0
+                    and row["end"] == len(text)
+                ]
+                time_detections += bool(rows)
+                result = normalize(text, locale=locale, offsets=True)
+                time_selected += any(
+                    f"time-rule:{locale}" in unit.provenance.split("+")
+                    for unit in getattr(result, "units", ())
+                )
+            time_receipts.append(
+                {
+                    "locale": locale,
+                    "pass": pass_index + 1,
+                    "count": len(time_inputs),
+                    "successful_time_detections": time_detections,
+                    "selected_generated": time_selected,
+                }
+            )
         gc.collect()
         rss_passes.append(rss_bytes())
     return {
@@ -2140,6 +2411,7 @@ def _soak_child() -> dict:
         "pass3_minus_pass1_bytes": rss_passes[2] - rss_passes[0],
         "date_receipts": receipts,
         "fraction_receipts": fraction_receipts,
+        "time_receipts": time_receipts,
     }
 
 

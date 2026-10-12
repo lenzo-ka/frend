@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed via r.jina.ai HTTP reader",
+  "fetched_at": "2026-10-11T02:39:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.treccani.it/vocabolario/ora/",
+  "revision": "Treccani Vocabolario, ora, spoken day-part clock examples",
+  "sha256": "c9aac1f540cbf27cf6b382359a9f1c36570b7e8c892debbc8730fdb90768a8b4",
+  "source": "treccani/vocabolario",
+  "transform_command": "manual transcription of the cited clock and day-part constructions"
+}

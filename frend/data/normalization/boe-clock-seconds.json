@@ -1,0 +1,10 @@
+{
+  "fetch_method": "curl 8.x --location --compressed direct PDF fetch",
+  "fetched_at": "2026-10-11T02:40:00Z",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.boe.es/gazeta/dias/1882/05/24/pdfs/GMD-1882-144.pdf#page=3",
+  "revision": "Gaceta de Madrid num. 144, 1882-05-24, p. 563, eclipse clock expressions",
+  "sha256": "92fcb951738f8b2e86b124bcfea682a08e0f44be772f73bd9fc081662655e833",
+  "source": "boe/gaceta",
+  "transform_command": "manual transcription of the cited hours-minutes-seconds clock examples"
+}
