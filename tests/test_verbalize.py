@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import icu
 import pytest
 from icukit.abbreviation_recognize import AbbreviationDetector
-from icukit.detectors import NumberValue, all_detectors, detect
+from icukit.detectors import NumberValue, all_detectors, date_detectors, detect
 from icukit.recognize import (
     AlphanumericRunsDetector,
     FlexibleCompactDetector,
@@ -1551,8 +1551,8 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
     assert unspoken == set()
 
 
-def _full_span_forms(text, detectors, type_):
-    lattice = resolve_choices(list(detect(text, detectors)), source_text=text)
+def _full_span_forms(text, detectors, type_, *, locale="en_US"):
+    lattice = resolve_choices(list(detect(text, detectors)), source_text=text, locale=locale)
     graph = compose_choices(lattice)
     edges = {edge.id: edge for edge in lattice.edges}
     (unit,) = [
@@ -1605,6 +1605,40 @@ def test_time_speaks_the_written_hour_minutes_and_period(written, expected):
     time zone as its letters after the time ("10 PM ET" "ten p m e t")."""
     unit = _full_span_forms(written, [FlexibleTimeDetector("en_US")], "time:flexible")
     assert {a.text for a in unit.alternatives} == expected
+    assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("locale", "written", "spoken"),
+    [
+        ("de_DE", "8 Uhr", "acht Uhr"),
+        ("fr_FR", "1 h", "un heure"),
+        ("fr_FR", "8 h", "huit heures"),
+        ("bg_BG", "8 ч.", "осем часа"),
+    ],
+)
+def test_cldr_literal_hour_is_spoken_from_locale_data(locale, written, spoken):
+    unit = _full_span_forms(
+        written, date_detectors(locale, ("H",)).detectors, "date:H", locale=locale
+    )
+
+    assert normalize_spoken(unit.alternatives[0].text) == normalize_spoken(spoken)
+    assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("locale", "written", "spoken"),
+    [
+        ("fr_FR", "08:00 h", "huit heures"),
+        ("bg_BG", "08:00 ч", "осем часа"),
+    ],
+)
+def test_flexible_time_speaks_its_captured_cldr_hour_unit(locale, written, spoken):
+    unit = _full_span_forms(
+        written, [FlexibleTimeDetector(locale)], "time:flexible", locale=locale
+    )
+
+    assert normalize_spoken(unit.alternatives[0].text) == normalize_spoken(spoken)
     assert unit.unspoken == ()
 
 

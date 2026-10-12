@@ -20,7 +20,7 @@ from types import MappingProxyType
 import icu
 from icukit import AbbreviationValue, Breaker, DateTimeFormatter
 from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
-from icukit.measure import WIDTH_WIDE, MeasureFormatter
+from icukit.measure import WIDTH_NARROW, WIDTH_SHORT, WIDTH_WIDE, MeasureFormatter
 
 from frend.abbreviation_variants import (
     AS_WRITTEN_SOURCE,
@@ -1133,11 +1133,12 @@ _SPOKEN_CAPTURES = {
             "day-period",
             "time-zone",
             "datetime-glue",
+            "hour-unit",
         }
     ),
     "ordinal": frozenset({"integer", "ordinal-affix"}),
     "abbreviation": frozenset({"surface"}),
-    "time": frozenset({"H", "m", "day-period", "time-zone"}),
+    "time": frozenset({"H", "m", "day-period", "time-zone", "hour-unit"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
     "serial": frozenset({"prefix", "digits", "suffix"}),
@@ -1237,6 +1238,156 @@ def _time_tail(
     return tuple(result)
 
 
+def _pattern_word_literals(pattern: str) -> tuple[str, ...]:
+    """Return CLDR date-pattern word literals without treating ASCII fields as words."""
+    words: list[str] = []
+    word: list[str] = []
+    quoted = False
+    index = 0
+    while index < len(pattern):
+        character = pattern[index]
+        if character == "'":
+            if word:
+                words.append("".join(word))
+                word.clear()
+            if index + 1 < len(pattern) and pattern[index + 1] == "'":
+                index += 2
+                continue
+            quoted = not quoted
+        elif character.isalpha() and (quoted or not character.isascii()):
+            word.append(character)
+        elif word:
+            words.append("".join(word))
+            word.clear()
+        index += 1
+    if word:
+        words.append("".join(word))
+    return tuple(words)
+
+
+def _unit_text(amount: Decimal, unit: str, locale: str, width: str) -> str | None:
+    """ICU's unit portion at ``width``, with its locale-formatted amount removed."""
+    formatted = MeasureFormatter(locale, width).format(float(amount), unit)
+    written = _number_formatter(locale).format(float(amount))
+    if formatted.count(written) != 1:
+        return None
+    return formatted.replace(written, "", 1).strip()
+
+
+def _time_literal(
+    value: DateTimeValue, detection: object, locale: str
+) -> tuple[str, str, str] | None:
+    """A source clock literal as ``(side, spoken, provenance)``.
+
+    A flexible clock's ``hour-unit`` is an icukit-proved CLDR short/narrow hour symbol.
+    A strict date reader instead carries its CLDR pattern in ``spec``; a pattern word
+    that equals an ICU short or narrow hour unit receives ICU's number-sensitive wide
+    name. Other pattern words have no proved spoken expansion, so they remain exactly
+    the CLDR literal. No locale words are stored here.
+    """
+    fields = dict(value.fields)
+    if "H" not in fields:
+        return None
+    hour_capture = _capture(detection, "H")
+    if hour_capture is None:
+        return None
+    unit_capture = _capture(detection, "hour-unit")
+    if unit_capture is not None:
+        literal = str(getattr(unit_capture, "text", "")).strip()
+        source = "icukit-hour-unit"
+        proved_unit = True
+        literal_start = int(getattr(unit_capture, "start", hour_capture.end))
+    else:
+        spec = detection.get("spec") if isinstance(detection, Mapping) else None
+        words = _pattern_word_literals(str(getattr(spec, "pattern", "")))
+        if not words:
+            return None
+        source = "icu-datetime:literal"
+        written = str(detection.get("text", "")) if isinstance(detection, Mapping) else ""
+        detection_start = int(detection.get("start", 0)) if isinstance(detection, Mapping) else 0
+        detection_end = detection_start + len(written)
+        capture_spans = sorted(
+            (
+                max(detection_start, int(getattr(capture, "start", detection_start))),
+                min(detection_end, int(getattr(capture, "end", detection_end))),
+            )
+            for capture in detection.get("captures", ())
+        )
+        gaps = []
+        cursor = detection_start
+        for start, stop in capture_spans:
+            if cursor < start:
+                gaps.append((cursor, start))
+            cursor = max(cursor, stop)
+        if cursor < detection_end:
+            gaps.append((cursor, detection_end))
+        uncovered = []
+        positions = []
+        for start, stop in gaps:
+            fragment = written[start - detection_start : stop - detection_start]
+            if any(character.isalpha() for character in fragment):
+                stripped = fragment.strip()
+                uncovered.append(stripped)
+                positions.append(start + fragment.index(stripped))
+        if not uncovered:
+            return None
+        literal = " ".join(uncovered)
+        literal_start = min(positions, default=int(getattr(hour_capture, "end", 0)))
+        compact = "".join(character for character in literal.casefold() if character.isalnum())
+        proved_unit = False
+        amount = Decimal(fields["H"])
+        for width in (WIDTH_SHORT, WIDTH_NARROW):
+            unit = _unit_text(amount, "hour", locale, width)
+            normalized = "" if unit is None else "".join(
+                character for character in unit.casefold() if character.isalnum()
+            )
+            if compact and compact == normalized:
+                proved_unit = True
+                break
+    if not literal:
+        return None
+    if proved_unit:
+        spoken = _unit_text(Decimal(fields["H"]), "hour", locale, WIDTH_WIDE)
+        if spoken:
+            literal = spoken
+            source = f"{source}+icu-measure:wide"
+    side = "prefix" if literal_start < int(getattr(hour_capture, "start", 0)) else "suffix"
+    return side, literal, source
+
+
+def _with_time_literal(
+    alternatives: tuple[SpokenAlternative, ...],
+    value: DateTimeValue,
+    detection: object,
+    locale: str,
+) -> tuple[SpokenAlternative, ...]:
+    literal = _time_literal(value, detection, locale)
+    if literal is None:
+        return alternatives
+    side, spoken, source = literal
+    normalized = normalize_spoken(spoken)
+    result = []
+    for item in alternatives:
+        words = normalize_spoken(item.text).split()
+        needle = normalized.split()
+        already_present = bool(needle) and any(
+            words[index : index + len(needle)] == needle for index in range(len(words))
+        )
+        if already_present:
+            result.append(item)
+            continue
+        text = f"{spoken} {item.text}" if side == "prefix" else f"{item.text} {spoken}"
+        result.append(
+            SpokenAlternative(
+                text,
+                f"{item.provenance}+{source}",
+                item.weight,
+                item.prior_provenance,
+            )
+        )
+    return tuple(result)
+
+
 def _legacy_spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
@@ -1307,11 +1458,12 @@ def _spoken_time(
     if locale.startswith("en") or (
         locale == "de_DE" and detection.get(_WRITTEN_UHR_MARKER) is not True
     ):
-        return _legacy_spoken_time(value, detection, locale)
-
-    if locale in GENERATED_TIME_LOCALES:
-        return generate_time_alternatives(value, detection, locale)
-    return _legacy_spoken_time(value, detection, locale)
+        alternatives = _legacy_spoken_time(value, detection, locale)
+    elif locale in GENERATED_TIME_LOCALES:
+        alternatives = generate_time_alternatives(value, detection, locale)
+    else:
+        alternatives = _legacy_spoken_time(value, detection, locale)
+    return _with_time_literal(alternatives, value, detection, locale)
 
 
 def _plural_word(word: str, rules: Sequence[Mapping]) -> str:
