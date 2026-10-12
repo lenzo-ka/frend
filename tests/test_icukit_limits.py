@@ -47,7 +47,7 @@ def test_normalize_propagates_sentence_break_failure_without_retry(monkeypatch):
         calls += 1
         raise error
 
-    monkeypatch.setattr(normalization.SentenceOverride, "segmentations", fail)
+    monkeypatch.setattr(normalization.SentenceOverride, "spans", fail)
 
     with pytest.raises(RegexLimitError) as caught:
         normalize("one")

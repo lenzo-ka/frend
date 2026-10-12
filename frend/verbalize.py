@@ -381,20 +381,46 @@ def _with_measured_provenance(
 
 
 def _digit_like_cldr_name_first(
-    alternatives: Sequence[SpokenAlternative], value: object
+    alternatives: Sequence[SpokenAlternative],
+    value: object,
+    edge: ReadingEdge,
+    context: TextContext | None,
 ) -> tuple[SpokenAlternative, ...]:
-    """Keep a CLDR-named digit-like symbol audible while retaining measured name order."""
+    """Keep the first CLDR name first except for a measured algebraic exponent.
+
+    A symbol-wide measurement such as ``squared`` is evidence for a one-letter
+    variable or a short lowercase unit-shaped token (``x²``, ``m²``, ``km²``),
+    not for a footnote after a word (``Smith²``, ``note²``).  The distinction is
+    structural so it needs no vocabulary list.
+    """
     alternatives = tuple(alternatives)
     if not isinstance(value, SymbolValue) or not value.char.isdigit():
         return alternatives
-    chosen = next(
-        (
-            index
-            for index, alternative in enumerate(alternatives)
-            if alternative.text and alternative.provenance.startswith("cldr-symbol:")
-        ),
-        None,
+    absolute_start = edge.start + (0 if context is None else context.offset)
+    before = "" if context is None else context.text[:absolute_start]
+    token = re.search(r"[^\W\d_]+\s*$", before, flags=re.UNICODE)
+    token_text = "" if token is None else token.group().rstrip()
+    exponent_context = token is not None and (
+        len(token_text) == 1 or (len(token_text) <= 2 and token_text.islower())
     )
+    if exponent_context:
+        spoken_first = next((item for item in alternatives if item.text), None)
+        if spoken_first is not None and spoken_first.weight is not None:
+            chosen = alternatives.index(spoken_first)
+        else:
+            chosen = None
+    else:
+        chosen = None
+    if chosen is None:
+        default_name, default_source = value.names[0]
+        chosen = next(
+            (
+                index
+                for index, alternative in enumerate(alternatives)
+                if alternative.text == default_name and alternative.provenance == default_source
+            ),
+            None,
+        )
     if chosen in (None, 0):
         return alternatives
     return (alternatives[chosen], *alternatives[:chosen], *alternatives[chosen + 1 :])
@@ -4327,7 +4353,7 @@ def _verbalize_edge(
             threshold=context_threshold,
         )
     if path == "symbol":
-        alternatives = _digit_like_cldr_name_first(alternatives, value)
+        alternatives = _digit_like_cldr_name_first(alternatives, value, edge, context)
     if path == "date":
         alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text, locale)
     additionally_spoken = (
