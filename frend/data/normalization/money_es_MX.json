@@ -1,0 +1,10 @@
+{
+  "schema": "frend-normalization/2", "locale": "es_MX",
+  "provenance": {"source": "frend/curated"}, "versions": {"icu": "78.3"},
+  "sources": [{"id": "banxico/numismatica", "receipt": "banxico-money.json"}],
+  "selectors": [],
+  "resources": [{"id": "currency-major-MXN", "kind": "currency", "code": "MXN", "gender": "masculine", "forms": {"one": "peso", "other": "pesos"}, "derived_from": ["banxico/numismatica#peso-denominations"]}],
+  "rules": [{"id": "money-major-MXN", "kind": "money-rule", "shape": "major", "fields": ["amount", "currency"], "target": ["AMOUNT", " ", "CURRENCY"], "currency": "MXN", "directions": ["tn"], "derived_from": ["banxico/numismatica#peso-denominations"]}],
+  "weights": [], "curated_rows": [],
+  "ancestry": {"banxico/numismatica#peso-denominations": ["1870f0d848d4d2e4078d2c82b0d274c333402f7ef425bc176ff8862bdebbb570"]}
+}

@@ -167,6 +167,9 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
         "ua/matesfacil": _citation_source("Universidad de Alicante, Matesfacil"),
         "oqlf/bdl": _citation_source("Office quebecois de la langue francaise"),
         "academie-francaise/dictionnaire": _citation_source("Academie francaise, Dictionnaire"),
+        "academie-francaise/questions-de-langue": _citation_source(
+            "Academie francaise, Questions de langue"
+        ),
         "eduscol/fractions-cycle-3": _citation_source(
             "Ministere de l'Education nationale, Eduscol"
         ),
@@ -176,6 +179,9 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
         "treccani/vocabolario": _citation_source(
             "Istituto della Enciclopedia Italiana, Vocabolario"
         ),
+        "banxico/numismatica": _citation_source("Banco de Mexico, Numismatica"),
+        "bcb/plano-real": _citation_source("Banco Central do Brasil, Plano Real"),
+        "bcb/cmn-1076": _citation_source("Banco Central do Brasil, CMN ata 1076"),
         "mext/math-grade4": _citation_source(
             "Japan Ministry of Education, Culture, Sports, Science and Technology"
         ),

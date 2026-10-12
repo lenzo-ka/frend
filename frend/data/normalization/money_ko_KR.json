@@ -1,0 +1,10 @@
+{
+  "schema": "frend-normalization/2", "locale": "ko_KR",
+  "provenance": {"source": "frend/curated"}, "versions": {"icu": "78.3"},
+  "sources": [{"id": "nikl/online-qna", "receipt": "nikl-money.json"}],
+  "selectors": [],
+  "resources": [{"id": "currency-major-KRW", "kind": "currency", "code": "KRW", "forms": {"other": "원"}, "rbnf_variant": "sinokorean", "forms_number": "other", "derived_from": ["nikl/online-qna#won-amounts"]}],
+  "rules": [{"id": "money-major-KRW", "kind": "money-rule", "shape": "major", "fields": ["amount", "currency"], "target": ["AMOUNT", "CURRENCY"], "currency": "KRW", "directions": ["tn"], "derived_from": ["nikl/online-qna#won-amounts"]}],
+  "weights": [], "curated_rows": [],
+  "ancestry": {"nikl/online-qna#won-amounts": ["0b5b4d6f10fe6f1ff8f647dd3c918830c2a2e1e0433876a36aeb576fd09ae4ec"]}
+}

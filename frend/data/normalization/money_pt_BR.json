@@ -1,0 +1,22 @@
+{
+  "schema": "frend-normalization/2", "locale": "pt_BR",
+  "provenance": {"source": "frend/curated"}, "versions": {"icu": "78.3"},
+  "sources": [{"id": "bcb/plano-real", "receipt": "bcb-plano-real.json"}, {"id": "bcb/cmn-1076", "receipt": "bcb-cmn-1076.json"}],
+  "selectors": [],
+  "resources": [
+    {"id": "currency-major-BRL", "kind": "currency", "code": "BRL", "gender": "masculine", "forms": {"one": "real", "other": "reais"}, "derived_from": ["bcb/plano-real#real-denominations"]},
+    {"id": "currency-minor-BRL", "kind": "minor", "code": "BRL", "gender": "masculine", "forms": {"one": "centavo", "other": "centavos"}, "derived_from": ["bcb/plano-real#centavo-denominations"]}
+  ],
+  "rules": [
+    {"id": "money-major-BRL", "kind": "money-rule", "shape": "major", "fields": ["amount", "currency"], "target": ["AMOUNT", " ", "CURRENCY"], "currency": "BRL", "directions": ["tn"], "derived_from": ["bcb/plano-real#real-denominations"]},
+    {"id": "money-major-minor-BRL", "kind": "money-rule", "shape": "major_minor", "fields": ["major", "currency", "minor"], "target": ["MAJOR", " ", "CURRENCY", " e ", "MINOR", " ", "MINOR_CURRENCY"], "currency": "BRL", "directions": ["tn"], "derived_from": ["bcb/cmn-1076#major-minor-wording"]},
+    {"id": "money-minor-only-BRL", "kind": "money-rule", "shape": "minor_only", "fields": ["currency", "minor"], "target": ["MINOR", " ", "MINOR_CURRENCY"], "currency": "BRL", "directions": ["tn"], "derived_from": ["bcb/cmn-1076#minor-only-wording"]}
+  ],
+  "weights": [], "curated_rows": [],
+  "ancestry": {
+    "bcb/plano-real#real-denominations": ["cf2db7c1a9489726362050f701283716041c0e6a37c0dbeccafe42f3da93c616"],
+    "bcb/plano-real#centavo-denominations": ["cf2db7c1a9489726362050f701283716041c0e6a37c0dbeccafe42f3da93c616"],
+    "bcb/cmn-1076#major-minor-wording": ["452328a070b6fabf34711461e87f62f663a03ac8c7cf1ca6094ec1883a221aeb"],
+    "bcb/cmn-1076#minor-only-wording": ["452328a070b6fabf34711461e87f62f663a03ac8c7cf1ca6094ec1883a221aeb"]
+  }
+}

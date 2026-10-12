@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public Treccani entries",
+  "fetched_at": "2026-10-12T12:00:00-04:00",
+  "license_sha256": "85890e4dd16f2bd1c7478f4b9be885c297b19127d64af101ae74a919d990e104",
+  "locator": "https://www.treccani.it/vocabolario/euro1/; https://www.treccani.it/vocabolario/numerale/",
+  "manual_citation": true,
+  "revision": "Treccani euro and numerale entries",
+  "sha256": "95a240d683e7dd5dbd514e1a121af90bdaca15d5890c5a5998177bb6f41a732f",
+  "source": "treccani/vocabolario",
+  "transform_command": "manual source-claim transcription"
+}

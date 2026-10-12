@@ -2307,6 +2307,14 @@ def _spoken_number(
         return _spoken_fraction(detection, locale, negative=decimal.is_signed())
     compact = _capture(detection, "compact")
     if compact is not None:
+        if value.currency is not None and locale != "en_US":
+            from frend.money_rules import GENERATED_MONEY_LOCALES, generate_money_alternatives
+
+            if locale in GENERATED_MONEY_LOCALES:
+                try:
+                    return generate_money_alternatives(value, detection, locale)
+                except NotImplementedError:
+                    pass
         alternatives = _spoken_compact(
             detection,
             locale,
@@ -2322,6 +2330,14 @@ def _spoken_number(
     if value.currency is not None or type_.startswith(("money:", "number:currency")):
         if value.currency is None:
             raise NotImplementedError("currency reading has no captured ISO currency code")
+        if locale != "en_US":
+            from frend.money_rules import GENERATED_MONEY_LOCALES, generate_money_alternatives
+
+            if locale in GENERATED_MONEY_LOCALES:
+                try:
+                    return generate_money_alternatives(value, detection, locale)
+                except NotImplementedError:
+                    pass
         return _spoken_money(decimal, value.currency, locale)
     if type_.startswith("number:decimal") and decimal.as_tuple().exponent < 0:
         integer_capture = _capture(detection, "integer")
