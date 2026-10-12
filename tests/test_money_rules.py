@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 from pathlib import Path
 
@@ -13,14 +14,7 @@ from frend.normalization_schema import validate_bundle
 from frend.normalize import _reading_detectors
 
 try:
-    from frend import money_rules as money_rules_module
-    from frend.money_rules import (
-        GENERATED_MONEY_LOCALES,
-        generate_money_alternatives,
-        load_money_rule_bundle,
-        money_grammar_input,
-        money_rule_events,
-    )
+    money_rules_module = importlib.import_module("frend.money_rules")
 except ModuleNotFoundError as error:
     if error.name != "frend.money_rules":
         raise
@@ -30,6 +24,12 @@ except ModuleNotFoundError as error:
     load_money_rule_bundle = None
     money_grammar_input = None
     money_rule_events = None
+else:
+    GENERATED_MONEY_LOCALES = money_rules_module.GENERATED_MONEY_LOCALES
+    generate_money_alternatives = money_rules_module.generate_money_alternatives
+    load_money_rule_bundle = money_rules_module.load_money_rule_bundle
+    money_grammar_input = money_rules_module.money_grammar_input
+    money_rule_events = money_rules_module.money_rule_events
 
 REPO = Path(__file__).resolve().parents[1]
 
