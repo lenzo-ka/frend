@@ -30,10 +30,8 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: pytest -q
 
-  # frend develops against icukit's main between icukit releases. This job installs icukit
-  # from main over the released one; the job above keeps showing whether frend works with
-  # what users can install, and must pass before frend itself is released.
-  test-icukit-main:
+  # Verify the declared icukit floor independently of the newest compatible release.
+  test-icukit-floor:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -45,6 +43,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[dev]"
-      - run: pip install --force-reinstall --no-deps "icukit @ git+https://github.com/lenzo-ka/icukit@main"
+      - run: pip install --force-reinstall --no-deps "icukit==0.10.0"
       - run: pip show icukit | grep -E "^(Version|Location)"; pip freeze | grep -i icukit
       - run: pytest -q

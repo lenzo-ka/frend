@@ -136,3 +136,20 @@ def apply_input_fold(text: str, fold: InputFold | None = "typographic") -> str:
     folded = "".join(folded_chars)
     assert len(folded) == len(text)
     return folded
+
+
+def _stable_fold_prefix_length(text: str, fold: InputFold | None) -> int:
+    """Return the prefix whose folded code points cannot change with more input."""
+    if fold is None or not text:
+        return len(text)
+    if fold != "typographic":
+        raise ValueError(f"unknown input fold: {fold!r}")
+    end = len(text)
+    if text[-1] in _BETWEEN_DIGITS or text[-1] in _NEXT_TO_DIGIT:
+        end -= 1
+    run = len(text)
+    while run and _is_fullwidth_latin(text[run - 1]):
+        run -= 1
+    if run < len(text) and run and text[run - 1] in _DECIMAL_DIGITS:
+        end = min(end, run)
+    return end

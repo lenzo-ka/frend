@@ -79,7 +79,7 @@
     "date": {
       "matched": 1797,
       "source_matched": {
-        "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
+        "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-year": 3,
         "icu-datetime:EEEE+icu-rbnf:%spellout-ordinal+icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 2,
         "icu-datetime:LLLL+icu-rbnf:%spellout-numbering-year": 89,
         "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 15,
@@ -104,7 +104,7 @@
         "month-first": {
           "matched": 333,
           "source_matched": {
-            "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 3,
+            "icu-datetime:EEEE+icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+lexical:en_US+icu-rbnf:%spellout-numbering-year": 3,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal": 15,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year": 312,
             "icu-datetime:LLLL+icu-rbnf:%spellout-ordinal+icu-rbnf:%spellout-numbering-year+lexical:en_US": 2,
@@ -510,17 +510,18 @@
       }
     },
     "electronic": {
-      "matched": 1443,
+      "matched": 1548,
       "source_matched": {
-        "measured:electronic": 1443
+        "measured:electronic": 1540,
+        "measured:electronic+lexical:en_US": 8
       },
       "sub_keys": {},
       "top_unmatched": [],
       "total": 1800,
-      "unmatched": 357,
+      "unmatched": 252,
       "unmatched_by_reason": {
-        "no_alternative_matched": 109,
-        "unrecognized": 244,
+        "no_alternative_matched": 147,
+        "unrecognized": 101,
         "unverbalized": 4
       }
     },
@@ -3215,10 +3216,10 @@
       }
     },
     "money": {
-      "matched": 1721,
+      "matched": 1718,
       "source_matched": {
         "icu-rbnf:%spellout-numbering+icu-compact:long+icu-measure:wide": 1,
-        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 401,
+        "icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 398,
         "icu-rbnf:%spellout-numbering+icu-measure:wide": 2,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 143,
         "icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-cardinal+icu-rbnf:%spellout-numbering+icu-rbnf:%spellout-numbering+icu-compact:long+lexical:en_US": 27,
@@ -3413,6 +3414,18 @@
         {
           "count": 1,
           "reasons": {
+            "no_alternative_matched": 1,
+            "unrecognized": 0,
+            "unverbalized": 0
+          },
+          "spoken": "four thousand two hundred million dollars",
+          "written_forms": {
+            "US$4,200 million": 1
+          }
+        },
+        {
+          "count": 1,
+          "reasons": {
             "no_alternative_matched": 0,
             "unrecognized": 1,
             "unverbalized": 0
@@ -3457,24 +3470,12 @@
           "written_forms": {
             "SHP-1": 1
           }
-        },
-        {
-          "count": 1,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 1,
-            "unverbalized": 0
-          },
-          "spoken": "minus one samoan talas",
-          "written_forms": {
-            "WST-1": 1
-          }
         }
       ],
       "total": 1800,
-      "unmatched": 79,
+      "unmatched": 82,
       "unmatched_by_reason": {
-        "no_alternative_matched": 4,
+        "no_alternative_matched": 7,
         "unrecognized": 75,
         "unverbalized": 0
       }
@@ -3534,15 +3535,16 @@
       }
     },
     "symbol": {
-      "matched": 2961,
+      "matched": 3354,
       "source_matched": {
         "cldr-symbol:and": 206,
         "cldr-symbol:dollar": 3,
         "cldr-symbol:hash": 1,
         "cldr-symbol:number": 29,
+        "cldr-symbol:squared": 2,
         "cldr-symbol:tilde": 2,
         "icu-name:letter": 279,
-        "surface:silence": 2441
+        "surface:silence": 2832
       },
       "sub_keys": {
         "Arab": {
@@ -3606,6 +3608,12 @@
             "surface:silence": 4
           }
         },
+        "U+0022": {
+          "matched": 269,
+          "source_matched": {
+            "surface:silence": 269
+          }
+        },
         "U+0023": {
           "matched": 30,
           "source_matched": {
@@ -3629,6 +3637,12 @@
           "matched": 17,
           "source_matched": {
             "surface:silence": 17
+          }
+        },
+        "U+0028": {
+          "matched": 122,
+          "source_matched": {
+            "surface:silence": 122
           }
         },
         "U+0029": {
@@ -3685,6 +3699,12 @@
             "cldr-symbol:tilde": 2
           }
         },
+        "U+00B2": {
+          "matched": 2,
+          "source_matched": {
+            "cldr-symbol:squared": 2
+          }
+        },
         "U+00BB": {
           "matched": 1,
           "source_matched": {
@@ -3705,29 +3725,6 @@
         }
       },
       "top_unmatched": [
-        {
-          "count": 405,
-          "reasons": {
-            "no_alternative_matched": 0,
-            "unrecognized": 405,
-            "unverbalized": 0
-          },
-          "spoken": "",
-          "written_forms": {
-            "\"": 269,
-            "(": 122,
-            "Ś": 1,
-            "ʻ": 2,
-            "ʼ": 1,
-            "Ḳ": 1,
-            "ầ": 2,
-            "ẫ": 1,
-            "ễ": 1,
-            "ợ": 1,
-            "ứ": 3,
-            "ー": 1
-          }
-        },
         {
           "count": 60,
           "reasons": {
@@ -3751,6 +3748,27 @@
           "written_forms": {
             "Λ": 1,
             "λ": 21
+          }
+        },
+        {
+          "count": 14,
+          "reasons": {
+            "no_alternative_matched": 0,
+            "unrecognized": 14,
+            "unverbalized": 0
+          },
+          "spoken": "",
+          "written_forms": {
+            "Ś": 1,
+            "ʻ": 2,
+            "ʼ": 1,
+            "Ḳ": 1,
+            "ầ": 2,
+            "ẫ": 1,
+            "ễ": 1,
+            "ợ": 1,
+            "ứ": 3,
+            "ー": 1
           }
         },
         {
@@ -3967,10 +3985,10 @@
         }
       ],
       "total": 3600,
-      "unmatched": 639,
+      "unmatched": 246,
       "unmatched_by_reason": {
         "no_alternative_matched": 44,
-        "unrecognized": 595,
+        "unrecognized": 202,
         "unverbalized": 0
       }
     },
@@ -4395,6 +4413,9 @@
           "FlexibleMeasureDetector",
           "FlexibleMeasureDetector",
           "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
+          "FlexibleMeasureDetector",
           "FlexibleMixedMeasureDetector",
           "FlexibleMixedMeasureDetector",
           "FlexibleNumberRangeDetector",
@@ -4466,6 +4487,8 @@
         "square-kilometer",
         "square-mile",
         "square-meter",
+        "square-yard",
+        "square-inch",
         "kilowatt",
         "megawatt",
         "watt",
@@ -4490,7 +4513,8 @@
         "meter-per-second",
         "square-foot",
         "millibar",
-        "cubic-meter"
+        "cubic-meter",
+        "cubic-foot"
       ],
       "mixed_measures": [
         "foot-and-inch",

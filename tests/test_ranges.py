@@ -18,14 +18,9 @@ from icukit.detectors import NumberValue, detect  # noqa: E402
 
 from frend import resolve_lattice  # noqa: E402
 from frend.context import TextContext  # noqa: E402
-from frend.ranges import RangeValue, has_icu_ranges  # noqa: E402
+from frend.ranges import RangeValue  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
 from frend.verbalize import _fill_slot, _spoken_range, verbalize_lattice  # noqa: E402
-
-needs_icu_ranges = pytest.mark.skipif(
-    not has_icu_ranges(),
-    reason="this icukit builds no range readers (icukit.engine.range_detectors)",
-)
 
 
 def _readings(text: str, count: int | None = 2) -> list[tuple[str, str]]:
@@ -60,26 +55,22 @@ def _assert_range_reads(text: str, said: str) -> None:
 # ------------------------------------------------------------------ ICU's own ranges
 
 
-@needs_icu_ranges
 def test_icu_en_dash_years():
     """CLDR's range separator between two years reads as one range of years (frend
     #43 already says "to" for the en dash between the three units it read)."""
     _assert_range_reads("1990–1995", "nineteen ninety to nineteen ninety five")
 
 
-@needs_icu_ranges
 def test_icu_spaced_interval():
     """CLDR's interval fallback, spaced ("{0} – {1}"), reads as the same range."""
     _assert_range_reads("1990 – 1995", "nineteen ninety to nineteen ninety five")
 
 
-@needs_icu_ranges
 def test_icu_measure_range_moves_the_unit():
     """A unit written once, after the right end, is said once, after it."""
     _assert_range_reads("5–10 km", "five to ten kilometers")
 
 
-@needs_icu_ranges
 def test_icu_range_follows_the_table(no_context_trees):
     """ "1990–95" reads as the range table orders a four-digit, two-digit range (J's
     ``dash:4+2`` row, the en dash pooled with the hyphen), no longer by the interim
@@ -89,7 +80,6 @@ def test_icu_range_follows_the_table(no_context_trees):
     assert source == "range:cardinal+silent+cardinal"
 
 
-@needs_icu_ranges
 def test_money_range_offers_the_currency_in_place_and_at_the_end():
     """ "$5–10": the currency is written on the left only; both placements are offered,
     unmeasured (the ranges plan's (R))."""
@@ -98,7 +88,6 @@ def test_money_range_offers_the_currency_in_place_and_at_the_end():
     assert "five to ten dollars" in said
 
 
-@needs_icu_ranges
 def test_date_interval_ends_are_cut_where_icu_writes_them():
     """ICU writes "May 3 – 5, 2020" with the month on the left end and the year on the
     right: each end says what it writes."""
@@ -165,7 +154,6 @@ def _all(text: str) -> list[str]:
     return [reading for reading, _ in _readings(text, 64)]
 
 
-@needs_icu_ranges
 def test_decimal_ends_keep_their_written_zeros():
     """An end is whole only where it writes no fraction: "1.00" is said "one point o o",
     as frend reads it alone (and as the base read each end), not "one"."""
@@ -173,7 +161,6 @@ def test_decimal_ends_keep_their_written_zeros():
     assert _first("1.50–2.00") == "one point five o to two point o o"
 
 
-@needs_icu_ranges
 def test_percent_ends_keep_their_written_fraction_digits():
     """A percent end is read from its own captures ("79.20%": fraction "20"), so its
     written digits are said; "80.00%" keeps "eighty point o o percent" among them."""
@@ -181,7 +168,6 @@ def test_percent_ends_keep_their_written_fraction_digits():
     assert any(r.endswith("to eighty point o o percent") for r in _all("79.20%–80.00%"))
 
 
-@needs_icu_ranges
 def test_an_interval_writing_fields_its_skeleton_does_not_name_is_not_a_range():
     """ICU's "h" interval writes each end's date when the days differ; that reading is
     dropped, so the span keeps the readings frend has without it, never an unsupported
@@ -196,7 +182,6 @@ def test_an_interval_writing_fields_its_skeleton_does_not_name_is_not_a_range():
     assert not any(source.startswith("range:") for source in sources), sources
 
 
-@needs_icu_ranges
 def test_year_readings_are_for_plain_numbers_only():
     """Year readings (R8) are offered for plain whole ends only; a range with a unit or
     currency keeps its kind's order and is not sourced as a date."""
@@ -206,7 +191,6 @@ def test_year_readings_are_for_plain_numbers_only():
         assert "date" not in source, (text, source)
 
 
-@needs_icu_ranges
 def test_interval_fields_are_cut_in_code_points_not_utf16_units():
     """ICU's field positions are UTF-16; Adlam's digits are outside the BMP, so each
     field's text must be cut through UTF-16 ("𞥑𞥐" for 10, "𞥓𞥐" for 30)."""

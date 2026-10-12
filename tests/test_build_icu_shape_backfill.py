@@ -1,25 +1,20 @@
 from __future__ import annotations
 
-import importlib.util
 import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from conftest import load_tool_module
 from icukit.locale import format_number
 
 from frend.shape import shape
 
 
 def _load_builder():
-    """Load tools/build_icu_shape_backfill.py by path (tools is not an installed package)."""
-    spec = importlib.util.spec_from_file_location(
+    return load_tool_module(
         "build_icu_shape_backfill",
         Path(__file__).resolve().parent.parent / "tools" / "build_icu_shape_backfill.py",
     )
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 builder = _load_builder()

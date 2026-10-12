@@ -1,22 +1,17 @@
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+from conftest import load_tool_module
+
 
 def _builder():
-    tools = Path(__file__).resolve().parents[1] / "tools"
-    if str(tools) not in sys.path:
-        sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "build_spellout_dictionary", tools / "build_spellout_dictionary.py"
+    return load_tool_module(
+        "build_spellout_dictionary",
+        Path(__file__).resolve().parents[1] / "tools" / "build_spellout_dictionary.py",
     )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def test_only_google_decisions_differing_from_the_fallback_ship(tmp_path):

@@ -4,18 +4,19 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import statistics
-import subprocess
 import sys
 import time
 from datetime import date, timedelta
 from pathlib import Path
 
-from icukit.detectors import DateTimeValue, detect
-from tiergraph import generate, recognize
+REPO = Path(__file__).resolve().parents[1]
+if not __package__:
+    sys.path.insert(0, str(REPO))
 
-from frend.date_rules import (
+from icukit.detectors import DateTimeValue, detect  # noqa: E402
+from tiergraph import generate, recognize  # noqa: E402
+
+from frend.date_rules import (  # noqa: E402
     GENERATED_DATE_LOCALES,
     date_grammar_input,
     exact_date_generation_count,
@@ -23,15 +24,10 @@ from frend.date_rules import (
     load_date_rule_bundle,
     render_date_derivation,
 )
-from frend.normalize import _reading_detectors
+from frend.normalize import _reading_detectors  # noqa: E402
+from tools.compose_benchmark import percentile, run_composition_benchmark  # noqa: E402
 
-REPO = Path(__file__).resolve().parents[1]
 INPUTS = Path(__file__).with_name("date_latency_inputs.json")
-
-
-def percentile(values: list[int], fraction: float) -> int:
-    ordered = sorted(values)
-    return ordered[min(len(ordered) - 1, max(0, int(len(ordered) * fraction + 0.999999) - 1))]
 
 
 def _date_detection(locale: str, text: str) -> dict:
@@ -121,80 +117,46 @@ def _exercise_unseen_dates(values_per_locale: int = 2000) -> int:
 
 
 def benchmark(out: Path, iterations: int, repeat: int) -> dict:
-    rows = []
-    environment = dict(os.environ)
-    environment["PYTHONPATH"] = str(REPO)
-    environment["PYTHONDONTWRITEBYTECODE"] = "1"
-    for run in range(1, repeat + 1):
+    def finish(failures: list[dict]) -> dict:
+        load_date_rule_bundle.cache_clear()
         for locale in GENERATED_DATE_LOCALES:
-            completed = subprocess.run(
-                [
-                    sys.executable,
-                    "-B",
-                    str(Path(__file__).resolve()),
-                    "--child-locale",
-                    locale,
-                    "--iterations",
-                    str(iterations),
-                ],
-                cwd=REPO,
-                env=environment,
-                check=True,
-                capture_output=True,
-                text=True,
+            load_date_rule_bundle(locale)
+        peak_bundle_count = load_date_rule_bundle.cache_info().currsize
+        unseen_generations = _exercise_unseen_dates()
+        stable_bundle_count = load_date_rule_bundle.cache_info().currsize
+        if peak_bundle_count != len(GENERATED_DATE_LOCALES):
+            failures.append(
+                {
+                    "metric": "peak_bundle_count",
+                    "value": peak_bundle_count,
+                    "expected": len(GENERATED_DATE_LOCALES),
+                }
             )
-            row = json.loads(completed.stdout)
-            row["run"] = run
-            rows.append(row)
-    summary = {}
-    failures = []
-    for locale in GENERATED_DATE_LOCALES:
-        selected = [row for row in rows if row["locale"] == locale]
-        p50 = int(statistics.median(row["p50_ns"] for row in selected))
-        p95 = int(statistics.median(row["p95_ns"] for row in selected))
-        summary[locale] = {"p50_ns": p50, "p95_ns": p95}
-        if p50 > 300_000:
-            failures.append({"locale": locale, "metric": "p50_ns", "value": p50})
-        if p95 > 1_000_000:
-            failures.append({"locale": locale, "metric": "p95_ns", "value": p95})
-    load_date_rule_bundle.cache_clear()
-    for locale in GENERATED_DATE_LOCALES:
-        load_date_rule_bundle(locale)
-    peak_bundle_count = load_date_rule_bundle.cache_info().currsize
-    unseen_generations = _exercise_unseen_dates()
-    stable_bundle_count = load_date_rule_bundle.cache_info().currsize
-    if peak_bundle_count != len(GENERATED_DATE_LOCALES):
-        failures.append(
-            {
-                "metric": "peak_bundle_count",
-                "value": peak_bundle_count,
-                "expected": len(GENERATED_DATE_LOCALES),
-            }
-        )
-    if stable_bundle_count != peak_bundle_count:
-        failures.append(
-            {
-                "metric": "bundle_count_after_unseen_dates",
-                "value": stable_bundle_count,
-                "expected": peak_bundle_count,
-            }
-        )
-    report = {
-        "schema": 1,
-        "repeat": repeat,
-        "iterations": iterations,
-        "tracemalloc": False,
-        "rows": rows,
-        "summary": summary,
-        "peak_observed_bundle_count": peak_bundle_count,
-        "bundle_count_after_unseen_dates": stable_bundle_count,
-        "never_seen_date_values_per_locale": 2000,
-        "never_seen_generation_calls": unseen_generations,
-        "failures": failures,
-    }
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return report
+        if stable_bundle_count != peak_bundle_count:
+            failures.append(
+                {
+                    "metric": "bundle_count_after_unseen_dates",
+                    "value": stable_bundle_count,
+                    "expected": peak_bundle_count,
+                }
+            )
+        return {
+            "peak_observed_bundle_count": peak_bundle_count,
+            "bundle_count_after_unseen_dates": stable_bundle_count,
+            "never_seen_date_values_per_locale": 2000,
+            "never_seen_generation_calls": unseen_generations,
+        }
+
+    return run_composition_benchmark(
+        script=Path(__file__),
+        repository=REPO,
+        locales=GENERATED_DATE_LOCALES,
+        output=out,
+        iterations=iterations,
+        repeat=repeat,
+        limits={"p50_ns": 300_000, "p95_ns": 1_000_000},
+        finish=finish,
+    )
 
 
 def main() -> int:

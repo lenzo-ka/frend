@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import icu
 import pytest
 from icukit.abbreviation_recognize import AbbreviationDetector
-from icukit.detectors import NumberValue, all_detectors, detect
+from icukit.detectors import NumberValue, all_detectors, date_detectors, detect
 from icukit.recognize import (
     AlphanumericRunsDetector,
     FlexibleCompactDetector,
@@ -33,7 +33,9 @@ from frend.electronic import ElectronicDetector
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import (
     SpokenAlternative,
+    _datetime_formatter,
     _decimal_separator_rules,
+    _measure_template,
     _quarter_names,
     _spellout_rule_sets,
     _weekday_name,
@@ -1152,6 +1154,13 @@ def test_every_icu_weekday_number_and_name_is_spoken():
             _weekday_name(SimpleNamespace(value=bad), "gregorian", "en_US")
 
 
+def test_datetime_formatter_is_reused_without_changing_weekday_output():
+    _datetime_formatter.cache_clear()
+
+    assert _datetime_formatter("en_US", "gregorian") is _datetime_formatter("en_US", "gregorian")
+    assert _weekday_name(SimpleNamespace(value=1), "gregorian", "en_US").text == "Sunday"
+
+
 def test_written_plus_sign_leads_with_plus_and_keeps_the_unsigned_form():
     number = [FlexibleNumberDetector("en_US")]
     (plus,) = [u for u in _units("+5", number) if u.verbalized]
@@ -1542,8 +1551,8 @@ def test_no_capture_goes_unspoken_across_the_recognition_profile():
     assert unspoken == set()
 
 
-def _full_span_forms(text, detectors, type_):
-    lattice = resolve_choices(list(detect(text, detectors)), source_text=text)
+def _full_span_forms(text, detectors, type_, *, locale="en_US"):
+    lattice = resolve_choices(list(detect(text, detectors)), source_text=text, locale=locale)
     graph = compose_choices(lattice)
     edges = {edge.id: edge for edge in lattice.edges}
     (unit,) = [
@@ -1596,6 +1605,38 @@ def test_time_speaks_the_written_hour_minutes_and_period(written, expected):
     time zone as its letters after the time ("10 PM ET" "ten p m e t")."""
     unit = _full_span_forms(written, [FlexibleTimeDetector("en_US")], "time:flexible")
     assert {a.text for a in unit.alternatives} == expected
+    assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("locale", "written", "spoken"),
+    [
+        ("de_DE", "8 Uhr", "acht Uhr"),
+        ("fr_FR", "1 h", "un heure"),
+        ("fr_FR", "8 h", "huit heures"),
+        ("bg_BG", "8 ч.", "осем часа"),
+    ],
+)
+def test_cldr_literal_hour_is_spoken_from_locale_data(locale, written, spoken):
+    unit = _full_span_forms(
+        written, date_detectors(locale, ("H",)).detectors, "date:H", locale=locale
+    )
+
+    assert normalize_spoken(unit.alternatives[0].text) == normalize_spoken(spoken)
+    assert unit.unspoken == ()
+
+
+@pytest.mark.parametrize(
+    ("locale", "written", "spoken"),
+    [
+        ("fr_FR", "08:00 h", "huit heures"),
+        ("bg_BG", "08:00 ч", "осем часа"),
+    ],
+)
+def test_flexible_time_speaks_its_captured_cldr_hour_unit(locale, written, spoken):
+    unit = _full_span_forms(written, [FlexibleTimeDetector(locale)], "time:flexible", locale=locale)
+
+    assert normalize_spoken(unit.alternatives[0].text) == normalize_spoken(spoken)
     assert unit.unspoken == ()
 
 
@@ -1702,6 +1743,14 @@ def test_measure_speaks_the_amount_and_icus_wide_unit(written, unit, spoken):
     )
     assert spoken in forms
     assert detection_unit.unspoken == ()
+
+
+def test_measure_template_reuses_the_locale_formatter_without_changing_output():
+    _measure_template.cache_clear()
+
+    assert _measure_template(Decimal(25), "kilogram", "en_US") == "{} kilograms"
+    assert _measure_template(Decimal(25), "kilogram", "en_US") == "{} kilograms"
+    assert _measure_template.cache_info().hits == 1
 
 
 def test_measured_rate_ranks_the_corpus_plural_after_per_first():

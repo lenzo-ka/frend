@@ -18,9 +18,9 @@ from pathlib import Path
 from types import MappingProxyType
 
 import icu
-from icukit import AbbreviationValue, DateTimeFormatter, break_grapheme_spans
+from icukit import AbbreviationValue, Breaker, DateTimeFormatter
 from icukit.detectors import DateTimeValue, MeasureValue, NumberValue
-from icukit.measure import WIDTH_WIDE, format_measure
+from icukit.measure import WIDTH_NARROW, WIDTH_SHORT, WIDTH_WIDE, MeasureFormatter
 
 from frend.abbreviation_variants import (
     AS_WRITTEN_SOURCE,
@@ -125,6 +125,7 @@ __all__ = [
 LEXICAL_SOURCE = "lexical:en_US"
 _DATE_MONTH_FIRST_KEYS = ("Mdy", "Md")
 _PLURAL_ONE = "one"
+_GRAPHEME_BREAKER = Breaker("root")
 
 
 def lexical_source(locale: str) -> str:
@@ -380,20 +381,46 @@ def _with_measured_provenance(
 
 
 def _digit_like_cldr_name_first(
-    alternatives: Sequence[SpokenAlternative], value: object
+    alternatives: Sequence[SpokenAlternative],
+    value: object,
+    edge: ReadingEdge,
+    context: TextContext | None,
 ) -> tuple[SpokenAlternative, ...]:
-    """Keep a CLDR-named digit-like symbol audible while retaining measured name order."""
+    """Keep the first CLDR name first except for a measured algebraic exponent.
+
+    A symbol-wide measurement such as ``squared`` is evidence for a one-letter
+    variable or a short lowercase unit-shaped token (``x²``, ``m²``, ``km²``),
+    not for a footnote after a word (``Smith²``, ``note²``).  The distinction is
+    structural so it needs no vocabulary list.
+    """
     alternatives = tuple(alternatives)
     if not isinstance(value, SymbolValue) or not value.char.isdigit():
         return alternatives
-    chosen = next(
-        (
-            index
-            for index, alternative in enumerate(alternatives)
-            if alternative.text and alternative.provenance.startswith("cldr-symbol:")
-        ),
-        None,
+    absolute_start = edge.start + (0 if context is None else context.offset)
+    before = "" if context is None else context.text[:absolute_start]
+    token = re.search(r"[^\W\d_]+\s*$", before, flags=re.UNICODE)
+    token_text = "" if token is None else token.group().rstrip()
+    exponent_context = token is not None and (
+        len(token_text) == 1 or (len(token_text) <= 2 and token_text.islower())
     )
+    if exponent_context:
+        spoken_first = next((item for item in alternatives if item.text), None)
+        if spoken_first is not None and spoken_first.weight is not None:
+            chosen = alternatives.index(spoken_first)
+        else:
+            chosen = None
+    else:
+        chosen = None
+    if chosen is None:
+        default_name, default_source = value.names[0]
+        chosen = next(
+            (
+                index
+                for index, alternative in enumerate(alternatives)
+                if alternative.text == default_name and alternative.provenance == default_source
+            ),
+            None,
+        )
     if chosen in (None, 0):
         return alternatives
     return (alternatives[chosen], *alternatives[:chosen], *alternatives[chosen + 1 :])
@@ -1047,10 +1074,16 @@ def _spoken_money(value: Decimal, currency: str, locale: str) -> tuple[SpokenAlt
     return _ranked(alternatives)
 
 
+@lru_cache(maxsize=LOCALE_CACHE * 4)
+def _datetime_formatter(locale: str, calendar: str | None) -> DateTimeFormatter:
+    """Retain icukit's formatter and its per-pattern ICU formatter cache."""
+    return DateTimeFormatter(locale, calendar=calendar)
+
+
 def _month_name(month: int, calendar: str, locale: str) -> SpokenAlternative:
     if not 1 <= month <= 12:
         raise ValueError(f"invalid month {month!r}")
-    text = DateTimeFormatter(locale, calendar=calendar).format(date(2000, month, 1), pattern="LLLL")
+    text = _datetime_formatter(locale, calendar).format(date(2000, month, 1), pattern="LLLL")
     return SpokenAlternative(text, "icu-datetime:LLLL")
 
 
@@ -1100,11 +1133,12 @@ _SPOKEN_CAPTURES = {
             "day-period",
             "time-zone",
             "datetime-glue",
+            "hour-unit",
         }
     ),
     "ordinal": frozenset({"integer", "ordinal-affix"}),
     "abbreviation": frozenset({"surface"}),
-    "time": frozenset({"H", "m", "day-period", "time-zone"}),
+    "time": frozenset({"H", "m", "day-period", "time-zone", "hour-unit"}),
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
     "serial": frozenset({"prefix", "digits", "suffix"}),
@@ -1204,6 +1238,158 @@ def _time_tail(
     return tuple(result)
 
 
+def _pattern_word_literals(pattern: str) -> tuple[str, ...]:
+    """Return CLDR date-pattern word literals without treating ASCII fields as words."""
+    words: list[str] = []
+    word: list[str] = []
+    quoted = False
+    index = 0
+    while index < len(pattern):
+        character = pattern[index]
+        if character == "'":
+            if word:
+                words.append("".join(word))
+                word.clear()
+            if index + 1 < len(pattern) and pattern[index + 1] == "'":
+                index += 2
+                continue
+            quoted = not quoted
+        elif character.isalpha() and (quoted or not character.isascii()):
+            word.append(character)
+        elif word:
+            words.append("".join(word))
+            word.clear()
+        index += 1
+    if word:
+        words.append("".join(word))
+    return tuple(words)
+
+
+def _unit_text(amount: Decimal, unit: str, locale: str, width: str) -> str | None:
+    """ICU's unit portion at ``width``, with its locale-formatted amount removed."""
+    formatted = MeasureFormatter(locale, width).format(float(amount), unit)
+    written = _number_formatter(locale).format(float(amount))
+    if formatted.count(written) != 1:
+        return None
+    return formatted.replace(written, "", 1).strip()
+
+
+def _time_literal(
+    value: DateTimeValue, detection: object, locale: str
+) -> tuple[str, str, str] | None:
+    """A source clock literal as ``(side, spoken, provenance)``.
+
+    A flexible clock's ``hour-unit`` is an icukit-proved CLDR short/narrow hour symbol.
+    A strict date reader instead carries its CLDR pattern in ``spec``; a pattern word
+    that equals an ICU short or narrow hour unit receives ICU's number-sensitive wide
+    name. Other pattern words have no proved spoken expansion, so they remain exactly
+    the CLDR literal. No locale words are stored here.
+    """
+    fields = dict(value.fields)
+    if "H" not in fields:
+        return None
+    hour_capture = _capture(detection, "H")
+    if hour_capture is None:
+        return None
+    unit_capture = _capture(detection, "hour-unit")
+    if unit_capture is not None:
+        literal = str(getattr(unit_capture, "text", "")).strip()
+        source = "icukit-hour-unit"
+        proved_unit = True
+        literal_start = int(getattr(unit_capture, "start", hour_capture.end))
+    else:
+        spec = detection.get("spec") if isinstance(detection, Mapping) else None
+        words = _pattern_word_literals(str(getattr(spec, "pattern", "")))
+        if not words:
+            return None
+        source = "icu-datetime:literal"
+        written = str(detection.get("text", "")) if isinstance(detection, Mapping) else ""
+        detection_start = int(detection.get("start", 0)) if isinstance(detection, Mapping) else 0
+        detection_end = detection_start + len(written)
+        capture_spans = sorted(
+            (
+                max(detection_start, int(getattr(capture, "start", detection_start))),
+                min(detection_end, int(getattr(capture, "end", detection_end))),
+            )
+            for capture in detection.get("captures", ())
+        )
+        gaps = []
+        cursor = detection_start
+        for start, stop in capture_spans:
+            if cursor < start:
+                gaps.append((cursor, start))
+            cursor = max(cursor, stop)
+        if cursor < detection_end:
+            gaps.append((cursor, detection_end))
+        uncovered = []
+        positions = []
+        for start, stop in gaps:
+            fragment = written[start - detection_start : stop - detection_start]
+            if any(character.isalpha() for character in fragment):
+                stripped = fragment.strip()
+                uncovered.append(stripped)
+                positions.append(start + fragment.index(stripped))
+        if not uncovered:
+            return None
+        literal = " ".join(uncovered)
+        literal_start = min(positions, default=int(getattr(hour_capture, "end", 0)))
+        compact = "".join(character for character in literal.casefold() if character.isalnum())
+        proved_unit = False
+        amount = Decimal(fields["H"])
+        for width in (WIDTH_SHORT, WIDTH_NARROW):
+            unit = _unit_text(amount, "hour", locale, width)
+            normalized = (
+                ""
+                if unit is None
+                else "".join(character for character in unit.casefold() if character.isalnum())
+            )
+            if compact and compact == normalized:
+                proved_unit = True
+                break
+    if not literal:
+        return None
+    if proved_unit:
+        spoken = _unit_text(Decimal(fields["H"]), "hour", locale, WIDTH_WIDE)
+        if spoken:
+            literal = spoken
+            source = f"{source}+icu-measure:wide"
+    side = "prefix" if literal_start < int(getattr(hour_capture, "start", 0)) else "suffix"
+    return side, literal, source
+
+
+def _with_time_literal(
+    alternatives: tuple[SpokenAlternative, ...],
+    value: DateTimeValue,
+    detection: object,
+    locale: str,
+) -> tuple[SpokenAlternative, ...]:
+    literal = _time_literal(value, detection, locale)
+    if literal is None:
+        return alternatives
+    side, spoken, source = literal
+    normalized = normalize_spoken(spoken)
+    result = []
+    for item in alternatives:
+        words = normalize_spoken(item.text).split()
+        needle = normalized.split()
+        already_present = bool(needle) and any(
+            words[index : index + len(needle)] == needle for index in range(len(words))
+        )
+        if already_present:
+            result.append(item)
+            continue
+        text = f"{spoken} {item.text}" if side == "prefix" else f"{item.text} {spoken}"
+        result.append(
+            SpokenAlternative(
+                text,
+                f"{item.provenance}+{source}",
+                item.weight,
+                item.prior_provenance,
+            )
+        )
+    return tuple(result)
+
+
 def _legacy_spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
@@ -1274,11 +1460,12 @@ def _spoken_time(
     if locale.startswith("en") or (
         locale == "de_DE" and detection.get(_WRITTEN_UHR_MARKER) is not True
     ):
-        return _legacy_spoken_time(value, detection, locale)
-
-    if locale in GENERATED_TIME_LOCALES:
-        return generate_time_alternatives(value, detection, locale)
-    return _legacy_spoken_time(value, detection, locale)
+        alternatives = _legacy_spoken_time(value, detection, locale)
+    elif locale in GENERATED_TIME_LOCALES:
+        alternatives = generate_time_alternatives(value, detection, locale)
+    else:
+        alternatives = _legacy_spoken_time(value, detection, locale)
+    return _with_time_literal(alternatives, value, detection, locale)
 
 
 def _plural_word(word: str, rules: Sequence[Mapping]) -> str:
@@ -1909,7 +2096,7 @@ _ICU_FIRST_WEEKDAY = date(2000, 1, 2)
 
 def _weekday_name(capture: object, calendar: str, locale: str) -> SpokenAlternative:
     """Speak a weekday capture, which icukit encodes as ICU's number or as a name."""
-    formatter = DateTimeFormatter(locale, calendar=calendar)
+    formatter = _datetime_formatter(locale, calendar)
     names = [
         formatter.format(_ICU_FIRST_WEEKDAY + timedelta(days=offset), pattern="EEEE")
         for offset in range(7)
@@ -2022,7 +2209,7 @@ def _quarter_names(quarter: int, calendar: str, locale: str) -> tuple[SpokenAlte
     "first quarter"), and the short name spelled ("Q1" -> "q one")."""
     if not 1 <= quarter <= 4:
         raise ValueError(f"invalid quarter {quarter!r}")
-    formatter = DateTimeFormatter(locale, calendar=calendar)
+    formatter = _datetime_formatter(locale, calendar)
     day = date(2000, 3 * quarter - 2, 1)
     wide = formatter.format(day, pattern="QQQQ")
     short = formatter.format(day, pattern="QQQ")
@@ -2522,6 +2709,7 @@ def _number_precedes_detached_prime(
     return re.match(r"[ \t]+′", after) is not None
 
 
+@lru_cache(maxsize=4096)
 def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     """ICU's wide measure form for an amount, with ICU's own formatted number cut out.
 
@@ -2530,11 +2718,22 @@ def _measure_template(amount: Decimal, unit: str, locale: str) -> str:
     states it. Nothing about the unit is written here.
     """
     number = float(amount)
-    formatted = format_measure(number, unit, locale, WIDTH_WIDE)
-    written = icu.NumberFormat.createInstance(icu.Locale(locale)).format(number)
+    formatted = _measure_api(locale).format(number, unit)
+    written = _number_formatter(locale).format(number)
     if formatted.count(written) != 1:
         raise NotImplementedError(f"cannot locate the amount in {formatted!r}")
     return formatted.replace(written, "{}", 1)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _measure_api(locale: str) -> MeasureFormatter:
+    """Retain icukit's formatter and its ICU formatter cache per locale."""
+    return MeasureFormatter(locale, WIDTH_WIDE)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _number_formatter(locale: str) -> icu.NumberFormat:
+    return icu.NumberFormat.createInstance(icu.Locale(locale))
 
 
 def _spoken_measure(
@@ -2625,10 +2824,16 @@ def _spoken_duration(detection: object, locale: str) -> tuple[SpokenAlternative,
     milliseconds after "and" ("... seconds and twenty two milliseconds"); that reading
     is the corpus's, so it is lexical over ICU's unit forms.
     """
-    fields = [
-        (Decimal(str(capture.value)), _DURATION_UNITS[capture.name])
+    duration_captures = [
+        capture
         for capture in detection.get("captures", ())  # type: ignore[union-attr]
         if capture.name in _DURATION_UNITS
+    ]
+    if any(capture.value is None for capture in duration_captures):
+        raise NotImplementedError("duration has an unrepresentable captured field")
+    fields = [
+        (Decimal(str(capture.value)), _DURATION_UNITS[capture.name])
+        for capture in duration_captures
     ]
     if not fields:
         raise NotImplementedError("duration without a captured field")
@@ -2685,8 +2890,8 @@ def _spoken_unit(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
     """Speak a unit written with no amount ("/km²", "per second"): ICU's wide form of the
     unit for one, with ICU's number cut out ("per square kilometer").
 
-    icukit reads such a rate as a ``UnitValue`` (icukit #102); it is matched by name so
-    frend still runs on an icukit release without it.
+    icukit reads such a rate as a ``UnitValue`` (icukit #102); the unit is matched by
+    name because that is the stable public value carried by the detection.
     """
     unit = str(getattr(value, "unit", ""))
     phrase = _measure_template(Decimal(1), unit, locale).replace("{}", "").strip()
@@ -3559,7 +3764,9 @@ def _char_detail(
 ) -> tuple[SpokenAlternative, ...]:
     """Render named and spelled slots from one unit's raw graphemes."""
     graphemes = [
-        span["text"] for span in break_grapheme_spans(surface, "root") if not span["text"].isspace()
+        span["text"]
+        for span in _GRAPHEME_BREAKER.break_grapheme_spans(surface)
+        if not span["text"].isspace()
     ]
 
     def kind(grapheme: str) -> str:
@@ -4335,7 +4542,7 @@ def _verbalize_edge(
             threshold=context_threshold,
         )
     if path == "symbol":
-        alternatives = _digit_like_cldr_name_first(alternatives, value)
+        alternatives = _digit_like_cldr_name_first(alternatives, value, edge, context)
     if path == "date":
         alternatives = _dedupe_date_boundary_prefix(alternatives, edge, source_text, locale)
     additionally_spoken = (

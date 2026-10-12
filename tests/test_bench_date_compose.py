@@ -2,21 +2,17 @@
 
 from __future__ import annotations
 
-import importlib.util
-import sys
 from pathlib import Path
+
+from conftest import load_tool_module
 
 REPO = Path(__file__).resolve().parents[1]
 
 
 def _bench():
-    name = "bench_date_compose_for_tests"
-    spec = importlib.util.spec_from_file_location(name, REPO / "tools/bench_date_compose.py")
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(
+        "bench_date_compose_for_tests", REPO / "tools/bench_date_compose.py", register=True
+    )
 
 
 bench = _bench()
