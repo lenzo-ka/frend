@@ -116,6 +116,36 @@ def test_us_telephone_numbers_read_digits_with_group_pauses(written):
 @pytest.mark.parametrize(
     ("written", "spoken"),
     [
+        (
+            "+44 20 7946 0958",
+            "plus four four sil two zero sil seven nine four six sil zero nine five eight",
+        ),
+        ("+49 30 901820", "plus four nine sil three zero sil nine zero one eight two zero"),
+        (
+            "+81 3 1234 5678",
+            "plus eight one sil three sil one two three four sil five six seven eight",
+        ),
+        (
+            "+33 1 42 68 53 00",
+            "plus three three sil one sil four two sil six eight sil five three sil zero zero",
+        ),
+    ],
+)
+def test_international_phone_reads_written_groups_as_digits(written, spoken):
+    assert frend.normalize(f"call {written}") == f" call   {spoken} "
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [("+5 degrees", " five degrees "), ("add plus 1 more", " add   plus   one   more ")],
+)
+def test_phone_country_code_does_not_broaden_plus_number_detection(written, spoken):
+    assert frend.normalize(written) == spoken
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
         ("pages 12-15", " pages   twelve to fifteen "),
         ("-19", " minus nineteen "),
         (
