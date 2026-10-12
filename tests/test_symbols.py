@@ -6,6 +6,7 @@ import unicodedata
 from decimal import Decimal
 
 import pytest
+from conftest import alignment_paths
 from icukit.detectors import NumberValue, detect
 
 import frend
@@ -411,16 +412,10 @@ def test_icu_graphemes_are_single_units_and_zwj_runs_retain_components():
 
 def _alignment_token_paths(alignment):
     plan = alignment.count_plan()
-
-    def walk(index, tokens):
-        item = alignment.items[plan.labels[index]]
-        tokens = (*tokens, *item.tokens)
-        if not plan.children[index]:
-            yield tokens
-        for child in plan.children[index]:
-            yield from walk(child, tokens)
-
-    return {tokens for root in plan.roots for tokens in walk(root, ())}
+    return {
+        tuple(token for index in path for token in alignment.items[plan.labels[index]].tokens)
+        for path in alignment_paths(alignment, plan="count")
+    }
 
 
 def test_run_is_additional_and_alignment_retains_partial_component_readings():

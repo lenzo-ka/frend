@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import pytest
+from conftest import load_tool_module
 
 from frend import resolve_lattice
 from frend.spoken_priors import normalize_spoken
@@ -73,19 +74,12 @@ def test_leaves_icus_own_forms_and_non_matches_alone(text):
 def test_a_grouped_number_is_never_a_year(text):
     """kal: "Dates won't have commas in like 2,026": no reader frend measures with reads a
     grouped number as a date, and its number reading gets no digit-by-digit form."""
-    import importlib.util
-    import sys
     from pathlib import Path
 
     from icukit.detectors import detect
 
     tools = Path(__file__).resolve().parents[1] / "tools"
-    sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "build_spoken_priors", tools / "build_spoken_priors.py"
-    )
-    builder = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(builder)
+    builder = load_tool_module("build_spoken_priors", tools / "build_spoken_priors.py")
     profile = builder._detectors()
     detectors = [d for kind in ("date", "time", "cardinal", "digit") for d in profile[kind]]
     found = [d for d in detect(text, detectors) if "2,026" in text[d["start"] : d["end"]]]

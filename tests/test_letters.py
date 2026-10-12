@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from icukit.abbreviation_recognize import AbbreviationDetector
 from icukit.detectors import detect
 from icukit.recognize import FlexibleNumberDetector
@@ -756,19 +757,10 @@ def test_same_script_word_internal_capitals_remain_unread(text):
 
 
 def _acronym_builder():
-    import importlib.util
-    import sys
-    from pathlib import Path
-
-    tools = Path(__file__).resolve().parents[1] / "tools"
-    if str(tools) not in sys.path:
-        sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "build_acronym_priors", tools / "build_acronym_priors.py"
+    return load_tool_module(
+        "build_acronym_priors",
+        Path(__file__).resolve().parents[1] / "tools" / "build_acronym_priors.py",
     )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 # Tokens the builder and the reader must agree on, one by one: decomposed and

@@ -2,19 +2,17 @@
 
 from __future__ import annotations
 
-import importlib.util
 from pathlib import Path
+
+from conftest import load_tool_module
 
 _REPO = Path(__file__).resolve().parents[1]
 
 
 def _builder():
-    path = _REPO / "tools" / "build_inch_context_priors.py"
-    spec = importlib.util.spec_from_file_location("build_inch_context_priors", path)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(
+        "build_inch_context_priors", _REPO / "tools" / "build_inch_context_priors.py"
+    )
 
 
 def test_fixture_builder_counts_following_classes_and_sentence_ends(tmp_path):

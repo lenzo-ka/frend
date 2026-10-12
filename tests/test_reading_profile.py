@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import importlib.util
 import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 if str(_TOOLS) not in sys.path:
@@ -14,12 +14,7 @@ if str(_TOOLS) not in sys.path:
 
 
 def _evaluator():
-    spec = importlib.util.spec_from_file_location(
-        "evaluate_google_tn", _TOOLS / "evaluate_google_tn.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("evaluate_google_tn", _TOOLS / "evaluate_google_tn.py")
 
 
 def _signature(detector) -> tuple:

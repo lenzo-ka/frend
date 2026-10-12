@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _REPO = Path(__file__).resolve().parents[1]
 _TOOLS = _REPO / "tools"
@@ -22,14 +21,7 @@ _BUILDERS = (
 
 
 def _builder(filename: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    module_name = filename.removesuffix(".py")
-    spec = importlib.util.spec_from_file_location(module_name, _TOOLS / filename)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(filename.removesuffix(".py"), _TOOLS / filename)
 
 
 @pytest.mark.parametrize("builder_filename", _BUILDERS)

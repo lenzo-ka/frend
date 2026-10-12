@@ -6,11 +6,11 @@ import hashlib
 import importlib.metadata
 import importlib.util
 import json
-import sys
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from tiergraph import WorkBudget
 
 import frend
@@ -27,13 +27,9 @@ GOLDEN_PROVENANCE = ROOT / "tests/data/normalize_golden.provenance.json"
 
 
 def _golden_generator():
-    path = ROOT / "tests/generate_normalize_golden.py"
-    spec = importlib.util.spec_from_file_location("generate_normalize_golden", path)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(
+        "generate_normalize_golden", ROOT / "tests/generate_normalize_golden.py", register=True
+    )
 
 
 def _golden_texts() -> list[str]:

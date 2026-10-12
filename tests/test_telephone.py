@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
 import re
-import sys
 from copy import deepcopy
 from pathlib import Path
 
 import pytest
+from conftest import assert_count_map, load_tool_module
 from icukit.detectors import detect
 
 from frend import resolve_lattice
@@ -172,19 +171,15 @@ def _assert_telephone_prior_is_aggregate(document):
         assert set(row) == {"classes", "prediction"}
         assert class_pattern.fullmatch(row["prediction"])
         assert row["prediction"] in row["classes"]
-        assert all(
-            class_pattern.fullmatch(name) and type(count) is int and count > 0
-            for name, count in row["classes"].items()
-        )
+        assert_count_map(row["classes"], nonempty=True)
+        assert all(class_pattern.fullmatch(name) for name in row["classes"])
     shape_pattern = re.compile(r"(?:N[1-9][0-9]*|[() .-])+\Z")
     reading_pattern = re.compile(r"[nrz](?::[nrz])+\Z")
     for shape, row in document["shapes"].items():
         assert shape_pattern.fullmatch(shape)
         assert set(row) == {"classes", "patterns"}
-        assert all(
-            class_pattern.fullmatch(name) and type(count) is int and count > 0
-            for name, count in row["classes"].items()
-        )
+        assert_count_map(row["classes"])
+        assert all(class_pattern.fullmatch(name) for name in row["classes"])
         for pattern, evidence in row["patterns"].items():
             assert reading_pattern.fullmatch(pattern)
             assert set(evidence) == {"readings", "unclassified_telephone"}
@@ -221,13 +216,7 @@ def test_telephone_privacy_guard_rejects_unallowlisted_strings(path):
 
 def test_builder_counts_shapes_readings_and_left_context_from_corpus_rows(tmp_path):
     tools = Path(__file__).resolve().parents[1] / "tools"
-    if str(tools) not in sys.path:
-        sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "build_telephone_priors", tools / "build_telephone_priors.py"
-    )
-    builder = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(builder)
+    builder = load_tool_module("build_telephone_priors", tools / "build_telephone_priors.py")
     shard = tmp_path / "output-00000-of-00001"
     shard.write_text(
         "LETTERS\tISBN\ti s b n\n"

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import io
 import json
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from icukit.detectors import detect
 
 from frend import resolve_lattice, verbalize_lattice
@@ -23,15 +22,7 @@ _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
 def _builder():
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(
-        "build_britishisms", _TOOLS / "build_britishisms.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("build_britishisms", _TOOLS / "build_britishisms.py", register=True)
 
 
 def test_builder_help_describes_google_tn_plain_rewrites(capsys):

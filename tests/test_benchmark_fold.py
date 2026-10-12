@@ -2,20 +2,17 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 
 def _tool():
-    path = Path(__file__).parents[1] / "tools" / "benchmark_fold.py"
-    spec = importlib.util.spec_from_file_location("benchmark_fold", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(
+        "benchmark_fold", Path(__file__).parents[1] / "tools" / "benchmark_fold.py"
+    )
 
 
 def _fixture(tmp_path: Path):
