@@ -7,7 +7,14 @@ import unicodedata
 from dataclasses import dataclass
 from functools import lru_cache
 
+from icukit import add_likely_subtags, parse_locale
 from icukit.detectors import Capture
+from phonenumbers import (
+    Leniency,
+    PhoneMetadata,
+    PhoneNumberMatcher,
+    national_significant_number,
+)
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 
@@ -17,7 +24,6 @@ __all__ = [
     "telephone_shape",
 ]
 
-_CANDIDATE = re.compile(r"[(0-9][0-9() .-]*[0-9](?!\w)")
 _SPACED_DASH = re.compile(r"\s-|\-\s")
 _LEFT_TOKEN = re.compile(r"(\S+)\s*$")
 _LEFT_CONTEXT_CLASSES = frozenset(
@@ -90,14 +96,22 @@ def _phone_groups(text: str) -> tuple[str, ...] | None:
     return groups
 
 
-def _valid_nanp(groups: tuple[str, ...]) -> bool:
-    """Whether groups satisfy the published NANP NXX-NXX-XXXX structure."""
-    area, exchange = groups[-3:-1]
-    # NANPA publishes NXX with N=2-9 for both the NPA and central-office code,
-    # and lists N11 as unavailable/special-use abbreviated dialing resources:
-    # https://www.nanpa.com/about
-    # https://www.nanpa.com/reports/co-code-reports/cocodes_assign
-    return all(group[0] in "23456789" and group[1:] != "11" for group in (area, exchange))
+@lru_cache(maxsize=LOCALE_CACHE)
+def _phone_region(locale: str) -> str | None:
+    """Return the locale's CLDR likely region for phone-number metadata lookup."""
+    likely = add_likely_subtags(locale)
+    region = parse_locale(likely)["region"]
+    return region if isinstance(region, str) else None
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _general_phone_pattern(region: str) -> re.Pattern[str] | None:
+    """Return libphonenumber's general national-number pattern for ``region``."""
+    metadata = PhoneMetadata.metadata_for_region(region)
+    if metadata is None or metadata.general_desc is None:
+        return None
+    pattern = metadata.general_desc.national_number_pattern
+    return re.compile(pattern) if pattern else None
 
 
 def _valid_left_boundary(text: str, start: int) -> bool:
@@ -106,6 +120,11 @@ def _valid_left_boundary(text: str, start: int) -> bool:
         return True
     previous = text[start - 1]
     return not (previous.isalnum() or unicodedata.category(previous).startswith("S"))
+
+
+def _valid_right_boundary(text: str, end: int) -> bool:
+    """Exclude candidates directly followed by a word character."""
+    return end == len(text) or not (text[end].isalnum() or text[end] == "_")
 
 
 def _length_bucket(length: int) -> str:
@@ -282,14 +301,22 @@ class TelephoneDetector:
         table, left_context_vetoes = _prior(self.locale)
         if not table:
             return []
+        region = _phone_region(self.locale)
+        general_pattern = _general_phone_pattern(region) if region is not None else None
+        if region is None or general_pattern is None:
+            return []
         found = []
-        for match in _CANDIDATE.finditer(text):
-            if not _valid_left_boundary(text, match.start()):
+        matches = PhoneNumberMatcher(text, region, leniency=Leniency.POSSIBLE)
+        for match in matches:
+            if not _valid_left_boundary(text, match.start) or not _valid_right_boundary(
+                text, match.end
+            ):
                 continue
-            surface = match.group()
+            surface = match.raw_string
             groups = _phone_groups(surface)
             readings = None
-            if groups is not None and _valid_nanp(groups):
+            national = national_significant_number(match.number)
+            if groups is not None and general_pattern.fullmatch(national) is not None:
                 shape = telephone_shape(surface)
                 pattern = telephone_reading_key(groups)
                 readings = table.get(f"{shape}|{pattern}")
@@ -297,20 +324,20 @@ class TelephoneDetector:
                     readings = table.get(f"{shape}|{pattern.replace('r', 'n')}")
             if groups is None or readings is None:
                 continue
-            if _left_context(text, match.start()) in left_context_vetoes:
+            if _left_context(text, match.start) in left_context_vetoes:
                 continue
             found.append(
                 {
                     "text": surface,
-                    "start": match.start(),
-                    "end": match.end(),
+                    "start": match.start,
+                    "end": match.end,
                     "type": "telephone:number",
                     "value": TelephoneValue(groups, readings),
                     "captures": (
                         Capture(
                             "telephone",
-                            match.start(),
-                            match.end(),
+                            match.start,
+                            match.end,
                             surface,
                             groups,
                             "numeric",
