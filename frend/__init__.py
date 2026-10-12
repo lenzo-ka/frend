@@ -38,8 +38,9 @@ from frend.lattice import (
     resolve_lattice,
     route_geometry,
 )
-from frend.normalize import NormalizedText, NormalizedUnit, normalize
+from frend.normalize import NormalizedText, NormalizedUnit, SentenceBase, normalize
 from frend.runtime import freeze_after_setup, prewarm
+from frend.stream import NormalizationBatch, NormalizationStream
 from frend.symbols import DEFAULT_SYMBOL_RUN_THRESHOLD
 from frend.verbalize import (
     SpokenAlternative,
@@ -67,6 +68,8 @@ __all__ = [
     "MAX_NON_TEXT_SHARE",
     "NormalizedText",
     "NormalizedUnit",
+    "NormalizationBatch",
+    "NormalizationStream",
     "PriorSummary",
     "ReadingEdge",
     "ReadingLattice",
@@ -75,6 +78,7 @@ __all__ = [
     "Resolution",
     "ResolvedBehavior",
     "SemanticRank",
+    "SentenceBase",
     "SpokenAlternative",
     "VerbalizedLattice",
     "VerbalizedPath",

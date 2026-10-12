@@ -9,14 +9,11 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from icukit import RegexLimitError
 
 from frend import normalize, resolve_lattice, verbalize_lattice
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
-
-
-class SentinelRegexError(RuntimeError):
-    pass
 
 
 class _FailingDetector:
@@ -42,7 +39,7 @@ def _tool(name: str):
 def test_normalize_propagates_sentence_break_failure_without_retry(monkeypatch):
     normalization = importlib.import_module("frend.normalize")
 
-    error = SentinelRegexError("sentence limit")
+    error = RegexLimitError("time", 50, "sentence")
     calls = 0
 
     def fail(*_args, **_kwargs):
@@ -50,9 +47,9 @@ def test_normalize_propagates_sentence_break_failure_without_retry(monkeypatch):
         calls += 1
         raise error
 
-    monkeypatch.setattr(normalization, "break_sentence_spans", fail)
+    monkeypatch.setattr(normalization.SentenceOverride, "segmentations", fail)
 
-    with pytest.raises(SentinelRegexError) as caught:
+    with pytest.raises(RegexLimitError) as caught:
         normalize("one")
     assert caught.value is error
     assert calls == 1
@@ -61,11 +58,11 @@ def test_normalize_propagates_sentence_break_failure_without_retry(monkeypatch):
 def test_normalize_propagates_detection_failure_without_retry(monkeypatch):
     normalization = importlib.import_module("frend.normalize")
 
-    error = SentinelRegexError("detection limit")
+    error = RegexLimitError("time", 50, "detection")
     detector = _FailingDetector(error)
     monkeypatch.setattr(normalization, "_reading_detectors", lambda *_args: detector)
 
-    with pytest.raises(SentinelRegexError) as caught:
+    with pytest.raises(RegexLimitError) as caught:
         normalize("one")
     assert caught.value is error
     assert detector.calls == 1
@@ -74,11 +71,11 @@ def test_normalize_propagates_detection_failure_without_retry(monkeypatch):
 def test_normalize_propagates_sentence_date_detection_failure_without_retry(monkeypatch):
     normalization = importlib.import_module("frend.normalize")
 
-    error = SentinelRegexError("date detection limit")
+    error = RegexLimitError("stack", 8000, "date detection")
     detector = _FailingDetector(error)
     monkeypatch.setattr(normalization, "_date_detector_gang", lambda *_args: detector)
 
-    with pytest.raises(SentinelRegexError) as caught:
+    with pytest.raises(RegexLimitError) as caught:
         normalize("one")
     assert caught.value is error
     assert detector.calls == 1
@@ -87,7 +84,7 @@ def test_normalize_propagates_sentence_date_detection_failure_without_retry(monk
 def test_resolve_lattice_propagates_detection_failure_without_retry(monkeypatch):
     import icukit.detectors
 
-    error = SentinelRegexError("detection limit")
+    error = RegexLimitError("time", 50, "lattice detection")
     calls = 0
 
     def fail(*_args, **_kwargs):
@@ -97,7 +94,7 @@ def test_resolve_lattice_propagates_detection_failure_without_retry(monkeypatch)
 
     monkeypatch.setattr(icukit.detectors, "detect", fail)
 
-    with pytest.raises(SentinelRegexError) as caught:
+    with pytest.raises(RegexLimitError) as caught:
         resolve_lattice(source_text="one")
     assert caught.value is error
     assert calls == 1
@@ -166,7 +163,7 @@ def test_builders_name_icukit_detection_failures(monkeypatch, tool_name, operati
     import icukit.detectors
 
     tool = _tool(tool_name)
-    error = SentinelRegexError("stack limit")
+    error = RegexLimitError("stack", 8000, operation)
     detector = _FailingDetector(error)
     if tool_name == "build_context_trees":
         tool._LATTICES.clear()
@@ -189,35 +186,35 @@ def test_evaluator_records_detection_exception_type(monkeypatch):
     import frend
 
     evaluate = _tool("evaluate_google_tn")
-    error = SentinelRegexError("time limit")
+    error = RegexLimitError("time", 50, "evaluation")
     monkeypatch.setattr(
         frend,
         "resolve_lattice",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(error),
     )
 
-    assert evaluate._score_text_status("1", "one") == (False, False, "SentinelRegexError")
+    assert evaluate._score_text_status("1", "one") == (False, False, "RegexLimitError")
 
     records = []
     monkeypatch.setattr(
         evaluate,
         "_map",
-        lambda *_args: [("CARDINAL", False, False, "SentinelRegexError")],
+        lambda *_args: [("CARDINAL", False, False, "RegexLimitError")],
     )
     report = evaluate._per_token(
         [[("CARDINAL", "1", "one")]],
         1,
         record_sink=records,
     )
-    assert report["exception_counts"] == {"SentinelRegexError": 1}
-    assert records[0]["exception_counts"] == {"SentinelRegexError": 1}
+    assert report["exception_counts"] == {"RegexLimitError": 1}
+    assert records[0]["exception_counts"] == {"RegexLimitError": 1}
 
 
 def test_triage_records_detection_exception_type_in_accuracy_only_output(monkeypatch):
     import icukit.detectors
 
     triage = _tool("triage_misses")
-    error = SentinelRegexError("time limit")
+    error = RegexLimitError("time", 50, "triage")
     monkeypatch.setattr(triage, "_detectors", lambda _locale: ())
     monkeypatch.setattr(
         icukit.detectors,
@@ -228,4 +225,4 @@ def test_triage_records_detection_exception_type_in_accuracy_only_output(monkeyp
 
     result = triage._score_sentence(("shard", 0, sentence, None, None, False))
 
-    assert result["exception_counts"] == {"SentinelRegexError": 1}
+    assert result["exception_counts"] == {"RegexLimitError": 1}

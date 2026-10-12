@@ -38,6 +38,10 @@ import frend
 
 spoken = frend.normalize("Meet me at 5:30. It costs $12.")
 aligned = frend.normalize("Meet me at 5:30.", offsets=True)
+
+stream = frend.NormalizationStream(offsets=True)
+first = stream.feed("Meet me at 5:30. ")
+last = stream.close()
 behavior = frend.resolve_behavior(["google-tn"])
 print(behavior.kwargs)
 print(aligned.text)
@@ -52,10 +56,24 @@ their own, including at the edges of the returned text and next to inter-sentenc
 Pass `offsets=True` when a screen reader or aligner also needs the source mapping; offset
 units cover discarded boundary-whitespace spans explicitly.
 
+Production sentence work is bounded at 1,024 code points by default. Set
+`max_sentence_chars=None` only for an already bounded complete evaluation unit, select an
+opt-in published model with `sentence_base=`, and use `reflow="lines"`, `"paragraphs"`, or
+`"auto"` when hard-wrapped source should be interpreted through icukit's offset-preserving
+view. `max_unit_chars` remains the independent lattice-work bound. Icukit
+`RegexLimitError` exceptions propagate unchanged.
+
+`NormalizationStream` accepts the same policy options. Each batch contains only settled
+speech, optional absolute source/output alignments, and a monotone `pending_from`
+watermark. It coordinates icukit's linear sentence and detection streams, so arbitrary
+input chunking produces the same answer as `normalize` while the default sentence bound
+keeps retained source bounded.
+
 Named behavior schemas compose in caller order, with later presets winning key by key.
 Resolve shipped names or JSON files with `resolve_behavior`, then spread its immutable
-`kwargs` into `normalize`; the result also records member digests, setters, and any opaque
-icukit sections. Explicit call keywords remain Python's normal duplicate-key error.
+`kwargs` into `normalize`; the result also records member digests, setters, and validated
+icukit sections. Icukit sentence options are applied through the same runtime keywords.
+Explicit call keywords remain Python's normal duplicate-key error.
 
 Resolving a behavior schema only composes its configuration; it does not load external
 profile data. Applying the `google-tn` behavior to `normalize` does load profile data and
@@ -152,9 +170,9 @@ pytest
 ruff check . && ruff format --check .
 ```
 
-The sibling repos (tiergraph, icukit, ipakit) are installed editable during development. CI tests
-against the released icukit and, in a second job, against icukit's `main`, so frend can
-use icukit changes before they are released; a frend release needs the first job green.
+The sibling repos (tiergraph, icukit, ipakit) may be installed editable during development.
+CI tests compatible released dependencies and, in a separate floor job, explicitly tests
+icukit 0.10.0.
 
 ### Reproducing the data tables
 

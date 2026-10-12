@@ -483,13 +483,12 @@ def test_c12_weighted_supplement_stays_first_and_replaces_the_grouped_duplicate(
         assert alternatives[0].group is None
 
 
-def test_c13_icukit_section_is_opaque_and_inert_for_every_golden_input():
+def test_c13_icukit_sentence_section_is_validated_and_active():
     resolved = resolve_behavior([DATA / "user/with-icukit.json"])
-    assert resolved.kwargs == {}
+    assert resolved.kwargs == {"sentence_base": "en-tn@1"}
     assert len(resolved.icukit_sections) == 1
     assert resolved.icukit_sections[0].mapping == {
         "schema_version": 1,
         "sentence": {"base": "en-tn@1"},
     }
-    for text in _golden_texts():
-        assert frend.normalize(text, **resolved.kwargs) == frend.normalize(text)
+    assert frend.normalize("Hon. Alice spoke. Next.", **resolved.kwargs)

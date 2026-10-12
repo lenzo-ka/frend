@@ -13,6 +13,9 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import NamedTuple, cast
 
+from icukit import BehaviorLoadError as IcukitBehaviorLoadError
+from icukit import load_behavior_schema
+
 from frend.input_folds import apply_input_fold
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
@@ -90,7 +93,7 @@ class BehaviorMember:
 
 @dataclass(frozen=True)
 class IcukitSection:
-    """An uninterpreted icukit behavior section carried for its owner."""
+    """One bounded icukit behavior section validated by icukit."""
 
     member: str
     digest: str
@@ -494,6 +497,12 @@ def _load_document(path: Path, shown: str, shipped: bool) -> _Document:
             ]
         )
     sections = cast(Mapping[str, object], data["sections"])
+    try:
+        load_behavior_schema(data)
+    except IcukitBehaviorLoadError as error:
+        raise BehaviorLoadError(
+            [BehaviorRefusal(item.code, item.detail) for item in error.refusals]
+        ) from error
     frend = sections.get("frend")
     if isinstance(frend, Mapping):
         errors = _frend_section(frend, shown)
@@ -663,6 +672,11 @@ def resolve_behavior(
                     setters[key] = doc.name
         raw_icukit = doc.sections.get("icukit")
         if isinstance(raw_icukit, Mapping):
+            loaded_icukit = load_behavior_schema(cast(Mapping[str, object], raw_icukit))
+            for key, value in loaded_icukit.sentence.items():
+                target = "sentence_base" if key == "base" else key
+                kwargs[target] = value
+                setters[target] = doc.name
             icukit.append(
                 IcukitSection(
                     doc.name,

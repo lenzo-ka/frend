@@ -104,7 +104,6 @@ _WEIGHT = QualifiedName(NS, "weight")
 # scoring reads start/end and the number of captures; the whole detection is
 # carried through untouched.
 Detection = Mapping[str, Any]
-DEFAULT_EPSILON = 1
 
 
 def _detection_span(detection: Detection) -> tuple[int, int]:
@@ -1404,7 +1403,6 @@ def resolve(
     *,
     locale: str = "en_US",
     n: int = 8,
-    epsilon: int = DEFAULT_EPSILON,
     feature_sources: Sequence[FeatureSource] | None = None,
     source_text: str | None = None,
     class_prior: Mapping[str, Decimal | int] | None = None,
@@ -1426,13 +1424,12 @@ def resolve(
     caps the ``covers`` list (the n-best covers across geometry levels, descending).
     ``ambiguous`` is True when the top geometry level holds more than one span
     signature (a structural ambiguity the prior may not resolve) or when any span
-    has no unique best reading. ``epsilon`` is deprecated and ignored.
+    has no unique best reading.
 
     ``n`` must be a positive integer; a non-positive or non-integer ``n`` is
     rejected so the ``covers[0] == best`` contract can never be broken by an empty
     ``covers`` list sitting beside a populated ``best``.
     """
-    del epsilon
     validate_input(source_text, max_input_chars=max_input_chars)
     if not isinstance(n, int) or isinstance(n, bool) or n < 1:
         raise ValueError(f"n must be a positive integer, got {n!r}")
