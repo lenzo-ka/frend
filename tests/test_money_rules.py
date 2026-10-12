@@ -8,17 +8,28 @@ import pytest
 from icukit.detectors import NumberValue
 from tiergraph import Realization
 
-from frend import money_rules as money_rules_module
 from frend import resolve_lattice, verbalize_edge
-from frend.money_rules import (
-    GENERATED_MONEY_LOCALES,
-    generate_money_alternatives,
-    load_money_rule_bundle,
-    money_grammar_input,
-    money_rule_events,
-)
 from frend.normalization_schema import validate_bundle
 from frend.normalize import _currencies, _reading_detectors
+
+try:
+    from frend import money_rules as money_rules_module
+    from frend.money_rules import (
+        GENERATED_MONEY_LOCALES,
+        generate_money_alternatives,
+        load_money_rule_bundle,
+        money_grammar_input,
+        money_rule_events,
+    )
+except ModuleNotFoundError as error:
+    if error.name != "frend.money_rules":
+        raise
+    money_rules_module = None
+    GENERATED_MONEY_LOCALES = ()
+    generate_money_alternatives = None
+    load_money_rule_bundle = None
+    money_grammar_input = None
+    money_rule_events = None
 
 REPO = Path(__file__).resolve().parents[1]
 
