@@ -13,6 +13,9 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import NamedTuple, cast
 
+from icukit import BehaviorLoadError as IcukitBehaviorLoadError
+from icukit import BehaviorSchema, load_behavior_schema
+
 from frend.input_folds import apply_input_fold
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
@@ -90,7 +93,7 @@ class BehaviorMember:
 
 @dataclass(frozen=True)
 class IcukitSection:
-    """An uninterpreted icukit behavior section carried for its owner."""
+    """One bounded icukit behavior section validated by icukit."""
 
     member: str
     digest: str
@@ -116,6 +119,7 @@ class _Document:
     origin: str
     extends: tuple[str, ...]
     sections: Mapping[str, object]
+    icukit: BehaviorSchema
     parents: tuple[_Document, ...] = field(default=())
 
 
@@ -494,6 +498,12 @@ def _load_document(path: Path, shown: str, shipped: bool) -> _Document:
             ]
         )
     sections = cast(Mapping[str, object], data["sections"])
+    try:
+        loaded_icukit = load_behavior_schema(data)
+    except IcukitBehaviorLoadError as error:
+        raise BehaviorLoadError(
+            [BehaviorRefusal(item.code, item.detail) for item in error.refusals]
+        ) from error
     frend = sections.get("frend")
     if isinstance(frend, Mapping):
         errors = _frend_section(frend, shown)
@@ -507,6 +517,7 @@ def _load_document(path: Path, shown: str, shipped: bool) -> _Document:
         "shipped" if shipped else shown,
         tuple(cast(list[str], data["extends"])),
         sections,
+        loaded_icukit,
     )
 
 
@@ -663,6 +674,24 @@ def resolve_behavior(
                     setters[key] = doc.name
         raw_icukit = doc.sections.get("icukit")
         if isinstance(raw_icukit, Mapping):
+            loaded_icukit = doc.icukit
+            for key, value in loaded_icukit.sentence.items():
+                target = "sentence_base" if key == "base" else key
+                kwargs[target] = value
+                setters[target] = doc.name
+            unsupported = tuple(
+                group for group in ("detection", "stream", "regex") if getattr(loaded_icukit, group)
+            )
+            if unsupported:
+                raise BehaviorLoadError(
+                    [
+                        _refuse(
+                            "UNSUPPORTED_OPTION_GROUP",
+                            f"{doc.origin}: sections.icukit.{group} is not applied by frend",
+                        )
+                        for group in unsupported
+                    ]
+                )
             icukit.append(
                 IcukitSection(
                     doc.name,

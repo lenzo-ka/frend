@@ -1,10 +1,26 @@
 # Changelog
 
 ## Unreleased
-- Require icukit 0.9.1, whose detectors decline candidates ending inside a grapheme
-  cluster instead of refusing the scan. Keycaps now read as their digit, number sign,
-  or asterisk does in the requested locale, without speaking the variation selector or
-  enclosing-keycap mark.
+- Require icukit 0.10.0 directly. `normalize` exposes its attributed sentence base,
+  1,024-code-point production bound, and offset-preserving reflow modes; forced
+  boundaries are never merged back through frend protections. Regex resource-limit
+  errors remain visible, and generated CLDR literal-hour readers participate in
+  date/time ranking.
+- Add `NormalizationStream`, a bounded incremental normalization path over icukit's
+  linear sentence and detection streams. It returns settled speech and optional
+  absolute alignments, preserves whole-text answers across arbitrary chunking, and
+  coordinates date protections before releasing sentence decisions.
+- Validate icukit behavior sections with icukit's schema loader and apply their
+  sentence options directly. Remove the old range-reader availability paths and the
+  deprecated resolver `epsilon` argument; frend no longer supports icukit 0.9.1 or
+  deprecated frend callers.
+- Keep icukit resource-limit failures visible at every runtime seam. Offline builders
+  abort with the failed detection operation, while evaluators that count a failure as a
+  miss record its exception class. Scientific notation skips exponents beyond Python's
+  bounded integer conversion, and numeric-duration readings with an unrepresentable
+  capture fall back to their written surface instead of raising.
+- Keycaps read as their digit, number sign, or asterisk does in the requested locale,
+  without speaking the variation selector or enclosing-keycap mark.
 - Add the public `normalize` speech API: pass plain text and receive its first-choice
   spoken text, or request `NormalizedText` with source/output offsets and per-unit reader
   and provenance metadata. It sentence-breaks documents, preserves boundary coverage,
@@ -16,7 +32,7 @@
   from the same verified corpus inventory. The general-purpose default is unchanged.
 - Add behavior schemas v1: `resolve_behavior` strictly loads and composes named shipped
   presets or caller JSON files in order, returning immutable effective arguments and
-  composition provenance. Schemas configure frend and carry opaque icukit sections;
+  composition provenance. Schemas configure frend and retain validated icukit sections;
   verbalization groups include TTS-sanity and opt-in character-detail ordering.
 - Enforce public input limits and plain-text validation. Recognition accepts documents
   of at most 4,194,304 Unicode code points by default, while graph-building units are

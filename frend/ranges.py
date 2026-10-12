@@ -55,6 +55,7 @@ from typing import Any, Literal
 
 import icu
 from icukit.detectors import Capture, DateTimeValue, DetectorSet, NumberValue
+from icukit.engine import DATE_INTERVAL_FAMILY, Family, generated_detectors, range_detectors
 
 from frend.abbreviation_variants import abbreviation_expansions
 from frend.durations import fractional_duration_shape
@@ -71,7 +72,6 @@ __all__ = [
     "date_interval_readers",
     "emit_relevant",
     "from_icukit",
-    "has_icu_ranges",
     "icu_range_readers",
     "load_range_priors",
     "punctuation_dash",
@@ -89,43 +89,25 @@ ICU_RANGE_TYPE = "range:icu"
 # cannot say.
 _SPOKEN_INTERVAL_FIELDS = frozenset("yMdLHhKkma")
 
-try:
-    from icukit.engine import DATE_INTERVAL_FAMILY, Family
-except ImportError:  # icukit before generated date-interval readers
-    SPOKEN_DATE_INTERVALS = None
-else:
-    # icukit memoizes generated families by identity.  Keep this subset family at
-    # module scope so every locale can reuse that memo entry, and enumerate only
-    # skeletons whose fields frend can actually speak.
-    SPOKEN_DATE_INTERVALS = Family(
-        "date-interval",
-        lambda locale: [
-            skeleton
-            for skeleton in DATE_INTERVAL_FAMILY.enumerate(locale)
-            if set(str(skeleton)) <= _SPOKEN_INTERVAL_FIELDS
-        ],
-        DATE_INTERVAL_FAMILY.invert,
-        DATE_INTERVAL_FAMILY.skip_reason,
-    )
-
-
-def has_icu_ranges() -> bool:
-    """Whether the installed icukit builds range readers (``icukit.engine.range_detectors``;
-    icukit main after 0.8.0)."""
-    import icukit.engine
-
-    return hasattr(icukit.engine, "range_detectors")
+# icukit memoizes generated families by identity. Keep this subset family at module
+# scope so every locale can reuse that memo entry, and enumerate only skeletons whose
+# fields frend can speak.
+SPOKEN_DATE_INTERVALS = Family(
+    "date-interval",
+    lambda locale: [
+        skeleton
+        for skeleton in DATE_INTERVAL_FAMILY.enumerate(locale)
+        if set(str(skeleton)) <= _SPOKEN_INTERVAL_FIELDS
+    ],
+    DATE_INTERVAL_FAMILY.invert,
+    DATE_INTERVAL_FAMILY.skip_reason,
+)
 
 
 def icu_range_readers(locale: str, readers: Iterable[object]) -> tuple[object, ...]:
     """icukit's range readers over the amount readers in ``readers`` (``number:range``
     over numbers, percents and currencies; ``measure:range`` over measures), each
-    ``*:approximately`` reader left out. Empty where icukit builds none."""
-    if not has_icu_ranges():
-        return ()
-    from icukit.detectors import DetectorSet
-    from icukit.engine import range_detectors
-
+    ``*:approximately`` reader left out."""
     return tuple(
         reader
         for reader in range_detectors(locale, DetectorSet(tuple(readers))).detectors
@@ -136,11 +118,7 @@ def icu_range_readers(locale: str, readers: Iterable[object]) -> tuple[object, .
 def date_interval_readers(locale: str) -> tuple[object, ...]:
     """icukit's generated date-interval readers for ``locale`` whose skeleton writes only
     fields frend speaks on a range's end (a year, month and day, or an hour, minutes and
-    day period). Empty where icukit builds no range readers."""
-    if not has_icu_ranges() or SPOKEN_DATE_INTERVALS is None:
-        return ()
-    from icukit.engine import generated_detectors
-
+    day period)."""
     return tuple(
         SpeakableDateIntervalDetector(reader)
         for reader in generated_detectors(locale, [SPOKEN_DATE_INTERVALS]).detectors

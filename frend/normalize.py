@@ -7,8 +7,9 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Literal, overload
 
-from icukit import break_sentence_spans
+from icukit import ReflowMode, SentenceOverride
 from icukit.detectors import DetectorSet, date_detectors
+from icukit.engine import DATE_TIME_SKELETON_FAMILY
 from icukit.recognize import (
     AlphanumericRunsDetector,
     FlexibleCompactDetector,
@@ -42,9 +43,9 @@ from frend.input_limits import (
 from frend.lattice import ReadingEdge, _resolve_lattice_validated
 from frend.letters import (
     HyphenatedSerialDetector,
-    LettersDetector,
     _dotted_acronym_suffix_spans,
     _dotted_plural_acronym_period_spans,
+    _letters_detector,
     _uppercase_abbreviation_period_spans,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale
@@ -72,7 +73,9 @@ from frend.work_budgets import (
 )
 from frend.written_forms import WrittenFormsDetector
 
-__all__ = ["NormalizedText", "NormalizedUnit", "normalize"]
+__all__ = ["NormalizedText", "NormalizedUnit", "SentenceBase", "normalize"]
+
+SentenceBase = Literal["none", "en-tn@1", "en-tn-cart@1", "en-real-cart@1"]
 
 _DATE_SKELETONS = ("yMd", "Md", "y")
 _CURRENCIES = ("USD", "EUR", "GBP", "JPY", "CNY", "INR", "CAD", "AUD", "KRW", "RUB", "XCD")
@@ -157,11 +160,38 @@ class _DetectorRegistry(Sequence[object]):
     def detect(self, text: str) -> list:
         return self.gang.detect(text)
 
+    def stream(self, **kwargs):
+        """Return icukit's bounded stream over this retained detector gang."""
+        return self.gang.stream(**kwargs)
+
 
 @lru_cache(maxsize=LOCALE_CACHE)
 def _date_detector_gang(locale: str) -> DetectorSet:
     """The retained strict date gang also used to protect sentence boundaries."""
-    return date_detectors(locale, _DATE_SKELETONS)
+    available = frozenset(map(str, DATE_TIME_SKELETON_FAMILY.enumerate(locale)))
+    literals = tuple(
+        detector
+        for skeleton in ("H", "h")
+        if skeleton in available
+        and (detector := DATE_TIME_SKELETON_FAMILY.invert(skeleton, locale)) is not None
+    )
+    return date_detectors(locale, _DATE_SKELETONS).with_(*literals)
+
+
+@lru_cache(maxsize=LOCALE_CACHE)
+def _sentence_override(
+    locale: str,
+    sentence_base: SentenceBase | None,
+    max_sentence_chars: int | None,
+    reflow: ReflowMode,
+) -> SentenceOverride:
+    """Retain immutable breaker configuration instead of reloading locale data."""
+    return SentenceOverride(
+        locale,
+        base=sentence_base,
+        max_sentence_chars=max_sentence_chars,
+        reflow=reflow,
+    )
 
 
 @dataclass(frozen=True)
@@ -253,7 +283,7 @@ def _reading_detectors(
         (
             AbbreviationDetector(locale),
             HyphenatedSerialDetector(locale),
-            LettersDetector(locale),
+            _letters_detector(locale),
             AbbreviationVariantDetector(locale),
         )
     )
@@ -261,58 +291,77 @@ def _reading_detectors(
     return _DetectorRegistry(detectors, missing_families)
 
 
-def _sentence_ranges(text: str, locale: str) -> list[tuple[int, int]]:
-    """Return nonempty sentence ranges with boundary whitespace excluded."""
-    spans = break_sentence_spans(text, locale)
-    nonempty = [span for span in spans if span["text"].strip()]
-    # Sentence breaking must not split dotted acronym suffixes or a consumed uppercase
-    # abbreviation period from its following word. Advance one monotone pointer so many
-    # protected spans and boundaries stay linear.
-    protected = tuple(
-        sorted(
+def _protected_sentence_spans(
+    text: str,
+    locale: str,
+    *,
+    offset: int = 0,
+    date_detections=None,
+) -> tuple[dict[str, object], ...]:
+    """Return coalesced caller-owned spans whose internal natural breaks are suppressed."""
+    if date_detections is None:
+        date_detections = _date_detector_gang(locale).detect(text)
+    candidates = [
+        *(
+            (offset + start, offset + end, "dotted-acronym")
+            for start, end in _dotted_acronym_suffix_spans(text)
+        ),
+        *(
+            (offset + start, offset + end, "uppercase-abbreviation")
+            for start, end in _uppercase_abbreviation_period_spans(text, locale)
+        ),
+        *(
+            (int(edge["start"]), int(edge["end"]), "date")
+            for edge in date_detections
+            if str(edge.get("type", "")).startswith("date:")
+        ),
+        *(
             (
-                *_dotted_acronym_suffix_spans(text),
-                *_uppercase_abbreviation_period_spans(text, locale),
+                offset + max(0, end - 1),
+                offset + min(len(text), end + 1),
+                "period-abbreviation",
             )
-        )
-    )
-    protected_index = 0
-    abbreviation_ends = _period_ending_abbreviation_ends(text, locale)
+            for end in _period_ending_abbreviation_ends(text, locale)
+            if text
+        ),
+    ]
+    merged: list[dict[str, object]] = []
+    for start, end, type_ in sorted(candidates):
+        if start >= end:
+            continue
+        if merged and start <= int(merged[-1]["end"]):
+            merged[-1]["end"] = max(int(merged[-1]["end"]), end)
+            merged[-1]["type"] = f"{merged[-1]['type']}+{type_}"
+        else:
+            merged.append({"start": start, "end": end, "type": type_})
+    return tuple(merged)
 
-    # Locale breakers can treat periods in numeric dates as sentence terminators
-    # (notably Korean ``2024. 6. 30.``). Recognition is authoritative for those
-    # spans, so keep each boundary strictly inside a date edge in one unit.
-    crossing_dates = sorted(
-        (int(edge["start"]), int(edge["end"]))
-        for edge in _date_detector_gang(locale).detect(text)
-        if str(edge.get("type", "")).startswith("date:")
-    )
-    date_index = 0
+
+def _sentence_ranges(
+    text: str,
+    locale: str,
+    *,
+    sentence_base: SentenceBase | None = None,
+    max_sentence_chars: int | None = 1024,
+    reflow: ReflowMode = "none",
+) -> list[tuple[int, int]]:
+    """Return nonempty sentence ranges from one attributed icukit segmentation."""
+    spans = _sentence_override(
+        locale,
+        sentence_base,
+        max_sentence_chars,
+        reflow,
+    ).spans(text, protected=_protected_sentence_spans(text, locale))
     ranges: list[tuple[int, int]] = []
-    for span in nonempty:
+    for span in spans:
         surface = span["text"]
+        if not surface.strip():
+            continue
         left = len(surface) - len(surface.lstrip())
         right = len(surface.rstrip())
         start = int(span["start"]) + left
         end = int(span["start"]) + right
-        while protected_index < len(protected) and protected[protected_index][1] <= start:
-            protected_index += 1
-        crosses_protected = protected_index < len(protected) and (
-            protected[protected_index][0] < start < protected[protected_index][1]
-        )
-        previous_end = ranges[-1][1] if ranges else start
-        while date_index < len(crossing_dates) and crossing_dates[date_index][1] <= previous_end:
-            date_index += 1
-        crosses_date = date_index < len(crossing_dates) and (
-            crossing_dates[date_index][0] < previous_end and crossing_dates[date_index][1] > start
-        )
-        follows_period_ending_abbreviation = (
-            ranges and previous_end == start and start in abbreviation_ends
-        )
-        if ranges and (crosses_protected or crosses_date or follows_period_ending_abbreviation):
-            ranges[-1] = (ranges[-1][0], end)
-        else:
-            ranges.append((start, end))
+        ranges.append((start, end))
     return ranges
 
 
@@ -404,8 +453,10 @@ def _sentence(
     symbol_run_threshold: int,
     groups: GroupOrders | None,
     work_budget: TiergraphWorkBudget,
+    detections: list | tuple | None = None,
 ) -> tuple[list[tuple[str, ReadingEdge, VerbalizedUnit]] | None, str]:
-    detections = _reading_detectors(locale, symbol_run_threshold).detect(text)
+    if detections is None:
+        detections = _reading_detectors(locale, symbol_run_threshold).detect(text)
     detections = compose_german_written_uhr(detections, text, locale)
     plural_period_spans = _dotted_plural_acronym_period_spans(text)
     detections = [
@@ -432,6 +483,7 @@ def _sentence(
         max_input_chars=max_input_chars,
         max_unit_chars=max_unit_chars,
         work_budget=work_budget,
+        snapshot_detections=False,
     )
     edges = {edge.id: edge for edge in lattice.edges} if offsets else None
     verbalized = _verbalize_lattice_validated(
@@ -469,6 +521,9 @@ def normalize(
     offsets: Literal[False] = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    sentence_base: SentenceBase | None = None,
+    max_sentence_chars: int | None = 1024,
+    reflow: ReflowMode = "none",
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
     work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
@@ -486,6 +541,9 @@ def normalize(
     offsets: Literal[True],
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    sentence_base: SentenceBase | None = None,
+    max_sentence_chars: int | None = 1024,
+    reflow: ReflowMode = "none",
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
     work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
@@ -503,6 +561,9 @@ def normalize(
     offsets: bool,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    sentence_base: SentenceBase | None = None,
+    max_sentence_chars: int | None = 1024,
+    reflow: ReflowMode = "none",
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
     work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
@@ -519,6 +580,9 @@ def normalize(
     offsets: bool = False,
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
+    sentence_base: SentenceBase | None = None,
+    max_sentence_chars: int | None = 1024,
+    reflow: ReflowMode = "none",
     symbol_run_threshold: int = DEFAULT_SYMBOL_RUN_THRESHOLD,
     groups: GroupOrders | None = None,
     work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
@@ -550,7 +614,13 @@ def normalize(
     profile = validate_profile(profile)
     groups = None if groups is None else dict(validate_groups(groups) or ())
     meter = work_meter(work_budget)
-    ranges = _sentence_ranges(text, locale)
+    ranges = _sentence_ranges(
+        text,
+        locale,
+        sentence_base=sentence_base,
+        max_sentence_chars=max_sentence_chars,
+        reflow=reflow,
+    )
     registry = _reading_detectors(locale, symbol_run_threshold) if ranges or offsets else None
     if not ranges:
         if not offsets:
@@ -570,14 +640,12 @@ def normalize(
         assert registry is not None
         return NormalizedText("", units, fold, registry.missing_families)
 
-    # TODO(icukit): use icukit's reflow(text, mode) -> str once it is released.
     for start, end in ranges:
         length = end - start
         if max_unit_chars is not None and length > max_unit_chars:
             raise InputValidationError(
                 f"sentence has {length} code points, exceeding max_unit_chars={max_unit_chars}; "
-                "icukit's forced sentence break is not yet released, so frend refuses "
-                "the unit instead of inventing a breaker"
+                "max_unit_chars work bound"
             )
 
     parts: list[str] = []

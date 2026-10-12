@@ -53,7 +53,8 @@ def test_description_names_only_current_pipeline_dependencies():
     readme = _README.read_text(encoding="utf-8")
 
     dependency_names = {
-        re.split(r"[<>=!~]", dependency, maxsplit=1)[0] for dependency in metadata["dependencies"]
+        re.split(r"\s*@\s*|[<>=!~]", dependency, maxsplit=1)[0]
+        for dependency in metadata["dependencies"]
     }
     pipeline_components = set(re.findall(r"^- \*\*(\w+)\*\*", readme, re.MULTILINE))
     later_components = set(re.findall(r"^- \*\*(\w+)\*\* \(later\)", readme, re.MULTILINE))

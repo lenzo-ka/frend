@@ -708,8 +708,14 @@ def _resolve_lattice_validated(
     max_input_chars: int | None = DEFAULT_MAX_INPUT_CHARS,
     max_unit_chars: int | None = DEFAULT_MAX_UNIT_CHARS,
     work_budget: TiergraphWorkBudget = DEFAULT_TIERGRAPH_WORK_BUDGET,
+    snapshot_detections: bool = True,
 ) -> ReadingLattice:
-    """Resolve text whose enclosing document API has already validated it."""
+    """Resolve text whose enclosing document API has already validated it.
+
+    Public resolver calls keep the ownership boundary enabled. The normalization
+    pipeline may disable it for its fresh, private detections because it consumes the
+    lattice immediately and exposes neither the lattice nor those mappings.
+    """
     meter = work_meter(work_budget)
     if source_text is not None:
         validate_unit_length(len(source_text), max_unit_chars=max_unit_chars)
@@ -801,7 +807,9 @@ def _resolve_lattice_validated(
         )
     snapshot_by_key = {
         content_key(det): (
-            _snapshot_spelled_token(det) if det.get("type") == "letters:token" else _snapshot(det)
+            (_snapshot_spelled_token(det) if det.get("type") == "letters:token" else _snapshot(det))
+            if snapshot_detections
+            else det
         )
         for det in unique
     }

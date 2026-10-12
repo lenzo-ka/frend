@@ -28,7 +28,7 @@ from dataclasses import dataclass
 from functools import cache, lru_cache
 
 import icu
-from icukit import break_grapheme_spans
+from icukit import Breaker
 from icukit.detectors import Capture, MeasureValue, NumberValue
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale
@@ -79,6 +79,7 @@ LETTER_NAME_SOURCE = "icu-name:letter"
 PROPERTY_NAME_SOURCE = "icu-name:property"
 SYMBOL_NAME_SOURCE = "icu-name:symbol"
 DEFAULT_SYMBOL_RUN_THRESHOLD = 3
+_GRAPHEME_BREAKER = Breaker("root")
 
 _COORDINATE_RE = re.compile(
     r"(?<![\w])(?P<degrees>[0-9]+(?:\.[0-9]+)?)°"
@@ -733,9 +734,10 @@ def _append_symbol_chain(text, spans, chain, threshold, code_ranges, runs) -> No
             runs.append((start, end, tuple(spans[at]["text"] for at in group)))
 
 
-def _symbol_runs(text: str, threshold: int) -> list[tuple[int, int, tuple[str, ...]]]:
+def _symbol_runs(text: str, threshold: int, spans=None) -> list[tuple[int, int, tuple[str, ...]]]:
     """Maximal standalone symbol-grapheme runs, allowing horizontal space between them."""
-    spans = break_grapheme_spans(text, "root")
+    if spans is None:
+        spans = _GRAPHEME_BREAKER.break_grapheme_spans(text)
     code_ranges = _code_ranges(text)
     runs: list[tuple[int, int, tuple[str, ...]]] = []
     index = 0
@@ -818,6 +820,7 @@ class SymbolDetector:
     def detect(self, text: str) -> list[dict]:
         language_neutral = canonical_locale(self.locale) == "root"
         detections = []
+        grapheme_spans = _GRAPHEME_BREAKER.break_grapheme_spans(text)
         compass_words = _COMPASS_WORDS.get(icu.Locale(self.locale).getLanguage(), {})
         for match in _COORDINATE_RE.finditer(text):
             direction = match.group("direction")
@@ -879,7 +882,9 @@ class SymbolDetector:
         abbreviation_ends = (
             frozenset() if language_neutral else _period_ending_abbreviation_ends(text, self.locale)
         )
-        symbol_runs = () if language_neutral else _symbol_runs(text, self.run_threshold)
+        symbol_runs = (
+            () if language_neutral else _symbol_runs(text, self.run_threshold, grapheme_spans)
+        )
         for start, end, symbols in symbol_runs:
             names = tuple(symbol_names(symbol, self.locale)[0] for symbol in symbols)
             bases = tuple(_without_variation_selectors(symbol) for symbol in symbols)
@@ -925,7 +930,7 @@ class SymbolDetector:
                     "captures": (Capture("symbol", start, end, surface, surface, None),),
                 }
             )
-        for span in break_grapheme_spans(text, "root"):
+        for span in grapheme_spans:
             index, end, char = span["start"], span["end"], span["text"]
             if any(position in in_runs for position in range(index, end)):
                 continue

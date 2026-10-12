@@ -319,11 +319,7 @@ def test_recognition_profile_includes_compacts_currency_names_and_xcd():
     build = _load_builder()
     detectors = build._detectors()
 
-    import icukit.engine
-
-    # icukit's number range reader over the cardinals follows them where icukit builds
-    # range readers (icukit main after 0.8.0).
-    ranges = ["FlexibleNumberRangeDetector"] if hasattr(icukit.engine, "range_detectors") else []
+    ranges = ["FlexibleNumberRangeDetector"]
     assert [type(detector).__name__ for detector in detectors["cardinal"]] == [
         "FlexibleNumberDetector",
         "FlexibleCompactDetector",
@@ -361,10 +357,6 @@ def test_measure_profile_recognizes_common_area_and_volume_units(source, spoken,
 def test_range_readers_join_the_kinds_of_their_endpoints():
     """ICU's range readers join the kinds whose amounts they read, and no other: a
     digit, decimal or ordinal row is a single value, which a range would only contest."""
-    import icukit.engine
-
-    if not hasattr(icukit.engine, "range_detectors"):
-        pytest.skip("this icukit builds no range readers (icukit.engine.range_detectors)")
     detectors = _load_builder()._detectors()
 
     def ranges(kind: str) -> set[str]:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import pytest
 
 from frend import normalize
@@ -117,3 +119,48 @@ def test_scientific_notation_preserves_negative_zero_mantissa(minus):
     assert [(unit.source_span, unit.reader) for unit in result.units] == [
         ((0, 4), "number:scientific")
     ]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        "1e{digits}",
+        "1 x 10^{digits}",
+        "1×10{super_digits}",
+    ],
+)
+def test_scientific_detector_skips_unrepresentable_exponents_atomically(written):
+    limit = sys.int_info.default_max_str_digits
+    text = written.format(digits="9" * (limit + 1), super_digits="⁹" * (limit + 1))
+
+    detections = ScientificNotationDetector().detect(f"2e3 {text} 4e5")
+
+    assert [(item["text"], item["start"], item["end"]) for item in detections] == [
+        ("2e3", 0, 3),
+        ("4e5", len(text) + 5, len(text) + 8),
+    ]
+    assert [item["value"].exponent for item in detections] == [3, 5]
+
+
+def test_scientific_detector_uses_current_integer_conversion_limit():
+    original_limit = sys.get_int_max_str_digits()
+    try:
+        sys.set_int_max_str_digits(640)
+        text = "1e" + "9" * 641
+
+        assert ScientificNotationDetector().detect(text) == []
+    finally:
+        sys.set_int_max_str_digits(original_limit)
+
+
+def test_scientific_detector_honors_disabled_integer_conversion_limit():
+    original_limit = sys.get_int_max_str_digits()
+    try:
+        sys.set_int_max_str_digits(0)
+        text = "1e" + "9" * (sys.int_info.default_max_str_digits + 1)
+
+        detections = ScientificNotationDetector().detect(text)
+    finally:
+        sys.set_int_max_str_digits(original_limit)
+
+    assert [item["text"] for item in detections] == [text]

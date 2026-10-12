@@ -139,18 +139,58 @@ def test_cldr_named_digit_like_symbols_are_read_but_decimal_digits_are_not(text,
         assert SymbolDetector().detect(decimal_digit) == []
 
 
+def test_symbol_detector_reuses_one_grapheme_pass(monkeypatch):
+    import frend.symbols as symbols_module
+
+    calls = []
+    original = symbols_module._GRAPHEME_BREAKER.break_grapheme_spans
+
+    def counted(text):
+        calls.append(text)
+        return original(text)
+
+    monkeypatch.setattr(symbols_module._GRAPHEME_BREAKER, "break_grapheme_spans", counted)
+
+    detections = SymbolDetector().detect("alpha **** beta")
+
+    assert calls == ["alpha **** beta"]
+    assert any(item["type"] == "symbol:run" for item in detections)
+
+
 @pytest.mark.parametrize(
     ("text", "spoken"),
-    [("x¹", "superscript one"), ("x²", "superscript two")],
+    [
+        ("x¹", "x superscript one"),
+        ("Smith²", "smith superscript two"),
+        ("see note²", "see note superscript two"),
+        ("see note³", "see note superscript three"),
+        ("the 2nd edition¹", "the second edition superscript one"),
+    ],
 )
 def test_cldr_named_digit_like_symbol_is_spoken_first_inside_a_token(text, spoken):
-    normalized = frend.normalize(text, fold=None).strip()
+    """Footnote and ordinal markers use CLDR's first name, even when another name
+    has a symbol-wide measurement from mathematical contexts."""
+    normalized = normalize_spoken(frend.normalize(text, fold=None))
 
-    assert spoken in normalized
+    assert normalized == spoken
     assert normalized != text
 
 
-def test_measured_spoken_digit_like_alternative_can_outrank_cldr_first_name(monkeypatch):
+@pytest.mark.parametrize(
+    ("text", "spoken"),
+    [
+        ("x²", "x squared"),
+        ("m²", "m squared"),
+        ("m ²", "m squared"),
+        ("km²", "km squared"),
+        ("km ²", "k m squared"),
+        ("a² + b²", "a squared b squared"),
+    ],
+)
+def test_measured_spoken_digit_like_alternative_can_outrank_cldr_first_name(
+    monkeypatch, text, spoken
+):
+    """A measured alternative wins for a variable or short unit-shaped exponent."""
     import frend.verbalize as verbalize_module
     from frend.spoken_priors import SourceMeasurement
 
@@ -167,7 +207,7 @@ def test_measured_spoken_digit_like_alternative_can_outrank_cldr_first_name(monk
 
     monkeypatch.setattr(verbalize_module, "source_prior", measured)
 
-    assert normalize_spoken(frend.normalize("x²", fold=None)) == "x squared"
+    assert normalize_spoken(frend.normalize(text, fold=None)) == spoken
 
 
 @pytest.mark.parametrize("text", ["ᵋ", "々"])

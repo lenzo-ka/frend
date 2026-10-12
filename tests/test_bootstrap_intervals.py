@@ -225,7 +225,7 @@ def test_evaluator_adds_intervals_and_text_free_sentence_records(monkeypatch):
     monkeypatch.setattr(
         evaluate,
         "_map",
-        lambda *_args: [("PLAIN", True, True), ("PLAIN", False, True)],
+        lambda *_args: [("PLAIN", True, True, None), ("PLAIN", False, True, None)],
     )
     records = []
     report = evaluate._per_token(sentences, 1, intervals=100, record_sink=records)
@@ -263,7 +263,7 @@ def test_triage_reports_each_class_interval_in_percentage_points(monkeypatch):
     monkeypatch.setattr(
         triage,
         "_score_token",
-        lambda *_args: (False, False, False, triage.Classification("D")),
+        lambda *_args: (False, False, False, triage.Classification("D"), None),
     )
     result = triage._score_sentence(("shard", 0, sentence, None, None))
     report = triage._aggregate([result], 1, intervals=100)
@@ -278,7 +278,7 @@ def test_accuracy_only_skips_classification_but_keeps_intervals(monkeypatch):
 
     def score(_row, _before, _after, _profile, classify_misses=True):
         calls.append(classify_misses)
-        return False, True, False, None
+        return False, True, False, None, None
 
     monkeypatch.setattr(triage, "_score_token", score)
     sentence = (("DATE", "1/2/03", "spoken"),)

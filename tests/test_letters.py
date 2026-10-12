@@ -15,14 +15,23 @@ from frend import normalize, resolve_lattice
 from frend.letters import (
     HyphenatedSerialDetector,
     LettersDetector,
+    _letters_detector,
     cv_pattern,
     is_roman,
     is_spelled_token,
+    letter_names,
     numeral_share,
 )
 from frend.verbalize import verbalize_lattice
 
 _DETECTORS = (FlexibleNumberDetector("en_US"), AbbreviationDetector("en_US"), LettersDetector())
+
+
+def test_locale_letter_detector_is_reused_without_changing_names():
+    _letters_detector.cache_clear()
+
+    assert _letters_detector("en_US") is _letters_detector("en_US")
+    assert letter_names("AB", "en_US").spoken == ("a", "b")
 
 
 def _read(text: str) -> list[list[str]]:
