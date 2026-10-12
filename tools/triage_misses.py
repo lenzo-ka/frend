@@ -422,9 +422,7 @@ def _score_sentence(item) -> dict[str, object]:
                 False,
                 **target_options,
             )
-        first, any_, capped, classification, exception_type = (
-            (*score, None) if len(score) == 4 else score
-        )
+        first, any_, capped, classification, exception_type = score
         if exception_type is not None:
             exception_counts[exception_type] += 1
         first_count += first

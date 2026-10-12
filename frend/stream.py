@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 
 from icukit import ReflowMode
@@ -108,7 +109,10 @@ class NormalizationStream:
         self._closed = False
 
     def _normalize_range(
-        self, absolute_start: int, absolute_end: int
+        self,
+        absolute_start: int,
+        absolute_end: int,
+        symbol_code_ranges: tuple[tuple[int, int], ...],
     ) -> tuple[str, list[NormalizedUnit]]:
         local_end = absolute_end - self._source_from
         folded_span = self._folded[:local_end]
@@ -131,8 +135,8 @@ class NormalizationStream:
         detections = [*first.detections, *last.detections]
         rendered, spoken = _sentence(
             text,
-            source_offset=0,
-            symbol_code_ranges=_code_ranges(text),
+            source_offset=content_start,
+            symbol_code_ranges=symbol_code_ranges,
             raw_text=raw_text,
             fold=self.fold,
             locale=self.locale,
@@ -193,13 +197,17 @@ class NormalizationStream:
         parts: list[str] = []
         units: list[NormalizedUnit] = []
         settled = self._source_from
+        symbol_code_ranges = tuple(
+            (self._source_from + start, self._source_from + end)
+            for start, end in _code_ranges(self._folded)
+        )
         for decision in decisions:
             if decision["decision"] != "break":
                 continue
             end = int(decision["offset"])
             if end <= settled:
                 continue
-            text, aligned = self._normalize_range(settled, end)
+            text, aligned = self._normalize_range(settled, end, symbol_code_ranges)
             parts.append(text)
             units.extend(aligned)
             consumed = end - self._source_from
@@ -253,6 +261,18 @@ class NormalizationStream:
         self._fold_fed = end
         return self._feed_protected(self._protection_stream.feed(chunk))
 
+    def _snapshot(self) -> dict[str, object]:
+        """Return enough detached state to make one public operation atomic."""
+        snapshot = self.__dict__.copy()
+        snapshot["_sentences"] = copy.deepcopy(self._sentences)
+        snapshot["_protection_stream"] = copy.copy(self._protection_stream)
+        snapshot["work_budget"] = copy.deepcopy(self.work_budget)
+        return snapshot
+
+    def _restore(self, snapshot: dict[str, object]) -> None:
+        self.__dict__.clear()
+        self.__dict__.update(snapshot)
+
     def feed(self, chunk: str, /) -> NormalizationBatch:
         """Append a source chunk and return newly immutable normalized output."""
         if self._closed:
@@ -265,40 +285,55 @@ class NormalizationStream:
             max_unit_chars=None,
             max_input_chars=self.max_input_chars,
         )
-        self._source += chunk
-        self._total = prospective
-        return self._feed_stable_fold()
+        snapshot = self._snapshot()
+        try:
+            self._source += chunk
+            self._total = prospective
+            return self._feed_stable_fold()
+        except Exception:
+            self._restore(snapshot)
+            raise
 
     def flush(self) -> NormalizationBatch:
         """Settle the current logical segment without closing the stream."""
         if self._closed:
             raise RuntimeError("normalization stream is closed")
-        folded = self._feed_stable_fold(final=True)
-        settled = self._feed_protected(self._protection_stream.flush())
-        flushed = self._settle(self._sentences.flush())
-        return self._combine(folded, settled, flushed)
+        snapshot = self._snapshot()
+        try:
+            folded = self._feed_stable_fold(final=True)
+            settled = self._feed_protected(self._protection_stream.flush())
+            flushed = self._settle(self._sentences.flush())
+            return self._combine(folded, settled, flushed)
+        except Exception:
+            self._restore(snapshot)
+            raise
 
     def close(self) -> NormalizationBatch:
         """Settle all remaining input and reject later input."""
         if self._closed:
             return NormalizationBatch("", (), self._source_from)
-        folded = self._feed_stable_fold(final=True)
-        settled = self._feed_protected(self._protection_stream.close())
-        closed = self._settle(self._sentences.close())
-        result = self._combine(folded, settled, closed)
-        if self.offsets and self._previous_content_end < self._total:
-            result = NormalizationBatch(
-                result.text,
-                (
-                    *result.units,
-                    NormalizedUnit(
-                        (self._output_at, self._output_at),
-                        (self._previous_content_end, self._total),
-                        None,
-                        "surface:boundary-whitespace",
+        snapshot = self._snapshot()
+        try:
+            folded = self._feed_stable_fold(final=True)
+            settled = self._feed_protected(self._protection_stream.close())
+            closed = self._settle(self._sentences.close())
+            result = self._combine(folded, settled, closed)
+            if self.offsets and self._previous_content_end < self._total:
+                result = NormalizationBatch(
+                    result.text,
+                    (
+                        *result.units,
+                        NormalizedUnit(
+                            (self._output_at, self._output_at),
+                            (self._previous_content_end, self._total),
+                            None,
+                            "surface:boundary-whitespace",
+                        ),
                     ),
-                ),
-                result.pending_from,
-            )
-        self._closed = True
-        return result
+                    result.pending_from,
+                )
+            self._closed = True
+            return result
+        except Exception:
+            self._restore(snapshot)
+            raise

@@ -661,17 +661,15 @@ def test_sentence_options_use_icukit_010_directly():
         "additional words to exceed the short-line protection threshold\ncontinues here."
     )
 
-    default = frend.normalize(source)
-    reflowed = frend.normalize(source, reflow="lines")
-
-    assert default
-    assert reflowed
     import importlib
 
     normalize_module = importlib.import_module("frend.normalize")
     assert len(normalize_module._sentence_ranges(source, "en_US")) == 2
     assert len(normalize_module._sentence_ranges(source, "en_US", reflow="lines")) == 1
-    assert frend.normalize("Hon. Alice spoke. Next.", sentence_base="en-real-cart@1")
+    decisions = normalize_module._sentence_override("en_US", "en-real-cart@1", 1024, "none").decide(
+        "Hon. Alice spoke. Next item."
+    )
+    assert any(item["layer"] == "model" for item in decisions)
 
 
 def test_forced_sentence_boundaries_are_never_merged_by_protection(monkeypatch):

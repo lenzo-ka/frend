@@ -16,7 +16,7 @@ from tiergraph import WorkBudget
 import frend
 import frend.behavior as behavior_module
 from frend import BehaviorLoadError, SpokenAlternative
-from frend.behavior import resolve_behavior, shipped_behaviors
+from frend.behavior import BehaviorRefusal, resolve_behavior, shipped_behaviors
 from frend.profiles import validate_groups
 from frend.verbalize import verbalize_lattice
 
@@ -416,6 +416,14 @@ def test_c10_conformance_manifests(owner):
         digest = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
         assert digest == contract["sha256"], relative
         if contract["expected"] == "valid":
+            if relative == "valid/icukit.json":
+                error = _error([path])
+                assert [item.code for item in error.refusals] == [
+                    "UNSUPPORTED_OPTION_GROUP",
+                    "UNSUPPORTED_OPTION_GROUP",
+                    "UNSUPPORTED_OPTION_GROUP",
+                ]
+                continue
             resolved = resolve_behavior([path])
             raw = json.loads(path.read_text(encoding="utf-8"))
             if "icukit" in raw["sections"]:
@@ -491,4 +499,38 @@ def test_c13_icukit_sentence_section_is_validated_and_active():
         "schema_version": 1,
         "sentence": {"base": "en-tn@1"},
     }
-    assert frend.normalize("Hon. Alice spoke. Next.", **resolved.kwargs)
+    source = "alpha a a a\n(1111). continues"
+    normalize_module = importlib.import_module("frend.normalize")
+    decision = normalize_module._sentence_override("en_US", "en-tn@1", 1024, "none").decide(source)[
+        0
+    ]
+    assert (decision["layer"], decision["decision"]) == ("rules", "no-break")
+
+
+@pytest.mark.parametrize("group", ["detection", "stream", "regex"])
+def test_c13_unsupported_icukit_groups_are_rejected(group, tmp_path):
+    values = {
+        "detection": {"guarded": True},
+        "stream": {"boundary": "paragraph"},
+        "regex": {"time_limit": 5000},
+    }
+    path = tmp_path / f"unsupported-{group}.json"
+    path.write_text(
+        json.dumps(
+            _document(
+                f"unsupported-{group}",
+                sections={
+                    "icukit": {"schema_version": 1, group: values[group]},
+                },
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    error = _error([path])
+    assert error.refusals == (
+        BehaviorRefusal(
+            "UNSUPPORTED_OPTION_GROUP",
+            f"{path}: sections.icukit.{group} is not applied by frend",
+        ),
+    )

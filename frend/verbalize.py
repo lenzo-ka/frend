@@ -2671,8 +2671,8 @@ def _spoken_unit(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
     """Speak a unit written with no amount ("/km²", "per second"): ICU's wide form of the
     unit for one, with ICU's number cut out ("per square kilometer").
 
-    icukit reads such a rate as a ``UnitValue`` (icukit #102); it is matched by name so
-    frend still runs on an icukit release without it.
+    icukit reads such a rate as a ``UnitValue`` (icukit #102); the unit is matched by
+    name because that is the stable public value carried by the detection.
     """
     unit = str(getattr(value, "unit", ""))
     phrase = _measure_template(Decimal(1), unit, locale).replace("{}", "").strip()

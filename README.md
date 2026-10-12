@@ -65,14 +65,18 @@ view. `max_unit_chars` remains the independent lattice-work bound. Icukit
 
 `NormalizationStream` accepts the same policy options. Each batch contains only settled
 speech, optional absolute source/output alignments, and a monotone `pending_from`
-watermark. It coordinates icukit's linear sentence and detection streams, so arbitrary
-input chunking produces the same answer as `normalize` while the default sentence bound
-keeps retained source bounded.
+watermark. It coordinates icukit's linear sentence and detection streams and keeps
+retained source bounded. Output normally settles at a paragraph, a configured cap, an
+explicit flush, or close; a cap or flush is an explicit context cut, so constructs that
+straddle it need not match a single whole-document `normalize` call. Chunk boundaries
+inside the same settlement windows do not change the answer.
 
 Named behavior schemas compose in caller order, with later presets winning key by key.
 Resolve shipped names or JSON files with `resolve_behavior`, then spread its immutable
 `kwargs` into `normalize`; the result also records member digests, setters, and validated
-icukit sections. Icukit sentence options are applied through the same runtime keywords.
+icukit sections. Icukit sentence options are applied through the same runtime keywords;
+schemas that set icukit detection, stream, or regex groups are rejected because frend
+does not expose those receiving APIs.
 Explicit call keywords remain Python's normal duplicate-key error.
 
 Resolving a behavior schema only composes its configuration; it does not load external

@@ -29,7 +29,7 @@ classifiers = [
 # behavior loading, reflow, and linear sentence/detection streams are required.
 # phonenumbers 9.0.41 is the floor: its tested regional metadata gates telephone spans.
 # tiergraph 0.8 is the floor: date generation uses GrammarInput, Realization, and generate.
-# cartlet 0.8 is the floor: it is required by icukit 0.9.0.
+# cartlet 0.8 is the floor: opt-in sentence models use its compiled decision trees.
 dependencies = [
     "cartlet>=0.8",
     "icukit>=0.10.0",

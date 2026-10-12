@@ -302,8 +302,7 @@ def _per_token(
         for sentence in sentences
         for index, row in enumerate(sentence)
     ]
-    raw_results = _map(_score, rows, workers, 256)
-    results = [(*result, None) if len(result) == 3 else result for result in raw_results]
+    results = _map(_score, rows, workers, 256)
     by_class: dict[str, Counter] = defaultdict(Counter)
     exception_counts: Counter[str] = Counter()
     for corpus_class, first, any_, exception_type in results:
@@ -534,8 +533,7 @@ def _running_text_rows(
             )
         )
     )
-    raw_results = _map(_score_joined, items, workers, 16)
-    joined_results = [(*result, None) if len(result) == 4 else result for result in raw_results]
+    joined_results = _map(_score_joined, items, workers, 16)
     by_joint: dict[tuple[str, str], Counter] = defaultdict(Counter)
     for separator, middle, first, any_, exception_type in joined_results:
         by_joint[(separator, middle)]["n"] += 1
