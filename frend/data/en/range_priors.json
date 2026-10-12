@@ -135,9 +135,9 @@
     "punctuation_dash": 236
    },
    "joint_outcomes": {
-    "credited": 114578,
+    "credited": 114580,
     "error": 9,
-    "no_end": 1630,
+    "no_end": 1628,
     "not_emittable": 2314,
     "punctuation_dash": 35,
     "unmatched": 17
@@ -1086,15 +1086,15 @@
  },
  "kinds": {
   "dash": {
-   "total": 99942,
-   "matched": 99930,
+   "total": 99944,
+   "matched": 99932,
    "unmatched": 12,
    "source_matched": {
     "range:cardinal+to+cardinal": 40332,
     "range:date+to+date": 33598,
     "range:cardinal+silent+cardinal": 10716,
     "range:date+to+cardinal": 5106,
-    "range:cardinal+to+measure": 2254,
+    "range:cardinal+to+measure": 2256,
     "range:date+silent+cardinal": 2101,
     "range:decimal+to+cardinal": 1843,
     "range:date+silent+date": 1351,
@@ -1475,9 +1475,9 @@
      }
     },
     "other": {
-     "matched": 5477,
+     "matched": 5479,
      "source_matched": {
-      "range:cardinal+to+measure": 2254,
+      "range:cardinal+to+measure": 2256,
       "range:decimal+to+cardinal": 1843,
       "range:date+to+measure": 496,
       "range:decimal+to+measure": 231,
