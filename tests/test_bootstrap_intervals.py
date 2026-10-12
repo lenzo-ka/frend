@@ -2,23 +2,16 @@
 
 from __future__ import annotations
 
-import importlib.util
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
 def _tool(name: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py", register=True)
 
 
 def _payload(first: int, *, tokens: int = 1, fingerprint: str = "sample-a") -> dict:

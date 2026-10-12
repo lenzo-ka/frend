@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import importlib.util
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from icukit.detectors import detect
 
 from frend import compose_choices, normalize, resolve_choices
@@ -14,13 +13,9 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def _load_gate():
-    name = "locale_gate_for_number_tests"
-    spec = importlib.util.spec_from_file_location(name, REPO / "tools" / "locale_gate.py")
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(
+        "locale_gate_for_number_tests", REPO / "tools" / "locale_gate.py", register=True
+    )
 
 
 gate = _load_gate()

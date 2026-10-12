@@ -7,6 +7,8 @@ import re
 import tomllib
 from pathlib import Path
 
+from conftest import assert_dependency_floor
+
 _REPO = Path(__file__).resolve().parents[1]
 _README = _REPO / "README.md"
 _PACKAGE_INIT = _REPO / "frend" / "__init__.py"
@@ -143,49 +145,9 @@ def test_unreleased_changelog_names_public_features_since_pr_57():
 
 def test_cartlet_floor_comment_matches_dependency_specifier():
     text = _PYPROJECT.read_text(encoding="utf-8")
-    metadata = tomllib.loads(text)
-    cartlet = next(
-        dependency
-        for dependency in metadata["project"]["dependencies"]
-        if dependency.startswith("cartlet")
-    )
-
-    dependency_floor = re.fullmatch(r"cartlet>=(\d+(?:\.\d+)*)", cartlet)
-    project_preamble = text.partition("[project.urls]")[0]
-    cartlet_comments = [
-        line
-        for line in project_preamble.splitlines()
-        if line.startswith("#") and "cartlet" in line.casefold()
-    ]
-
-    assert dependency_floor is not None
-    assert len(cartlet_comments) == 1
-    comment_floor = re.fullmatch(r"# cartlet (\d+(?:\.\d+)*) is the floor: .+", cartlet_comments[0])
-    assert comment_floor is not None
-    assert comment_floor.group(1) == dependency_floor.group(1)
+    assert_dependency_floor(text, "cartlet")
 
 
 def test_tiergraph_floor_comment_matches_dependency_specifier():
     text = _PYPROJECT.read_text(encoding="utf-8")
-    metadata = tomllib.loads(text)
-    tiergraph = next(
-        dependency
-        for dependency in metadata["project"]["dependencies"]
-        if dependency.startswith("tiergraph")
-    )
-
-    dependency_floor = re.fullmatch(r"tiergraph>=(\d+(?:\.\d+)*)", tiergraph)
-    project_preamble = text.partition("[project.urls]")[0]
-    tiergraph_comments = [
-        line
-        for line in project_preamble.splitlines()
-        if line.startswith("#") and "tiergraph" in line.casefold()
-    ]
-
-    assert dependency_floor is not None
-    assert len(tiergraph_comments) == 1
-    comment_floor = re.fullmatch(
-        r"# tiergraph (\d+(?:\.\d+)*) is the floor: .+", tiergraph_comments[0]
-    )
-    assert comment_floor is not None
-    assert comment_floor.group(1) == dependency_floor.group(1)
+    assert_dependency_floor(text, "tiergraph")

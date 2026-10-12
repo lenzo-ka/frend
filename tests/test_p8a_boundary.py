@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 import subprocess
 import sys
@@ -12,6 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from conftest import load_tool_module
 
 _REPO = Path(__file__).resolve().parents[1]
 _TOOLS = _REPO / "tools"
@@ -125,12 +125,7 @@ def test_non_english_letters_require_locale_names():
 
 
 def _load(name: str):
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    assert spec and spec.loader
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py", register=True)
 
 
 def test_verified_inputs_reject_wrong_identity(tmp_path, monkeypatch):

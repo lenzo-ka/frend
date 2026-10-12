@@ -13,7 +13,6 @@ no repo on PYTHONPATH.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import os
 import subprocess
@@ -22,6 +21,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 from frend.type_priors import PriorTable, corpus_classes
 
@@ -43,13 +43,7 @@ _EXPECTED = {
 
 
 def _load_build_tool():
-    """Load tools/build_type_priors.py by path (tools is not an installed package)."""
-    spec = importlib.util.spec_from_file_location("build_type_priors", _SCRIPT)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("build_type_priors", _SCRIPT, register=True)
 
 
 def _clean_env() -> dict[str, str]:

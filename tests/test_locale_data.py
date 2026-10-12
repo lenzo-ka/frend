@@ -4,7 +4,6 @@ with no table gets."""
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 import re
 import sys
@@ -13,6 +12,7 @@ from importlib.resources import files
 from pathlib import Path, PurePosixPath
 
 import pytest
+from conftest import load_tool_module
 
 from frend import data_sources, locale_data
 
@@ -187,12 +187,7 @@ def test_a_missing_locale_table_passed_on_gives_no_english_counts():
 
 
 def _builder(name: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py")
 
 
 @pytest.mark.parametrize(
@@ -423,13 +418,7 @@ def test_shipped_spellout_dictionary_is_compact_private_and_source_labeled():
 
 
 def _evaluator():
-    sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(
-        "evaluate_google_tn", _TOOLS / "evaluate_google_tn.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("evaluate_google_tn", _TOOLS / "evaluate_google_tn.py")
 
 
 @pytest.mark.parametrize(

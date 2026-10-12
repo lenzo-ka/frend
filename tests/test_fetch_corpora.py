@@ -9,7 +9,6 @@ written for them, so every verification and refusal runs against real bytes.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import io
 import re
 import tarfile
@@ -17,21 +16,18 @@ import zipfile
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _REPO = Path(__file__).resolve().parents[1]
 _SCRIPT = _REPO / "tools" / "fetch_corpora.py"
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
-def _load_tool():
-    spec = importlib.util.spec_from_file_location("fetch_corpora", _SCRIPT)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+def _tool():
+    return load_tool_module("fetch_corpora", _SCRIPT)
 
 
-tool = _load_tool()
+tool = _tool()
 
 
 def _sha(data: bytes) -> str:
