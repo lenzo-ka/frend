@@ -139,6 +139,8 @@ def _currencies(locale: str) -> tuple[str, ...]:
     locale = canonical_locale(locale)
     default = icu.NumberFormat.createCurrencyInstance(icu.Locale(locale)).getCurrency()
     return tuple(dict.fromkeys((*_CURRENCIES, default)))
+
+
 _MIXED_MEASURES = ("foot-and-inch", "pound-and-ounce")
 
 
