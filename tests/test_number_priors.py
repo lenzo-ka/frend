@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 from frend.number_priors import NumberPrior, NumberPriorTable, load_number_priors
 
@@ -15,12 +15,7 @@ _REPO = Path(__file__).resolve().parents[1]
 
 
 def _builder():
-    path = _REPO / "tools" / "build_number_priors.py"
-    spec = importlib.util.spec_from_file_location("build_number_priors", path)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("build_number_priors", _REPO / "tools" / "build_number_priors.py")
 
 
 def test_table_uses_a_century_row_and_a_measured_fallback():

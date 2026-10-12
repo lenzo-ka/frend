@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 
+from conftest import load_tool_module
 from icukit.breaker import break_sentence_spans, break_word_spans
 from icukit.exceptions import load_exception_inventory
 
@@ -11,12 +11,10 @@ from frend.exceptions import english_break_exceptions
 
 
 def _load_importer():
-    path = Path(__file__).resolve().parent.parent / "tools" / "import_break_exceptions.py"
-    spec = importlib.util.spec_from_file_location("import_break_exceptions", path)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(
+        "import_break_exceptions",
+        Path(__file__).resolve().parent.parent / "tools" / "import_break_exceptions.py",
+    )
 
 
 importer = _load_importer()

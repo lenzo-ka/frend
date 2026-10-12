@@ -9,6 +9,7 @@ from decimal import Decimal
 from importlib.resources import files
 
 import pytest
+from conftest import assert_count_map
 from icukit.detectors import detect
 from icukit.recognize import FlexibleDateDetector, FlexibleNumberDetector
 
@@ -386,10 +387,7 @@ def _assert_span_prior_is_aggregate(document):
     }
     for row in document["features"].values():
         assert set(row) == {"classes"}
-        assert type(row["classes"]) is dict and row["classes"]
-        for name, count in row["classes"].items():
-            assert name in GOOGLE_TN_CLASSES
-            assert type(count) is int and count > 0
+        assert_count_map(row["classes"], names=GOOGLE_TN_CLASSES, nonempty=True)
 
 
 def test_span_priors_table_contains_only_aggregate_counts():

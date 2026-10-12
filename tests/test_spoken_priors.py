@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 from frend.spoken_priors import (
     SpokenPriorTable,
@@ -30,11 +30,7 @@ _NORMALIZATION_PROVENANCE = (
 
 
 def _load_builder():
-    spec = importlib.util.spec_from_file_location("build_spoken_priors", _SCRIPT)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("build_spoken_priors", _SCRIPT)
 
 
 def test_shipped_table_shape_and_denominators():

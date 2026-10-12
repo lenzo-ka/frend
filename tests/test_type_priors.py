@@ -8,12 +8,12 @@ they survive swapping the placeholder corpus for a stronger basis.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 from frend.fold_resolve import CoverMargin, resolve, resolve_cover
 from frend.shape import shape
@@ -32,14 +32,7 @@ _REPO = Path(__file__).resolve().parents[1]
 
 
 def _load_build_tool():
-    """Load tools/build_type_priors.py by path (tools is not an installed package)."""
-    spec = importlib.util.spec_from_file_location(
-        "build_type_priors", _REPO / "tools" / "build_type_priors.py"
-    )
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("build_type_priors", _REPO / "tools" / "build_type_priors.py")
 
 
 def _det(start: int, end: int, type_: str, text: str) -> dict:

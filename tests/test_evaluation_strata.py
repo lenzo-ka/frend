@@ -3,23 +3,17 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
-import sys
 from pathlib import Path
 from types import SimpleNamespace
+
+from conftest import load_tool_module
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
 def _tool(name: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py", register=True)
 
 
 def test_evaluator_fixture_counts_tokens_classes_and_sentences(monkeypatch):
