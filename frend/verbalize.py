@@ -995,6 +995,66 @@ def _spoken_fraction(
     return alternatives
 
 
+def compose_english_fraction_measures(
+    detections: Sequence[object], source_text: str, locale: str
+) -> list[object]:
+    """Add one US-English measure spanning a fraction and its following unit.
+
+    ICU's measure reader begins at the denominator in ``3/4 inch`` and therefore
+    competes away the complete fraction. Join that suffix measure to the fraction
+    it overlaps. Units that ICU does not recognize, such as ``cup``, retain their
+    existing fraction-plus-word path.
+    """
+    if canonical_locale(locale) != "en_US":
+        return list(detections)
+    fractions = [
+        detection
+        for detection in detections
+        if detection.get("type") == "fraction:flexible"
+        and _capture(detection, "whole") is None
+        and _capture(detection, "sign") is None
+    ]
+    composed = list(detections)
+    for fraction in fractions:
+        numerator = _capture(fraction, "numerator")
+        denominator = _capture(fraction, "denominator")
+        if numerator is None or denominator is None:
+            continue
+        for measure in detections:
+            value = measure.get("value")
+            integer = _capture(measure, "integer")
+            unit = _capture(measure, "unit")
+            if (
+                not isinstance(value, MeasureValue)
+                or integer is None
+                or unit is None
+                or int(measure.get("start", -1)) != int(denominator.start)
+                or int(integer.end) != int(fraction.get("end", -1))
+                or str(integer.text) != str(denominator.text)
+            ):
+                continue
+            if (
+                str(numerator.value) == "1"
+                and str(denominator.value) == "2"
+                and value.unit == "cup"
+            ):
+                continue
+            start = int(fraction["start"])
+            end = int(measure["end"])
+            composed.append(
+                {
+                    "text": source_text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": measure["type"],
+                    "value": MeasureValue(str(fraction["value"].decimal), value.unit),
+                    "captures": (numerator, denominator, unit),
+                    "spec": measure.get("spec"),
+                }
+            )
+    return composed
+
+
 def _currency_units(currency: str, locale: str):
     """The corpus's bare major and minor names for ``currency`` (``currency.units``)."""
     return (_lexical("currency.units", locale) or {}).get(currency)
@@ -1153,7 +1213,9 @@ _SPOKEN_CAPTURES = {
     "symbol-run": frozenset({"symbol"}),
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
-    "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
+    "measure": frozenset(
+        {"integer", "decimal-separator", "fraction", "numerator", "denominator", "unit"}
+    ),
     "coordinate": frozenset({"degrees", "minutes", "seconds", "direction"}),
     "mixed-measure": frozenset({"integer", "unit"}),
     "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
@@ -2766,6 +2828,7 @@ def _spoken_measure(
     value: MeasureValue,
     locale: str,
     *,
+    detection: object | None = None,
     preserve_negative_zero: bool = False,
     suppress_in_token_minus: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
@@ -2776,6 +2839,34 @@ def _spoken_measure(
     kilometers"). Both unit forms are ICU's; putting the plural there is the corpus's
     choice, so that form is lexical over them.
     """
+    numerator = _capture_integer(detection, "numerator") if detection is not None else None
+    denominator = _capture_integer(detection, "denominator") if detection is not None else None
+    if numerator is not None and denominator is not None:
+        fractions = _spoken_fraction(detection, locale)
+        regular = (
+            fractions[0]
+            if denominator == 2
+            else next(
+                (
+                    item
+                    for item in fractions
+                    if "ordinal" in item.provenance and " over " not in item.text
+                ),
+                fractions[0],
+            )
+        )
+        numerator_words, separator, denominator_word = regular.text.rpartition(" ")
+        fraction = f"{numerator_words}-{denominator_word}" if separator else regular.text
+        template = _measure_template(Decimal(1), value.unit, locale)
+        return (
+            SpokenAlternative(
+                template.format(fraction),
+                f"{regular.provenance}+icu-measure:wide",
+                regular.weight,
+                regular.prior_provenance,
+            ),
+        )
+
     amount = Decimal(value.decimal)
     if suppress_in_token_minus:
         amount = abs(amount)
@@ -4427,6 +4518,7 @@ def _verbalize_edge(
             alternatives = _spoken_measure(
                 value,
                 locale,
+                detection=detection,
                 preserve_negative_zero=_has_leading_minus(detection, written_context),
                 suppress_in_token_minus=_minus_follows_letter_bearing_run(
                     detection, written_context

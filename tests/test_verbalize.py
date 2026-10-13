@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import icu
 import pytest
 from icukit.abbreviation_recognize import AbbreviationDetector
-from icukit.detectors import NumberValue, all_detectors, date_detectors, detect
+from icukit.detectors import MeasureValue, NumberValue, all_detectors, date_detectors, detect
 from icukit.recognize import (
     AlphanumericRunsDetector,
     FlexibleCompactDetector,
@@ -39,6 +39,7 @@ from frend.verbalize import (
     _quarter_names,
     _spellout_rule_sets,
     _weekday_name,
+    compose_english_fraction_measures,
     register_curated_alternative,
     verbalize_edge,
     verbalize_lattice,
@@ -1743,6 +1744,47 @@ def test_measure_speaks_the_amount_and_icus_wide_unit(written, unit, spoken):
     )
     assert spoken in forms
     assert detection_unit.unspoken == ()
+
+
+def test_english_fraction_measure_keeps_the_fraction_and_singular_unit():
+    assert normalize("3/4 inch", locale="en_US") == " three-fourths inch "
+
+
+def test_existing_english_half_cup_reading_is_byte_identical():
+    assert normalize("1/2 cup", locale="en_US") == " one half   cup "
+
+
+def test_english_half_cup_is_not_composed_even_if_icu_offers_a_suffix_measure():
+    fraction = next(iter(FlexibleFractionDetector("en_US").detect("1/2")))
+    measure = {
+        "text": "2 cup",
+        "start": 2,
+        "end": 7,
+        "type": "measure:cup",
+        "value": MeasureValue("2", "cup"),
+        "captures": (
+            SimpleNamespace(name="integer", start=2, end=3, text="2", value="2"),
+            SimpleNamespace(name="unit", start=4, end=7, text="cup", value="cup"),
+        ),
+    }
+
+    composed = compose_english_fraction_measures([fraction, measure], "1/2 cup", "en_US")
+
+    assert not any(item["start"] == 0 and item["end"] == 7 for item in composed)
+
+
+def test_english_half_measure_composes_when_icu_recognizes_the_unit():
+    assert normalize("Add 1/2 kg of flour.", locale="en_US") == (
+        " add   one-half kilogram   of   flour ."
+    )
+
+
+def test_english_measure_uses_half_instead_of_the_ambiguous_ordinal_second():
+    assert normalize("3/2 inch", locale="en_US") == " three-halves inch "
+
+
+def test_hyphenated_english_fraction_measure_still_reads_the_fraction():
+    assert "three quarters" in normalize("a 3/4-inch bolt", locale="en_US")
 
 
 def test_measure_template_reuses_the_locale_formatter_without_changing_output():
