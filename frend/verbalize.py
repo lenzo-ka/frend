@@ -64,9 +64,11 @@ from frend.input_limits import (
 from frend.lattice import ReadingEdge, ReadingLattice
 from frend.letters import (
     HyphenatedSerialValue,
+    LetterHyphenWordValue,
     LettersValue,
     cv_pattern,
     is_letter_run,
+    is_spelled_token,
     letter_names,
     spelled,
     spelled_token_prior,
@@ -1108,6 +1110,7 @@ _SPOKEN_CAPTURES = {
     "plural": frozenset({"number", "suffix", "apostrophe", "elision"}),
     "runs": frozenset({"digits", "letters", "separator"}),
     "serial": frozenset({"prefix", "digits", "suffix"}),
+    "letter-hyphen-word": frozenset({"letter", "word"}),
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
     "telephone": frozenset({"telephone"}),
@@ -1384,6 +1387,29 @@ def _spoken_hyphenated_serial(
     # A serial names the digit zero; the alternate telephone-like "o" form is not a
     # digit name and must not outrank it through general spoken-source priors.
     return _compose((letter_parts[:1], digits[:1], letter_parts[1:]), "{} {} {}")
+
+
+def _spoken_letter_hyphen_word(
+    value: LetterHyphenWordValue,
+    locale: str,
+    profile: str | None = None,
+    case_variant_lookup: bool = False,
+) -> tuple[SpokenAlternative, ...]:
+    """Name the letter, leave the structural hyphen silent, and say the word."""
+    letter = spelled(value.letter, locale)
+    if letter is None:
+        raise NotImplementedError(f"no authoritative letter names for {locale}")
+    words = (
+        _spoken_letters(
+            LettersValue(value.word, value.word, ""),
+            locale,
+            profile,
+            case_variant_lookup,
+        )
+        if is_spelled_token(value.word, locale)
+        else (SpokenAlternative(_NFC.normalize(value.word).lower(), "surface:word"),)
+    )
+    return _compose(((letter,), words), "{} {}")
 
 
 def _roman_readings(
@@ -4150,6 +4176,10 @@ def _verbalize_edge(
             alternatives = _spoken_hyphenated_serial(value, locale)
             key_value = (value.prefix, value.digits, value.suffix)
             path = "serial"
+        elif isinstance(value, LetterHyphenWordValue):
+            alternatives = _spoken_letter_hyphen_word(value, locale, profile, case_variant_lookup)
+            key_value = (value.letter, value.word)
+            path = "letter-hyphen-word"
         elif isinstance(value, GroupedDigitsValue):
             alternatives = _spoken_grouped_id(value, locale)
             key_value = value.groups
