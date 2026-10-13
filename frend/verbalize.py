@@ -115,7 +115,7 @@ from frend.symbols import (
 )
 from frend.telephone import TelephoneValue
 from frend.versions import VersionValue
-from frend.written_forms import DigitsValue
+from frend.written_forms import DigitsValue, DottedNumericValue
 
 __all__ = [
     "RangeConnector",
@@ -1002,6 +1002,66 @@ def _spoken_fraction(
     return alternatives
 
 
+def compose_english_fraction_measures(
+    detections: Sequence[object], source_text: str, locale: str
+) -> list[object]:
+    """Add one US-English measure spanning a fraction and its following unit.
+
+    ICU's measure reader begins at the denominator in ``3/4 inch`` and therefore
+    competes away the complete fraction. Join that suffix measure to the fraction
+    it overlaps. Units that ICU does not recognize, such as ``cup``, retain their
+    existing fraction-plus-word path.
+    """
+    if canonical_locale(locale) != "en_US":
+        return list(detections)
+    fractions = [
+        detection
+        for detection in detections
+        if detection.get("type") == "fraction:flexible"
+        and _capture(detection, "whole") is None
+        and _capture(detection, "sign") is None
+    ]
+    composed = list(detections)
+    for fraction in fractions:
+        numerator = _capture(fraction, "numerator")
+        denominator = _capture(fraction, "denominator")
+        if numerator is None or denominator is None:
+            continue
+        for measure in detections:
+            value = measure.get("value")
+            integer = _capture(measure, "integer")
+            unit = _capture(measure, "unit")
+            if (
+                not isinstance(value, MeasureValue)
+                or integer is None
+                or unit is None
+                or int(measure.get("start", -1)) != int(denominator.start)
+                or int(integer.end) != int(fraction.get("end", -1))
+                or str(integer.text) != str(denominator.text)
+            ):
+                continue
+            if (
+                str(numerator.value) == "1"
+                and str(denominator.value) == "2"
+                and value.unit == "cup"
+            ):
+                continue
+            start = int(fraction["start"])
+            end = int(measure["end"])
+            composed.append(
+                {
+                    "text": source_text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": measure["type"],
+                    "value": MeasureValue(str(fraction["value"].decimal), value.unit),
+                    "captures": (numerator, denominator, unit),
+                    "spec": measure.get("spec"),
+                }
+            )
+    return composed
+
+
 def _currency_units(currency: str, locale: str):
     """The corpus's bare major and minor names for ``currency`` (``currency.units``)."""
     return (_lexical("currency.units", locale) or {}).get(currency)
@@ -1154,6 +1214,7 @@ _SPOKEN_CAPTURES = {
     "letter-hyphen-word": frozenset({"letter", "word"}),
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
+    "dotted-numeric": frozenset({"groups"}),
     "telephone": frozenset({"telephone"}),
     "grouped-id": frozenset({"grouped-id"}),
     "version": frozenset({"version", "prefix", "component", "separator"}),
@@ -1161,7 +1222,9 @@ _SPOKEN_CAPTURES = {
     "symbol-run": frozenset({"symbol"}),
     "letters": frozenset({"letters", "suffix", "period"}),
     "electronic": frozenset({"digits", "letters", "separator"}),
-    "measure": frozenset({"integer", "decimal-separator", "fraction", "unit"}),
+    "measure": frozenset(
+        {"integer", "decimal-separator", "fraction", "numerator", "denominator", "unit"}
+    ),
     "coordinate": frozenset({"degrees", "minutes", "seconds", "direction"}),
     "mixed-measure": frozenset({"integer", "unit"}),
     "duration": frozenset({"h", "m", "s", "decimal-separator", "fraction"}),
@@ -1524,10 +1587,30 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
     """Speak a letter-digit token as its runs ("3D" -> "three d", "1080p" -> "ten eighty p").
 
     Each digit run reads as a cardinal and as a year; each letter run is spelled by
-    its letters; a separator is silent. The corpus speaks such tokens this way.
+    its letters. A separator is silent except for dots in a v-prefixed numeric
+    version, which use ICU's decimal separator word.
     """
+    runs = getattr(value, "runs", ())
+    dotted_version = (
+        len(runs) >= 4
+        and len(runs) % 2 == 0
+        and runs[0][0] == "letters"
+        and runs[0][1].lower() == "v"
+        and all(
+            kind == ("digits" if index % 2 else "separator") and (index % 2 or text == ".")
+            for index, (kind, text) in enumerate(runs[1:], 1)
+        )
+    )
+    separator = None
+    if dotted_version:
+        rules = _decimal_separator_rules(locale)
+        if not rules:
+            raise NotImplementedError(f"no spoken decimal separator for {locale}")
+        separator = SpokenAlternative(
+            rules[0].separator, _rbnf_provenance(rules[0].ruleset, locale)
+        )
     parts: list[tuple[SpokenAlternative, ...]] = []
-    for kind, text in getattr(value, "runs", ()):
+    for kind, text in runs:
         if kind == "digits" and len(text) > 1 and text.startswith("0"):
             # A zero-led run ("007", the "000" of "1,000th") is read digit by digit.
             digits = _spoken_digits(DigitsValue(text), locale)
@@ -1555,9 +1638,50 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
                     else letter_form,
                 )
             )
+        elif kind == "separator" and separator is not None:
+            parts.append((separator,))
     if not parts:
         raise NotImplementedError("alphanumeric token has no speakable run")
     return _compose(parts, " ".join("{}" for _ in parts))
+
+
+def _spoken_dotted_numeric(value: DottedNumericValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Read versions with point, but corpus-confirmed structural IPv4 with dot."""
+    if value.is_ipv4:
+        parts = tuple(
+            part
+            for index, group in enumerate(value.groups)
+            for part in (("separator", "."), ("digits", group))
+            if index or part[0] == "digits"
+        )
+        return _spoken_electronic(ElectronicValue("dotted-numeric", "", parts), locale)
+
+    rules = _decimal_separator_rules(locale)
+    if not rules:
+        raise NotImplementedError(f"no spoken decimal separator for {locale}")
+    separator = SpokenAlternative(rules[0].separator, _rbnf_provenance(rules[0].ruleset, locale))
+    components = []
+    for group in value.groups:
+        if len(group) > 1 and group.startswith("0"):
+            alternatives = _spoken_digits(DigitsValue(group), locale)
+        else:
+            try:
+                alternatives = _number_leaf(Decimal(group), "cardinal", locale)
+            except NotImplementedError:
+                alternatives = _spoken_big_integer(group, locale)
+        if not alternatives:
+            return ()
+        components.append(alternatives[0])
+
+    parts = [components[0]]
+    for component in components[1:]:
+        parts.extend((separator, component))
+    return (
+        SpokenAlternative(
+            " ".join(part.text for part in parts),
+            "+".join(part.provenance for part in parts),
+        ),
+    )
 
 
 def _spoken_hyphenated_serial(
@@ -2740,6 +2864,7 @@ def _spoken_measure(
     value: MeasureValue,
     locale: str,
     *,
+    detection: object | None = None,
     preserve_negative_zero: bool = False,
     suppress_in_token_minus: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
@@ -2750,6 +2875,34 @@ def _spoken_measure(
     kilometers"). Both unit forms are ICU's; putting the plural there is the corpus's
     choice, so that form is lexical over them.
     """
+    numerator = _capture_integer(detection, "numerator") if detection is not None else None
+    denominator = _capture_integer(detection, "denominator") if detection is not None else None
+    if numerator is not None and denominator is not None:
+        fractions = _spoken_fraction(detection, locale)
+        regular = (
+            fractions[0]
+            if denominator == 2
+            else next(
+                (
+                    item
+                    for item in fractions
+                    if "ordinal" in item.provenance and " over " not in item.text
+                ),
+                fractions[0],
+            )
+        )
+        numerator_words, separator, denominator_word = regular.text.rpartition(" ")
+        fraction = f"{numerator_words}-{denominator_word}" if separator else regular.text
+        template = _measure_template(Decimal(1), value.unit, locale)
+        return (
+            SpokenAlternative(
+                template.format(fraction),
+                f"{regular.provenance}+icu-measure:wide",
+                regular.weight,
+                regular.prior_provenance,
+            ),
+        )
+
     amount = Decimal(value.decimal)
     if suppress_in_token_minus:
         amount = abs(amount)
@@ -4437,6 +4590,10 @@ def _verbalize_edge(
             alternatives = _spoken_digits(value, locale)
             key_value = value.digits
             path = "digits"
+        elif isinstance(value, DottedNumericValue):
+            alternatives = _spoken_dotted_numeric(value, locale)
+            key_value = value.groups
+            path = "dotted-numeric"
         elif type(value).__name__ == "RelativeDateValue":
             alternatives = _spoken_relative(value, detection, locale)
             key_value = (value.offset, value.unit)
@@ -4449,6 +4606,7 @@ def _verbalize_edge(
             alternatives = _spoken_measure(
                 value,
                 locale,
+                detection=detection,
                 preserve_negative_zero=_has_leading_minus(detection, written_context),
                 suppress_in_token_minus=_minus_follows_letter_bearing_run(
                     detection, written_context

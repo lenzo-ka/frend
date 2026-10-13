@@ -6,10 +6,10 @@ from __future__ import annotations
 import pytest
 from conftest import load_tool_module
 
-from frend import resolve_lattice
+from frend import normalize, resolve_lattice
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import verbalize_edge
-from frend.written_forms import WrittenFormsDetector
+from frend.written_forms import DottedNumericValue, WrittenFormsDetector
 
 
 def _spans(text):
@@ -54,6 +54,88 @@ def test_citation_reads_its_volume_only_where_a_page_follows():
 
 def test_zero_digit_also_reads_o():
     assert {"one zero two", "one o two"} <= set(_forms("1 0 2"))
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("Python 3.12.1", " python   three point twelve point one "),
+        ("v2.1.3", " v two point one point three "),
+        ("192.168.1.1", " one nine two dot one six eight dot one dot one "),
+    ],
+)
+def test_dotted_numeric_runs_keep_their_separators(written, spoken):
+    assert normalize(written) == spoken
+
+
+def test_bare_and_v_prefixed_versions_use_the_same_separator():
+    bare = normalize_spoken(normalize("2.1.3"))
+    prefixed = normalize_spoken(normalize("v2.1.3"))
+
+    assert bare == "two point one point three"
+    assert prefixed == f"v {bare}"
+
+
+def test_only_four_groups_in_the_ipv4_range_use_the_address_reading():
+    assert normalize_spoken(normalize("256.1.1.1")) == (
+        "two hundred fifty six point one point one point one"
+    )
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("3.14", " three point one four "),
+        ("10.12.2026", " the tenth of December twenty twenty-six "),
+    ],
+)
+def test_dotted_numeric_runs_leave_decimals_and_dates_to_their_readers(written, spoken):
+    assert normalize(written) == spoken
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        "2009.01.22",
+        "3.28.2016",
+        "10.15.2010",
+        "1999.05.11",
+        "1925.05.29",
+    ],
+)
+def test_dotted_calendar_dates_keep_their_main_readings(written):
+    """These valid dates expose an icukit recognition gap, so frend leaves them alone."""
+    assert _spans(written) == []
+    assert normalize(written) == written
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("3.12.1", " three point twelve point one "),
+        ("3.32.2016", " three point thirty-two point two thousand sixteen "),
+        ("v3.12.1", " v three point twelve point one "),
+        ("Python 3.12.1", " python   three point twelve point one "),
+        ("1.14.13.72", " one dot fourteen dot thirteen dot seventy-two "),
+    ],
+)
+def test_nondate_dotted_numeric_runs_keep_their_readings(written, spoken):
+    assert normalize(written) == spoken
+
+
+@pytest.mark.parametrize(
+    ("written", "is_date"),
+    [
+        ("2024.2.29", True),
+        ("2.29.24", True),
+        ("29.2.2024", True),
+        ("2023.2.29", False),
+        ("31.4.2024", False),
+        ("3.12.1", False),
+    ],
+)
+def test_dotted_date_classification_uses_structure_and_calendar_validity(written, is_date):
+    assert DottedNumericValue(tuple(written.split("."))).is_date is is_date
 
 
 def test_era_written_first_is_said_first():

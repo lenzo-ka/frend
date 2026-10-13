@@ -8,6 +8,12 @@ speech stays ICU's (numbers, era names) or the corpus's:
 - a case citation's volume ("339 U.S. 629"; a page must follow), as
   ``number:cardinal:citation`` with the reporter as a capture;
 - spaced single digits ("6 3"), as ``number:digits``, said digit by digit;
+- numeric runs with two or more dots ("3.12.1"), as ``number:dotted-run``. Bare
+  versions use the version reader's component and separator readings; structural
+  IPv4 addresses use the corpus-measured electronic digit and dot readings. Valid
+  dotted calendar dates are not claimed: icukit still has a recognition gap for
+  ``2009.01.22``, ``3.28.2016``, ``10.15.2010``, ``1999.05.11``, and
+  ``1925.05.29``, so these keep the main pipeline's existing readings;
 - an era written with dotted letters, attached to the year, or before it ("500
   B.C.", "4AD", "A.D. 1066"), as ``date:era``; "500 BC." is ICU's "500 BC" and a
   sentence-final period, left to icukit.
@@ -21,6 +27,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import date
 
 from icukit.detectors import Capture, DateTimeValue, NumberValue
 
@@ -28,12 +35,13 @@ from frend.grouped_ids import GroupedDigitsDetector
 from frend.locale_data import canonical_locale
 from frend.telephone import TelephoneDetector
 
-__all__ = ["DigitsValue", "WrittenFormsDetector"]
+__all__ = ["DigitsValue", "DottedNumericValue", "WrittenFormsDetector"]
 
 _SPACED_COLON = re.compile(r"(?<![\w:.])(\d{1,2}): (\d{2})(?![\w:])")
 # A citation names its page too ("339 U.S. 629"); without one, "339 U.S. troops" is prose.
 _CITATION = re.compile(r"(?<![\w.,])(\d+) (U\. ?S\.)(?= \d)")
 _SPACED_DIGITS = re.compile(r"(?<![\w.,:/-])\d(?: \d)+(?![\w.,:/-])")
+_DOTTED_NUMERIC_RUN = re.compile(r"(?<![\w.])\d+(?:\.\d+){2,}(?![\w.])")
 # Dotted letters only: a period after "BC" or "AD" ends the sentence, not the era.
 _ERA_WRITTEN = r"B\.C\.E\.|B\.C\.|A\.D\.|C\.E\."
 _ERA_AFTER = re.compile(rf"(?<![\w.])(\d{{1,4}})( ?)({_ERA_WRITTEN}|AD|BC)(?!\w)")
@@ -47,6 +55,44 @@ class DigitsValue:
     """Spaced single digits, said one by one ("6 3")."""
 
     digits: str
+
+
+@dataclass(frozen=True)
+class DottedNumericValue:
+    """Numeric groups separated by dots, with structural IPv4 and date classification."""
+
+    groups: tuple[str, ...]
+
+    @property
+    def is_ipv4(self) -> bool:
+        """Whether this is exactly four ASCII-decimal groups, each in 0--255."""
+        return len(self.groups) == 4 and all(
+            group.isascii() and group.isdecimal() and int(group) <= 255 for group in self.groups
+        )
+
+    @property
+    def is_date(self) -> bool:
+        """Whether three groups form a valid Y.M.D, M.D.Y, or D.M.Y date."""
+        if len(self.groups) != 3:
+            return False
+
+        first, second, third = self.groups
+        candidates: list[tuple[str, str, str]] = []
+        if len(first) == 4 and 1 <= len(second) <= 2 and 1 <= len(third) <= 2:
+            candidates.append((first, second, third))
+        if len(third) in (2, 4) and 1 <= len(first) <= 2 and 1 <= len(second) <= 2:
+            candidates.extend(((third, first, second), (third, second, first)))
+
+        for year_text, month_text, day_text in candidates:
+            year = int(year_text)
+            if len(year_text) == 2:
+                year += 2000
+            try:
+                date(year, int(month_text), int(day_text))
+            except ValueError:
+                continue
+            return True
+        return False
 
 
 def _era_index(text: str) -> int:
@@ -140,6 +186,30 @@ class WrittenFormsDetector:
                     (
                         Capture(
                             "digits", match.start(), match.end(), match.group(), digits, "numeric"
+                        ),
+                    ),
+                )
+            )
+        for match in _DOTTED_NUMERIC_RUN.finditer(text):
+            groups = tuple(match.group().split("."))
+            value = DottedNumericValue(groups)
+            if value.is_date:
+                continue
+            found.append(
+                _detection(
+                    text,
+                    match.start(),
+                    match.end(),
+                    "number:dotted-run",
+                    value,
+                    (
+                        Capture(
+                            "groups",
+                            match.start(),
+                            match.end(),
+                            match.group(),
+                            groups,
+                            "numeric",
                         ),
                     ),
                 )
