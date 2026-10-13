@@ -18,8 +18,9 @@ same visible text depending only on its normalization form.
 from __future__ import annotations
 
 import unicodedata
+from collections.abc import Callable
 
-__all__ = ["SINGLE_UPPERCASE_SHAPE", "is_single_uppercase", "shape"]
+__all__ = ["SINGLE_UPPERCASE_SHAPE", "ascii_width_shape", "is_single_uppercase", "shape"]
 
 # Structural punctuation and space kept verbatim, so "N/N", "N.N", "A N" and the
 # like remain distinct shapes. Anything else outside Nd/L*/Sc also passes through
@@ -30,6 +31,23 @@ _DIGIT = "N"
 _LETTER = "A"
 _CURRENCY = "¤"
 SINGLE_UPPERCASE_SHAPE = "<Lu>"
+
+
+def ascii_width_shape(text: str, transform: Callable[[str], str]) -> str:
+    """Collapse ASCII digit runs to ``N<width>`` and transform every other character."""
+    result: list[str] = []
+    index = 0
+    while index < len(text):
+        if text[index] in "0123456789":
+            end = index + 1
+            while end < len(text) and text[end] in "0123456789":
+                end += 1
+            result.append(f"N{end - index}")
+            index = end
+        else:
+            result.append(transform(text[index]))
+            index += 1
+    return "".join(result)
 
 
 def is_single_uppercase(surface: str) -> bool:

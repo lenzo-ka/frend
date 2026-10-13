@@ -14,6 +14,7 @@ from itertools import product
 import icu
 
 from frend.data_sources import resolve_receipt, shipping_refusals, source_class
+from frend.normalization_components import expand_normalization_bundle
 
 __all__ = ["bundle_refusals", "validate_bundle"]
 
@@ -440,6 +441,10 @@ def bundle_refusals(
     """Return named reasons why a ``frend-normalization/2`` bundle is invalid."""
     if not isinstance(bundle, Mapping):
         return (_reason("invalid-bundle", "bundle is not a mapping"),)
+    try:
+        bundle = expand_normalization_bundle(bundle)
+    except ValueError as error:
+        return (_reason("invalid-component", str(error)),)
 
     refusals: list[str] = []
     if bundle.get("schema") != _SCHEMA:

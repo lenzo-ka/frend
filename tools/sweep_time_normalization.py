@@ -12,11 +12,11 @@ from pathlib import Path
 import icu
 
 from frend import prewarm, resolve_lattice
+from frend.generated_rule_locales import locales_for
 from frend.normalize import _reading_detectors
-from frend.time_rules import GENERATED_TIME_LOCALES
 from frend.verbalize import verbalize_lattice
 
-LOCALES = (*GENERATED_TIME_LOCALES, "en_US")
+LOCALES = (*locales_for("time"), "en_US")
 
 
 def _formatter(locale: str, skeleton: str) -> icu.SimpleDateFormat:

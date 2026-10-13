@@ -10,7 +10,9 @@ from functools import lru_cache
 
 from icukit.detectors import Capture
 
+from frend.artifact_policy import GROUPED_ID_POLICY, require_policy, strict_majority
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
+from frend.shape import ascii_width_shape
 
 __all__ = [
     "GroupedDigitsDetector",
@@ -25,19 +27,7 @@ _SHAPE = re.compile(r"N[1-9][0-9]*(?:[- ]N[1-9][0-9]*)+(?:[- ]X)?\Z")
 
 def grouped_id_shape(text: str) -> str:
     """A width-preserving ASCII shape (``0-306-40615-2`` -> ``N1-N3-N5-N1``)."""
-    out: list[str] = []
-    at = 0
-    while at < len(text):
-        if text[at] in "0123456789":
-            end = at + 1
-            while end < len(text) and text[end] in "0123456789":
-                end += 1
-            out.append(f"N{end - at}")
-            at = end
-        else:
-            out.append(text[at].upper())
-            at += 1
-    return "".join(out)
+    return ascii_width_shape(text, str.upper)
 
 
 def _groups(text: str) -> tuple[str, ...] | None:
@@ -192,6 +182,12 @@ def _prior(locale: str) -> frozenset[str]:
         return frozenset()
     if document.get("schema_version") != 1:
         raise ValueError("invalid grouped-ID prior table: wrong schema version")
+    provenance = document.get("provenance")
+    require_policy(
+        provenance.get("policy") if isinstance(provenance, dict) else None,
+        GROUPED_ID_POLICY,
+        "grouped-ID",
+    )
     rows = document.get("shapes")
     if not isinstance(rows, dict):
         raise ValueError("invalid grouped-ID prior table: shapes must be an object")
@@ -209,8 +205,11 @@ def _prior(locale: str) -> frozenset[str]:
             or set(readings) != {"grouped", "other"}
         ):
             raise ValueError(f"invalid grouped-ID prior row for {shape!r}")
-        grouped = readings["grouped"]
-        if grouped < 3 or 2 * grouped <= sum(readings.values()):
+        if not strict_majority(
+            readings,
+            str(GROUPED_ID_POLICY["label"]),
+            minimum_support=int(GROUPED_ID_POLICY["minimum_support"]),
+        ):
             raise ValueError(f"unselected grouped-ID prior row for {shape!r}")
         if sum(classes.values()) != sum(readings.values()):
             raise ValueError(f"inconsistent grouped-ID prior row for {shape!r}")

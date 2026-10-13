@@ -12,6 +12,12 @@ from icukit.detectors import detect
 
 from frend import resolve_lattice
 from frend import telephone as telephone_module
+from frend.artifact_policy import (
+    TELEPHONE_CONTEXT_POLICY,
+    TELEPHONE_READING_POLICY,
+    TELEPHONE_SHAPE_POLICY,
+    policy_document,
+)
 from frend.spoken_priors import normalize_spoken
 from frend.telephone import TelephoneDetector
 from frend.verbalize import verbalize_edge
@@ -162,23 +168,17 @@ def _assert_telephone_prior_is_aggregate(document):
         "corpus",
         "locale",
         "shards",
-        "selection",
-        "left_context",
+        "shape_policy",
+        "reading_policy",
+        "context_policy",
         "reading",
     }
     assert provenance["builder"] == "tools/build_telephone_priors.py"
     assert provenance["corpus"] == "google-tn:en_with_types"
     assert provenance["locale"] == "en"
-    assert provenance["selection"] == (
-        "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a "
-        "strict TELEPHONE majority among all corpus classes for the exact shape"
-    )
-    assert provenance["left_context"] == (
-        "surface-free character-class shape of the immediately preceding "
-        "corpus token, counted by that token's gold class; with at least 3 "
-        "observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority "
-        "contexts for selected shapes"
-    )
+    assert provenance["shape_policy"] == policy_document(TELEPHONE_SHAPE_POLICY)
+    assert provenance["reading_policy"] == policy_document(TELEPHONE_READING_POLICY)
+    assert provenance["context_policy"] == policy_document(TELEPHONE_CONTEXT_POLICY)
     assert provenance["reading"] == (
         "raw counts of whole grouped readings classified against ICU cardinal and "
         "digit spellout, with zero/o from the locale lexical table"

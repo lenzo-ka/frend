@@ -11,13 +11,15 @@ from icukit.detectors import DateTimeValue
 
 from frend import normalize, prewarm
 from frend.date_rules import (
-    GENERATED_DATE_LOCALES,
     date_grammar_input,
     exact_date_generation_count,
     generate_date_alternatives,
     load_date_rule_bundle,
     render_date_derivation,
 )
+from frend.generated_rule_locales import locales_for
+
+GENERATED_DATE_LOCALES = locales_for("date")
 
 REPO = Path(__file__).resolve().parents[1]
 

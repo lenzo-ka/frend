@@ -15,6 +15,7 @@ from icukit.recognize import FlexibleDateDetector, FlexibleNumberDetector
 
 import frend.electronic as electronic
 from frend import InputValidationError, resolve, resolve_lattice
+from frend.artifact_policy import ELECTRONIC_SPAN_POLICY, policy_document
 from frend.electronic import (
     DEFAULT_MAX_EMAIL_CHARS,
     DEFAULT_MAX_URL_CHARS,
@@ -360,16 +361,13 @@ def _assert_span_prior_is_aggregate(document):
         "corpus",
         "locale",
         "shards",
-        "selection",
+        "policy",
         "privacy",
     }
     assert provenance["builder"] == "tools/build_electronic_span_priors.py"
     assert provenance["corpus"] == "google-tn:en_with_types"
     assert provenance["locale"] == "en"
-    assert provenance["selection"] == (
-        "feature enabled with at least 3 ELECTRONIC rows and a strict ELECTRONIC "
-        "majority over all corpus rows"
-    )
+    assert provenance["policy"] == policy_document(ELECTRONIC_SPAN_POLICY)
     assert provenance["privacy"] == (
         "aggregate feature and corpus-class counts only; no corpus text"
     )

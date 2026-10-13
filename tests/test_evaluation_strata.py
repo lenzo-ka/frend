@@ -126,8 +126,8 @@ def test_triage_real_off_paths_score_and_main_without_strata(tmp_path, monkeypat
         lambda *_args, **_kwargs: {"fingerprint": "fixture"},
     )
     monkeypatch.setattr(triage, "_reservoir_sample", lambda *_args: ([(0, sentence)], 1))
-    monkeypatch.setattr(triage, "_head", lambda: "fixture-head")
-    monkeypatch.setattr(triage, "_version", lambda _name: "fixture-version")
+    monkeypatch.setattr(triage, "repository_head", lambda _repository: "fixture-head")
+    monkeypatch.setattr(triage, "distribution_version", lambda _name: "fixture-version")
 
     def no_vocabulary(*_args, **_kwargs):
         raise AssertionError("no-strata main must not load a vocabulary")

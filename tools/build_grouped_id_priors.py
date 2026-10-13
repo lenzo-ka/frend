@@ -21,6 +21,7 @@ from corpus_builder import (  # noqa: E402
     training_inputs,
 )
 
+from frend.artifact_policy import GROUPED_ID_POLICY, policy_document, strict_majority  # noqa: E402
 from frend.grouped_ids import _groups, grouped_id_shape  # noqa: E402
 from frend.letters import letter_names  # noqa: E402
 from frend.spoken_priors import normalize_spoken  # noqa: E402
@@ -87,7 +88,11 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     selected = {}
     for shape, counts in sorted(readings.items()):
         grouped = counts["grouped"]
-        if grouped < 3 or 2 * grouped <= sum(counts.values()):
+        if not strict_majority(
+            counts,
+            str(GROUPED_ID_POLICY["label"]),
+            minimum_support=int(GROUPED_ID_POLICY["minimum_support"]),
+        ):
             continue
         selected[shape] = {
             "classes": dict(sorted(classes[shape].items())),
@@ -99,10 +104,7 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
         "corpus": source.corpus,
         "locale": "en",
         "shards": source.shards,
-        "selection": (
-            "exact ASCII digit-group shape with at least 3 grouped-reading rows "
-            "and a strict grouped-reading majority over all corpus rows"
-        ),
+        "policy": policy_document(GROUPED_ID_POLICY),
         "reading": (
             "one ICU digit name per written digit, locale lexical o for zero, "
             "and literal sil between written groups"

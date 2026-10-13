@@ -17,17 +17,18 @@ from icukit.detectors import DateTimeValue, detect  # noqa: E402
 from tiergraph import generate, recognize  # noqa: E402
 
 from frend.date_rules import (  # noqa: E402
-    GENERATED_DATE_LOCALES,
     date_grammar_input,
     exact_date_generation_count,
     generate_date_alternatives,
     load_date_rule_bundle,
     render_date_derivation,
 )
+from frend.generated_rule_locales import locales_for  # noqa: E402
 from frend.normalize import _reading_detectors  # noqa: E402
 from tools.compose_benchmark import percentile, run_composition_benchmark  # noqa: E402
 
 INPUTS = Path(__file__).with_name("date_latency_inputs.json")
+LOCALES = locales_for("date")
 
 
 def _date_detection(locale: str, text: str) -> dict:
@@ -103,7 +104,7 @@ def _child(locale: str, iterations: int) -> int:
 def _exercise_unseen_dates(values_per_locale: int = 2000) -> int:
     """Run complete production generation for values that cannot share a date key."""
     generated = 0
-    for locale_index, locale in enumerate(GENERATED_DATE_LOCALES):
+    for locale_index, locale in enumerate(LOCALES):
         start = date(2000, 1, 1) + timedelta(days=locale_index * values_per_locale)
         for index in range(values_per_locale):
             value = start + timedelta(days=index)
@@ -119,17 +120,17 @@ def _exercise_unseen_dates(values_per_locale: int = 2000) -> int:
 def benchmark(out: Path, iterations: int, repeat: int) -> dict:
     def finish(failures: list[dict]) -> dict:
         load_date_rule_bundle.cache_clear()
-        for locale in GENERATED_DATE_LOCALES:
+        for locale in LOCALES:
             load_date_rule_bundle(locale)
         peak_bundle_count = load_date_rule_bundle.cache_info().currsize
         unseen_generations = _exercise_unseen_dates()
         stable_bundle_count = load_date_rule_bundle.cache_info().currsize
-        if peak_bundle_count != len(GENERATED_DATE_LOCALES):
+        if peak_bundle_count != len(LOCALES):
             failures.append(
                 {
                     "metric": "peak_bundle_count",
                     "value": peak_bundle_count,
-                    "expected": len(GENERATED_DATE_LOCALES),
+                    "expected": len(LOCALES),
                 }
             )
         if stable_bundle_count != peak_bundle_count:
@@ -150,7 +151,7 @@ def benchmark(out: Path, iterations: int, repeat: int) -> dict:
     return run_composition_benchmark(
         script=Path(__file__),
         repository=REPO,
-        locales=GENERATED_DATE_LOCALES,
+        locales=LOCALES,
         output=out,
         iterations=iterations,
         repeat=repeat,
@@ -164,7 +165,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--iterations", type=int, default=1000)
     parser.add_argument("--repeat", type=int, default=5)
-    parser.add_argument("--child-locale", choices=GENERATED_DATE_LOCALES)
+    parser.add_argument("--child-locale", choices=LOCALES)
     args = parser.parse_args()
     if args.child_locale:
         return _child(args.child_locale, args.iterations)

@@ -4,33 +4,29 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from decimal import Decimal
 from functools import cache
 from importlib.resources import files
-from itertools import product
 from types import MappingProxyType
 
 import icu
 from icukit.detectors import DateTimeValue
-from tiergraph import GrammarDeclaration, GrammarHole, Realization, grammar_loads
+from tiergraph import Realization
 
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
-
-GENERATED_TIME_LOCALES = (
-    "es_MX",
-    "es_ES",
-    "fr_FR",
-    "de_DE",
-    "pt_BR",
-    "pt_PT",
-    "it_IT",
-    "zh_CN",
-    "ko_KR",
-    "ja_JP",
+from frend.normalization_components import load_runtime_records
+from frend.rule_composition import (
+    FieldProvider,
+    RuleRecipe,
+    compose_recipes,
+    exact_composition_count,
+    preserve_legacy_ranking,
 )
+
+_LOCALES = locales_for("time")
 _SHAPES = ("H", "HM", "HMS", "PH", "PHM", "PHMS")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
 _WRITTEN_UHR_MARKER = "_frend_written_uhr"
@@ -74,115 +70,64 @@ def time_rule_events() -> Mapping[str, int]:
 
 
 @dataclass(frozen=True)
-class TimeRuleRecipe:
-    tokens: tuple[str, ...]
-    provenance: tuple[str, ...]
-
-
-@dataclass(frozen=True)
 class TimeRuleBundle:
     locale: str
-    declaration: GrammarDeclaration
-    recipes: Mapping[str, tuple[TimeRuleRecipe, ...]]
+    recipes: Mapping[str, tuple[RuleRecipe, ...]]
     periods: Mapping[int, str]
     records: Mapping[str, Mapping[str, object]]
-
-
-def _declaration_recipes(declaration: GrammarDeclaration) -> dict[str, tuple[TimeRuleRecipe, ...]]:
-    result = {shape: [] for shape in _SHAPES}
-    for rule in declaration.rules:
-        if rule.left != declaration.start:
-            continue
-        source = tuple(
-            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
-        )
-        semantic = "".join(item for item in source if item in {"P", "H", "M", "S"})
-        if semantic not in result:
-            raise ValueError(f"time grammar has unknown shape {semantic!r}")
-        target_holes = tuple(
-            item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
-        )
-        if len(source) != len(set(source)) or set(source) != set(target_holes):
-            raise ValueError("time grammar must consume and emit every field hole exactly once")
-        result[semantic].append(
-            TimeRuleRecipe(
-                tuple(
-                    f"\ufff0{item.nonterminal.local_name}\ufff1"
-                    if isinstance(item, GrammarHole)
-                    else item.text.lexical
-                    for item in rule.target
-                ),
-                tuple(value.lexical for value in rule.provenance),
-            )
-        )
-    return {shape: tuple(items) for shape, items in result.items()}
 
 
 @cache
 def load_time_rule_bundle(locale: str) -> TimeRuleBundle:
     _EVENTS["load"] += 1
     locale = canonical_locale(locale)
-    if locale not in GENERATED_TIME_LOCALES:
+    if locale not in _LOCALES:
         raise ValueError(f"no generated time-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "time_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
-    if document.get("schema") != 2 or document.get("locale") != locale:
+    required = {
+        "schema",
+        "provenance",
+        "locale",
+        "icu_version",
+        "normalization_sha256",
+        "projection_sha256",
+        "recipes",
+        "periods",
+    }
+    if set(document) != required or document.get("schema") != 3 or document.get("locale") != locale:
         raise ValueError(f"time-rule bundle identity mismatch for {locale!r}")
     if document.get("icu_version") != icu.ICU_VERSION:
         raise ValueError(
             f"time-rule bundle {locale!r} was built with ICU {document.get('icu_version')}, "
             f"not runtime ICU {icu.ICU_VERSION}"
         )
-    projection = {key: document.get(key) for key in ("grammar", "recipes", "periods", "records")}
+    projection = {key: document.get(key) for key in ("recipes", "periods")}
     if (
         document.get("projection_sha256")
         != hashlib.sha256(_canonical_bytes(projection)).hexdigest()
     ):
         raise ValueError(f"time-rule bundle {locale!r} projection hash mismatch")
-    normalization_sha256 = document.get("normalization_sha256")
-    if (
-        not isinstance(normalization_sha256, str)
-        or len(normalization_sha256) != 64
-        or any(char not in "0123456789abcdef" for char in normalization_sha256)
-    ):
-        raise ValueError(f"time-rule bundle {locale!r} has invalid normalization hash")
-    if any(
-        key in {"quoted_passage", "receipt", "source_text"}
-        for record in document.get("records", ())
-        if isinstance(record, Mapping)
-        for key in record
-    ):
-        raise ValueError(f"time-rule bundle {locale!r} retains source text or receipts")
-    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
-    wanted = _declaration_recipes(declaration)
     raw_recipes = document.get("recipes")
     if not isinstance(raw_recipes, Mapping) or set(raw_recipes) != set(_SHAPES):
         raise ValueError(f"time-rule bundle {locale!r} has incomplete compiled recipes")
     observed = {
         shape: tuple(
-            TimeRuleRecipe(tuple(item["tokens"]), tuple(item["provenance"]))
+            RuleRecipe(tuple(item["tokens"]), tuple(item["provenance"]))
             for item in raw_recipes[shape]
         )
         for shape in _SHAPES
     }
-    if observed != wanted or any(len(items) not in {0, 1} for items in observed.values()):
-        raise ValueError(f"time-rule bundle {locale!r} recipes do not match its grammar")
-    raw_records = document.get("records")
-    if not isinstance(raw_records, list):
-        raise ValueError(f"time-rule bundle {locale!r} has invalid runtime records")
-    records = {
-        str(item["id"]): MappingProxyType(dict(item))
-        for item in raw_records
-        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
-    }
-    if len(records) != len(raw_records):
-        raise ValueError(f"time-rule bundle {locale!r} has invalid or duplicate records")
+    if any(len(items) not in {0, 1} for items in observed.values()):
+        raise ValueError(f"time-rule bundle {locale!r} has duplicate recipes")
+    records = load_runtime_records(
+        f"time_{locale}.json", locale, document.get("normalization_sha256")
+    )
     periods = document.get("periods")
     if not isinstance(periods, Mapping) or set(periods) != {str(hour) for hour in range(24)}:
         raise ValueError(f"time-rule bundle {locale!r} has a non-total period selector")
     return TimeRuleBundle(
         locale,
-        declaration,
         MappingProxyType(observed),
         MappingProxyType({int(hour): str(value) for hour, value in periods.items()}),
         MappingProxyType(records),
@@ -275,26 +220,6 @@ def _field_realizations(
     )
 
 
-def _preserve_unchanged_ranking(generated, previous):
-    """Keep every legacy reading in exact order/metadata, then add genuinely new text."""
-    remaining = list(generated)
-    preserved = []
-    for old in previous:
-        match = next((item for item in remaining if item.text == old.text), None)
-        if match is None:
-            preserved.append(old)
-            continue
-        remaining.remove(match)
-        preserved.append(
-            replace(
-                match,
-                weight=old.weight,
-                prior_provenance=old.prior_provenance or old.provenance,
-            )
-        )
-    return tuple((*preserved, *remaining))
-
-
 def generate_time_alternatives(
     value: DateTimeValue,
     detection: Mapping[str, object],
@@ -345,58 +270,45 @@ def generate_time_alternatives(
     if not recipes:
         raise NotImplementedError(f"time rules have no sourced {shape} recipe for {bundle.locale}")
     recipe = recipes[0]
-    symbols = [token[1:-1] for token in recipe.tokens if token.startswith("\ufff0")]
-    realizations = [
-        _field_realizations(
-            bundle,
-            symbol,
-            realized,
-            period=has_period,
-            semantic_hour=normalized["H"],
+    symbols = tuple(token[1:-1] for token in recipe.tokens if token.startswith("\ufff0"))
+    fields = {
+        symbol: FieldProvider(
+            _field_realizations(
+                bundle,
+                symbol,
+                realized,
+                period=has_period,
+                semantic_hour=normalized["H"],
+            )
         )
         for symbol in symbols
-    ]
+    }
     tails = _time_tail(detection, bundle.locale)
-    exact_count = math.prod(len(items) for items in realizations) * max(1, len(tails))
+    suffixes = tuple(
+        Realization(tuple(tokens), tuple(provenance), weight)
+        for tokens, provenance, weight in tails
+    ) or (Realization((), (), None),)
+    exact_count = exact_composition_count(recipes, fields, suffixes=suffixes)
     if exact_count < 1 or exact_count > max_derivations:
         raise ValueError(f"time generation for {bundle.locale} has {exact_count} derivations")
-    alternatives = []
-    for selected in product(*realizations):
-        by_symbol = dict(zip(symbols, selected, strict=True))
-        rendered = []
-        provenance = [f"time-rule:{bundle.locale}", *recipe.provenance]
-        weights = []
-        prior = []
-        for token in recipe.tokens:
-            symbol = token[1:-1] if token.startswith("\ufff0") else None
-            realization = by_symbol.get(symbol)
-            if realization is None:
-                rendered.append(token)
-                continue
-            rendered.extend(realization.tokens)
-            provenance.extend(realization.provenance)
-            prior.extend(realization.provenance[:1])
-            weights.append(realization.weight)
-        core = "".join(rendered)
-        tail_options = tails or (((), (), None),)
-        for tail_tokens, tail_provenance, tail_weight in tail_options:
-            text = " ".join(item for item in (core, *tail_tokens) if item)
-            sources = tuple(dict.fromkeys((*provenance, *tail_provenance)))
-            all_weights = (*weights, tail_weight)
-            alternatives.append(
-                SpokenAlternative(
-                    text,
-                    "+".join(sources),
-                    sum((item for item in all_weights if item is not None), Decimal(0))
-                    if all_weights and all(item is not None for item in all_weights)
-                    else None,
-                    prior_provenance="+".join(dict.fromkeys(prior)) or None,
-                )
-            )
+    alternatives = compose_recipes(
+        recipes,
+        fields,
+        base_provenance=(f"time-rule:{bundle.locale}",),
+        make=lambda text, provenance, weight, prior: SpokenAlternative(
+            text, provenance, weight, prior_provenance=prior
+        ),
+        render=lambda core, suffix, selected: " ".join(
+            item for item in ("".join(core), *suffix) if item
+        ),
+        max_derivations=max_derivations,
+        exact_count=exact_count,
+        suffixes=suffixes,
+    )
     if written_uhr:
         return tuple(alternatives)
     try:
         previous = _legacy_spoken_time(value, detection, bundle.locale)
     except NotImplementedError:
         previous = ()
-    return _preserve_unchanged_ranking(alternatives, previous)
+    return preserve_legacy_ranking(alternatives, previous, unmatched="retain")

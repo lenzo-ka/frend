@@ -15,15 +15,16 @@ if not __package__:
 
 from icukit.detectors import DateTimeValue, detect  # noqa: E402
 
+from frend.generated_rule_locales import locales_for  # noqa: E402
 from frend.normalize import _reading_detectors  # noqa: E402
 from frend.time_rules import (  # noqa: E402
-    GENERATED_TIME_LOCALES,
     generate_time_alternatives,
     load_time_rule_bundle,
 )
 from tools.compose_benchmark import percentile, run_composition_benchmark  # noqa: E402
 
 INPUTS = Path(__file__).with_name("time_latency_inputs.json")
+LOCALES = locales_for("time")
 
 
 def _detection(locale: str, text: str) -> dict:
@@ -76,7 +77,7 @@ def benchmark(out: Path, iterations: int, repeat: int) -> dict:
     return run_composition_benchmark(
         script=Path(__file__),
         repository=REPO,
-        locales=GENERATED_TIME_LOCALES,
+        locales=LOCALES,
         output=out,
         iterations=iterations,
         repeat=repeat,
@@ -89,7 +90,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--iterations", type=int, default=1000)
     parser.add_argument("--repeat", type=int, default=5)
-    parser.add_argument("--child-locale", choices=GENERATED_TIME_LOCALES)
+    parser.add_argument("--child-locale", choices=LOCALES)
     args = parser.parse_args()
     if args.child_locale:
         print(json.dumps(_one(args.child_locale, args.iterations), ensure_ascii=False))

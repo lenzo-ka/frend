@@ -4,29 +4,33 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from decimal import Decimal
 from functools import cache
 from importlib.resources import files
-from itertools import product
 from types import MappingProxyType
 
 import icu
 from icukit.detectors import NumberValue
 from tiergraph import (
-    GrammarDeclaration,
-    GrammarHole,
     GrammarInput,
     GrammarInputToken,
     Realization,
-    grammar_loads,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
+from frend.normalization_components import load_runtime_records
+from frend.rule_composition import (
+    FieldProvider,
+    RuleRecipe,
+    compose_recipes,
+    exact_composition_count,
+    preserve_legacy_ranking,
+)
 
-GENERATED_MONEY_LOCALES = ("es_MX", "fr_FR", "pt_BR", "it_IT", "ko_KR")
+_LOCALES = locales_for("money")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
 
 
@@ -39,118 +43,53 @@ def money_rule_events() -> Mapping[str, int]:
 
 
 @dataclass(frozen=True)
-class MoneyRuleRecipe:
-    tokens: tuple[str, ...]
-    provenance: tuple[str, ...]
-
-
-@dataclass(frozen=True)
 class MoneyRuleBundle:
     locale: str
-    declaration: GrammarDeclaration
-    recipes: Mapping[str, tuple[MoneyRuleRecipe, ...]]
+    recipes: Mapping[str, tuple[RuleRecipe, ...]]
     records: Mapping[str, Mapping[str, object]]
-
-
-def _declaration_recipes(
-    declaration: GrammarDeclaration,
-) -> dict[str, tuple[MoneyRuleRecipe, ...]]:
-    result: dict[str, list[MoneyRuleRecipe]] = {}
-    for rule in declaration.rules:
-        if rule.left != declaration.start:
-            continue
-        source = tuple(
-            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
-        )
-        target_holes = tuple(
-            item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
-        )
-        if len(source) != len(set(source)) or set(source) != set(target_holes):
-            raise ValueError("money grammar must consume and emit every field hole exactly once")
-        provenance = tuple(value.lexical for value in rule.provenance)
-        key = next(
-            (
-                item.removeprefix("money-key:")
-                for item in provenance
-                if item.startswith("money-key:")
-            ),
-            None,
-        )
-        if key is None:
-            raise ValueError("money grammar rule has no shape/currency key")
-        result.setdefault(key, []).append(
-            MoneyRuleRecipe(
-                tuple(
-                    f"\ufff0{item.nonterminal.local_name}\ufff1"
-                    if isinstance(item, GrammarHole)
-                    else item.text.lexical
-                    for item in rule.target
-                ),
-                provenance,
-            )
-        )
-    return {key: tuple(values) for key, values in result.items()}
 
 
 @cache
 def load_money_rule_bundle(locale: str) -> MoneyRuleBundle:
     _EVENTS["load"] += 1
     locale = canonical_locale(locale)
-    if locale not in GENERATED_MONEY_LOCALES:
+    if locale not in _LOCALES:
         raise ValueError(f"no generated money-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "money_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
-    if document.get("schema") != 2 or document.get("locale") != locale:
+    required = {
+        "schema",
+        "provenance",
+        "locale",
+        "icu_version",
+        "normalization_sha256",
+        "projection_sha256",
+        "recipes",
+    }
+    if set(document) != required or document.get("schema") != 3 or document.get("locale") != locale:
         raise ValueError(f"money-rule bundle identity mismatch for {locale!r}")
     if document.get("icu_version") != icu.ICU_VERSION:
         raise ValueError(
             f"money-rule bundle {locale!r} was built with ICU "
             f"{document.get('icu_version')}, not runtime ICU {icu.ICU_VERSION}"
         )
-    normalization = files("frend").joinpath("data", "normalization", f"money_{locale}.json")
-    normalization_document = json.loads(normalization.read_text(encoding="utf-8"))
-    if (
-        document.get("normalization_sha256")
-        != hashlib.sha256(_canonical_bytes(normalization_document)).hexdigest()
-    ):
-        raise ValueError(f"money-rule bundle {locale!r} normalization hash mismatch")
-    projection = {key: document.get(key) for key in ("grammar", "recipes", "records")}
+    projection = {"recipes": document.get("recipes")}
     projection_hash = hashlib.sha256(_canonical_bytes(projection)).hexdigest()
     if document.get("projection_sha256") != projection_hash:
         raise ValueError(f"money-rule bundle {locale!r} projection hash mismatch")
-    if any(
-        key in {"quoted_passage", "receipt", "source_text"}
-        for record in document.get("records", ())
-        if isinstance(record, Mapping)
-        for key in record
-    ):
-        raise ValueError(f"money-rule bundle {locale!r} retains source text or receipts")
-    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
-    wanted = _declaration_recipes(declaration)
     raw = document.get("recipes")
     if not isinstance(raw, Mapping):
         raise ValueError(f"money-rule bundle {locale!r} has invalid recipes")
     observed = {
-        key: tuple(
-            MoneyRuleRecipe(tuple(item["tokens"]), tuple(item["provenance"])) for item in values
-        )
+        key: tuple(RuleRecipe(tuple(item["tokens"]), tuple(item["provenance"])) for item in values)
         for key, values in raw.items()
     }
-    if observed != wanted or any(len(values) != 1 for values in observed.values()):
-        raise ValueError(f"money-rule bundle {locale!r} recipes do not match its grammar")
-    records_raw = document.get("records")
-    if not isinstance(records_raw, list):
-        raise ValueError(f"money-rule bundle {locale!r} has invalid runtime records")
-    records = {
-        str(item["id"]): MappingProxyType(dict(item))
-        for item in records_raw
-        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
-    }
-    if len(records) != len(records_raw):
-        raise ValueError(f"money-rule bundle {locale!r} has invalid or duplicate records")
-    return MoneyRuleBundle(
-        locale, declaration, MappingProxyType(observed), MappingProxyType(records)
+    if any(len(values) != 1 for values in observed.values()):
+        raise ValueError(f"money-rule bundle {locale!r} has duplicate recipes")
+    records = load_runtime_records(
+        f"money_{locale}.json", locale, document.get("normalization_sha256")
     )
+    return MoneyRuleBundle(locale, MappingProxyType(observed), records)
 
 
 def _capture(detection: Mapping[str, object], name: str) -> object | None:
@@ -261,25 +200,6 @@ def _currency_realization(
     return Realization((text,), (f"normalization-record:{record['id']}",), None)
 
 
-def _preserve_unchanged_ranking(generated, previous):
-    remaining = list(generated)
-    preserved = []
-    for old in previous:
-        match = next((item for item in remaining if item.text == old.text), None)
-        if match is None:
-            preserved.append(old)
-            continue
-        remaining.remove(match)
-        preserved.append(
-            replace(
-                match,
-                weight=old.weight,
-                prior_provenance=old.prior_provenance or old.provenance,
-            )
-        )
-    return tuple((*preserved, *remaining))
-
-
 def generate_money_alternatives(
     value: NumberValue,
     detection: Mapping[str, object],
@@ -324,40 +244,21 @@ def generate_money_alternatives(
     }
     if shape == "major_minor":
         values["MINOR_CURRENCY"] = (_currency_realization(bundle, currency, minor, minor=True),)
-    generated = []
-    for recipe in recipes:
-        symbols = tuple(token[1:-1] for token in recipe.tokens if token.startswith("\ufff0"))
-        exact_count = math.prod(len(values[symbol]) for symbol in symbols)
-        if exact_count < 1 or exact_count > max_derivations:
-            raise ValueError(f"money generation for {bundle.locale} has {exact_count} derivations")
-        for selected in product(*(values[symbol] for symbol in symbols)):
-            by_symbol = dict(zip(symbols, selected, strict=True))
-            rendered = []
-            provenance = [
-                f"money-rule:{bundle.locale}",
-                *(item for item in recipe.provenance if not item.startswith("money-key:")),
-            ]
-            weights = []
-            prior = []
-            for token in recipe.tokens:
-                symbol = token[1:-1] if token.startswith("\ufff0") else None
-                realization = by_symbol.get(symbol)
-                if realization is None:
-                    rendered.append(token)
-                else:
-                    rendered.extend(realization.tokens)
-                    provenance.extend(realization.provenance)
-                    prior.extend(realization.provenance[:1])
-                    weights.append(realization.weight)
-            generated.append(
-                SpokenAlternative(
-                    "".join(rendered),
-                    "+".join(dict.fromkeys(provenance)),
-                    sum((weight for weight in weights if weight is not None), Decimal(0))
-                    if weights and all(weight is not None for weight in weights)
-                    else None,
-                    prior_provenance="+".join(dict.fromkeys(prior)) or None,
-                )
-            )
+    fields = {symbol: FieldProvider(realizations) for symbol, realizations in values.items()}
+    exact_count = exact_composition_count(recipes, fields)
+    if exact_count < 1 or exact_count > max_derivations:
+        raise ValueError(f"money generation for {bundle.locale} has {exact_count} derivations")
+    generated = compose_recipes(
+        recipes,
+        fields,
+        base_provenance=(f"money-rule:{bundle.locale}",),
+        make=lambda text, provenance, weight, prior: SpokenAlternative(
+            text, provenance, weight, prior_provenance=prior
+        ),
+        render=lambda core, suffix, selected: "".join(core),
+        max_derivations=max_derivations,
+        exact_count=exact_count,
+        provenance_filter=lambda item: bool(item) and not item.startswith("money-key:"),
+    )
     previous = _spoken_money(amount, currency, bundle.locale)
-    return _preserve_unchanged_ranking(generated, previous)
+    return preserve_legacy_ranking(generated, previous, unmatched="retain")

@@ -22,6 +22,13 @@ from corpus_builder import (  # noqa: E402
     training_inputs,
 )
 
+from frend.artifact_policy import (  # noqa: E402
+    TELEPHONE_CONTEXT_POLICY,
+    TELEPHONE_READING_POLICY,
+    TELEPHONE_SHAPE_POLICY,
+    policy_document,
+    strict_majority,
+)
 from frend.spoken_priors import normalize_spoken  # noqa: E402
 from frend.telephone import (  # noqa: E402
     _is_left_context_shape,
@@ -120,10 +127,11 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
     selected = {}
     for shape in sorted(classes):
         counts = classes[shape]
-        telephone = counts["TELEPHONE"]
         patterns = {}
         for (reading_shape, pattern), pattern_readings in readings.items():
-            if reading_shape != shape or sum(pattern_readings.values()) < 3:
+            if reading_shape != shape or sum(pattern_readings.values()) < int(
+                TELEPHONE_READING_POLICY["minimum_support"]
+            ):
                 continue
             patterns[pattern] = {
                 "readings": [
@@ -134,7 +142,14 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
                 ],
                 "unclassified_telephone": unclassified[(shape, pattern)],
             }
-        if telephone < 3 or 2 * telephone <= sum(counts.values()) or not patterns:
+        if (
+            not strict_majority(
+                counts,
+                str(TELEPHONE_SHAPE_POLICY["label"]),
+                minimum_support=int(TELEPHONE_SHAPE_POLICY["minimum_support"]),
+            )
+            or not patterns
+        ):
             continue
         selected[shape] = {
             "classes": dict(sorted(counts.items())),
@@ -146,11 +161,14 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
             selected_contexts[context].update(counts)
     vetoes = {}
     for context, counts in sorted(selected_contexts.items()):
-        prediction, prediction_count = counts.most_common(1)[0]
+        prediction = counts.most_common(1)[0][0]
         if (
-            sum(counts.values()) >= 3
-            and prediction not in {"PLAIN", "PUNCT", "TELEPHONE"}
-            and 2 * prediction_count > sum(counts.values())
+            strict_majority(
+                counts,
+                prediction,
+                minimum_observations=int(TELEPHONE_CONTEXT_POLICY["minimum_observations"]),
+            )
+            and prediction not in TELEPHONE_CONTEXT_POLICY["excluded_predictions"]
         ):
             vetoes[context] = {
                 "classes": dict(sorted(counts.items())),
@@ -167,17 +185,9 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
             "corpus": source.corpus,
             "locale": "en",
             "shards": source.shards,
-            "selection": (
-                "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a "
-                "strict TELEPHONE majority among all corpus classes for the exact shape"
-            ),
-            "left_context": (
-                "surface-free character-class shape of the immediately preceding "
-                "corpus token, counted by that token's gold class; with at least 3 "
-                "observations, veto typed "
-                "(not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for "
-                "selected shapes"
-            ),
+            "shape_policy": policy_document(TELEPHONE_SHAPE_POLICY),
+            "reading_policy": policy_document(TELEPHONE_READING_POLICY),
+            "context_policy": policy_document(TELEPHONE_CONTEXT_POLICY),
             "reading": (
                 "raw counts of whole grouped readings classified against ICU cardinal and "
                 "digit spellout, with zero/o from the locale lexical table"

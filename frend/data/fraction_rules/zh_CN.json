@@ -47,17 +47,5 @@
       }
     ]
   },
-  "records": [
-    {
-      "derived_from": [
-        "jixi/education-cloud#zh-fractions"
-      ],
-      "forms": {
-        "default": "cardinal"
-      },
-      "id": "denominator-strategy",
-      "kind": "fraction-denominator-strategy"
-    }
-  ],
-  "schema": 2
+  "schema": 3
 }

@@ -16,19 +16,16 @@ from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-import icu
-
 _REPO = Path(__file__).resolve().parents[1]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
-from google_tn_rows import corpus_label, expected, full_training_set  # noqa: E402
+from google_tn_rows import corpus_label, full_training_set  # noqa: E402
 
-from frend.letters import is_spelled_token, spelled  # noqa: E402
-from frend.spoken_priors import normalize_spoken  # noqa: E402
+from frend.letters import is_spelled_token  # noqa: E402
+from tools.literal_spell_say import literal_spell_say, normalize_literal  # noqa: E402
 
-_NFC = icu.Normalizer2.getNFCInstance()
 _OUT = _REPO / "frend" / "data" / "en" / "spelled_token_priors.json"
 _ACRONYM_CASES = frozenset({"SOS", "USA", "ATM", "FBI", "NATO", "NASA", "SCUBA"})
 
@@ -58,7 +55,7 @@ def _count_file(
             label = literal_outcome(parts[0], parts[1], parts[2], locale)
             if label is None:
                 continue
-            token = _NFC.normalize(parts[1])
+            token = normalize_literal(parts[1])
             counts[token][label] += 1
             outcomes[label] += 1
     return (
@@ -72,22 +69,15 @@ def _literal_reading(
     corpus_class: str, written: str, spoken: str, locale: str, *, bounded: bool
 ) -> str | None:
     """Literal ``spell``/``say`` label, optionally restricted to the new population."""
-    if corpus_class not in {"LETTERS", "PLAIN"}:
-        return None
-    written = _NFC.normalize(written)
-    if bounded and not is_spelled_token(written, locale):
-        return None
-    target = expected(corpus_class, written, spoken)
-    if corpus_class == "PLAIN" and target == normalize_spoken(written):
-        return "say"
-    letter_form = spelled(written, locale)
-    if (
-        corpus_class == "LETTERS"
-        and letter_form is not None
-        and target == normalize_spoken(letter_form.text)
-    ):
-        return "spell"
-    return None
+    return literal_spell_say(
+        corpus_class,
+        written,
+        spoken,
+        locale,
+        eligible=(lambda token, language: is_spelled_token(token, language))
+        if bounded
+        else (lambda _token, _language: True),
+    )
 
 
 def literal_outcome(corpus_class: str, written: str, spoken: str, locale: str) -> str | None:

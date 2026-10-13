@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from decimal import Decimal
 from functools import cache
 from importlib.resources import files
-from itertools import product
 from types import MappingProxyType
 from typing import Literal
 
@@ -31,20 +30,16 @@ from tiergraph import (
     recognize,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
-
-GENERATED_DATE_LOCALES = (
-    "es_MX",
-    "es_ES",
-    "fr_FR",
-    "de_DE",
-    "pt_BR",
-    "pt_PT",
-    "it_IT",
-    "zh_CN",
-    "ko_KR",
-    "ja_JP",
+from frend.rule_composition import (
+    FieldProvider,
+    RuleRecipe,
+    compose_recipes,
+    exact_composition_count,
 )
+
+_LOCALES = locales_for("date")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
 
 
@@ -62,12 +57,6 @@ class DateRuleBundle:
     declaration: GrammarDeclaration
     lowered: LoweredGrammar
     day_policy: str
-
-
-@dataclass(frozen=True)
-class DateRuleRecipe:
-    tokens: tuple[str, ...]
-    provenance: tuple[str, ...]
 
 
 def _validate_field_holes(declaration: GrammarDeclaration) -> None:
@@ -101,7 +90,7 @@ def _validate_field_holes(declaration: GrammarDeclaration) -> None:
 def load_date_rule_bundle(locale: str) -> DateRuleBundle:
     _EVENTS["load"] += 1
     locale = canonical_locale(locale)
-    if locale not in GENERATED_DATE_LOCALES:
+    if locale not in _LOCALES:
         raise ValueError(f"no generated date-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "date_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
@@ -226,7 +215,7 @@ def _date_source_path_count(bundle: DateRuleBundle, symbols: tuple[str, ...]) ->
 
 
 @cache
-def _date_rule_recipes(locale: str, kind: str) -> tuple[DateRuleRecipe, ...]:
+def _date_rule_recipes(locale: str, kind: str) -> tuple[RuleRecipe, ...]:
     """Compile a locale/field-shape rule once, never a date value or input text."""
     bundle = load_date_rule_bundle(locale)
     symbols = ("FIELD:M", "FIELD:D") if kind == "Md" else ("FIELD:Y", "FIELD:M", "FIELD:D")
@@ -251,7 +240,7 @@ def _date_rule_recipes(locale: str, kind: str) -> tuple[DateRuleRecipe, ...]:
             f"{count} derivations (truncated={result.truncated})"
         )
     return tuple(
-        DateRuleRecipe(
+        RuleRecipe(
             tuple(derivation.tokens),
             tuple(
                 value.lexical
@@ -280,7 +269,12 @@ def generate_date_alternatives(
     source_paths = _date_source_path_count(
         bundle, tuple(token.symbol for token in grammar_input.tokens)
     )
-    exact_count = source_paths * math.prod(len(token.realization) for token in grammar_input.tokens)
+    recipes = _date_rule_recipes(locale, kind)
+    fields = {
+        token.symbol: FieldProvider(token.realization, token.provenance, prior=False)
+        for token in grammar_input.tokens
+    }
+    exact_count = exact_composition_count(recipes, fields)
     realization_counts = tuple(len(token.realization) for token in grammar_input.tokens)
     if exact_count > max_derivations:
         raise ValueError(
@@ -290,34 +284,20 @@ def generate_date_alternatives(
         )
     if exact_count < 1:
         raise ValueError(f"date grammar for {locale} recognized no complete derivation")
-    recipes = _date_rule_recipes(locale, kind)
     if len(recipes) != source_paths:
         raise ValueError(
             f"date grammar for {locale} {kind} compiled {len(recipes)} of "
             f"{source_paths} source paths"
         )
-    by_placeholder = {f"\ufff0{token.symbol}\ufff1": token for token in grammar_input.tokens}
-    alternatives = []
-    for recipe in recipes:
-        fields = [token for token in recipe.tokens if token in by_placeholder]
-        for realizations in product(*(by_placeholder[field].realization for field in fields)):
-            selected = dict(zip(fields, realizations, strict=True))
-            rendered: list[str] = []
-            provenance = [f"date-rule:{locale}", *recipe.provenance]
-            for token in recipe.tokens:
-                realization = selected.get(token)
-                if realization is None:
-                    rendered.append(token)
-                    continue
-                field = by_placeholder[token]
-                rendered.extend(realization.tokens)
-                provenance.extend(field.provenance)
-                provenance.extend(realization.provenance)
-            unique = tuple(dict.fromkeys(provenance))
-            alternatives.append(SpokenAlternative("".join(rendered), "+".join(unique)))
-    if len(alternatives) != exact_count:
-        raise ValueError(
-            f"date generation for {locale} returned {len(alternatives)} of "
-            f"{exact_count} derivations"
-        )
-    return tuple(alternatives)
+    return compose_recipes(
+        recipes,
+        fields,
+        base_provenance=(f"date-rule:{locale}",),
+        make=lambda text, provenance, weight, prior: SpokenAlternative(
+            text, provenance, weight, prior_provenance=prior
+        ),
+        render=lambda core, suffix, selected: "".join(core),
+        max_derivations=max_derivations,
+        exact_count=exact_count,
+        combine_weights=False,
+    )

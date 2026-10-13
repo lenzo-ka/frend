@@ -19,18 +19,9 @@ from tiergraph import (
     XsdType,
 )
 
-LOCALES = (
-    "es_MX",
-    "es_ES",
-    "fr_FR",
-    "de_DE",
-    "pt_BR",
-    "pt_PT",
-    "it_IT",
-    "zh_CN",
-    "ko_KR",
-    "ja_JP",
-)
+from frend.generated_rule_locales import locales_for
+
+LOCALES = locales_for("date")
 DATA = Path(__file__).resolve().parents[1] / "frend" / "data" / "date_rules"
 
 
