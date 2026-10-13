@@ -67,6 +67,7 @@ from frend.symbols import (
 )
 from frend.time_rules import compose_german_written_uhr
 from frend.verbalize import SpokenAlternative, VerbalizedUnit, _verbalize_lattice_validated
+from frend.versions import VersionDetector
 from frend.work_budgets import (
     DEFAULT_TIERGRAPH_WORK_BUDGET,
     TiergraphWorkBudget,
@@ -293,6 +294,7 @@ def _reading_detectors(
     detectors.extend(
         (
             AbbreviationDetector(locale),
+            VersionDetector(locale),
             HyphenatedSerialDetector(locale),
             _letters_detector(locale),
             AbbreviationVariantDetector(locale),

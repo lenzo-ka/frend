@@ -77,8 +77,6 @@ _CAPITALS = icu.UnicodeSet("[:Lu:]")
 _CAPITALS.freeze()
 _LETTERS = icu.UnicodeSet("[:L:]")
 _LETTERS.freeze()
-_LOWERCASE = icu.UnicodeSet("[:Ll:]")
-_LOWERCASE.freeze()
 _MARKS = icu.UnicodeSet("[:M:]")
 _MARKS.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
@@ -98,13 +96,13 @@ def _character_class(unicode_set: icu.UnicodeSet, *, bracket: bool = True) -> st
 
 _LU = _character_class(_CAPITALS)
 _L = _character_class(_LETTERS)
-_LL = _character_class(_LOWERCASE)
 _M = _character_class(_MARKS)
 _MARK_RANGES = _character_class(_MARKS, bracket=False)
 _CAPITAL = f"{_LU}{_M}*"
 _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
 _LETTER_HYPHEN_WORD = re.compile(
-    rf"{_BEFORE}({_CAPITAL})-({_LL}{_M}*(?:{_L}{_M}*)*)(?![\w&'’{_MARK_RANGES}]|-\w)"
+    rf"{_BEFORE}((?:(?:{_CAPITAL}){{2,}}|{_L}{_M}*))-"
+    rf"((?:{_L}{_M}*){{2,}})(?![\w&'’{_MARK_RANGES}]|-\w)"
 )
 _RUN = re.compile(rf"((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?")
 _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(s['’]?|['’][sS])?(?![\w'’{_MARK_RANGES}])")
@@ -417,7 +415,7 @@ class HyphenatedSerialValue:
 
 @dataclass(frozen=True)
 class LetterHyphenWordValue:
-    """A capital letter joined by a silent hyphen to an ordinary word."""
+    """A letter or capital-letter run joined by a silent hyphen to a word."""
 
     letter: str
     word: str
@@ -667,8 +665,11 @@ class LettersDetector:
         occupied: list[tuple[int, int]] = []
         for match in _LETTER_HYPHEN_WORD.finditer(text):
             letter, word = match.group(1), match.group(2)
-            if letter_names(letter, self.locale) is None or not _is_locale_word_suffix(
-                word, self.locale
+            letter_units = _letters(_NFC.normalize(letter))
+            if (
+                (len(letter_units) != 1 and not is_letter_run(letter))
+                or letter_names(letter, self.locale) is None
+                or not _is_locale_word_suffix(word, self.locale)
             ):
                 continue
             start, end = match.span()
