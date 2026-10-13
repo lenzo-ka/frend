@@ -659,6 +659,7 @@ def resolve_lattice(
     SymbolDetector("root", run_threshold=symbol_run_threshold)
     raw_source_text = source_text
     applied_fold: InputFold | None = None
+    canonical = canonical_locale(locale)
     if detections is None:
         if raw_source_text is None:
             raise ValueError("source_text is required when detections is None")
@@ -668,7 +669,6 @@ def resolve_lattice(
 
         from frend.normalize import _reading_detectors
 
-        canonical = canonical_locale(locale)
         detectors = (
             _reading_detectors(canonical)
             if symbol_run_threshold == DEFAULT_SYMBOL_RUN_THRESHOLD
@@ -678,6 +678,10 @@ def resolve_lattice(
         from frend.time_rules import compose_german_written_uhr
 
         detections = compose_german_written_uhr(detections, source_text, canonical)
+    if source_text is not None:
+        from frend.verbalize import compose_english_fraction_measures
+
+        detections = compose_english_fraction_measures(detections, source_text, canonical)
     return _resolve_lattice_validated(
         detections,
         locale=locale,
