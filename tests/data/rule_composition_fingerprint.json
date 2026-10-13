@@ -16,7 +16,7 @@
       "sha256": "46c02a3d40b2ddb9d9dd0c86a69ccccfed83c7ff106d3f34b55fecb4ceb109de"
     },
     "time": {
-      "branch_hits": {
+      "scenario_counts": {
         "day_period": 70800,
         "iana_zone": 1,
         "long_zone": 1,
@@ -40,5 +40,5 @@
     "role",
     "prior_provenance"
   ],
-  "schema": 1
+  "schema": 2
 }

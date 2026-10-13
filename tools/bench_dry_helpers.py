@@ -61,6 +61,12 @@ def _measure(call: Callable[[int], object], iterations: int) -> dict[str, int]:
 def benchmark(iterations: int) -> dict[str, object]:
     def words(index: int):
         text, start, end, locale = _WORD_CASES[index % len(_WORD_CASES)]
+        nonce = f"sample{index}"
+        span_length = end - start
+        before = f"{text[:start]} {nonce} "
+        text = f"{before}{text[start:end]} {nonce} {text[end:]}"
+        start = len(before)
+        end = start + span_length
         return neighbor_words(text, start, end, locale=locale)
 
     def ranges(index: int):
@@ -69,7 +75,7 @@ def benchmark(iterations: int) -> dict[str, object]:
 
     return {
         "iterations": iterations,
-        "neighbor_words": _measure(words, iterations),
+        "neighbor_words_cache_miss": _measure(words, iterations),
         "range_offers": _measure(ranges, iterations),
         "telephone_shape": _measure(
             lambda index: telephone_shape(_SHAPES[index % len(_SHAPES)]), iterations

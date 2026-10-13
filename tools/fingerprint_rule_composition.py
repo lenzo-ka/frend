@@ -167,7 +167,7 @@ def _time_detection(
 
 def _time_fingerprint() -> dict[str, object]:
     result = Fingerprint()
-    branch_hits = {
+    scenario_counts = {
         "day_period": 0,
         "long_zone": 0,
         "short_zone": 0,
@@ -193,7 +193,7 @@ def _time_fingerprint() -> dict[str, object]:
                             f"time:{locale}:{shape}:{hour:02}:{minute:02}:{second:02}",
                             generate_time_alternatives(value, detection, locale),
                         )
-                        branch_hits["day_period"] += shape.startswith("P")
+                        scenario_counts["day_period"] += shape.startswith("P")
 
     tail_cases = (
         (
@@ -214,13 +214,13 @@ def _time_fingerprint() -> dict[str, object]:
         if not alternatives:
             raise AssertionError(f"{name} produced no alternatives")
         result.add(f"time-capture:{name}", alternatives)
-        branch_hits[name] += 1
+        scenario_counts[name] += 1
 
     for minute, name in ((0, "written_uhr_zero"), (7, "written_uhr_nonzero")):
         value, detection = _time_detection("HM", 8, minute, written_uhr=True)
         alternatives = generate_time_alternatives(value, detection, "de_DE")
         result.add(f"time-capture:{name}", alternatives)
-        branch_hits[name] += 1
+        scenario_counts[name] += 1
 
     refusal_cases: tuple[tuple[str, str, DateTimeValue, Mapping[str, object]], ...] = ()
     value, detection = _time_detection("HM", 8, 0, written_uhr=True)
@@ -240,13 +240,13 @@ def _time_fingerprint() -> dict[str, object]:
         try:
             generate_time_alternatives(value, detection, locale)
         except NotImplementedError:
-            branch_hits[name] += 1
+            scenario_counts[name] += 1
             result.add(f"time-capture:{name}", ())
         else:
             raise AssertionError(f"{name} did not refuse")
-    if not all(branch_hits.values()):
-        raise AssertionError(f"unhit time branches: {branch_hits}")
-    return {**result.summary(), "branch_hits": branch_hits}
+    if not all(scenario_counts.values()):
+        raise AssertionError(f"missing time scenarios: {scenario_counts}")
+    return {**result.summary(), "scenario_counts": scenario_counts}
 
 
 def _money_fingerprint() -> dict[str, object]:
@@ -279,7 +279,7 @@ _FAMILIES: Mapping[str, Callable[[], dict[str, object]]] = {
 def fingerprint(families: Iterable[str] = _FAMILIES) -> dict[str, object]:
     selected = tuple(families)
     return {
-        "schema": 1,
+        "schema": 2,
         "row_fields": ["text", "provenance", "weight", "group", "role", "prior_provenance"],
         "families": {family: _FAMILIES[family]() for family in selected},
     }

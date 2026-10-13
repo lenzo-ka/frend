@@ -1,6 +1,7 @@
 {
   "schema": "frend-normalization-component/1",
   "language": "pt",
+  "provenance": {"source": "frend/curated"},
   "sources": [
     {"id": "icu/78.3/fraction-percent", "receipt": "icu-78.3.json"},
     {"id": "ciberduvidas/consultorio", "receipt": "ciberduvidas-fractions.json"},

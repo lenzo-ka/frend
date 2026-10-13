@@ -6,7 +6,7 @@ import math
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from decimal import Decimal
-from functools import cache
+from functools import lru_cache
 from itertools import product
 from typing import Literal
 
@@ -41,7 +41,7 @@ def placeholder_symbol(token: str) -> str | None:
     return None
 
 
-@cache
+@lru_cache(maxsize=256)
 def ordered_placeholders(recipe: RuleRecipe) -> tuple[str, ...]:
     return tuple(
         dict.fromkeys(

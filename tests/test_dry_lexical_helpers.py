@@ -3,13 +3,14 @@ from functools import cache
 import icu
 import pytest
 
-from frend.context import _segments
+from frend.context import _segments, _word_breaker
 from frend.generated_rule_locales import locales_for
 from frend.grouped_ids import grouped_id_shape
 from frend.lexical_boundaries import letter_bearing_hyphenated_alnum_before
 from frend.ranges import range_separator_classes
 from frend.telephone import telephone_shape
 from frend.verbalize import range_separators
+from tools import bench_dry_helpers
 
 _SPAN_TEXTS = (
     "alpha beta",
@@ -52,8 +53,13 @@ def _legacy_segments(text: str, locale: str) -> list[tuple[int, int]]:
 
 @pytest.mark.parametrize("locale", locales_for("time"))
 @pytest.mark.parametrize("text", _SPAN_TEXTS)
-def test_icukit_word_spans_are_exactly_the_legacy_110_case_bridge(locale, text):
-    assert _segments(text, locale) == tuple(_legacy_segments(text, locale))
+def test_native_word_spans_keep_every_mixed_script_and_astral_offset_exact(locale, text):
+    assert _segments(text, locale) == _legacy_segments(text, locale)
+
+
+def test_word_segmentation_reuses_one_native_iterator_per_locale():
+    assert isinstance(_word_breaker("en_US"), icu.BreakIterator)
+    assert _word_breaker("en_US") is _word_breaker("en_US")
 
 
 @pytest.mark.parametrize("locale", locales_for("time"))
@@ -102,3 +108,18 @@ def test_width_shapes_keep_every_ascii_width_separator_and_terminal_x_key_exact(
                 surface = f"{digits}{separator}{digits}{terminal}"
                 assert telephone_shape(surface) == _legacy_width_shape(surface, lambda item: item)
                 assert grouped_id_shape(surface) == _legacy_width_shape(surface, str.upper)
+
+
+def test_native_span_benchmark_measures_distinct_text_cache_misses(monkeypatch):
+    seen = []
+
+    def record(text, start, end, *, locale):
+        seen.append((text, start, end, locale))
+        return (), ()
+
+    monkeypatch.setattr(bench_dry_helpers, "neighbor_words", record)
+
+    result = bench_dry_helpers.benchmark(32)
+
+    assert len({text for text, _start, _end, _locale in seen}) == 32
+    assert "neighbor_words_cache_miss" in result

@@ -58,7 +58,6 @@ from functools import lru_cache
 from typing import Any
 
 import icu
-from icukit import Breaker
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_directory
 from frend.spoken_priors import normalize_spoken
@@ -202,17 +201,28 @@ def class_windows(
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
-def _word_breaker(locale: str) -> Breaker:
-    return Breaker(locale)
+def _word_breaker(locale: str) -> icu.BreakIterator:
+    return icu.BreakIterator.createWordInstance(icu.Locale(locale))
 
 
-@lru_cache(maxsize=4096)
-def _segments(text: str, locale: str) -> tuple[tuple[int, int], ...]:
+def _segments(text: str, locale: str) -> list[tuple[int, int]]:
     """Non-whitespace ICU word spans expressed as code-point offsets."""
-    return tuple(
-        (int(span["codepoint_start"]), int(span["codepoint_end"]))
-        for span in _word_breaker(locale).break_word_spans(text, skip_whitespace=True)
-    )
+    breaker = _word_breaker(locale)
+    breaker.setText(text)
+    boundaries = [breaker.first(), *breaker]
+    if any(ord(character) > 0xFFFF for character in text):
+        to_code_point = {}
+        unit = 0
+        for index, character in enumerate(text):
+            to_code_point[unit] = index
+            unit += 2 if ord(character) > 0xFFFF else 1
+        to_code_point[unit] = len(text)
+        boundaries = [to_code_point[boundary] for boundary in boundaries]
+    return [
+        (start, end)
+        for start, end in zip(boundaries, boundaries[1:], strict=False)
+        if text[start:end].strip()
+    ]
 
 
 def neighbor_words(

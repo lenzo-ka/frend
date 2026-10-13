@@ -475,7 +475,7 @@ def _generate(
     return compose_recipes(
         recipes,
         fields,
-        base_provenance=(f"fraction-rule:{bundle.locale}", f"lexical:{bundle.locale}"),
+        base_provenance=[f"fraction-rule:{bundle.locale}", f"lexical:{bundle.locale}"],
         make=lambda text, provenance, weight, prior: SpokenAlternative(
             text, provenance, weight, prior_provenance=prior
         ),

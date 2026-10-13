@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Callable, Mapping
-from functools import cache
+from functools import lru_cache
 from importlib.resources import files
 from types import MappingProxyType
 
@@ -14,7 +14,7 @@ _ENTRY_SECTIONS = ("selectors", "resources", "rules", "weights", "curated_rows")
 _NORMALIZATION_DATA = files("frend").joinpath("data", "normalization")
 
 
-@cache
+@lru_cache(maxsize=64)
 def _packaged_component(name: str) -> Mapping[str, object]:
     resource = _NORMALIZATION_DATA.joinpath(name)
     document = json.loads(resource.read_text(encoding="utf-8"))
@@ -114,7 +114,7 @@ def expand_normalization_bundle(
     return expanded
 
 
-@cache
+@lru_cache(maxsize=64)
 def load_normalization_document(name: str) -> dict[str, object]:
     """Load and expand one packaged normalization document by basename."""
     if not name or name != name.rsplit("/", 1)[-1] or not name.endswith(".json"):
@@ -126,7 +126,7 @@ def load_normalization_document(name: str) -> dict[str, object]:
     return expand_normalization_bundle(document)
 
 
-@cache
+@lru_cache(maxsize=16)
 def load_normalization_bundle(locale: str) -> dict[str, object]:
     """Load and expand a packaged locale normalization document once."""
     expanded = load_normalization_document(f"{locale}.json")
