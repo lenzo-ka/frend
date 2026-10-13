@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 from conftest import load_tool_module
 
-from frend import resolve_lattice
+from frend import normalize, resolve_lattice
 from frend.spoken_priors import normalize_spoken
 from frend.verbalize import verbalize_edge
 from frend.written_forms import WrittenFormsDetector
@@ -54,6 +54,43 @@ def test_citation_reads_its_volume_only_where_a_page_follows():
 
 def test_zero_digit_also_reads_o():
     assert {"one zero two", "one o two"} <= set(_forms("1 0 2"))
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("Python 3.12.1", " python   three point twelve point one "),
+        ("v2.1.3", " v two point one point three "),
+        ("192.168.1.1", " one nine two dot one six eight dot one dot one "),
+    ],
+)
+def test_dotted_numeric_runs_keep_their_separators(written, spoken):
+    assert normalize(written) == spoken
+
+
+def test_bare_and_v_prefixed_versions_use_the_same_separator():
+    bare = normalize_spoken(normalize("2.1.3"))
+    prefixed = normalize_spoken(normalize("v2.1.3"))
+
+    assert bare == "two point one point three"
+    assert prefixed == f"v {bare}"
+
+
+def test_only_four_groups_in_the_ipv4_range_use_the_address_reading():
+    assert normalize_spoken(normalize("256.1.1.1")) == (
+        "two hundred fifty six point one point one point one"
+    )
+
+
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [
+        ("3.14", " three point one four "),
+        ("10.12.2026", " the tenth of December twenty twenty-six "),
+    ],
+)
+def test_dotted_numeric_runs_leave_decimals_and_dates_to_their_readers(written, spoken):
+    assert normalize(written) == spoken
 
 
 def test_era_written_first_is_said_first():

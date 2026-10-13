@@ -109,7 +109,7 @@ from frend.symbols import (
 )
 from frend.telephone import TelephoneValue
 from frend.versions import VersionValue
-from frend.written_forms import DigitsValue
+from frend.written_forms import DigitsValue, DottedNumericValue
 
 __all__ = [
     "RangeConnector",
@@ -1148,6 +1148,7 @@ _SPOKEN_CAPTURES = {
     "letter-hyphen-word": frozenset({"letter", "word"}),
     "relative": frozenset({"relative", "integer", "relative-marker"}),
     "digits": frozenset({"digits"}),
+    "dotted-numeric": frozenset({"groups"}),
     "telephone": frozenset({"telephone"}),
     "grouped-id": frozenset({"grouped-id"}),
     "version": frozenset({"version", "prefix", "component", "separator"}),
@@ -1522,10 +1523,30 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
     """Speak a letter-digit token as its runs ("3D" -> "three d", "1080p" -> "ten eighty p").
 
     Each digit run reads as a cardinal and as a year; each letter run is spelled by
-    its letters; a separator is silent. The corpus speaks such tokens this way.
+    its letters. A separator is silent except for dots in a v-prefixed numeric
+    version, which use ICU's decimal separator word.
     """
+    runs = getattr(value, "runs", ())
+    dotted_version = (
+        len(runs) >= 4
+        and len(runs) % 2 == 0
+        and runs[0][0] == "letters"
+        and runs[0][1].lower() == "v"
+        and all(
+            kind == ("digits" if index % 2 else "separator") and (index % 2 or text == ".")
+            for index, (kind, text) in enumerate(runs[1:], 1)
+        )
+    )
+    separator = None
+    if dotted_version:
+        rules = _decimal_separator_rules(locale)
+        if not rules:
+            raise NotImplementedError(f"no spoken decimal separator for {locale}")
+        separator = SpokenAlternative(
+            rules[0].separator, _rbnf_provenance(rules[0].ruleset, locale)
+        )
     parts: list[tuple[SpokenAlternative, ...]] = []
-    for kind, text in getattr(value, "runs", ()):
+    for kind, text in runs:
         if kind == "digits" and len(text) > 1 and text.startswith("0"):
             # A zero-led run ("007", the "000" of "1,000th") is read digit by digit.
             digits = _spoken_digits(DigitsValue(text), locale)
@@ -1553,9 +1574,50 @@ def _spoken_runs(value: object, locale: str) -> tuple[SpokenAlternative, ...]:
                     else letter_form,
                 )
             )
+        elif kind == "separator" and separator is not None:
+            parts.append((separator,))
     if not parts:
         raise NotImplementedError("alphanumeric token has no speakable run")
     return _compose(parts, " ".join("{}" for _ in parts))
+
+
+def _spoken_dotted_numeric(value: DottedNumericValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Read versions with point, but corpus-confirmed structural IPv4 with dot."""
+    if value.is_ipv4:
+        parts = tuple(
+            part
+            for index, group in enumerate(value.groups)
+            for part in (("separator", "."), ("digits", group))
+            if index or part[0] == "digits"
+        )
+        return _spoken_electronic(ElectronicValue("dotted-numeric", "", parts), locale)
+
+    rules = _decimal_separator_rules(locale)
+    if not rules:
+        raise NotImplementedError(f"no spoken decimal separator for {locale}")
+    separator = SpokenAlternative(rules[0].separator, _rbnf_provenance(rules[0].ruleset, locale))
+    components = []
+    for group in value.groups:
+        if len(group) > 1 and group.startswith("0"):
+            alternatives = _spoken_digits(DigitsValue(group), locale)
+        else:
+            try:
+                alternatives = _number_leaf(Decimal(group), "cardinal", locale)
+            except NotImplementedError:
+                alternatives = _spoken_big_integer(group, locale)
+        if not alternatives:
+            return ()
+        components.append(alternatives[0])
+
+    parts = [components[0]]
+    for component in components[1:]:
+        parts.extend((separator, component))
+    return (
+        SpokenAlternative(
+            " ".join(part.text for part in parts),
+            "+".join(part.provenance for part in parts),
+        ),
+    )
 
 
 def _spoken_hyphenated_serial(
@@ -4482,6 +4544,10 @@ def _verbalize_edge(
             alternatives = _spoken_digits(value, locale)
             key_value = value.digits
             path = "digits"
+        elif isinstance(value, DottedNumericValue):
+            alternatives = _spoken_dotted_numeric(value, locale)
+            key_value = value.groups
+            path = "dotted-numeric"
         elif type(value).__name__ == "RelativeDateValue":
             alternatives = _spoken_relative(value, detection, locale)
             key_value = (value.offset, value.unit)

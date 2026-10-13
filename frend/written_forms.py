@@ -8,6 +8,9 @@ speech stays ICU's (numbers, era names) or the corpus's:
 - a case citation's volume ("339 U.S. 629"; a page must follow), as
   ``number:cardinal:citation`` with the reporter as a capture;
 - spaced single digits ("6 3"), as ``number:digits``, said digit by digit;
+- numeric runs with two or more dots ("3.12.1"), as ``number:dotted-run``. Bare
+  versions use the version reader's component and separator readings; structural
+  IPv4 addresses use the corpus-measured electronic digit and dot readings;
 - an era written with dotted letters, attached to the year, or before it ("500
   B.C.", "4AD", "A.D. 1066"), as ``date:era``; "500 BC." is ICU's "500 BC" and a
   sentence-final period, left to icukit.
@@ -28,12 +31,13 @@ from frend.grouped_ids import GroupedDigitsDetector
 from frend.locale_data import canonical_locale
 from frend.telephone import TelephoneDetector
 
-__all__ = ["DigitsValue", "WrittenFormsDetector"]
+__all__ = ["DigitsValue", "DottedNumericValue", "WrittenFormsDetector"]
 
 _SPACED_COLON = re.compile(r"(?<![\w:.])(\d{1,2}): (\d{2})(?![\w:])")
 # A citation names its page too ("339 U.S. 629"); without one, "339 U.S. troops" is prose.
 _CITATION = re.compile(r"(?<![\w.,])(\d+) (U\. ?S\.)(?= \d)")
 _SPACED_DIGITS = re.compile(r"(?<![\w.,:/-])\d(?: \d)+(?![\w.,:/-])")
+_DOTTED_NUMERIC_RUN = re.compile(r"(?<![\w.])\d+(?:\.\d+){2,}(?![\w.])")
 # Dotted letters only: a period after "BC" or "AD" ends the sentence, not the era.
 _ERA_WRITTEN = r"B\.C\.E\.|B\.C\.|A\.D\.|C\.E\."
 _ERA_AFTER = re.compile(rf"(?<![\w.])(\d{{1,4}})( ?)({_ERA_WRITTEN}|AD|BC)(?!\w)")
@@ -47,6 +51,20 @@ class DigitsValue:
     """Spaced single digits, said one by one ("6 3")."""
 
     digits: str
+
+
+@dataclass(frozen=True)
+class DottedNumericValue:
+    """Numeric groups separated by dots, with structural IPv4 classification."""
+
+    groups: tuple[str, ...]
+
+    @property
+    def is_ipv4(self) -> bool:
+        """Whether this is exactly four ASCII-decimal groups, each in 0--255."""
+        return len(self.groups) == 4 and all(
+            group.isascii() and group.isdecimal() and int(group) <= 255 for group in self.groups
+        )
 
 
 def _era_index(text: str) -> int:
@@ -140,6 +158,27 @@ class WrittenFormsDetector:
                     (
                         Capture(
                             "digits", match.start(), match.end(), match.group(), digits, "numeric"
+                        ),
+                    ),
+                )
+            )
+        for match in _DOTTED_NUMERIC_RUN.finditer(text):
+            groups = tuple(match.group().split("."))
+            found.append(
+                _detection(
+                    text,
+                    match.start(),
+                    match.end(),
+                    "number:dotted-run",
+                    DottedNumericValue(groups),
+                    (
+                        Capture(
+                            "groups",
+                            match.start(),
+                            match.end(),
+                            match.group(),
+                            groups,
+                            "numeric",
                         ),
                     ),
                 )
