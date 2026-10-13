@@ -152,3 +152,9 @@ def test_cartlet_floor_comment_matches_dependency_specifier():
 def test_tiergraph_floor_comment_matches_dependency_specifier():
     text = _PYPROJECT.read_text(encoding="utf-8")
     assert_dependency_floor(text, "tiergraph")
+
+
+def test_tiergraph_floor_includes_shared_path_and_plan_apis():
+    metadata = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))["project"]
+
+    assert "tiergraph>=0.9.0" in metadata["dependencies"]

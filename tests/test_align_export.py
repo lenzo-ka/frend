@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.metadata
 import random
 import re
@@ -32,6 +33,10 @@ from frend.verbalize import SpokenAlternative, VerbalizedUnit
 
 def prior(p: str) -> ReadingPrior:
     return ReadingPrior("number", "A", Decimal(p), 100, True, "measured")
+
+
+def _sha256(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
 
 
 def choices(text, specs=()):
@@ -236,6 +241,53 @@ def assert_fsg_contract(alignment, text, manifest):
         abs(actual_exact[tokens] - expected_exact[tokens]) <= tolerance for tokens in expected_exact
     )
     assert manifest_exact_oracle(manifest) == expected_exact
+
+
+def test_tiergraph_plan_order_keeps_existing_export_bytes():
+    """A shared-plan tie order must not renumber the established serialized states."""
+    alignment = build_align_graph(
+        choices("ab", [(0, 1, ["same first", "same second"], prior("1"))])
+    )
+    plan = alignment.count_plan()
+    rank = {label: index for index, label in enumerate(plan.labels)}
+    indegree = {label: 0 for label in plan.labels}
+    children = {
+        label: tuple(plan.labels[child] for child in plan.children[index])
+        for index, label in enumerate(plan.labels)
+    }
+    for successors in children.values():
+        for child in successors:
+            indegree[child] += 1
+    ready = sorted(
+        (label for label, degree in indegree.items() if degree == 0), key=rank.__getitem__
+    )
+    historical = []
+    while ready:
+        label = ready.pop(0)
+        historical.append(label)
+        for child in children[label]:
+            indegree[child] -= 1
+            if indegree[child] == 0:
+                ready.append(child)
+                ready.sort(key=rank.__getitem__)
+    shared = tuple(plan.labels[index] for index in reversed(plan.order))
+    assert tuple(historical) != shared
+
+    fsg, fsg_manifest = to_fsg_text(alignment, "tie-order")
+    att, symbols, att_manifest = to_att_text(alignment)
+    assert {
+        "fsg": _sha256(fsg),
+        "fsg_manifest": _sha256(fsg_manifest.to_json()),
+        "att": _sha256(att),
+        "symbols": _sha256(symbols),
+        "att_manifest": _sha256(att_manifest.to_json()),
+    } == {
+        "fsg": "9eec26f8961c76325de495b54bc8df3804dcbb5a0157a9832ef1faf4192b14dc",
+        "fsg_manifest": "90990ac63b9cc24adfc49517c0d48bb6b6ca8dac660acc574322458ed5ced802",
+        "att": "11789a9ec4b84101b0b7b5e598fc9afcd86b93a89c2a4787dbd057c10bc441f5",
+        "symbols": "20cd76496055b5292740a9f72827e68d72798bcb952354082d215991f60dfac4",
+        "att_manifest": "29aa96fb079918b6036370ca307a5e04c4f5e1624be2acd7d02c1cbcadd389cb",
+    }
 
 
 def _att_longest_path(text, final_state):

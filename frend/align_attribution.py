@@ -149,20 +149,7 @@ def _first_divergence(alignment: AlignGraph, aligned: tuple[str, ...]) -> str:
     best = 0
     for root in plan.roots:
         reached[root].add(0)
-    indegree = [0] * len(plan.labels)
-    for children in plan.children:
-        for child in children:
-            indegree[child] += 1
-    ready = [index for index, degree in enumerate(indegree) if degree == 0]
-    ordered = []
-    while ready:
-        index = ready.pop(0)
-        ordered.append(index)
-        for child in plan.children[index]:
-            indegree[child] -= 1
-            if indegree[child] == 0:
-                ready.append(child)
-    for index in ordered:
+    for index in reversed(plan.order):
         label = plan.labels[index]
         emission = alignment.items[label].tokens
         for start in reached[index]:

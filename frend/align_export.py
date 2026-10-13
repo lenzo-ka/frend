@@ -200,11 +200,16 @@ def _children(alignment: AlignGraph, budget: _Budget):
     )
 
 
-def _topological_labels(
+def _stable_state_labels(
     plan, children: dict[str, tuple[str, ...]], budget: _Budget
 ) -> tuple[str, ...]:
-    """Return the DAG's labels in deterministic parent-before-child order."""
-    # Reserve the vertex and edge visits before starting the topological sort.
+    """Retain the historical lexicographically first state numbering.
+
+    PathPlan.order supplies computation order. Exported numeric state identities
+    predate that API, however, and changing its different tie order would change
+    otherwise identical FSG, AT&T, and manifest bytes.
+    """
+    # Reserve the vertex and edge visits before deriving serialized state identities.
     edge_count = sum(map(len, children.values()))
     budget.charge("topological_steps", len(plan.labels) + edge_count)
     rank = {label: index for index, label in enumerate(plan.labels)}
@@ -366,7 +371,8 @@ def _validate_probability(probability: Decimal) -> None:
 def _candidates(alignment: AlignGraph, context: Context, budget: _Budget):
     """Use max-product DAG closure for null-only routes between visible states."""
     children, plan = _children(alignment, budget)
-    topological = _topological_labels(plan, children, budget)
+    state_labels = _stable_state_labels(plan, children, budget)
+    topological = tuple(plan.labels[index] for index in reversed(plan.order))
     factors = _factors(alignment, budget)
     sink = next(
         plan.labels[index] for index, successors in enumerate(plan.children) if not successors
@@ -443,7 +449,7 @@ def _candidates(alignment: AlignGraph, context: Context, budget: _Budget):
                     or (product == previous[0] and here < previous[1])
                 ):
                     best[child] = (product, here)
-    return candidates, accepts_empty, topological, plan
+    return candidates, accepts_empty, state_labels, plan
 
 
 def _provenance_indices(alignment: AlignGraph, plan, budget: _Budget):
@@ -549,7 +555,7 @@ def _prepare(
         raise ValueError("decimal_precision must be a positive integer")
     context = Context(prec=precision, rounding=ROUND_HALF_EVEN)
     budget = _Budget(work_budget)
-    raw, accepts_empty, topological, plan = _candidates(alignment, context, budget)
+    raw, accepts_empty, state_order, plan = _candidates(alignment, context, budget)
     merged: dict[tuple[str, str, str | None], _Candidate] = {}
     for candidate in raw:
         budget.charge("transitions_merged")
@@ -562,7 +568,7 @@ def _prepare(
         ):
             merged[key] = candidate
     root = plan.labels[plan.roots[0]]
-    state_labels = (root, *(label for label in topological if label != root), "__final__")
+    state_labels = (root, *(label for label in state_order if label != root), "__final__")
     states = {label: index for index, label in enumerate(state_labels)}
     ordered = sorted(
         merged.items(),

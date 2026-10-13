@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import re
 from collections.abc import Sequence
 
-from tiergraph import Graph, ItemRef, QualifiedName
+from tiergraph import Graph, ItemRef, QualifiedName, parse_path_index_segment
 from tiergraph.path import (
     AlternativeRef,
     CanonicalPath,
@@ -21,28 +20,6 @@ from frend.fold_resolve import _POS, NS, Detection, _dedupe, build_lattice, reso
 __all__ = ["FrendReadingProfile"]
 
 _READINGS = QualifiedName(NS, "readings")
-_INDEX = re.compile(r"(?:0|[1-9][0-9]*)\Z")
-
-
-def _index(value: str, segment_index: int, path: CanonicalPath) -> int:
-    """Read a canonical unsigned integer with TG-PATH's refusal taxonomy."""
-    if _INDEX.fullmatch(value):
-        return int(value)
-    body = value[1:] if value.startswith("+") else value
-    code = (
-        PathRefusalCode.NONCANONICAL_SEGMENT
-        if body and body.isdecimal()
-        else PathRefusalCode.INVALID_SEGMENT
-    )
-    raise PathRefusal(
-        code,
-        PathOffender(
-            text=str(path),
-            path=path,
-            segment_index=segment_index,
-            segment=value,
-        ),
-    )
 
 
 class FrendReadingProfile:
@@ -84,7 +61,7 @@ class FrendReadingProfile:
                 PathRefusalCode.UNKNOWN_FORM,
                 PathOffender(text=str(path), path=path),
             )
-        index = _index(segments[1], 1, path)
+        index = parse_path_index_segment(segments[1], path=path, segment_index=1)
         if segments[0] == "offset":
             return ItemBinding(ItemRef(_POS, index))
         return AlternativeRef(ItemRef(_POS, 0), _READINGS, index)

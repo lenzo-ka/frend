@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import pytest
 from icukit.detectors import detect
 from icukit.recognize import (
@@ -122,6 +124,27 @@ def test_unknown_form_and_integer_refusals():
     )
     assert refusal.offender.segment_index == 1
     assert refusal.offender.segment == "01"
+    refusal = _refuses(
+        PathRefusalCode.NONCANONICAL_SEGMENT,
+        lambda: resolve_path(profile.graph, profile, "/reading/+1"),
+    )
+    assert refusal.offender.segment_index == 1
+    assert refusal.offender.segment == "+1"
+
+
+def test_overlong_canonical_index_has_typed_refusal():
+    _detections, profile = _profile("1/3/2026")
+    digit_limit = sys.get_int_max_str_digits()
+    if digit_limit == 0:
+        pytest.skip("interpreter integer-string conversion limit is disabled")
+    segment = "1" * (digit_limit + 1)
+
+    refusal = _refuses(
+        PathRefusalCode.INVALID_SEGMENT,
+        lambda: resolve_path(profile.graph, profile, f"/reading/{segment}"),
+    )
+    assert refusal.offender.segment_index == 1
+    assert refusal.offender.segment == segment
 
 
 def test_profile_is_guarded_to_its_graph_snapshot():
