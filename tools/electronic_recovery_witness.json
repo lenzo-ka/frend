@@ -1,0 +1,1804 @@
+{
+  "base_head": "b15eac60d1a996ea2c2710edfacd56a0648b1c41",
+  "canonical_rows_sha256": "b522e961ee14f7af799c99ace73481619281bebf432b80d4ab386401cf5d67c1",
+  "family": "electronic-heldout",
+  "generator": {
+    "rows": 64,
+    "seed": 20261013,
+    "version": 1
+  },
+  "manifest_sha256": "44bfdb13e925d7efafda733d3c321b4063c7d64be6b2d51114772f80a29f25a4",
+  "rows": [
+    {
+      "base": {
+        "error": null,
+        "first": " gswk7@n-tt.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "17de268364fc1756c9507556875218fdeaf91414050c1d7e3a8875618bd589ef",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "0101d97881af2e35846cff0739ce5006b7ddb44fd3ade46afd55f4e153134e3b",
+      "id": "bc255601f1cc9b4249d03a67",
+      "ordinal": 0,
+      "source_record_ids": [
+        "letter-G",
+        "letter-S",
+        "letter-W",
+        "letter-K",
+        "separator-0040",
+        "letter-N",
+        "separator-002d",
+        "letter-T",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " x.cah@h.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "186a0575133a4b5c72bda2bf253575c38fcd3e61526524c6d43b4f592010c72f",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "56ebdbcb75ed19d92a5bfba64c3b660cf8b7fd45b8cb31db58d169537f7a2bed",
+      "id": "33b2deca4c6c3ff8fd7a09e3",
+      "ordinal": 1,
+      "source_record_ids": [
+        "letter-X",
+        "separator-002e",
+        "letter-C",
+        "letter-A",
+        "letter-H",
+        "separator-0040",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " go@xebe.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ba3c058018e59b9166cbe13ece8ff16e7a658f952a841eb44ec548fccdd59f64",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "f33dc8dcc60b9c584c1e25dea9dccb3753c09b970433188333923469ab2fbf7e",
+      "id": "d02f48a5bb60b62d7579356c",
+      "ordinal": 2,
+      "source_record_ids": [
+        "letter-G",
+        "letter-O",
+        "separator-0040",
+        "letter-X",
+        "letter-E",
+        "letter-B",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " fs_kmn5@zsrp.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f15428c01493e587e8230161cb328058571139241fe465c24be96176c2cf8cd2",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "5e33bdaec024ed4ef1a937a7a88a5f6ee23eec7d501703832e4f42256aa03f9e",
+      "id": "e0a441a9e2eb2d2bc487c75e",
+      "ordinal": 3,
+      "source_record_ids": [
+        "letter-F",
+        "letter-S",
+        "separator-005f",
+        "letter-K",
+        "letter-M",
+        "letter-N",
+        "separator-0040",
+        "letter-Z",
+        "letter-R",
+        "letter-P",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " nomh@aew.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d9fbfe10214b7ab283ef7b2cd3930304d2bbb65010ef66c7c520542fae17cf05",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "b02d83020ab105620cdfc9672e6884042e68c9b692598018bcf252de22e9be6e",
+      "id": "1ed412ae8b0a40366d1ad1db",
+      "ordinal": 4,
+      "source_record_ids": [
+        "letter-N",
+        "letter-O",
+        "letter-M",
+        "letter-H",
+        "separator-0040",
+        "letter-A",
+        "letter-E",
+        "letter-W",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " hdtu.ovc@roeq-an.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9a2b304a892f6a19ef1a0e685c1ae665a66409d44df01e19bafcff46ce792d69",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "dac1e3af94cf389de6b8e01a2711ea9913019f2a13e3a5796bff610c07107f93",
+      "id": "caee8019e9cf8bf8b72b09bf",
+      "ordinal": 5,
+      "source_record_ids": [
+        "letter-H",
+        "letter-D",
+        "letter-T",
+        "letter-U",
+        "separator-002e",
+        "letter-O",
+        "letter-V",
+        "letter-C",
+        "separator-0040",
+        "letter-R",
+        "letter-E",
+        "letter-Q",
+        "separator-002d",
+        "letter-A",
+        "letter-N",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " n3@ghb.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bec5c16a78aa5283fbd7364a46b3ec990749960e6691dec8128aeccc16da5c74",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "5f3c91fb5119c10a2ea7762277f2a20153a11b0ff828f5162a6494960acb87a0",
+      "id": "4d82e4a28ee4a3dff80b7ee1",
+      "ordinal": 6,
+      "source_record_ids": [
+        "letter-N",
+        "separator-0040",
+        "letter-G",
+        "letter-H",
+        "letter-B",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " cjxb.eq@xezr.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "307c6e0aed3e1843dead74eadc31bdd326a6ef0ba911e6d002ffdd87f4eaadff",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "47db2b055eeed73ac50294d8fc3020b7f434616d1810d702f7760c1a969ef03a",
+      "id": "f4368af46109a402c5c641e0",
+      "ordinal": 7,
+      "source_record_ids": [
+        "letter-C",
+        "letter-J",
+        "letter-X",
+        "letter-B",
+        "separator-002e",
+        "letter-E",
+        "letter-Q",
+        "separator-0040",
+        "letter-Z",
+        "letter-R",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " mzy@uc.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b03dc39a508b02324716187d15cb9ef4dc05e33dc6345a9f52f4a3db21fdbd50",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "602a59ce0d21c517288e74b7b6db824dd5f657f0c1cbd36bfd7e6e2de59cc5b0",
+      "id": "9caa18786e7d12560bd51f89",
+      "ordinal": 8,
+      "source_record_ids": [
+        "letter-M",
+        "letter-Z",
+        "letter-Y",
+        "separator-0040",
+        "letter-U",
+        "letter-C",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " w-s7@r.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5a39688f71a243ae607092c59bda1015eff7ba67f53e75a241897e4dbd183752",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "d86a7efb380e203dcace38ef3dd36207a4301736c61a52cfa095af0b3c199935",
+      "id": "b8d013cfeb70512e2889a9b1",
+      "ordinal": 9,
+      "source_record_ids": [
+        "letter-W",
+        "separator-002d",
+        "letter-S",
+        "separator-0040",
+        "letter-R",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ydou@jvq-sl.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "85dd177dc04ea3403bab6b1517b66ec6746055fd8cf994f44abeffc64d4d8180",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "3165010823fcc5c4a0c3bb45098b10569a28ecd58b74080b3303117fdb7491c7",
+      "id": "f7a45a134f699a4d2856acad",
+      "ordinal": 10,
+      "source_record_ids": [
+        "letter-Y",
+        "letter-D",
+        "letter-O",
+        "letter-U",
+        "separator-0040",
+        "letter-J",
+        "letter-V",
+        "letter-Q",
+        "separator-002d",
+        "letter-S",
+        "letter-L",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " pmbv_wg@lj.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "420b378b22b480102af4cd62d48f7a9a40b8f5dd1328174ef105a42835053854",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "a40e88dc9c59e8ab474eee9705554b2e00e6ad05315c221dd31c6dfcd6368e53",
+      "id": "4d3a442c10ec2ccdcb7239ae",
+      "ordinal": 11,
+      "source_record_ids": [
+        "letter-P",
+        "letter-M",
+        "letter-B",
+        "letter-V",
+        "separator-005f",
+        "letter-W",
+        "letter-G",
+        "separator-0040",
+        "letter-L",
+        "letter-J",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " xvr4@sy.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "0babc64dab515e64646ad552f5d243356656b20137830dae632f66941ae86c46",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "3a286e71cfd39c344786a400e144b9ea8d3d93ccaae3180a490c0668c4c7e939",
+      "id": "c02a3c17d614d7e44ab87d30",
+      "ordinal": 12,
+      "source_record_ids": [
+        "letter-X",
+        "letter-V",
+        "letter-R",
+        "separator-0040",
+        "letter-S",
+        "letter-Y",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ssy_igh@ggh.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "3d5ae98389f090e8ff1e34c98598dd9f41685c6e61250aef7c0cce5e4d5855ec",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "043577e6155a283aaeacb90cffaf0162c1f47bda909215c68a8f59b4d215fed4",
+      "id": "a46f442b5c2a0acdb2d3368e",
+      "ordinal": 13,
+      "source_record_ids": [
+        "letter-S",
+        "letter-Y",
+        "separator-005f",
+        "letter-I",
+        "letter-G",
+        "letter-H",
+        "separator-0040",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " d@rci.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c2888d4afb58907d1ba8e800c824fcef94d256ea7729dc1081b6a613ed18d103",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "2ef21240ba8ce23504af643e5af8c3c80e63e43f93cfcb3b1ca0458fe3dd423d",
+      "id": "de0595893e91f96b1f400e19",
+      "ordinal": 14,
+      "source_record_ids": [
+        "letter-D",
+        "separator-0040",
+        "letter-R",
+        "letter-C",
+        "letter-I",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " mlro.l5@vk-kn.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "237a3eeb1e531db55f61b34a190a473eee526a889fb38bad2370145c74ddccbc",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "6eef90ef2ec138397a57f9c818b4a8c2372b2c1a0ab470b1accecba9e8a8c9ea",
+      "id": "43a73a106cae4af4e4f4fad1",
+      "ordinal": 15,
+      "source_record_ids": [
+        "letter-M",
+        "letter-L",
+        "letter-R",
+        "letter-O",
+        "separator-002e",
+        "separator-0040",
+        "letter-V",
+        "letter-K",
+        "separator-002d",
+        "letter-N",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " s@txg.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f7b5cd9c80bd8b6fd9a5ba88f4142692efc2d8cb31736f0a4a9e7db701ea4b20",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "1b7eff6e5ad784081011cc8efbebc63ffb2df55b448503b769442afe36232896",
+      "id": "50834de9de53f31d9bca9526",
+      "ordinal": 16,
+      "source_record_ids": [
+        "letter-S",
+        "separator-0040",
+        "letter-T",
+        "letter-X",
+        "letter-G",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " m_va@n.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "712aa59563f720071eff8066605d315b2e194943173512386cd263b689744b74",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "efb3a35ce20a7bebb747be8a365db8644a0c85ad788bef50b5fcadc603edfb9f",
+      "id": "dedd28788480049a42d11e00",
+      "ordinal": 17,
+      "source_record_ids": [
+        "letter-M",
+        "separator-005f",
+        "letter-V",
+        "letter-A",
+        "separator-0040",
+        "letter-N",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " q8@wk.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "5956901d87d2aca7b8ad9856e402927a61a8239b88eca34bd2f9a7a1a4baf4c6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "d5cba7e0dc57c1f5db185e10a46e4c73f2f9b76c101edbdf9a6826b535d3b273",
+      "id": "1251b6f54d2e87031a2f290d",
+      "ordinal": 18,
+      "source_record_ids": [
+        "letter-Q",
+        "separator-0040",
+        "letter-W",
+        "letter-K",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " uv_m@k.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c35465e5e7207940fb347c4c7ea7309d845d3a26a126eb00c19d361d366aae45",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "1beabec200458d89ff0ee78629d98dc0fe8baac0bd21765530da17b5ed1b3219",
+      "id": "7549df69240bb1d7d242ecb3",
+      "ordinal": 19,
+      "source_record_ids": [
+        "letter-U",
+        "letter-V",
+        "separator-005f",
+        "letter-M",
+        "separator-0040",
+        "letter-K",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " t@jrww-rh.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a2233093bec6cf32d93d11771f48a0ece9bc17c943cafbd6e9a46bf12d919cb6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "9d64f0818b20323e83d446dbafd3af56b3e207d682c34656d9511d5c08ab836f",
+      "id": "b1e154cf9feea6bdafe4124d",
+      "ordinal": 20,
+      "source_record_ids": [
+        "letter-T",
+        "separator-0040",
+        "letter-J",
+        "letter-R",
+        "letter-W",
+        "separator-002d",
+        "letter-H",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " fn_dyy1@mkyi.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4055f90faf9a576e6d803322b12b8be000f76251c34de372fa30caac43766fa9",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "a1cbdc2a3f2592e2894e40cd8ae0e1191f39776ad4a5bdeef0922b51e26827fe",
+      "id": "8ce03782f6366435bb01cf73",
+      "ordinal": 21,
+      "source_record_ids": [
+        "letter-F",
+        "letter-N",
+        "separator-005f",
+        "letter-D",
+        "letter-Y",
+        "separator-0040",
+        "letter-M",
+        "letter-K",
+        "letter-I",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " lh@wq.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2a2acd9fefdfd31c277cc73f69839e53166eec78dd22c7e7d28422680cc6967e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "0832620596e76cd61eefde23aff98b8e3d8bd73dcb50f4171fb395de9721374d",
+      "id": "3c38770d851ff3bc64e83982",
+      "ordinal": 22,
+      "source_record_ids": [
+        "letter-L",
+        "letter-H",
+        "separator-0040",
+        "letter-W",
+        "letter-Q",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " u-iax@anl.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "0b99e616f292795bb677c3fc8d720a467ab3c406ce3126d4e6340c6651e70f0b",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "79648d662c98e7ce076c574e488d4f89f11587a3e4c4230af66b1b3c70192a2f",
+      "id": "a5dde9f079e164cd5dc3a975",
+      "ordinal": 23,
+      "source_record_ids": [
+        "letter-U",
+        "separator-002d",
+        "letter-I",
+        "letter-A",
+        "letter-X",
+        "separator-0040",
+        "letter-N",
+        "letter-L",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " h1@jfqp.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "87f32d63a95b65bd2159e3fff3cb0a74194a37ec8150728f77b5d5d49ba5d616",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "056031c9ce735c54785cef58a6eab8780cb40ecd6d39eef9b4a71b05a6dfad0c",
+      "id": "84dd7666e820f2274ade1662",
+      "ordinal": 24,
+      "source_record_ids": [
+        "letter-H",
+        "separator-0040",
+        "letter-J",
+        "letter-F",
+        "letter-Q",
+        "letter-P",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " jccc.wtt@b-ba.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "95f2d11d894e5f83145ffbb00d6657d5a22ce1f3c0c699fde2e7f3c10d2f7fd8",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "1f17e9f1d44f758251544449d3e1283569d3d69a5771ba92c0127fa497121843",
+      "id": "39f21c518c548e482a75a2f8",
+      "ordinal": 25,
+      "source_record_ids": [
+        "letter-J",
+        "letter-C",
+        "separator-002e",
+        "letter-W",
+        "letter-T",
+        "separator-0040",
+        "letter-B",
+        "separator-002d",
+        "letter-A",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " sxdj@xlky.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "2f550464a59e522aaf262d7db451fb24d71a927ba170e419c3b5da1eae2b1683",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "2aaf83236eb97ed2044c3c106433dc9afd4adc372a81b86f0fe9a337817458bc",
+      "id": "f56e6177c76b27685d1ba3ca",
+      "ordinal": 26,
+      "source_record_ids": [
+        "letter-S",
+        "letter-X",
+        "letter-D",
+        "letter-J",
+        "separator-0040",
+        "letter-L",
+        "letter-K",
+        "letter-Y",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " uu_pl7@m.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "8738bfd18088551c8dd84412fe69023324d9770bde600c44adede8a687f454a4",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "531572f5f56153f11b0dfb8a918b4a9798983cfc3a5779b47dcb3c2364bb358e",
+      "id": "369e9e3266ebfc033793ba01",
+      "ordinal": 27,
+      "source_record_ids": [
+        "letter-U",
+        "separator-005f",
+        "letter-P",
+        "letter-L",
+        "separator-0040",
+        "letter-M",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ps@qvs.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "42da590d17febc76331f06148796bf862c509e9d5c2d42751ebc5e8cd03be28c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "4fc0bde88156d75157f00042cc2e6cc66ea723f32dd7c7f822143c4fcc4d0780",
+      "id": "70ef293f2a2f5574d2fe06b4",
+      "ordinal": 28,
+      "source_record_ids": [
+        "letter-P",
+        "letter-S",
+        "separator-0040",
+        "letter-Q",
+        "letter-V",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " hujf.iio@dby.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b232808dbe0b20fd6275fa149b031b1354ac467f4a3ec689a986c6045c377383",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "f74ad66998b57da6c94ff3aeef49ac575476378fa6cb1eb42209ce710298ddae",
+      "id": "ccfa5fdbd2b1c206cc6530db",
+      "ordinal": 29,
+      "source_record_ids": [
+        "letter-H",
+        "letter-U",
+        "letter-J",
+        "letter-F",
+        "separator-002e",
+        "letter-I",
+        "letter-O",
+        "separator-0040",
+        "letter-D",
+        "letter-B",
+        "letter-Y",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " nsp5@zv-vw.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bae9382aeff5fcba387350f3aa27406cf0cab589d0d676b60751f9177a7c940c",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "da3abb718ff577f59930c12e6f4ee197800a5373743454d34fb419fd5c1baec1",
+      "id": "d5ce2e68b2adf82f66856ef8",
+      "ordinal": 30,
+      "source_record_ids": [
+        "letter-N",
+        "letter-S",
+        "letter-P",
+        "separator-0040",
+        "letter-Z",
+        "letter-V",
+        "separator-002d",
+        "letter-W",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ktal-hof@mvpf.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "08be88d8c0aba98198c658409a523e2f0dee999f355ccaa6ed787794d36338f9",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "3e90991f9c92e1a7f82c8ec24560a626e4b017a126fefd594bde585d47de4365",
+      "id": "342f020382aa5384b7fc277c",
+      "ordinal": 31,
+      "source_record_ids": [
+        "letter-K",
+        "letter-T",
+        "letter-A",
+        "letter-L",
+        "separator-002d",
+        "letter-H",
+        "letter-O",
+        "letter-F",
+        "separator-0040",
+        "letter-M",
+        "letter-V",
+        "letter-P",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " xiu@dqhm.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "32d87dbf9175fe8546024c889dddd6edbf27d7d3b29d4236a6aaaf2373c0278b",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "9c8b112787dff43bb6781707684226d14f3907c4a85b1db870d5febeca06b10a",
+      "id": "ce6fcdf21c0dd83fd31772cc",
+      "ordinal": 32,
+      "source_record_ids": [
+        "letter-X",
+        "letter-I",
+        "letter-U",
+        "separator-0040",
+        "letter-D",
+        "letter-Q",
+        "letter-H",
+        "letter-M",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " q-obx0@avb.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "069b412908dc7be7012fd75ad9d24c821c22d9a8fd4a97fd641f9c6bc8fe59b7",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "ae6933c234cb8c17ffb2c9e49774a419d7bd5095244fdbb515dbe017d97f6aa0",
+      "id": "4e380f5651c26ec387c41023",
+      "ordinal": 33,
+      "source_record_ids": [
+        "letter-Q",
+        "separator-002d",
+        "letter-O",
+        "letter-B",
+        "letter-X",
+        "separator-0040",
+        "letter-A",
+        "letter-V",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " djsu@rzv.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ffbf7f2dbdd7b4a2eb5066746e453d42b5285cf3f3a8b2dcd45d6d834b8580ac",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "f4cc9adf3f85a7454db8d5d51f5906e331c214c92c5eb1155688970a1c4048f5",
+      "id": "c16b5c4df1aef9ab99ac4ebd",
+      "ordinal": 34,
+      "source_record_ids": [
+        "letter-D",
+        "letter-J",
+        "letter-S",
+        "letter-U",
+        "separator-0040",
+        "letter-R",
+        "letter-Z",
+        "letter-V",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " qckw.smv@emh-xu.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "328cc83697bff9ca58fa7d975751181cfa1bd9f56e5de884043a78c4018ded09",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "9409e3f2e783d4f86a04e61b106b4741c7e4f7e36642332d24ee1c1c685ec89c",
+      "id": "da026eaf9c7ddc7eb8560659",
+      "ordinal": 35,
+      "source_record_ids": [
+        "letter-Q",
+        "letter-C",
+        "letter-K",
+        "letter-W",
+        "separator-002e",
+        "letter-S",
+        "letter-M",
+        "letter-V",
+        "separator-0040",
+        "letter-E",
+        "letter-H",
+        "separator-002d",
+        "letter-X",
+        "letter-U",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " taeq9@qck.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d369067e91fb43e7399dd2d4e57861e5fcbae6da482e5dc29a41960afd5713e0",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "f39261790a0abee5dee55786ce6772833d16527738c47ac1db12c4b3796128b5",
+      "id": "97a90cfe613c2b81a4fe794b",
+      "ordinal": 36,
+      "source_record_ids": [
+        "letter-T",
+        "letter-A",
+        "letter-E",
+        "letter-Q",
+        "separator-0040",
+        "letter-C",
+        "letter-K",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " j.ty@myra.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "1d1ffd725ecbd8a471a2340ced440e205577c227e6b04f8c3079669dfa02eff8",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "ac0afed7cbda9480e4867311c9822f0191622075976ae905de118e74e0b73ec1",
+      "id": "28cc6f2da0dc83f5006ffec0",
+      "ordinal": 37,
+      "source_record_ids": [
+        "letter-J",
+        "separator-002e",
+        "letter-T",
+        "letter-Y",
+        "separator-0040",
+        "letter-M",
+        "letter-R",
+        "letter-A",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " qsf@p.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "25244a57d9f0e67a8f0a195ff4766f4e9e942ece5fb21e68f43a596ba18b74e2",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "68e0357e5f54dc415f320cd549878344de27bb6fb08fd2c15cd4c5126755e4a7",
+      "id": "06c5cbb49369b79c7d0298ca",
+      "ordinal": 38,
+      "source_record_ids": [
+        "letter-Q",
+        "letter-S",
+        "letter-F",
+        "separator-0040",
+        "letter-P",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " z-fo4@c.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "7a5c172caa4e1d6adb9990d5e820e904e11d8d0849bd281d2caad3f31ac09a9e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "4077a869b3b048f8aec9fd998d24474f98257b77c36c733c8cb364a4b5f504cb",
+      "id": "5e72e08c9fc76d36fd831e61",
+      "ordinal": 39,
+      "source_record_ids": [
+        "letter-Z",
+        "separator-002d",
+        "letter-F",
+        "letter-O",
+        "separator-0040",
+        "letter-C",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " hh@lcz-cf.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "790f9176e9d7de23a06aa2268920931c40d4e15aafd83ce0d7056cd6b498a13d",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "a26bb7fbd2e1a22eec1aa53204ae2426714df4a1ba82d2ae62771f18c6d28982",
+      "id": "f666597b89232f9cb63e9263",
+      "ordinal": 40,
+      "source_record_ids": [
+        "letter-H",
+        "separator-0040",
+        "letter-L",
+        "letter-C",
+        "letter-Z",
+        "separator-002d",
+        "letter-F",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " mpl-ox@v.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "781b72c674d5768be18f27757ef33d6608fea458f74e77654e876e435df0e9e6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "8e8244202aa47d7cc8779949164c917923b4dfa826705f0549e2ba7487f5442f",
+      "id": "7a21997ddfa50d5b7f88900d",
+      "ordinal": 41,
+      "source_record_ids": [
+        "letter-M",
+        "letter-P",
+        "letter-L",
+        "separator-002d",
+        "letter-O",
+        "letter-X",
+        "separator-0040",
+        "letter-V",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " myt3@tllj.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "1caaeb3dac57a91abb0fdca00a23a7c2414b969e208ee381b73acfeeb84b4bdb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "9f99b3808129fe0024b5aa686ef340db223f828246f30cbb4ad09a5bfa49b5b3",
+      "id": "b095caf4b86487025923e72a",
+      "ordinal": 42,
+      "source_record_ids": [
+        "letter-M",
+        "letter-Y",
+        "letter-T",
+        "separator-0040",
+        "letter-L",
+        "letter-J",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " rnvv_ozk@raa.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "98725c6e05352d22ae853cafe37c12e888a3fb1ecafd33a01885002441c9e031",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "1ace783004938ece60e6e243ea2c42fee6162884b5231a6bcfba039932602f33",
+      "id": "3d1d9abffc7188f98382a147",
+      "ordinal": 43,
+      "source_record_ids": [
+        "letter-R",
+        "letter-N",
+        "letter-V",
+        "separator-005f",
+        "letter-O",
+        "letter-Z",
+        "letter-K",
+        "separator-0040",
+        "letter-A",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ep@sfpb.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "c70e35c1f444a2b1bf916ecd1886f0d654bcd4d76f9a02fa0f3a374c45303fe1",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "bb0624eaa4b7177bb696df959fbc085ea15b257190f9bca6ccf9ec1a1f07f1f7",
+      "id": "9f7ca6faca6cf7226fce3b69",
+      "ordinal": 44,
+      "source_record_ids": [
+        "letter-E",
+        "letter-P",
+        "separator-0040",
+        "letter-S",
+        "letter-F",
+        "letter-B",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " bu-x9@v-mv.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "37b78ff7322f027946dde548ec9e0ff50b1df0d8e61d89fef942acf58ac376bb",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "4a768adcb85a5c7fb2b5ca7c45ba4721f99a5ed5534f25b7f9cf4320756840f4",
+      "id": "2d29fb55fd49900b7e10d99f",
+      "ordinal": 45,
+      "source_record_ids": [
+        "letter-B",
+        "letter-U",
+        "separator-002d",
+        "letter-X",
+        "separator-0040",
+        "letter-V",
+        "letter-M",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " nq@p.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4e5ffec3164a8f74061ab794e3f95c3cfbe30568b727caaaf0d774620bcff213",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "9bbfb8b70704711ea95f5e49dbd751aa28c2e1d8cc388e2082e995a139d7162d",
+      "id": "b56d1a5e02c336a287c66aae",
+      "ordinal": 46,
+      "source_record_ids": [
+        "letter-N",
+        "letter-Q",
+        "separator-0040",
+        "letter-P",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " iw.t@vjp.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "013be43b0b80850d5aec5ee9e24fdb8f722fb0d624f1dfd010b88243297a5a54",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "0321fc56827a89e50a454d9f55ce75a6148b454060253685bf94ac18dc34d88a",
+      "id": "75274242163b1a1dd09b6923",
+      "ordinal": 47,
+      "source_record_ids": [
+        "letter-I",
+        "letter-W",
+        "separator-002e",
+        "letter-T",
+        "separator-0040",
+        "letter-V",
+        "letter-J",
+        "letter-P",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ds9@xxre.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "410caf2178a99db76be19c46046d3c442c504fb4efdf418c97359aff9ddc0169",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "a54d51a16a11da39bb17ecb4cb4ed828933d9dd3bf6b10450f303f0c3a2a0352",
+      "id": "f978a2af9498a90ed6df14da",
+      "ordinal": 48,
+      "source_record_ids": [
+        "letter-D",
+        "letter-S",
+        "separator-0040",
+        "letter-X",
+        "letter-R",
+        "letter-E",
+        "separator-002e",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " uila-d@hgno.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "42fce66aa8e1bc12af7a405c003c9f430df5025d0883ddda2d1e3913a69dce8d",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "af5d9fb78cef8707c95f1ade46d15805500c1374680540d5b4bf9c5d02cbcf3c",
+      "id": "b0d4c815cf4fe27cae169834",
+      "ordinal": 49,
+      "source_record_ids": [
+        "letter-U",
+        "letter-I",
+        "letter-L",
+        "letter-A",
+        "separator-002d",
+        "letter-D",
+        "separator-0040",
+        "letter-H",
+        "letter-G",
+        "letter-N",
+        "letter-O",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " tznl@d-ud.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "dda5894a35e62743fda92197a020d04bf4233f804db7d4600097ca35df2bbe58",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "c42a7d918038802df85f433033c0170333fbd53795cbcdc51dfd45c062dae8ac",
+      "id": "fae1b277174fbf93a6064f1e",
+      "ordinal": 50,
+      "source_record_ids": [
+        "letter-T",
+        "letter-Z",
+        "letter-N",
+        "letter-L",
+        "separator-0040",
+        "letter-D",
+        "separator-002d",
+        "letter-U",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " poz-r5@tg.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "a5575b36e353fa47b511612fb5d5be5566bf903d2a8498ec15c0626b10771b1d",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "e729e6f6b086bcc4741d3d426016950adfdf527e5645cfa6e678d3b41822a606",
+      "id": "ad99ab8a3dd7b39c063f5aaf",
+      "ordinal": 51,
+      "source_record_ids": [
+        "letter-P",
+        "letter-O",
+        "letter-Z",
+        "separator-002d",
+        "letter-R",
+        "separator-0040",
+        "letter-T",
+        "letter-G",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ehf@zuv.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "48d8689cc72428b6779c1cd2fc739868b70e04abda23a36490dc6c1c2f90d36e",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "3831d4b96aa77653b6153ddd93cc19bc115a7e7632c6c5b1644134270e28451b",
+      "id": "7f9ed5529de10032be31b0f6",
+      "ordinal": 52,
+      "source_record_ids": [
+        "letter-E",
+        "letter-H",
+        "letter-F",
+        "separator-0040",
+        "letter-Z",
+        "letter-U",
+        "letter-V",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " o-qq@wsdu.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "dd40c44222126ac215df93b23bbb088d489bfb865e1b6ec243054483362846cd",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "994a032dff1dbeca8a9d5847b816562ec784fa1175b02824be338495522548bb",
+      "id": "f24d2949776d4cbb963b04c2",
+      "ordinal": 53,
+      "source_record_ids": [
+        "letter-O",
+        "separator-002d",
+        "letter-Q",
+        "separator-0040",
+        "letter-W",
+        "letter-S",
+        "letter-D",
+        "letter-U",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " n8@xqx.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "4a3baa04d9bdac42fb0033762175af732475e85044878e0e5d9a9f47f20950e6",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "fa15c832510084750e9c0988f9941019b8520d600499c58be49adefe352501fd",
+      "id": "6fce5df99fef0b2a3f0afc19",
+      "ordinal": 54,
+      "source_record_ids": [
+        "letter-N",
+        "separator-0040",
+        "letter-X",
+        "letter-Q",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " y_e@o-vq.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "ad188ec6ff6d75c9e77ff047cedc4cccbf0461e82feccb3e914b495276262584",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "ad51f92782fc307d2445b658a43ee4145598b84c81cd561dd409509ec769b4fa",
+      "id": "08a435e737b1556b0b1f25b0",
+      "ordinal": 55,
+      "source_record_ids": [
+        "letter-Y",
+        "separator-005f",
+        "letter-E",
+        "separator-0040",
+        "letter-O",
+        "separator-002d",
+        "letter-V",
+        "letter-Q",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " xp@mhp.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "b37c703a3c78d00b0f62cec2fcc460a773d6d6a0761560b621c0fb77ba80b93b",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "0736e9859608c0bafc939927f1404d2f8266efb62bca06d9e04ee36fa668c2cc",
+      "id": "b597cd7a5cfa6bb0ca5040cb",
+      "ordinal": 56,
+      "source_record_ids": [
+        "letter-X",
+        "letter-P",
+        "separator-0040",
+        "letter-M",
+        "letter-H",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " atq.na5@g.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "d4cd9f3a09ea0f15be4ed32820a21a63813b7b35e84788a055ef970e3a5edc48",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "5ecef4917b7895937df8ed79146446b29117eef37ddf3f64a7ee7a04e4963c0b",
+      "id": "ce308088b9cca8a8d3a8c1be",
+      "ordinal": 57,
+      "source_record_ids": [
+        "letter-A",
+        "letter-T",
+        "letter-Q",
+        "separator-002e",
+        "letter-N",
+        "separator-0040",
+        "letter-G",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " zuho@b.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "6458f3595074e6a9a602dcee611c68b587e8eb674cb3b54005fb673cb1480ac8",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "77921661478eaac94e671b589f2b17af96ca22c6b207d0cdf3acefe1c0703eca",
+      "id": "37227cebfc34abb4fe90823d",
+      "ordinal": 58,
+      "source_record_ids": [
+        "letter-Z",
+        "letter-U",
+        "letter-H",
+        "letter-O",
+        "separator-0040",
+        "letter-B",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " ptrz-kdb@lm.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9aa0d160c1a11233c01a77c671fb5f4edc89c120ec94cb19c30f94d6febf4191",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "664dcd8998e5a5a69696d445b64a12c0b7340c592e15410a835185be4d1f2282",
+      "id": "ffcdd5205d8609ae1f95318f",
+      "ordinal": 59,
+      "source_record_ids": [
+        "letter-P",
+        "letter-T",
+        "letter-R",
+        "letter-Z",
+        "separator-002d",
+        "letter-K",
+        "letter-D",
+        "letter-B",
+        "separator-0040",
+        "letter-L",
+        "letter-M",
+        "separator-002e",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " y6@lll-ul.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "9b59fbbe523272263296615efa4cd5aaf4e7d41da770d7b64cc87cc2b717044a",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "71aedaec014e7a32a360e76b049f67feb8067deccf8e2eaf92972c33ae338ddd",
+      "id": "6e8488d621ca8f61c3ab6ffc",
+      "ordinal": 60,
+      "source_record_ids": [
+        "letter-Y",
+        "separator-0040",
+        "letter-L",
+        "separator-002d",
+        "letter-U",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " bme_ur@axcj.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "bd96c6a6d632b27b24e1f731cf433cd0bec47125bddfd21f34982fa1ac58ae4b",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "7143709d4a193d8dd4a959379c9c4341478c6e2e94a2ba3d945c72b49796413a",
+      "id": "a23f056bc10a3185346cd099",
+      "ordinal": 61,
+      "source_record_ids": [
+        "letter-B",
+        "letter-M",
+        "letter-E",
+        "separator-005f",
+        "letter-U",
+        "letter-R",
+        "separator-0040",
+        "letter-A",
+        "letter-X",
+        "letter-C",
+        "letter-J",
+        "separator-002e",
+        "letter-D",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " mmen@dsf.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "39ff3a37590835b5f8c91205cbe14aa40f6c051abde2188f9472470cc65c94af",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "8af32bf20bbc570e2ebc8e4a6e7a780574a0d3fd414c11f224c493f26c07df97",
+      "id": "95db0495eab62a71cf7c7535",
+      "ordinal": 62,
+      "source_record_ids": [
+        "letter-M",
+        "letter-E",
+        "letter-N",
+        "separator-0040",
+        "letter-D",
+        "letter-S",
+        "letter-F",
+        "separator-002e",
+        "electronic-email"
+      ]
+    },
+    {
+      "base": {
+        "error": null,
+        "first": " p_kwz1@l.de ",
+        "first_presentation": false,
+        "first_strict": false,
+        "insensitive": false,
+        "offer_signature_sha256": "f2b98d2c34e349aefa9541a80e5b5e622ccbd0f227119d6dc7227b6987e85875",
+        "presentation": false,
+        "strict": false
+      },
+      "expected_speech_sha256": "2a93dfabd72d77348f9dad1955dbdff1ca23f50407c8b36072ab0f8ba1f0a929",
+      "id": "7871d52e4dfb155bfd96d139",
+      "ordinal": 63,
+      "source_record_ids": [
+        "letter-P",
+        "separator-005f",
+        "letter-K",
+        "letter-W",
+        "letter-Z",
+        "separator-0040",
+        "letter-L",
+        "separator-002e",
+        "letter-D",
+        "letter-E",
+        "electronic-email"
+      ]
+    }
+  ],
+  "schema": 1,
+  "status": "frozen-base-only"
+}
