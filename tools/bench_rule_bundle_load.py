@@ -58,8 +58,10 @@ def _measure(family: str, repeats: int) -> dict[str, object]:
         rows[locale] = {
             "median_cold_load_ns": int(statistics.median(item["cold_load_ns"] for item in samples)),
             "median_loader_ns": int(statistics.median(item["elapsed_ns"] for item in samples)),
-            "peak_rss_kib": max(item["peak_rss_kib"] for item in samples),
-            "rss_delta_kib": max(item["rss_delta_kib"] for item in samples),
+            "median_peak_rss_kib": int(statistics.median(item["peak_rss_kib"] for item in samples)),
+            "median_rss_delta_kib": int(
+                statistics.median(item["rss_delta_kib"] for item in samples)
+            ),
         }
     return {"family": family, "repeats": repeats, "locales": rows}
 
