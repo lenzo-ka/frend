@@ -16,7 +16,7 @@ from tiergraph.path import (
     PathRefusalCode,
 )
 
-from frend.fold_resolve import _POS, DEFAULT_EPSILON, NS, Detection, _dedupe, build_lattice, resolve
+from frend.fold_resolve import _POS, NS, Detection, _dedupe, build_lattice, resolve
 
 __all__ = ["FrendReadingProfile"]
 
@@ -58,16 +58,11 @@ class FrendReadingProfile:
         *,
         locale: str = "en_US",
         n: int = 8,
-        epsilon: int = DEFAULT_EPSILON,
     ) -> None:
-        """Build one lattice snapshot and its ranked resolution readings.
-
-        ``epsilon`` is deprecated and accepted for compatibility; resolution
-        uses exact structural ties and ignores it.
-        """
+        """Build one lattice snapshot and its ranked resolution readings."""
         unique = _dedupe(detections)
         self.graph, _roots, _id_to_index = build_lattice(unique)
-        self.covers = resolve(unique, locale=locale, n=n, epsilon=epsilon).covers
+        self.covers = resolve(unique, locale=locale, n=n).covers
 
     def _require_snapshot(self, graph: Graph, path: CanonicalPath | None = None) -> None:
         if graph is not self.graph:

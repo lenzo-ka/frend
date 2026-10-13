@@ -5,22 +5,16 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
 def _evaluator():
-    sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(
-        "evaluate_google_tn", _TOOLS / "evaluate_google_tn.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("evaluate_google_tn", _TOOLS / "evaluate_google_tn.py")
 
 
 def test_a_number_separator_number_triple_is_rejoined_as_written():
@@ -121,14 +115,7 @@ _HELD_OUT = _RUNTIME_EVAL | _TEST
 
 
 def _tool(name: str):
-    """Load ``tools/<name>.py`` by path under its own module name (tools is not a package)."""
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py", register=True)
 
 
 def _corpus(root: Path, first: int) -> Path:

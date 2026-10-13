@@ -13,6 +13,8 @@ from decimal import Decimal, localcontext
 from pathlib import Path
 
 import pytest
+from conftest import alignment_choices as choices
+from conftest import alignment_paths as paths
 from tiergraph import (
     AttributeDeclaration,
     AttributeDomain,
@@ -43,12 +45,8 @@ from tiergraph.semiring import COUNTING
 import frend.align_graph as module
 import frend.work_budgets as work_budgets
 from frend.align_graph import arc_weight, build_align_graph
-from frend.fold_resolve import CoverScore, resolve, resolve_cover
+from frend.fold_resolve import resolve, resolve_cover
 from frend.lattice import (
-    ChoiceGraph,
-    ReadingEdge,
-    ReadingRank,
-    SemanticRank,
     compose_choices,
     resolve_choices,
     resolve_lattice,
@@ -56,7 +54,7 @@ from frend.lattice import (
 )
 from frend.spoken_priors import normalize_spoken, spoken_tokens
 from frend.type_priors import BlendedPrior, CorpusPrior, IcuBackfillTable, PriorTable, ReadingPrior
-from frend.verbalize import SpokenAlternative, VerbalizedUnit
+from frend.verbalize import SpokenAlternative
 
 
 def prior(p=".2", *, tier="measured", supported=True, n=100, generated_p=None, group="a"):
@@ -97,55 +95,6 @@ def _expect(statement, call, *args):
         return call(*args)
     except (ValueError, TypeError) as error:
         pytest.fail(f"{statement}, but it raised {error!r}")
-
-
-def choices(text, specs=()):
-    """Specs are (start, end, forms, prior); unit skips come from the real carrier."""
-    base = resolve_choices([], source_text=text)
-    edges, units = [], []
-    for index, (start, end, forms, measurement) in enumerate(specs):
-        id = f"c{index}"
-        geometry = CoverScore(end - start, 1, 0)
-        semantic = SemanticRank("unsupported", None, None)
-        edges.append(
-            ReadingEdge(
-                id,
-                start,
-                end,
-                None,
-                "reading",
-                geometry,
-                measurement,
-                ReadingRank(end - start, 1, 0, semantic),
-            )
-        )
-        units.append(
-            VerbalizedUnit(
-                id,
-                tuple(
-                    SpokenAlternative(form, f"source:{i}", Decimal(".7"))
-                    for i, form in enumerate(forms)
-                ),
-                None,
-                None,
-                True,
-            )
-        )
-    return ChoiceGraph(replace(base, edges=tuple(edges) + base.edges), tuple(units))
-
-
-def paths(alignment):
-    plan = alignment.log_plan()
-
-    def walk(index, path):
-        path = (*path, index)
-        if not plan.children[index]:
-            yield path
-        else:
-            for child in plan.children[index]:
-                yield from walk(child, path)
-
-    return list(walk(plan.roots[0], ()))
 
 
 def path_key(alignment, path):

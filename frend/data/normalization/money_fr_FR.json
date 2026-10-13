@@ -1,0 +1,10 @@
+{
+  "schema": "frend-normalization/2", "locale": "fr_FR",
+  "provenance": {"source": "frend/curated"}, "versions": {"icu": "78.3"},
+  "sources": [{"id": "academie-francaise/questions-de-langue", "receipt": "academie-money.json"}],
+  "selectors": [],
+  "resources": [{"id": "currency-major-EUR", "kind": "currency", "code": "EUR", "gender": "masculine", "forms": {"one": "euro", "other": "euros"}, "derived_from": ["academie-francaise/questions-de-langue#euro-amounts"]}],
+  "rules": [{"id": "money-major-EUR", "kind": "money-rule", "shape": "major", "fields": ["amount", "currency"], "target": ["AMOUNT", " ", "CURRENCY"], "currency": "EUR", "directions": ["tn"], "derived_from": ["academie-francaise/questions-de-langue#euro-amounts"]}],
+  "weights": [], "curated_rows": [],
+  "ancestry": {"academie-francaise/questions-de-langue#euro-amounts": ["23addb705cb3da1e9daa5d50f09cf98327d8f9a0659aa64c4639df9859858e08"]}
+}

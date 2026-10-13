@@ -381,7 +381,10 @@ def _lattice(token: str):
 
         from frend import resolve_lattice
 
-        detections = list(detect(token, _detectors())) if token.strip() else []
+        try:
+            detections = list(detect(token, _detectors())) if token.strip() else []
+        except Exception as exc:
+            raise RuntimeError("failed to detect context-tree token with icukit") from exc
         _LATTICES[token] = resolve_lattice(detections, source_text=token)
     return _LATTICES[token]
 

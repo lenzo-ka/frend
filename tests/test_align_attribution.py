@@ -12,21 +12,14 @@ from fractions import Fraction
 from pathlib import Path
 
 import pytest
+from conftest import alignment_choices as choices
+from conftest import alignment_paths as paths
 from tiergraph import BudgetExhausted, WorkBudget, WorkMeter
 
 from frend.align_attribution import attribute
 from frend.align_export import to_fsg_text
 from frend.align_graph import build_align_graph
-from frend.fold_resolve import CoverScore
-from frend.lattice import (
-    ChoiceGraph,
-    ReadingEdge,
-    ReadingRank,
-    SemanticRank,
-    resolve_choices,
-)
 from frend.type_priors import ReadingPrior
-from frend.verbalize import SpokenAlternative, VerbalizedUnit
 
 
 def prior(p=".2", *, tier="measured", supported=True, n=100):
@@ -38,54 +31,6 @@ def prior(p=".2", *, tier="measured", supported=True, n=100):
         supported,
         tier,
     )
-
-
-def choices(text, specs=()):
-    base = resolve_choices([], source_text=text)
-    edges, units = [], []
-    for index, (start, end, forms, measurement) in enumerate(specs):
-        item_id = f"c{index}"
-        geometry = CoverScore(end - start, 1, 0)
-        semantic = SemanticRank("unsupported", None, None)
-        edges.append(
-            ReadingEdge(
-                item_id,
-                start,
-                end,
-                None,
-                "reading",
-                geometry,
-                measurement,
-                ReadingRank(end - start, 1, 0, semantic),
-            )
-        )
-        units.append(
-            VerbalizedUnit(
-                item_id,
-                tuple(
-                    SpokenAlternative(form, f"source:{form_index}", Decimal(".7"))
-                    for form_index, form in enumerate(forms)
-                ),
-                None,
-                None,
-                True,
-            )
-        )
-    return ChoiceGraph(replace(base, edges=tuple(edges) + base.edges), tuple(units))
-
-
-def paths(alignment):
-    plan = alignment.log_plan()
-
-    def walk(index, path):
-        path = (*path, index)
-        if not plan.children[index]:
-            yield path
-        else:
-            for child in plan.children[index]:
-                yield from walk(child, path)
-
-    return list(walk(plan.roots[0], ()))
 
 
 def _path_tokens(alignment, path):

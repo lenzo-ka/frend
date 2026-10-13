@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _REPO = Path(__file__).parents[1]
 _TOOL = _REPO / "tools" / "benchmark_latency.py"
@@ -14,11 +14,7 @@ _GOLDEN = _REPO / "tests" / "data" / "benchmark_latency_no_flag_main-87a5e6a.jso
 
 
 def _tool():
-    spec = importlib.util.spec_from_file_location("benchmark_latency", _TOOL)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("benchmark_latency", _TOOL)
 
 
 def _deterministic_projection(payload: dict) -> dict:

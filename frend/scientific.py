@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -53,11 +54,20 @@ def _plain_exponent(exponent: str) -> str:
     return exponent.translate(_SUPERSCRIPT_TRANSLATION).replace("−", "-")
 
 
+def _exponent_value(exponent: str) -> int | None:
+    plain = _plain_exponent(exponent)
+    digits = plain[1:] if plain[:1] in "+-" else plain
+    limit = sys.get_int_max_str_digits()
+    if limit and len(digits) > limit:
+        return None
+    return int(plain)
+
+
 def _capture(name: str, start: int, text: str, value: object, form: str) -> Capture:
     return Capture(name, start, start + len(text), text, value, form)
 
 
-def _captures(match: re.Match[str]) -> tuple[Capture, ...]:
+def _captures(match: re.Match[str], exponent_value: int) -> tuple[Capture, ...]:
     mantissa = match.group("mantissa")
     mantissa_start = match.start("mantissa")
     sign = mantissa[0] if mantissa[0] in _SIGNS else ""
@@ -103,7 +113,7 @@ def _captures(match: re.Match[str]) -> tuple[Capture, ...]:
             "exponent",
             match.start("exponent") + len(exponent_sign),
             exponent_digits,
-            int(_plain_exponent(exponent_digits)),
+            abs(exponent_value),
             "numeric",
         )
     )
@@ -170,6 +180,9 @@ class ScientificNotationDetector:
         for pattern in (_E_NOTATION, _TIMES_TEN_CARET, _TIMES_TEN_SUPERSCRIPT):
             for match in pattern.finditer(text):
                 exponent = match.group("exponent")
+                exponent_value = _exponent_value(exponent)
+                if exponent_value is None:
+                    continue
                 exponent_sign = exponent[0] if exponent[0] in _SIGNS + _SUPERSCRIPT_SIGNS else None
                 detection = {
                     "text": match.group(),
@@ -177,9 +190,9 @@ class ScientificNotationDetector:
                     "end": match.end(),
                     "type": "number:scientific",
                     "value": ScientificValue(
-                        match.group("mantissa"), int(_plain_exponent(exponent)), exponent_sign
+                        match.group("mantissa"), exponent_value, exponent_sign
                     ),
-                    "captures": _captures(match),
+                    "captures": _captures(match, exponent_value),
                 }
                 detections.extend((detection, *self._with_unit(text, detection)))
         return sorted(detections, key=lambda detection: (detection["start"], detection["end"]))

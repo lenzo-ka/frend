@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from icukit.abbreviation_recognize import AbbreviationDetector
 from icukit.detectors import detect
 from icukit.recognize import FlexibleNumberDetector
@@ -14,14 +15,23 @@ from frend import normalize, resolve_lattice
 from frend.letters import (
     HyphenatedSerialDetector,
     LettersDetector,
+    _letters_detector,
     cv_pattern,
     is_roman,
     is_spelled_token,
+    letter_names,
     numeral_share,
 )
 from frend.verbalize import verbalize_lattice
 
 _DETECTORS = (FlexibleNumberDetector("en_US"), AbbreviationDetector("en_US"), LettersDetector())
+
+
+def test_locale_letter_detector_is_reused_without_changing_names():
+    _letters_detector.cache_clear()
+
+    assert _letters_detector("en_US") is _letters_detector("en_US")
+    assert letter_names("AB", "en_US").spoken == ("a", "b")
 
 
 def _read(text: str) -> list[list[str]]:
@@ -788,19 +798,10 @@ def test_same_script_word_internal_capitals_remain_unread(text):
 
 
 def _acronym_builder():
-    import importlib.util
-    import sys
-    from pathlib import Path
-
-    tools = Path(__file__).resolve().parents[1] / "tools"
-    if str(tools) not in sys.path:
-        sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "build_acronym_priors", tools / "build_acronym_priors.py"
+    return load_tool_module(
+        "build_acronym_priors",
+        Path(__file__).resolve().parents[1] / "tools" / "build_acronym_priors.py",
     )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 # Tokens the builder and the reader must agree on, one by one: decomposed and

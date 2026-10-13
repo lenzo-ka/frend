@@ -4,16 +4,15 @@ from __future__ import annotations
 
 import argparse
 import copy
-import importlib.util
 import io
 import json
 import subprocess
-import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+from conftest import load_tool_module
 from icukit.detectors import Capture, NumberValue
 
 _REPO = Path(__file__).resolve().parents[1]
@@ -21,14 +20,7 @@ _TOOLS = _REPO / "tools"
 
 
 def _tool(name: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py", register=True)
 
 
 def test_latency_worker_imports_the_selected_subject(tmp_path):

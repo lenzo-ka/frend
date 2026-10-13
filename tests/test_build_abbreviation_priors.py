@@ -3,12 +3,11 @@ written case, and its shipped table."""
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 
 _REPO = Path(__file__).resolve().parents[1]
 _TOOLS = _REPO / "tools"
@@ -16,14 +15,7 @@ _TABLE = _REPO / "frend" / "data" / "en" / "abbreviation_priors.json"
 
 
 def _builder():
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(
-        "build_abbreviation_priors", _TOOLS / "build_abbreviation_priors.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module("build_abbreviation_priors", _TOOLS / "build_abbreviation_priors.py")
 
 
 _ROWS = [

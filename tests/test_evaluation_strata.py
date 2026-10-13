@@ -3,23 +3,17 @@
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import json
-import sys
 from pathlib import Path
 from types import SimpleNamespace
+
+from conftest import load_tool_module
 
 _TOOLS = Path(__file__).resolve().parents[1] / "tools"
 
 
 def _tool(name: str):
-    if str(_TOOLS) not in sys.path:
-        sys.path.insert(0, str(_TOOLS))
-    spec = importlib.util.spec_from_file_location(name, _TOOLS / f"{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
+    return load_tool_module(name, _TOOLS / f"{name}.py", register=True)
 
 
 def test_evaluator_fixture_counts_tokens_classes_and_sentences(monkeypatch):
@@ -30,9 +24,9 @@ def test_evaluator_fixture_counts_tokens_classes_and_sentences(monkeypatch):
         [("PLAIN", "FreshSelf", "<self>")],
     ]
     outcomes = [
-        ("PLAIN", True, True),
-        ("PLAIN", False, False),
-        ("PLAIN", True, True),
+        ("PLAIN", True, True, None),
+        ("PLAIN", False, False, None),
+        ("PLAIN", True, True, None),
     ]
     monkeypatch.setattr(evaluate, "_map", lambda *_args: outcomes)
     report = evaluate._per_token(sentences, 1, strata_seen=frozenset({"Seen"}))
@@ -63,7 +57,7 @@ def test_evaluator_fixture_counts_tokens_classes_and_sentences(monkeypatch):
 def test_evaluator_no_strata_json_and_text_are_byte_pinned(monkeypatch):
     evaluate = _tool("evaluate_google_tn")
     sentences = [[("PLAIN", "Seen", "self")], [("PLAIN", "Novel", "spoken")]]
-    outcomes = [("PLAIN", True, True), ("PLAIN", False, False)]
+    outcomes = [("PLAIN", True, True, None), ("PLAIN", False, False, None)]
     monkeypatch.setattr(evaluate, "_rows", lambda *_args: sentences)
     monkeypatch.setattr(evaluate, "_map", lambda *_args: outcomes)
     monkeypatch.setattr(evaluate, "_running_text_rows", lambda *_args: [])
@@ -87,8 +81,8 @@ def test_triage_fixture_splits_every_reported_family(monkeypatch):
 
     def score(row, _before, _after, _profile):
         if row[1] == "Seen":
-            return True, True, False, None
-        return False, False, False, triage.Classification("V", "other", "new entry")
+            return True, True, False, None, None
+        return False, False, False, triage.Classification("V", "other", "new entry"), None
 
     monkeypatch.setattr(triage, "_score_token", score)
     result = triage._score_sentence(("shard", 0, sentence, ("SEEN", "UNSEEN"), None))
@@ -118,7 +112,7 @@ def test_triage_fixture_splits_every_reported_family(monkeypatch):
 def test_triage_real_off_paths_score_and_main_without_strata(tmp_path, monkeypatch):
     triage = _tool("triage_misses")
     sentence = (("PLAIN", "Seen", "<self>"),)
-    monkeypatch.setattr(triage, "_score_token", lambda *_args: (True, True, False, None))
+    monkeypatch.setattr(triage, "_score_token", lambda *_args: (True, True, False, None, None))
 
     direct = triage._score_sentence(("shard", 0, sentence, None, None))
     assert "strata" not in direct

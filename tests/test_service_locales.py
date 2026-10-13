@@ -60,7 +60,6 @@ def test_detect_yields_no_duplicate_detections():
 @pytest.mark.parametrize("locale", LOCALES)
 def test_interval_readers_identical_to_full_family_filtered(locale, monkeypatch):
     assert SPOKEN_DATE_INTERVALS is not None
-    monkeypatch.setattr(ranges, "has_icu_ranges", lambda: True)
     from icukit.engine import DATE_INTERVAL_FAMILY, generated_detectors
 
     expected = {
@@ -85,8 +84,7 @@ def test_interval_family_is_one_module_level_instance():
         return original(locale, families)
 
     with pytest.MonkeyPatch.context() as monkeypatch:
-        monkeypatch.setattr(ranges, "has_icu_ranges", lambda: True)
-        monkeypatch.setattr(engine, "generated_detectors", record)
+        monkeypatch.setattr(ranges, "generated_detectors", record)
         date_interval_readers("en_US")
         date_interval_readers("fr_FR")
 

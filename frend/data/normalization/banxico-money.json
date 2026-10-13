@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public Banco de Mexico page",
+  "fetched_at": "2026-10-12T12:00:00-04:00",
+  "license_sha256": "85890e4dd16f2bd1c7478f4b9be885c297b19127d64af101ae74a919d990e104",
+  "locator": "https://www.anterior.banxico.org.mx/dyn/divulgacion/billetes-y-monedas/8--numismatica.html",
+  "manual_citation": true,
+  "revision": "Banco de Mexico Numismatica, denomination examples",
+  "sha256": "553c751e277a4999907298b7c435693afde98b410e5aae1c3e09a1c59162af44",
+  "source": "banxico/numismatica",
+  "transform_command": "manual source-claim transcription"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "frend-normalization/2", "locale": "it_IT",
+  "provenance": {"source": "frend/curated"}, "versions": {"icu": "78.3"},
+  "sources": [{"id": "treccani/vocabolario", "receipt": "treccani-money.json"}],
+  "selectors": [],
+  "resources": [{"id": "currency-major-EUR", "kind": "currency", "code": "EUR", "gender": "masculine", "forms": {"one": "euro", "other": "euro"}, "derived_from": ["treccani/vocabolario#euro-invariant"]}],
+  "rules": [{"id": "money-major-EUR", "kind": "money-rule", "shape": "major", "fields": ["amount", "currency"], "target": ["AMOUNT", " ", "CURRENCY"], "currency": "EUR", "directions": ["tn"], "derived_from": ["treccani/vocabolario#cardinal-before-monetary-noun"]}],
+  "weights": [], "curated_rows": [],
+  "ancestry": {"treccani/vocabolario#euro-invariant": ["2aec4d3fd24a337d17b9cbeabfc3c464da94e4f6db03ee36ef17c961f1467826"], "treccani/vocabolario#cardinal-before-monetary-noun": ["2aec4d3fd24a337d17b9cbeabfc3c464da94e4f6db03ee36ef17c961f1467826"]}
+}

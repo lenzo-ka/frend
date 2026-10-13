@@ -1,0 +1,363 @@
+"""Sourced MONEY composition through precompiled tiergraph rule projections."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+from collections.abc import Mapping
+from dataclasses import dataclass, replace
+from decimal import Decimal
+from functools import cache
+from importlib.resources import files
+from itertools import product
+from types import MappingProxyType
+
+import icu
+from icukit.detectors import NumberValue
+from tiergraph import (
+    GrammarDeclaration,
+    GrammarHole,
+    GrammarInput,
+    GrammarInputToken,
+    Realization,
+    grammar_loads,
+)
+
+from frend.locale_data import canonical_locale
+
+GENERATED_MONEY_LOCALES = ("es_MX", "fr_FR", "pt_BR", "it_IT", "ko_KR")
+_EVENTS = {"load": 0, "lower": 0, "generate": 0}
+
+
+def _canonical_bytes(document: object) -> bytes:
+    return json.dumps(document, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+
+
+def money_rule_events() -> Mapping[str, int]:
+    return MappingProxyType(dict(_EVENTS))
+
+
+@dataclass(frozen=True)
+class MoneyRuleRecipe:
+    tokens: tuple[str, ...]
+    provenance: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class MoneyRuleBundle:
+    locale: str
+    declaration: GrammarDeclaration
+    recipes: Mapping[str, tuple[MoneyRuleRecipe, ...]]
+    records: Mapping[str, Mapping[str, object]]
+
+
+def _declaration_recipes(
+    declaration: GrammarDeclaration,
+) -> dict[str, tuple[MoneyRuleRecipe, ...]]:
+    result: dict[str, list[MoneyRuleRecipe]] = {}
+    for rule in declaration.rules:
+        if rule.left != declaration.start:
+            continue
+        source = tuple(
+            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
+        )
+        target_holes = tuple(
+            item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
+        )
+        if len(source) != len(set(source)) or set(source) != set(target_holes):
+            raise ValueError("money grammar must consume and emit every field hole exactly once")
+        provenance = tuple(value.lexical for value in rule.provenance)
+        key = next(
+            (
+                item.removeprefix("money-key:")
+                for item in provenance
+                if item.startswith("money-key:")
+            ),
+            None,
+        )
+        if key is None:
+            raise ValueError("money grammar rule has no shape/currency key")
+        result.setdefault(key, []).append(
+            MoneyRuleRecipe(
+                tuple(
+                    f"\ufff0{item.nonterminal.local_name}\ufff1"
+                    if isinstance(item, GrammarHole)
+                    else item.text.lexical
+                    for item in rule.target
+                ),
+                provenance,
+            )
+        )
+    return {key: tuple(values) for key, values in result.items()}
+
+
+@cache
+def load_money_rule_bundle(locale: str) -> MoneyRuleBundle:
+    _EVENTS["load"] += 1
+    locale = canonical_locale(locale)
+    if locale not in GENERATED_MONEY_LOCALES:
+        raise ValueError(f"no generated money-rule bundle for {locale!r}")
+    resource = files("frend").joinpath("data", "money_rules", f"{locale}.json")
+    document = json.loads(resource.read_text(encoding="utf-8"))
+    if document.get("schema") != 2 or document.get("locale") != locale:
+        raise ValueError(f"money-rule bundle identity mismatch for {locale!r}")
+    if document.get("icu_version") != icu.ICU_VERSION:
+        raise ValueError(
+            f"money-rule bundle {locale!r} was built with ICU "
+            f"{document.get('icu_version')}, not runtime ICU {icu.ICU_VERSION}"
+        )
+    normalization = files("frend").joinpath("data", "normalization", f"money_{locale}.json")
+    normalization_document = json.loads(normalization.read_text(encoding="utf-8"))
+    if (
+        document.get("normalization_sha256")
+        != hashlib.sha256(_canonical_bytes(normalization_document)).hexdigest()
+    ):
+        raise ValueError(f"money-rule bundle {locale!r} normalization hash mismatch")
+    projection = {key: document.get(key) for key in ("grammar", "recipes", "records")}
+    projection_hash = hashlib.sha256(_canonical_bytes(projection)).hexdigest()
+    if document.get("projection_sha256") != projection_hash:
+        raise ValueError(f"money-rule bundle {locale!r} projection hash mismatch")
+    if any(
+        key in {"quoted_passage", "receipt", "source_text"}
+        for record in document.get("records", ())
+        if isinstance(record, Mapping)
+        for key in record
+    ):
+        raise ValueError(f"money-rule bundle {locale!r} retains source text or receipts")
+    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
+    wanted = _declaration_recipes(declaration)
+    raw = document.get("recipes")
+    if not isinstance(raw, Mapping):
+        raise ValueError(f"money-rule bundle {locale!r} has invalid recipes")
+    observed = {
+        key: tuple(
+            MoneyRuleRecipe(tuple(item["tokens"]), tuple(item["provenance"])) for item in values
+        )
+        for key, values in raw.items()
+    }
+    if observed != wanted or any(len(values) != 1 for values in observed.values()):
+        raise ValueError(f"money-rule bundle {locale!r} recipes do not match its grammar")
+    records_raw = document.get("records")
+    if not isinstance(records_raw, list):
+        raise ValueError(f"money-rule bundle {locale!r} has invalid runtime records")
+    records = {
+        str(item["id"]): MappingProxyType(dict(item))
+        for item in records_raw
+        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
+    }
+    if len(records) != len(records_raw):
+        raise ValueError(f"money-rule bundle {locale!r} has invalid or duplicate records")
+    return MoneyRuleBundle(
+        locale, declaration, MappingProxyType(observed), MappingProxyType(records)
+    )
+
+
+def _capture(detection: Mapping[str, object], name: str) -> object | None:
+    return next(
+        (item for item in detection.get("captures", ()) if getattr(item, "name", None) == name),
+        None,
+    )
+
+
+def _fraction_digits(currency: str, locale: str) -> int:
+    formatter = icu.NumberFormat.createCurrencyInstance(icu.Locale(locale))
+    formatter.setCurrency(currency)
+    return formatter.getMaximumFractionDigits()
+
+
+def _shape(value: NumberValue, detection: Mapping[str, object], bundle: MoneyRuleBundle) -> str:
+    currency = value.currency
+    if currency is None:
+        raise NotImplementedError("money rules require a captured ISO currency code")
+    if _capture(detection, "compact") is not None:
+        return "compact_major"
+    amount = abs(Decimal(value.decimal))
+    digits = _fraction_digits(currency, bundle.locale)
+    scaled = amount * (Decimal(10) ** digits)
+    if scaled != scaled.to_integral_value():
+        return "major"
+    minor = int(scaled) % (10**digits) if digits else 0
+    if not minor:
+        return "major"
+    if not int(amount) and f"minor_only:{currency}" in bundle.recipes:
+        return "minor_only"
+    return "major_minor"
+
+
+def money_grammar_input(
+    value: NumberValue, detection: Mapping[str, object], locale: str
+) -> GrammarInput:
+    """Return the exact typed tiergraph input routed for a complete money edge."""
+    bundle = load_money_rule_bundle(locale)
+    shape = _shape(value, detection, bundle)
+    currency = value.currency
+    key = f"{shape}:{currency}"
+    recipes = bundle.recipes.get(key, ())
+    if not recipes:
+        raise NotImplementedError(f"money rules have no sourced {key} recipe for {bundle.locale}")
+    symbols = tuple(token[1:-1] for token in recipes[0].tokens if token.startswith("\ufff0"))
+    return GrammarInput(
+        tuple(
+            GrammarInputToken(
+                f"FIELD:{symbol}",
+                (Realization((symbol,), (f"money-input:{symbol}",), None),),
+                (f"money-field:{symbol}",),
+            )
+            for symbol in symbols
+        )
+    )
+
+
+def _number_realizations(
+    amount: Decimal, locale: str, record: Mapping[str, object] | None = None
+) -> tuple[Realization, ...]:
+    from frend.verbalize import _number_leaf, _spoken_decimal
+
+    if amount != amount.to_integral_value():
+        forms = _spoken_decimal(amount, locale)
+    else:
+        forms = _number_leaf(amount, "cardinal", locale)
+    marker = None
+    if record is not None and record.get("rbnf_variant") == "sinokorean":
+        marker = "%spellout-cardinal-sinokorean"
+    elif record is not None and record.get("gender") in {"masculine", "feminine", "neuter"}:
+        marker = f"%spellout-cardinal-{record['gender']}"
+    if marker is not None:
+        selected = tuple(
+            item
+            for item in forms
+            if any(part.endswith(f":{marker}") for part in item.provenance.split("+"))
+        )
+        if selected:
+            forms = selected
+    return tuple(
+        Realization((item.text.replace("-", " "),), (item.provenance,), item.weight)
+        for item in forms[:1]
+    )
+
+
+def _currency_record(
+    bundle: MoneyRuleBundle, currency: str, *, minor: bool
+) -> Mapping[str, object]:
+    kind = "minor" if minor else "currency"
+    return next(
+        record
+        for record in bundle.records.values()
+        if record.get("kind") == kind and record.get("code") == currency
+    )
+
+
+def _currency_realization(
+    bundle: MoneyRuleBundle, currency: str, amount: Decimal, *, minor: bool
+) -> Realization:
+    record = _currency_record(bundle, currency, minor=minor)
+    forms = record["forms"]
+    operand = int(abs(amount)) if amount == amount.to_integral_value() else float(abs(amount))
+    category = str(icu.PluralRules.forLocale(icu.Locale(bundle.locale)).select(operand))
+    text = forms.get(category, forms.get("other"))
+    if not isinstance(text, str):
+        raise ValueError(f"money record {record['id']!r} has no form for {category!r}")
+    return Realization((text,), (f"normalization-record:{record['id']}",), None)
+
+
+def _preserve_unchanged_ranking(generated, previous):
+    remaining = list(generated)
+    preserved = []
+    for old in previous:
+        match = next((item for item in remaining if item.text == old.text), None)
+        if match is None:
+            preserved.append(old)
+            continue
+        remaining.remove(match)
+        preserved.append(
+            replace(
+                match,
+                weight=old.weight,
+                prior_provenance=old.prior_provenance or old.provenance,
+            )
+        )
+    return tuple((*preserved, *remaining))
+
+
+def generate_money_alternatives(
+    value: NumberValue,
+    detection: Mapping[str, object],
+    locale: str,
+    *,
+    max_derivations: int = 128,
+):
+    """Add sourced non-English readings for one complete recognized currency edge."""
+    from frend.verbalize import SpokenAlternative, _spoken_money
+
+    bundle = load_money_rule_bundle(locale)
+    currency = value.currency
+    if currency is None:
+        raise NotImplementedError("money rules require a captured ISO currency code")
+    amount = Decimal(value.decimal)
+    shape = _shape(value, detection, bundle)
+    recipes = bundle.recipes.get(f"{shape}:{currency}", ())
+    if not recipes:
+        raise NotImplementedError(
+            f"money rules have no sourced {shape}:{currency} recipe for {bundle.locale}"
+        )
+    digits = _fraction_digits(currency, bundle.locale)
+    scale = 10**digits
+    absolute = abs(amount)
+    major = Decimal(int(absolute))
+    minor = Decimal(int(absolute * scale) % scale)
+    signed_major = major.copy_sign(amount) if major else major
+    signed_minor = minor.copy_sign(amount) if amount.is_signed() and not major else minor
+    major_record = _currency_record(bundle, currency, minor=False)
+    values = {
+        "AMOUNT": _number_realizations(amount, bundle.locale, major_record),
+        "MAJOR": _number_realizations(signed_major, bundle.locale, major_record),
+        "MINOR": _number_realizations(signed_minor, bundle.locale),
+        "CURRENCY": (
+            _currency_realization(
+                bundle,
+                currency,
+                minor if shape == "minor_only" else (amount if shape == "major" else major),
+                minor=shape == "minor_only",
+            ),
+        ),
+    }
+    if shape == "major_minor":
+        values["MINOR_CURRENCY"] = (_currency_realization(bundle, currency, minor, minor=True),)
+    generated = []
+    for recipe in recipes:
+        symbols = tuple(token[1:-1] for token in recipe.tokens if token.startswith("\ufff0"))
+        exact_count = math.prod(len(values[symbol]) for symbol in symbols)
+        if exact_count < 1 or exact_count > max_derivations:
+            raise ValueError(f"money generation for {bundle.locale} has {exact_count} derivations")
+        for selected in product(*(values[symbol] for symbol in symbols)):
+            by_symbol = dict(zip(symbols, selected, strict=True))
+            rendered = []
+            provenance = [
+                f"money-rule:{bundle.locale}",
+                *(item for item in recipe.provenance if not item.startswith("money-key:")),
+            ]
+            weights = []
+            prior = []
+            for token in recipe.tokens:
+                symbol = token[1:-1] if token.startswith("\ufff0") else None
+                realization = by_symbol.get(symbol)
+                if realization is None:
+                    rendered.append(token)
+                else:
+                    rendered.extend(realization.tokens)
+                    provenance.extend(realization.provenance)
+                    prior.extend(realization.provenance[:1])
+                    weights.append(realization.weight)
+            generated.append(
+                SpokenAlternative(
+                    "".join(rendered),
+                    "+".join(dict.fromkeys(provenance)),
+                    sum((weight for weight in weights if weight is not None), Decimal(0))
+                    if weights and all(weight is not None for weight in weights)
+                    else None,
+                    prior_provenance="+".join(dict.fromkeys(prior)) or None,
+                )
+            )
+    previous = _spoken_money(amount, currency, bundle.locale)
+    return _preserve_unchanged_ranking(generated, previous)

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import sys
 from pathlib import Path
 
 import pytest
+from conftest import load_tool_module
 from tiergraph import WorkBudget, WorkMeter
 
 import frend
@@ -13,16 +13,10 @@ from frend import InputValidationError, NormalizedText
 
 
 def _evaluator():
-    tools = Path(__file__).resolve().parents[1] / "tools"
-    if str(tools) not in sys.path:
-        sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "normalize_evaluator", tools / "evaluate_google_tn.py"
+    return load_tool_module(
+        "normalize_evaluator",
+        Path(__file__).resolve().parents[1] / "tools" / "evaluate_google_tn.py",
     )
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
 
 
 def test_normalize_returns_a_string_by_default():
@@ -53,6 +47,17 @@ def test_normalize_locale_aliases_are_byte_identical(canonical, aliases, localiz
 
     for alias in aliases:
         assert frend.normalize("123", locale=alias) == expected, alias
+
+
+def test_cldr_literal_hour_uses_the_new_strict_hour_reader():
+    import importlib
+
+    normalize_module = importlib.import_module("frend.normalize")
+    detections = normalize_module._reading_detectors("de_DE").detect("8 Uhr")
+
+    assert any(item["type"] == "date:H" and item["text"] == "8 Uhr" for item in detections)
+    assert " ".join(frend.normalize("8 Uhr", locale="de_DE").split()) == "acht Uhr"
+    assert " ".join(frend.normalize("08:00 Uhr", locale="de_DE").split()) == "acht Uhr"
 
 
 @pytest.mark.parametrize(
@@ -667,11 +672,49 @@ def test_input_limit_refusals_pass_through():
         frend.normalize("bad\x00text")
 
 
-def test_sentence_over_unit_bound_names_the_missing_icukit_forced_break():
-    with pytest.raises(
-        InputValidationError, match=r"sentence has 4.*max_unit_chars=3.*forced sentence break"
-    ):
+def test_sentence_and_lattice_bounds_are_independent():
+    with pytest.raises(InputValidationError, match=r"4 code points.*max_unit_chars=3"):
         frend.normalize("four", max_unit_chars=3)
+
+    assert frend.normalize("four", max_sentence_chars=3)
+
+
+def test_sentence_options_use_icukit_010_directly():
+    source = (
+        "The first part of this sentence has no terminal punctuation with enough "
+        "additional words to exceed the short-line protection threshold\ncontinues here."
+    )
+
+    import importlib
+
+    normalize_module = importlib.import_module("frend.normalize")
+    assert len(normalize_module._sentence_ranges(source, "en_US")) == 2
+    assert len(normalize_module._sentence_ranges(source, "en_US", reflow="lines")) == 1
+    decisions = normalize_module._sentence_override("en_US", "en-real-cart@1", 1024, "none").decide(
+        "Hon. Alice spoke. Next item."
+    )
+    assert any(item["layer"] == "model" for item in decisions)
+
+
+def test_forced_sentence_boundaries_are_never_merged_by_protection(monkeypatch):
+    import importlib
+
+    normalize_module = importlib.import_module("frend.normalize")
+    text = "x" * 40
+    monkeypatch.setattr(
+        normalize_module,
+        "_dotted_acronym_suffix_spans",
+        lambda _text: ((0, len(text)),),
+    )
+
+    ranges = normalize_module._sentence_ranges(
+        text,
+        "en_US",
+        max_sentence_chars=10,
+    )
+
+    assert ranges == [(0, 10), (10, 20), (20, 30), (30, 40)]
+    assert all(end - start <= 10 for start, end in ranges)
 
 
 def test_document_input_is_validated_once(monkeypatch):
@@ -695,44 +738,56 @@ def test_document_input_is_validated_once(monkeypatch):
     assert len(calls) == 1
 
 
-def test_sentence_range_protection_advances_through_acronym_spans_once(monkeypatch):
+def test_sentence_range_protection_is_passed_to_one_upstream_span_pass(monkeypatch):
     import importlib
 
     normalize_module = importlib.import_module("frend.normalize")
-    sentence_count = 100
-    sentence_length = 10
-    text = "x" * (sentence_count * sentence_length)
-    spans = [
-        {
-            "text": text[start : start + sentence_length],
-            "start": start,
-            "end": start + sentence_length,
-        }
-        for start in range(0, len(text), sentence_length)
-    ]
-    protected = tuple(
-        (start - 2, start + 2) for start in range(sentence_length, len(text), sentence_length)
-    )
+    calls = []
 
-    class CountingSpans:
-        def __init__(self, values):
-            self.values = values
-            self.accesses = 0
+    class Override:
+        def __init__(self, locale, **kwargs):
+            calls.append((locale, kwargs))
 
-        def __len__(self):
-            return len(self.values)
+        def spans(self, text, *, protected):
+            calls.append((text, tuple(protected)))
+            return [{"text": text, "start": 0, "end": len(text)}]
 
-        def __getitem__(self, index):
-            self.accesses += 1
-            return self.values[index]
+    normalize_module._sentence_override.cache_clear()
+    monkeypatch.setattr(normalize_module, "SentenceOverride", Override)
+    monkeypatch.setattr(normalize_module, "_dotted_acronym_suffix_spans", lambda _text: ((1, 4),))
+    monkeypatch.setattr(normalize_module, "_uppercase_abbreviation_period_spans", lambda *_args: ())
+    monkeypatch.setattr(normalize_module, "_period_ending_abbreviation_ends", lambda *_args: ())
 
-    counting = CountingSpans(protected)
+    class EmptyDetector:
+        def detect(self, _text):
+            return []
 
-    monkeypatch.setattr(normalize_module, "break_sentence_spans", lambda *_args: spans)
-    monkeypatch.setattr(normalize_module, "_dotted_acronym_suffix_spans", lambda _text: counting)
+    monkeypatch.setattr(normalize_module, "_date_detector_gang", lambda *_args: EmptyDetector())
 
-    assert normalize_module._sentence_ranges(text, "en_US") == [(0, len(text))]
-    assert counting.accesses <= 5 * sentence_count
+    try:
+        assert normalize_module._sentence_ranges("hello", "en_US") == [(0, 5)]
+        assert calls[0] == (
+            "en_US",
+            {"base": None, "max_sentence_chars": 1024, "reflow": "none"},
+        )
+        assert calls[1] == (
+            "hello",
+            ({"start": 1, "end": 4, "type": "dotted-acronym"},),
+        )
+    finally:
+        normalize_module._sentence_override.cache_clear()
+
+
+def test_normalize_skips_public_detection_snapshot_for_fresh_private_detections(monkeypatch):
+    import frend.lattice as lattice_module
+
+    def unexpected_snapshot(_detection):
+        raise AssertionError("normalize must not snapshot its private detections")
+
+    monkeypatch.setattr(lattice_module, "_snapshot", unexpected_snapshot)
+    monkeypatch.setattr(lattice_module, "_snapshot_spelled_token", unexpected_snapshot)
+
+    assert frend.normalize("The total is 25 kg.") == " the   total   is   twenty-five kilograms "
 
 
 def test_text_mode_skips_offset_record_construction(monkeypatch):

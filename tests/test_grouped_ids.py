@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
 import re
-import sys
 from copy import deepcopy
 from pathlib import Path
 
 import pytest
+from conftest import assert_count_map, load_tool_module
 from icukit.detectors import detect
 
 from frend import grouped_ids as grouped_module
@@ -242,7 +241,7 @@ def _assert_grouped_prior_is_aggregate(document):
         assert all(class_pattern.fullmatch(key) for key in row["classes"])
         assert set(row["readings"]) == {"grouped", "other"}
         for counts in row.values():
-            assert all(type(count) is int for count in counts.values())
+            assert_count_map(counts, positive=False)
 
 
 def test_shipped_table_contains_only_allowlisted_aggregate_fields():
@@ -265,13 +264,7 @@ def test_privacy_guard_rejects_unallowlisted_string_fields(path):
 
 def test_builder_counts_classes_and_grouped_readings_by_shape(tmp_path):
     tools = Path(__file__).resolve().parents[1] / "tools"
-    if str(tools) not in sys.path:
-        sys.path.insert(0, str(tools))
-    spec = importlib.util.spec_from_file_location(
-        "build_grouped_id_priors", tools / "build_grouped_id_priors.py"
-    )
-    builder = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(builder)
+    builder = load_tool_module("build_grouped_id_priors", tools / "build_grouped_id_priors.py")
     shard = tmp_path / "output-00000-of-00001"
     grouped = "one sil eight five four four five sil one five seven\n"
     shard.write_text(
