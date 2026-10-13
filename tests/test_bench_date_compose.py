@@ -31,7 +31,7 @@ def test_latency_manifest_has_exactly_the_eleven_gate_locales():
     import json
 
     document = json.loads(bench.INPUTS.read_text(encoding="utf-8"))
-    assert set(document["locales"]) == {*bench.GENERATED_DATE_LOCALES, "en_US"}
+    assert set(document["locales"]) == {*bench.LOCALES, "en_US"}
 
 
 def test_unseen_cache_probe_runs_complete_generation(monkeypatch):
@@ -44,6 +44,6 @@ def test_unseen_cache_probe_runs_complete_generation(monkeypatch):
     monkeypatch.setattr(bench, "generate_date_alternatives", record)
     generated = bench._exercise_unseen_dates(2)
 
-    assert generated == 2 * len(bench.GENERATED_DATE_LOCALES)
+    assert generated == 2 * len(bench.LOCALES)
     assert len(calls) == generated
-    assert {locale for _value, _detection, locale in calls} == set(bench.GENERATED_DATE_LOCALES)
+    assert {locale for _value, _detection, locale in calls} == set(bench.LOCALES)

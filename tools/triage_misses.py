@@ -8,11 +8,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.metadata
 import json
 import os
 import random
-import subprocess
 import sys
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
@@ -46,6 +44,7 @@ from evaluate_google_tn import (  # noqa: E402
     _joined,
     _validate_evaluation_profile,
 )
+from evaluation_metadata import distribution_version, repository_head  # noqa: E402
 from seen_strata import (  # noqa: E402
     SENTENCE_RULE,
     SENTENCE_STRATA,
@@ -864,23 +863,6 @@ def _per_sentence_strata(result: dict) -> dict[str, object]:
     }
 
 
-def _head() -> str:
-    return subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=_REPO,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-
-
-def _version(distribution: str) -> str:
-    try:
-        return importlib.metadata.version(distribution)
-    except importlib.metadata.PackageNotFoundError:
-        return "unknown"
-
-
 def _write_json(path: Path, payload: dict[str, object]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -1002,11 +984,11 @@ def main(argv: list[str] | None = None) -> int:
     receipt_path = args.output_dir / "receipt.json"
     receipt = {
         "schema_version": 1,
-        "head": _head(),
+        "head": repository_head(_REPO),
         "versions": {
-            "frend": _version("frend"),
-            "icukit": _version("icukit"),
-            "tiergraph": _version("tiergraph"),
+            "frend": distribution_version("frend"),
+            "icukit": distribution_version("icukit"),
+            "tiergraph": distribution_version("tiergraph"),
         },
         "sample": {
             "seed": args.seed,

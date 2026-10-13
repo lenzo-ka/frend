@@ -1,0 +1,44 @@
+{
+  "families": {
+    "date": {
+      "inputs": 7320,
+      "readings": 10148,
+      "sha256": "44fea7745d26c44949bdbce7e5e1958972c5f0d90c6abea812700d04f243b564"
+    },
+    "fraction": {
+      "inputs": 166020,
+      "readings": 204453,
+      "sha256": "83ef469c2f55d5da36727d6e67242ead4ff6a15a607803c36dae9c94673f36cf"
+    },
+    "money": {
+      "inputs": 65,
+      "readings": 153,
+      "sha256": "46c02a3d40b2ddb9d9dd0c86a69ccccfed83c7ff106d3f34b55fecb4ceb109de"
+    },
+    "time": {
+      "scenario_counts": {
+        "day_period": 70800,
+        "iana_zone": 1,
+        "long_zone": 1,
+        "refusal_incongruent_period": 1,
+        "refusal_non_german_uhr": 1,
+        "refusal_uhr_seconds": 1,
+        "short_zone": 1,
+        "written_uhr_nonzero": 1,
+        "written_uhr_zero": 1
+      },
+      "inputs": 143048,
+      "readings": 212190,
+      "sha256": "bcfe503fb3fcdc90e22d663a0c645759588fc0a1747be2c88942e459e6a8413a"
+    }
+  },
+  "row_fields": [
+    "text",
+    "provenance",
+    "weight",
+    "group",
+    "role",
+    "prior_provenance"
+  ],
+  "schema": 2
+}

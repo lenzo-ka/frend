@@ -97,7 +97,13 @@
    "output-00088-of-00100",
    "output-00089-of-00100"
   ],
-  "selection": "feature enabled with at least 3 ELECTRONIC rows and a strict ELECTRONIC majority over all corpus rows",
+  "policy": {
+   "id": "electronic-span-feature-majority",
+   "version": 1,
+   "minimum_support": 3,
+   "label": "ELECTRONIC",
+   "strict_majority": true
+  },
   "privacy": "aggregate feature and corpus-class counts only; no corpus text"
  },
  "features": {
@@ -113,7 +119,7 @@
   },
   "path-document": {
    "classes": {
-    "ELECTRONIC": 1785
+    "ELECTRONIC": 1784
    }
   },
   "scheme-relative-url": {

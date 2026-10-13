@@ -54,7 +54,7 @@ import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
-from functools import cache, lru_cache
+from functools import lru_cache
 from typing import Any
 
 import icu
@@ -200,26 +200,29 @@ def class_windows(
 # Words around a span (F, C): ICU word-break segments that are not white space.
 
 
-@cache
+@lru_cache(maxsize=LOCALE_CACHE)
 def _word_breaker(locale: str) -> icu.BreakIterator:
     return icu.BreakIterator.createWordInstance(icu.Locale(locale))
 
 
 def _segments(text: str, locale: str) -> list[tuple[int, int]]:
-    """The word-break segments of ``text`` that are not white space, as code-point
-    offsets (ICU's boundaries are UTF-16 offsets, mapped back here)."""
+    """Non-whitespace ICU word spans expressed as code-point offsets."""
     breaker = _word_breaker(locale)
     breaker.setText(text)
     boundaries = [breaker.first(), *breaker]
-    if any(ord(char) > 0xFFFF for char in text):
+    if any(ord(character) > 0xFFFF for character in text):
         to_code_point = {}
         unit = 0
-        for index, char in enumerate(text):
+        for index, character in enumerate(text):
             to_code_point[unit] = index
-            unit += 2 if ord(char) > 0xFFFF else 1
+            unit += 2 if ord(character) > 0xFFFF else 1
         to_code_point[unit] = len(text)
-        boundaries = [to_code_point[b] for b in boundaries]
-    return [(a, b) for a, b in zip(boundaries, boundaries[1:], strict=False) if text[a:b].strip()]
+        boundaries = [to_code_point[boundary] for boundary in boundaries]
+    return [
+        (start, end)
+        for start, end in zip(boundaries, boundaries[1:], strict=False)
+        if text[start:end].strip()
+    ]
 
 
 def neighbor_words(

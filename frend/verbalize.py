@@ -54,6 +54,8 @@ from frend.electronic import (
     separator_names,
     tld_positions,
 )
+from frend.external_profile import verified_profile_key
+from frend.generated_rule_locales import locales_for
 from frend.grouped_ids import GroupedDigitsValue
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
@@ -75,6 +77,10 @@ from frend.letters import (
     spelled_token_rule,
     spellout_dictionary_entry,
     split_acronym_surface,
+)
+from frend.lexical_boundaries import (
+    letter_bearing_hyphenated_alnum_before,
+    separator_classes,
 )
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.number_priors import load_number_priors
@@ -1519,17 +1525,13 @@ def _spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
     """Keep English legacy-first; route supported non-English clocks to PR7 rules."""
-    from frend.time_rules import (
-        _WRITTEN_UHR_MARKER,
-        GENERATED_TIME_LOCALES,
-        generate_time_alternatives,
-    )
+    from frend.time_rules import _WRITTEN_UHR_MARKER, generate_time_alternatives
 
     if locale.startswith("en") or (
         locale == "de_DE" and detection.get(_WRITTEN_UHR_MARKER) is not True
     ):
         alternatives = _legacy_spoken_time(value, detection, locale)
-    elif locale in GENERATED_TIME_LOCALES:
+    elif locale in locales_for("time"):
         alternatives = generate_time_alternatives(value, detection, locale)
     else:
         alternatives = _legacy_spoken_time(value, detection, locale)
@@ -1962,9 +1964,6 @@ def _google_tn_britishisms(*, locale: str = "en_US"):
     return britishisms
 
 
-_PROFILE_FILE_KEYS: dict[str, tuple[tuple[int, int, int, int, int], tuple[str, int, int, str]]] = {}
-
-
 def _missing_profile(path: Path) -> FileNotFoundError:
     return FileNotFoundError(
         f"{GOOGLE_TN!r} profile data is missing at {path}; build it from your licensed "
@@ -1974,32 +1973,13 @@ def _missing_profile(path: Path) -> FileNotFoundError:
 
 def _profile_file_key(path: Path) -> tuple[str, int, int, str]:
     """Resolved path, mtime, size and digest, refreshed on filesystem replacement."""
-    resolved = path.expanduser().resolve()
-    try:
-        stat = resolved.stat()
-    except FileNotFoundError:
-        raise _missing_profile(resolved) from None
-    freshness = (stat.st_dev, stat.st_ino, stat.st_ctime_ns, stat.st_mtime_ns, stat.st_size)
-    cached = _PROFILE_FILE_KEYS.get(str(resolved))
-    if cached is not None and cached[0] == freshness:
-        return cached[1]
-    try:
-        content = resolved.read_bytes()
-        after = resolved.stat()
-    except FileNotFoundError:
-        raise _missing_profile(resolved) from None
-    after_freshness = (
-        after.st_dev,
-        after.st_ino,
-        after.st_ctime_ns,
-        after.st_mtime_ns,
-        after.st_size,
+    return verified_profile_key(
+        path,
+        missing=_missing_profile,
+        changed=lambda resolved: ValueError(
+            f"{GOOGLE_TN!r} profile data changed while being read at {resolved}"
+        ),
     )
-    if freshness != after_freshness:
-        raise ValueError(f"{GOOGLE_TN!r} profile data changed while being read at {resolved}")
-    key = (str(resolved), stat.st_mtime_ns, stat.st_size, hashlib.sha256(content).hexdigest())
-    _PROFILE_FILE_KEYS[str(resolved)] = (freshness, key)
-    return key
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
@@ -2505,19 +2485,7 @@ def _spoken_date(
     detected_value = detection.get("value") if isinstance(detection, Mapping) else None
     if (
         not locale.startswith("en")
-        and locale
-        in {
-            "es_MX",
-            "es_ES",
-            "fr_FR",
-            "de_DE",
-            "pt_BR",
-            "pt_PT",
-            "it_IT",
-            "zh_CN",
-            "ko_KR",
-            "ja_JP",
-        }
+        and locale in locales_for("date")
         and set(fields) in ({"M", "d"}, {"y", "M", "d"})
         and isinstance(detected_value, DateTimeValue)
         and all(dict(detected_value.fields).get(key) == item for key, item in value.fields)
@@ -2647,17 +2615,17 @@ def _spoken_number(
     if not preserve_negative_zero and not decimal:
         decimal = abs(decimal)
     if type_.startswith("fraction:") or type_.startswith("number:fraction"):
-        from frend.fraction_rules import GENERATED_FRACTION_LOCALES, generate_fraction_alternatives
+        from frend.fraction_rules import generate_fraction_alternatives
 
-        if locale in GENERATED_FRACTION_LOCALES:
+        if locale in locales_for("fraction"):
             return generate_fraction_alternatives(detection, locale)
         return _spoken_fraction(detection, locale, negative=decimal.is_signed())
     compact = _capture(detection, "compact")
     if compact is not None:
         if value.currency is not None and locale != "en_US":
-            from frend.money_rules import GENERATED_MONEY_LOCALES, generate_money_alternatives
+            from frend.money_rules import generate_money_alternatives
 
-            if locale in GENERATED_MONEY_LOCALES:
+            if locale in locales_for("money"):
                 try:
                     return generate_money_alternatives(value, detection, locale)
                 except NotImplementedError:
@@ -2678,9 +2646,9 @@ def _spoken_number(
         if value.currency is None:
             raise NotImplementedError("currency reading has no captured ISO currency code")
         if locale != "en_US":
-            from frend.money_rules import GENERATED_MONEY_LOCALES, generate_money_alternatives
+            from frend.money_rules import generate_money_alternatives
 
-            if locale in GENERATED_MONEY_LOCALES:
+            if locale in locales_for("money"):
                 try:
                     return generate_money_alternatives(value, detection, locale)
                 except NotImplementedError:
@@ -2709,9 +2677,9 @@ def _spoken_number(
             digits = "".join(ch for ch in str(integer.text) if ch.isdigit())
             sign = "-" if decimal.is_signed() else ""
             amount = Decimal(f"{sign}{digits or '0'}.{fraction.text}")
-        from frend.fraction_rules import GENERATED_FRACTION_LOCALES, generate_percent_alternatives
+        from frend.fraction_rules import generate_percent_alternatives
 
-        if locale in GENERATED_FRACTION_LOCALES:
+        if locale in locales_for("fraction"):
             return generate_percent_alternatives(amount, detection, locale)
         suffix = _percent_name(locale)
         return tuple(
@@ -3512,9 +3480,12 @@ def range_separators(locale: str) -> frozenset[str]:
 def _range_separators(locale: str, lexical, lexical_for) -> frozenset[str]:
     if _range_connector(locale, lexical, lexical_for) is None:
         return frozenset()
-    written = set((lexical("range.separator", locale) or {}).get("range", ()))
-    cldr = cldr_range_separator(locale)
-    return frozenset(written | ({cldr} if cldr else set()))
+    connector = _range_connector(locale, lexical, lexical_for)
+    connectors = {} if connector is None else {"range": (connector,)}
+    written = lexical("range.separator", locale) or {}
+    return separator_classes(connectors, written, cldr_range_separator(locale)).get(
+        "range", frozenset()
+    )
 
 
 # The digit groups a separator joins (``frend.ranges.digit_groups``, R3's chain).
@@ -3528,22 +3499,6 @@ def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) 
     ("555-1212")."""
     groups = _digit_groups(text, start, end, separators)
     return len(groups) >= 3 or groups == [3, 4]
-
-
-def _letter_bearing_hyphenated_alnum_before(text: str, end: int) -> bool:
-    """Whether the joined hyphenated alphanumeric run before ``end`` has a letter."""
-    cursor = end
-    while True:
-        group_end = cursor
-        while cursor > 0 and text[cursor - 1].isalnum():
-            cursor -= 1
-        if cursor == group_end:
-            return False
-        if any(char.isalpha() for char in text[cursor:group_end]):
-            return True
-        if cursor == 0 or text[cursor - 1] != "-":
-            return False
-        cursor -= 1
 
 
 def _range_to(
@@ -3572,7 +3527,7 @@ def _range_to(
         return None
     if not between_numbers(context.text, a, b):
         return None
-    if _letter_bearing_hyphenated_alnum_before(context.text, a):
+    if letter_bearing_hyphenated_alnum_before(context.text, a):
         return None
     if _is_identifier(context.text, a, b, separators):
         return None

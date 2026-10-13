@@ -13,8 +13,8 @@ from pathlib import Path
 
 from icukit.detectors import NumberValue
 
+from frend.generated_rule_locales import locales_for
 from frend.money_rules import (
-    GENERATED_MONEY_LOCALES,
     generate_money_alternatives,
     load_money_rule_bundle,
 )
@@ -22,6 +22,7 @@ from frend.normalize import _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
 INPUTS = Path(__file__).with_name("money_latency_inputs.json")
+LOCALES = locales_for("money")
 
 
 def percentile(values: list[int], fraction: float) -> int:
@@ -76,7 +77,7 @@ def benchmark(out: Path, iterations: int, repeat: int) -> dict:
     environment = dict(os.environ)
     environment.update(PYTHONPATH=str(REPO), PYTHONDONTWRITEBYTECODE="1")
     for run in range(1, repeat + 1):
-        for locale in GENERATED_MONEY_LOCALES:
+        for locale in LOCALES:
             completed = subprocess.run(
                 [
                     sys.executable,
@@ -99,7 +100,7 @@ def benchmark(out: Path, iterations: int, repeat: int) -> dict:
     summary = {}
     failures = []
     limits = {"cold_ns": 10_000_000, "p50_ns": 300_000, "p95_ns": 1_000_000}
-    for locale in GENERATED_MONEY_LOCALES:
+    for locale in LOCALES:
         selected = [row for row in rows if row["locale"] == locale]
         summary[locale] = {
             name: int(statistics.median(row[name] for row in selected)) for name in limits
@@ -133,7 +134,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--iterations", type=int, default=1000)
     parser.add_argument("--repeat", type=int, default=5)
-    parser.add_argument("--child-locale", choices=GENERATED_MONEY_LOCALES)
+    parser.add_argument("--child-locale", choices=LOCALES)
     args = parser.parse_args()
     if args.child_locale:
         print(json.dumps(_one(args.child_locale, args.iterations), ensure_ascii=False))

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+from frend.external_profile import verified_profile_key
 from frend.locale_data import LOCALE_CACHE, canonical_locale
 from frend.profiles import GOOGLE_TN, google_tn_britishisms_path
 
@@ -79,9 +80,6 @@ class BritishismTable:
     rules: dict[str, dict[str, frozenset[str]]]
 
 
-_FILE_KEYS: dict[str, tuple[tuple[int, int, int, int, int], tuple[str, int, int, str]]] = {}
-
-
 def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
     for key, value in pairs:
@@ -99,29 +97,13 @@ def _missing(path: Path) -> FileNotFoundError:
 
 
 def _file_key(path: Path) -> tuple[str, int, int, str]:
-    resolved = path.expanduser().resolve()
-    try:
-        stat = resolved.stat()
-    except FileNotFoundError:
-        raise _missing(resolved) from None
-    freshness = (stat.st_dev, stat.st_ino, stat.st_ctime_ns, stat.st_mtime_ns, stat.st_size)
-    cached = _FILE_KEYS.get(str(resolved))
-    if cached is not None and cached[0] == freshness:
-        return cached[1]
-    content = resolved.read_bytes()
-    after = resolved.stat()
-    after_freshness = (
-        after.st_dev,
-        after.st_ino,
-        after.st_ctime_ns,
-        after.st_mtime_ns,
-        after.st_size,
+    return verified_profile_key(
+        path,
+        missing=_missing,
+        changed=lambda _path: ValueError(
+            "Google-TN PLAIN rewrite profile data changed while being read"
+        ),
     )
-    if freshness != after_freshness:
-        raise ValueError("Google-TN PLAIN rewrite profile data changed while being read")
-    key = (str(resolved), stat.st_mtime_ns, stat.st_size, hashlib.sha256(content).hexdigest())
-    _FILE_KEYS[str(resolved)] = (freshness, key)
-    return key
 
 
 def load_britishisms(*, locale: str = "en_US") -> BritishismTable:

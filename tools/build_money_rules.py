@@ -26,12 +26,13 @@ from tiergraph import (
     recognize,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 
 REPO = Path(__file__).resolve().parents[1]
 RECORDS = REPO / "frend" / "data" / "normalization"
 DATA = REPO / "frend" / "data" / "money_rules"
-LOCALES = ("es_MX", "fr_FR", "pt_BR", "it_IT", "ko_KR")
+LOCALES = locales_for("money")
 SHAPE_SYMBOLS = {
     "major": ("AMOUNT", "CURRENCY"),
     "major_minor": ("MAJOR", "CURRENCY", "MINOR", "MINOR_CURRENCY"),
@@ -195,13 +196,9 @@ def build_bundle(locale: str) -> dict[str, object]:
     document = json.loads(path.read_text("utf-8"))
     validate_bundle(document, receipt_index=_receipt_index(document))
     declaration = compile_grammar(locale, document)
-    projection = {
-        "grammar": declaration.to_data(),
-        "recipes": compile_recipes(declaration, document),
-        "records": document["resources"],
-    }
+    projection = {"recipes": compile_recipes(declaration, document)}
     return {
-        "schema": 2,
+        "schema": 3,
         "provenance": {"source": "frend/curated"},
         "locale": locale,
         "icu_version": icu.ICU_VERSION,

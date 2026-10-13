@@ -97,7 +97,13 @@
    "output-00088-of-00100",
    "output-00089-of-00100"
   ],
-  "selection": "exact ASCII digit-group shape with at least 3 grouped-reading rows and a strict grouped-reading majority over all corpus rows",
+  "policy": {
+   "id": "grouped-id-reading-majority",
+   "version": 1,
+   "minimum_support": 3,
+   "label": "grouped",
+   "strict_majority": true
+  },
   "reading": "one ICU digit name per written digit, locale lexical o for zero, and literal sil between written groups"
  },
  "shapes": {

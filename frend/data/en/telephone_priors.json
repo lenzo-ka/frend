@@ -97,8 +97,29 @@
    "output-00088-of-00100",
    "output-00089-of-00100"
   ],
-  "selection": "phone-shaped NANP digit groups; at least 3 TELEPHONE rows and a strict TELEPHONE majority among all corpus classes for the exact shape",
-  "left_context": "surface-free character-class shape of the immediately preceding corpus token, counted by that token's gold class; with at least 3 observations, veto typed (not PLAIN/PUNCT) non-TELEPHONE strict-majority contexts for selected shapes",
+  "shape_policy": {
+   "id": "telephone-shape-majority",
+   "version": 1,
+   "minimum_support": 3,
+   "label": "TELEPHONE",
+   "strict_majority": true
+  },
+  "reading_policy": {
+   "id": "telephone-reading-support",
+   "version": 1,
+   "minimum_support": 3
+  },
+  "context_policy": {
+   "id": "telephone-left-context-veto",
+   "version": 1,
+   "minimum_observations": 3,
+   "strict_majority": true,
+   "excluded_predictions": [
+    "PLAIN",
+    "PUNCT",
+    "TELEPHONE"
+   ]
+  },
   "reading": "raw counts of whole grouped readings classified against ICU cardinal and digit spellout, with zero/o from the locale lexical table"
  },
  "left_contexts": {

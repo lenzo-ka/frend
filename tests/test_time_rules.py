@@ -7,17 +7,19 @@ from pathlib import Path
 
 import pytest
 from icukit.detectors import Capture, DateTimeValue
-from tiergraph import GrammarHole, grammar_loads
+from tiergraph import GrammarHole
 
 from frend import normalize, resolve_lattice, verbalize_edge
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 from frend.runtime import prewarm
 from frend.time_rules import (
-    GENERATED_TIME_LOCALES,
     generate_time_alternatives,
     load_time_rule_bundle,
     time_rule_events,
 )
+
+GENERATED_TIME_LOCALES = locales_for("time")
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -118,10 +120,12 @@ def test_public_lattice_recognition_composes_german_written_uhr():
 
 @pytest.mark.parametrize("locale", GENERATED_TIME_LOCALES)
 def test_generated_declaration_has_six_exact_unique_hole_paths(locale):
-    document = json.loads(
-        (REPO / "frend/data/time_rules" / f"{locale}.json").read_text(encoding="utf-8")
+    import tools.build_time_rules as builder
+
+    source = json.loads(
+        (REPO / "frend/data/normalization" / f"time_{locale}.json").read_text(encoding="utf-8")
     )
-    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
+    declaration = builder.compile_grammar(locale, source)
     rules = [rule for rule in declaration.rules if rule.left == declaration.start]
 
     expected_shapes = {
@@ -138,14 +142,19 @@ def test_generated_declaration_has_six_exact_unique_hole_paths(locale):
         for rule in rules
     } == expected_shapes
     for rule in rules:
-        source = [
+        source_holes = [
             item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
         ]
         target = [
             item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
         ]
-        assert len(source) == len(set(source))
-        assert sorted(source) == sorted(target)
+        assert len(source_holes) == len(set(source_holes))
+        assert sorted(source_holes) == sorted(target)
+
+    runtime = json.loads(
+        (REPO / "frend/data/time_rules" / f"{locale}.json").read_text(encoding="utf-8")
+    )
+    assert runtime["recipes"] == builder.compile_recipes(declaration, source)
 
 
 @pytest.mark.parametrize(
@@ -430,6 +439,23 @@ def test_runtime_loads_only_the_requested_locale_and_never_lowers_or_generates()
     assert after["generate"] == before["generate"] == 0
 
 
+@pytest.mark.parametrize("duplicate", ["grammar", "records"])
+def test_runtime_rejects_embedded_duplicate_bundle_forms(tmp_path, monkeypatch, duplicate):
+    import frend.time_rules as rules
+
+    locale = "es_ES"
+    runtime_dir = tmp_path / "data/time_rules"
+    runtime_dir.mkdir(parents=True)
+    runtime = json.loads((REPO / "frend/data/time_rules" / f"{locale}.json").read_text("utf-8"))
+    runtime[duplicate] = []
+    (runtime_dir / f"{locale}.json").write_text(json.dumps(runtime), encoding="utf-8")
+    monkeypatch.setattr(rules, "files", lambda _package: tmp_path)
+    load_time_rule_bundle.cache_clear()
+    with pytest.raises(ValueError, match="identity mismatch"):
+        load_time_rule_bundle(locale)
+    load_time_rule_bundle.cache_clear()
+
+
 def test_all_typed_records_validate_and_runtime_projection_keeps_no_source_text():
     import tools.build_time_rules as builder
 
@@ -439,10 +465,23 @@ def test_all_typed_records_validate_and_runtime_projection_keeps_no_source_text(
         )
         validate_bundle(document, receipt_index=builder._receipt_index(document))
         runtime = json.loads((REPO / "frend/data/time_rules" / f"{locale}.json").read_text("utf-8"))
+        assert set(runtime) == {
+            "schema",
+            "provenance",
+            "locale",
+            "icu_version",
+            "normalization_sha256",
+            "projection_sha256",
+            "recipes",
+            "periods",
+        }
         lowered = json.dumps(runtime, ensure_ascii=False)
         assert "quoted_passage" not in lowered
         assert '"receipt"' not in lowered
         assert "source_text" not in lowered
+        assert dict(load_time_rule_bundle(locale).records) == {
+            item["id"]: item for item in document["resources"]
+        }
 
 
 def test_time_bundles_are_lazy_by_locale_and_prewarm_loads_each_once():

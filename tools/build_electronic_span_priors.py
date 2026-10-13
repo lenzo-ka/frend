@@ -21,6 +21,7 @@ from corpus_builder import (  # noqa: E402
     training_inputs,
 )
 
+from frend.artifact_policy import ELECTRONIC_SPAN_POLICY, policy_document  # noqa: E402
 from frend.electronic import _span_features  # noqa: E402
 
 DEFAULT_OUT = _REPO / "frend" / "data" / "en" / "electronic_span_priors.json"
@@ -62,10 +63,7 @@ def build_document(corpus_dir: Path, jobs: int = 1, *, inputs=None) -> dict:
         "corpus": source.corpus,
         "locale": "en",
         "shards": source.shards,
-        "selection": (
-            "feature enabled with at least 3 ELECTRONIC rows and a strict ELECTRONIC "
-            "majority over all corpus rows"
-        ),
+        "policy": policy_document(ELECTRONIC_SPAN_POLICY),
         "privacy": "aggregate feature and corpus-class counts only; no corpus text",
     }
     return {

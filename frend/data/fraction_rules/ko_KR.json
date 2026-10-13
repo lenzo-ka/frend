@@ -48,27 +48,5 @@
       }
     ]
   },
-  "records": [
-    {
-      "derived_from": [
-        "nikl/online-qna#ko-fractions"
-      ],
-      "forms": {
-        "default": "cardinal"
-      },
-      "id": "denominator-strategy",
-      "kind": "fraction-denominator-strategy"
-    },
-    {
-      "derived_from": [
-        "nikl/online-qna#ko-wa-gwa"
-      ],
-      "forms": {
-        "default": "korean-wa-gwa"
-      },
-      "id": "mixed-joiner-strategy",
-      "kind": "fraction-mixed-joiner"
-    }
-  ],
-  "schema": 2
+  "schema": 3
 }
