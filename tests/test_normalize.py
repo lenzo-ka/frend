@@ -287,6 +287,41 @@ def _assert_alignment_tiles(source: str, result: NormalizedText):
 
 
 @pytest.mark.parametrize(
+    ("source", "electronic", "reader", "spoken"),
+    [
+        (
+            "Visit https://example.com today.",
+            "https://example.com",
+            "electronic:url",
+            " visit   h t t p s colon slash slash example dot com   today .",
+        ),
+        (
+            "Email me at user@example.com please.",
+            "user@example.com",
+            "electronic:email",
+            " email   me   at   user at example dot com   please .",
+        ),
+    ],
+)
+def test_public_normalize_composes_electronic_spans_with_surrounding_prose(
+    source, electronic, reader, spoken
+):
+    result = frend.normalize(source, locale="en_US", offsets=True)
+
+    assert isinstance(result, NormalizedText)
+    assert result.text == spoken
+    _assert_alignment_tiles(source, result)
+    electronic_units = [
+        unit
+        for unit in result.units
+        if unit.reader is not None and unit.reader.startswith("electronic:")
+    ]
+    assert [(unit.reader, source[slice(*unit.source_span)]) for unit in electronic_units] == [
+        (reader, electronic)
+    ]
+
+
+@pytest.mark.parametrize(
     ("source", "without_boundary_whitespace"),
     [
         ("\nPlain text.", "Plain text."),
