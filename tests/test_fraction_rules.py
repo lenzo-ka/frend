@@ -19,6 +19,7 @@ from frend.fraction_rules import (
     render_fraction_tokens,
 )
 from frend.generated_rule_locales import locales_for
+from frend.normalization_components import load_normalization_bundle
 from frend.normalization_schema import validate_bundle
 from frend.normalize import _reading_detectors
 
@@ -233,9 +234,7 @@ def test_all_bundles_validate_closed_non_ldc_ancestry_and_field_rules():
     for locale in GENERATED_FRACTION_LOCALES:
         bundle = load_fraction_rule_bundle(locale)
         assert bundle.locale == locale
-        document = json.loads(
-            (REPO / "frend/data/normalization" / f"{locale}.json").read_text("utf-8")
-        )
+        document = load_normalization_bundle(locale)
         assert "ldc" not in json.dumps(document).casefold()
         validate_bundle(document, receipt_index=builder._receipt_index(document))
 

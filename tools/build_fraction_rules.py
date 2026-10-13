@@ -26,6 +26,7 @@ from tiergraph import (
 )
 
 from frend.generated_rule_locales import locales_for
+from frend.normalization_components import expand_normalization_bundle, load_normalization_bundle
 from frend.normalization_schema import validate_bundle
 
 REPO = Path(__file__).resolve().parents[1]
@@ -42,6 +43,7 @@ def _canonical_bytes(document: object) -> bytes:
 
 
 def _receipt_index(document: Mapping[str, object]) -> dict[str, Mapping[str, object]]:
+    document = expand_normalization_bundle(document)
     result = {}
     for source in document["sources"]:
         reference = source["receipt"]
@@ -156,8 +158,7 @@ def compile_recipes(declaration: GrammarDeclaration) -> dict[str, list[dict[str,
 
 
 def build_bundle(locale: str) -> dict[str, object]:
-    path = RECORDS / f"{locale}.json"
-    document = json.loads(path.read_text("utf-8"))
+    document = load_normalization_bundle(locale)
     validate_bundle(document, receipt_index=_receipt_index(document))
     declaration = compile_grammar(locale, document)
     return {
