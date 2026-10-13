@@ -148,6 +148,38 @@ def test_hyphenated_serial_does_not_replace_an_ordinary_hyphenated_word(written)
     assert all(unit.reader != "identifier:serial" for unit in normalized.units)
 
 
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [("X-ray", "x ray"), ("T-shirt", "t shirt"), ("U-turn", "u turn")],
+)
+def test_capital_letter_hyphen_word_reads_as_a_letter_and_word(written, spoken):
+    normalized = normalize(written, offsets=True)
+
+    assert normalized.text.strip() == spoken
+    assert [(unit.source_span, unit.reader) for unit in normalized.units] == [
+        ((0, len(written)), "letters:hyphen-word")
+    ]
+
+
+@pytest.mark.parametrize("written", ["A-b", "A-β", "A-βή"])
+def test_capital_letter_hyphen_word_requires_a_locale_word_suffix(written):
+    detections = [
+        detection
+        for detection in LettersDetector().detect(written)
+        if detection["type"] == "letters:hyphen-word"
+    ]
+
+    assert detections == []
+    assert all(
+        unit.reader != "letters:hyphen-word" for unit in normalize(written, offsets=True).units
+    )
+
+
+@pytest.mark.parametrize(("written", "spoken"), [("F-16", "F sixteen"), ("A-1", "A one")])
+def test_capital_letter_hyphen_number_keeps_its_reading(written, spoken):
+    assert " ".join(normalize(written).split()) == spoken
+
+
 def test_hyphenated_serial_requires_authoritative_locale_letter_names():
     written = "AB-123-CD"
     normalized = normalize(written, locale="fr_FR", offsets=True)

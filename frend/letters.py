@@ -47,6 +47,7 @@ __all__ = [
     "LettersValue",
     "HyphenatedSerialDetector",
     "HyphenatedSerialValue",
+    "LetterHyphenWordValue",
     "capital_script",
     "capitals",
     "cv_pattern",
@@ -76,6 +77,8 @@ _CAPITALS = icu.UnicodeSet("[:Lu:]")
 _CAPITALS.freeze()
 _LETTERS = icu.UnicodeSet("[:L:]")
 _LETTERS.freeze()
+_LOWERCASE = icu.UnicodeSet("[:Ll:]")
+_LOWERCASE.freeze()
 _MARKS = icu.UnicodeSet("[:M:]")
 _MARKS.freeze()
 _NFC = icu.Normalizer2.getNFCInstance()
@@ -95,10 +98,14 @@ def _character_class(unicode_set: icu.UnicodeSet, *, bracket: bool = True) -> st
 
 _LU = _character_class(_CAPITALS)
 _L = _character_class(_LETTERS)
+_LL = _character_class(_LOWERCASE)
 _M = _character_class(_MARKS)
 _MARK_RANGES = _character_class(_MARKS, bracket=False)
 _CAPITAL = f"{_LU}{_M}*"
 _BEFORE = rf"(?<![\w&'’.\-{_MARK_RANGES}])"
+_LETTER_HYPHEN_WORD = re.compile(
+    rf"{_BEFORE}({_CAPITAL})-({_LL}{_M}*(?:{_L}{_M}*)*)(?![\w&'’{_MARK_RANGES}]|-\w)"
+)
 _RUN = re.compile(rf"((?:{_CAPITAL}){{2,}})(s['’]?|['’][sS])?")
 _INITIALS = re.compile(rf"{_BEFORE}((?:{_CAPITAL}\.)+)(s['’]?|['’][sS])?(?![\w'’{_MARK_RANGES}])")
 _INITIAL = re.compile(rf"({_CAPITAL})\.")
@@ -218,6 +225,21 @@ def is_spelled_token(token: str, locale: str = "en_US") -> bool:
     if not 2 <= len(units) <= 6 or token.isupper():
         return False
     if not all(_LETTERS.contains(unit[0]) for unit in units):
+        return False
+    scripts = {
+        icu.Script.getScript(ord(unit[0])).getShortName()
+        for unit in units
+        if icu.Script.getScript(ord(unit[0])).getScriptCode() not in _NEUTRAL_SCRIPTS
+    }
+    return bool(scripts) and scripts <= set(locale_scripts(canonical_locale(locale)))
+
+
+def _is_locale_word_suffix(word: str, locale: str) -> bool:
+    """Whether ``word`` has at least two letters in the locale's writing system."""
+    from frend.symbols import locale_scripts
+
+    units = _letters(_NFC.normalize(word))
+    if len(units) < 2 or not all(_LETTERS.contains(unit[0]) for unit in units):
         return False
     scripts = {
         icu.Script.getScript(ord(unit[0])).getShortName()
@@ -391,6 +413,14 @@ class HyphenatedSerialValue:
     prefix: str
     digits: str
     suffix: str
+
+
+@dataclass(frozen=True)
+class LetterHyphenWordValue:
+    """A capital letter joined by a silent hyphen to an ordinary word."""
+
+    letter: str
+    word: str
 
 
 class HyphenatedSerialDetector:
@@ -635,6 +665,27 @@ class LettersDetector:
     def detect(self, text: str) -> list[dict]:
         detections = []
         occupied: list[tuple[int, int]] = []
+        for match in _LETTER_HYPHEN_WORD.finditer(text):
+            letter, word = match.group(1), match.group(2)
+            if letter_names(letter, self.locale) is None or not _is_locale_word_suffix(
+                word, self.locale
+            ):
+                continue
+            start, end = match.span()
+            detections.append(
+                {
+                    "text": text[start:end],
+                    "start": start,
+                    "end": end,
+                    "type": "letters:hyphen-word",
+                    "value": LetterHyphenWordValue(letter, word),
+                    "captures": (
+                        Capture("letter", *match.span(1), letter, letter, None),
+                        Capture("word", *match.span(2), word, word, None),
+                    ),
+                }
+            )
+            occupied.append((start, end))
         for chain, initials, letters in _initial_chains(text):
             # "S." or a chain of initials ("J.R.R."): each letter, with its marks, and its
             # period, the chain's letters in one script. A suffix makes a dotted chain
