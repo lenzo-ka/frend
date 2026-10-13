@@ -26,6 +26,35 @@ def test_normalize_returns_a_string_by_default():
 
 
 @pytest.mark.parametrize(
+    ("source", "formula", "spoken", "formula_spoken"),
+    [
+        ("Drink H2O daily.", "H2O", " drink   h two o   daily .", " h two o "),
+        ("CO2 levels rose.", "CO2", " c o two   levels   rose .", " c o two "),
+    ],
+)
+def test_simple_ascii_chemical_formulas_keep_their_alphanumeric_run(
+    source, formula, spoken, formula_spoken
+):
+    normalized = frend.normalize(source, locale="en_US", offsets=True)
+
+    assert isinstance(normalized, NormalizedText)
+    assert normalized.text == spoken
+    formula_units = [
+        unit for unit in normalized.units if source[slice(*unit.source_span)] == formula
+    ]
+    assert [
+        (unit.reader, unit.source_span, normalized.text[slice(*unit.output_span)])
+        for unit in formula_units
+    ] == [
+        (
+            "alnum:runs",
+            (source.index(formula), source.index(formula) + len(formula)),
+            formula_spoken,
+        )
+    ]
+
+
+@pytest.mark.parametrize(
     ("canonical", "aliases", "localized_reading"),
     [
         ("en_US", ("en-US", "EN_us"), " one hundred twenty-three "),
