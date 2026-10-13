@@ -671,6 +671,35 @@ def test_bare_degree_range_does_not_invent_a_temperature_scale():
 
 
 @pytest.mark.parametrize(
+    ("source", "written_range", "spoken_range"),
+    [
+        ("Expect 20–25°C.", "20–25°C", "twenty to twenty-five degrees Celsius"),
+        (
+            "The range is -5–-1°C.",
+            "-5–-1°C",
+            "minus five to minus one degree Celsius",
+        ),
+    ],
+)
+def test_public_temperature_ranges_keep_scale_signs_and_endpoint_number(
+    source, written_range, spoken_range
+):
+    normalized = frend.normalize(source, locale="en_US", offsets=True)
+    assert isinstance(normalized, NormalizedText)
+
+    range_units = [unit for unit in normalized.units if unit.reader == "measure:range"]
+    assert len(range_units) == 1
+    (unit,) = range_units
+    start = source.index(written_range)
+    assert unit.source_span == (start, start + len(written_range))
+
+    spoken = normalized.text[slice(*unit.output_span)].strip()
+    assert spoken == spoken_range
+    assert spoken.endswith("Celsius")
+    assert spoken.count("minus") == written_range.count("-")
+
+
+@pytest.mark.parametrize(
     ("source", "spoken"),
     [
         ("45°N", " forty-five degrees north "),
