@@ -14,17 +14,11 @@ from itertools import product
 from types import MappingProxyType
 
 import icu
-from tiergraph import (
-    GrammarDeclaration,
-    GrammarHole,
-    GrammarInput,
-    GrammarInputToken,
-    GrammarTerminal,
-    Realization,
-)
+from tiergraph import GrammarInput, GrammarInputToken, Realization
 
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
+from frend.normalization_components import load_runtime_records
 
 _LOCALES = locales_for("fraction")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
@@ -47,70 +41,6 @@ class FractionRuleRecipe:
     provenance: tuple[str, ...]
 
 
-def _validate_holes(declaration: GrammarDeclaration) -> None:
-    observed: set[tuple[str, ...]] = set()
-    for rule in declaration.rules:
-        if rule.left != declaration.start:
-            continue
-        source = tuple(
-            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
-        )
-        target = tuple(
-            item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
-        )
-        if len(source) != len(set(source)) or sorted(source) != sorted(target):
-            raise ValueError("fraction grammar must consume and emit every field hole exactly once")
-        observed.add(source)
-    expected = {
-        ("SIGN", "NUM", "DEN"),
-        ("SIGN", "WHOLE", "NUM", "DEN"),
-        ("SIGN", "AMOUNT"),
-    }
-    if observed != expected:
-        raise ValueError(f"fraction grammar field rules are {observed!r}, expected {expected!r}")
-    for rule in declaration.rules:
-        if rule.left == declaration.start:
-            continue
-        terminals = [item.text.lexical for item in rule.source if isinstance(item, GrammarTerminal)]
-        if terminals != [f"FIELD:{rule.left.local_name}"] or rule.source != rule.target:
-            raise ValueError(f"fraction field rule {rule.left.local_name!r} is not an exact echo")
-
-
-def _validate_compiled_recipes(
-    declaration: GrammarDeclaration,
-    recipes: Mapping[str, Sequence[FractionRuleRecipe]],
-    locale: str,
-) -> None:
-    """Require the fast-path recipes to be an exact projection of the parsed grammar."""
-    kinds = {
-        ("SIGN", "NUM", "DEN"): "fraction",
-        ("SIGN", "WHOLE", "NUM", "DEN"): "mixed",
-        ("SIGN", "AMOUNT"): "percent",
-    }
-    expected: dict[str, list[FractionRuleRecipe]] = {kind: [] for kind in kinds.values()}
-    for rule in declaration.rules:
-        if rule.left != declaration.start:
-            continue
-        symbols = tuple(
-            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
-        )
-        kind = kinds.get(symbols)
-        if kind is None:
-            continue
-        tokens = tuple(
-            f"\ufff0{item.nonterminal.local_name}\ufff1"
-            if isinstance(item, GrammarHole)
-            else item.text.lexical
-            for item in rule.target
-        )
-        provenance = tuple(value.lexical for value in rule.provenance)
-        expected[kind].append(FractionRuleRecipe(tokens, provenance))
-    observed = {kind: tuple(items) for kind, items in recipes.items()}
-    wanted = {kind: tuple(items) for kind, items in expected.items()}
-    if observed != wanted:
-        raise ValueError(f"fraction-rule bundle {locale!r} compiled recipes do not match grammar")
-
-
 @cache
 def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
     _EVENTS["load"] += 1
@@ -119,7 +49,15 @@ def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
         raise ValueError(f"no generated fraction-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "fraction_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
-    if document.get("schema") != 2 or document.get("locale") != locale:
+    required = {
+        "schema",
+        "provenance",
+        "locale",
+        "icu_version",
+        "normalization_sha256",
+        "recipes",
+    }
+    if set(document) != required or document.get("schema") != 3 or document.get("locale") != locale:
         raise ValueError(f"fraction-rule bundle identity mismatch for {locale!r}")
     if document.get("icu_version") != icu.ICU_VERSION:
         raise ValueError(
@@ -151,16 +89,11 @@ def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
                 raise ValueError(f"fraction-rule bundle {locale!r} has invalid recipe provenance")
             compiled.append(FractionRuleRecipe(tuple(tokens), tuple(provenance)))
         recipes[kind] = tuple(compiled)
-    raw_records = document.get("records")
-    if not isinstance(raw_records, list) or not all(
-        isinstance(item, Mapping) and isinstance(item.get("id"), str) for item in raw_records
-    ):
-        raise ValueError(f"fraction-rule bundle {locale!r} has invalid runtime records")
-    records = {str(item["id"]): MappingProxyType(dict(item)) for item in raw_records}
+    records = load_runtime_records(f"{locale}.json", locale, document.get("normalization_sha256"))
     return FractionRuleBundle(
         locale,
         MappingProxyType(recipes),
-        MappingProxyType(records),
+        records,
     )
 
 
@@ -194,7 +127,7 @@ def _record_realizations(record: Mapping[str, object]) -> tuple[Realization, ...
     identifier = str(record["id"])
     return tuple(
         Realization((value,), (f"normalization-record:{identifier}",), None)
-        for value in forms.values()
+        for _, value in sorted(forms.items())
     )
 
 
@@ -300,7 +233,7 @@ def _cardinal_denominator_alternatives(
             source=f"normalization-record:{identifier}",
         )
         for cardinal in _normal_cardinals(Decimal(denominator), bundle.locale)
-        for pattern in forms.values()
+        for _, pattern in sorted(forms.items())
     )
 
 

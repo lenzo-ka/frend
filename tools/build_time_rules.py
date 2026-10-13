@@ -185,14 +185,9 @@ def build_bundle(locale: str) -> dict[str, object]:
     document = json.loads(path.read_text("utf-8"))
     validate_bundle(document, receipt_index=_receipt_index(document))
     declaration = compile_grammar(locale, document)
-    projection = {
-        "grammar": declaration.to_data(),
-        "recipes": compile_recipes(declaration, document),
-        "periods": _periods(document),
-        "records": document["resources"],
-    }
+    projection = {"recipes": compile_recipes(declaration, document), "periods": _periods(document)}
     return {
-        "schema": 2,
+        "schema": 3,
         "provenance": {"source": "frend/curated"},
         "locale": locale,
         "icu_version": icu.ICU_VERSION,

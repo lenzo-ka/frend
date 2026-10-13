@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Callable, Mapping
 from functools import cache
 from importlib.resources import files
+from types import MappingProxyType
 
 _COMPONENT_SCHEMA = "frend-normalization-component/1"
 _ENTRY_SECTIONS = ("selectors", "resources", "rules", "weights", "curated_rows")
@@ -113,13 +115,46 @@ def expand_normalization_bundle(
 
 
 @cache
-def load_normalization_bundle(locale: str) -> dict[str, object]:
-    """Load and expand a packaged locale normalization document once."""
-    resource = _NORMALIZATION_DATA.joinpath(f"{locale}.json")
+def load_normalization_document(name: str) -> dict[str, object]:
+    """Load and expand one packaged normalization document by basename."""
+    if not name or name != name.rsplit("/", 1)[-1] or not name.endswith(".json"):
+        raise ValueError(f"invalid normalization document name {name!r}")
+    resource = _NORMALIZATION_DATA.joinpath(name)
     document = json.loads(resource.read_text(encoding="utf-8"))
     if not isinstance(document, Mapping):
-        raise ValueError(f"normalization bundle {locale!r} is not an object")
-    expanded = expand_normalization_bundle(document)
+        raise ValueError(f"normalization document {name!r} is not an object")
+    return expand_normalization_bundle(document)
+
+
+@cache
+def load_normalization_bundle(locale: str) -> dict[str, object]:
+    """Load and expand a packaged locale normalization document once."""
+    expanded = load_normalization_document(f"{locale}.json")
     if expanded.get("locale") != locale:
         raise ValueError(f"normalization bundle {locale!r} has locale drift")
     return expanded
+
+
+def load_runtime_records(
+    name: str, locale: str, normalization_sha256: object
+) -> Mapping[str, Mapping[str, object]]:
+    """Verify a normalization authority and index its runtime resource records."""
+    document = load_normalization_document(name)
+    if document.get("locale") != locale:
+        raise ValueError(f"normalization document {name!r} has locale drift")
+    canonical = json.dumps(
+        document, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode()
+    if normalization_sha256 != hashlib.sha256(canonical).hexdigest():
+        raise ValueError(f"normalization document {name!r} hash mismatch")
+    raw = document.get("resources")
+    if not isinstance(raw, list):
+        raise ValueError(f"normalization document {name!r} has invalid resources")
+    records = {
+        str(item["id"]): MappingProxyType(dict(item))
+        for item in raw
+        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
+    }
+    if len(records) != len(raw):
+        raise ValueError(f"normalization document {name!r} has invalid or duplicate resources")
+    return MappingProxyType(records)

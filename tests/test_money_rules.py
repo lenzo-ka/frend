@@ -140,6 +140,21 @@ def test_runtime_loads_only_requested_locale_and_never_lowers_or_generates():
     assert load_money_rule_bundle.cache_info().currsize == 1
 
 
+@pytest.mark.parametrize("duplicate", ["grammar", "records"])
+def test_runtime_rejects_embedded_duplicate_bundle_forms(tmp_path, monkeypatch, duplicate):
+    locale = "es_MX"
+    runtime_dir = tmp_path / "data/money_rules"
+    runtime_dir.mkdir(parents=True)
+    runtime = json.loads((REPO / "frend/data/money_rules" / f"{locale}.json").read_text("utf-8"))
+    runtime[duplicate] = []
+    (runtime_dir / f"{locale}.json").write_text(json.dumps(runtime), encoding="utf-8")
+    monkeypatch.setattr(money_rules_module, "files", lambda _package: tmp_path)
+    load_money_rule_bundle.cache_clear()
+    with pytest.raises(ValueError, match="identity mismatch"):
+        load_money_rule_bundle(locale)
+    load_money_rule_bundle.cache_clear()
+
+
 def test_all_records_validate_and_runtime_projection_keeps_no_source_text():
     import tools.build_money_rules as builder
 
@@ -151,10 +166,24 @@ def test_all_records_validate_and_runtime_projection_keeps_no_source_text():
         runtime = json.loads(
             (REPO / "frend/data/money_rules" / f"{locale}.json").read_text("utf-8")
         )
+        assert set(runtime) == {
+            "schema",
+            "provenance",
+            "locale",
+            "icu_version",
+            "normalization_sha256",
+            "projection_sha256",
+            "recipes",
+        }
         lowered = json.dumps(runtime, ensure_ascii=False)
         assert "quoted_passage" not in lowered
         assert '"receipt"' not in lowered
         assert "source_text" not in lowered
+        assert dict(load_money_rule_bundle(locale).records) == {
+            item["id"]: item for item in document["resources"]
+        }
+        declaration = builder.compile_grammar(locale, document)
+        assert runtime["recipes"] == builder.compile_recipes(declaration, document)
 
 
 def test_projection_hash_and_normalization_hash_are_exact():
@@ -165,7 +194,7 @@ def test_projection_hash_and_normalization_hash_are_exact():
         runtime = json.loads(
             (REPO / "frend/data/money_rules" / f"{locale}.json").read_text("utf-8")
         )
-        projection = {key: runtime[key] for key in ("grammar", "recipes", "records")}
+        projection = {"recipes": runtime["recipes"]}
         canonical = json.dumps(
             projection, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ).encode()
@@ -193,7 +222,7 @@ def test_runtime_refuses_normalization_hash_drift(tmp_path, monkeypatch):
     (normalization_dir / f"money_{locale}.json").write_bytes(source.read_bytes())
     monkeypatch.setattr(money_rules_module, "files", lambda _package: tmp_path)
     load_money_rule_bundle.cache_clear()
-    with pytest.raises(ValueError, match="normalization hash mismatch"):
+    with pytest.raises(ValueError, match="normalization document .* hash mismatch"):
         load_money_rule_bundle(locale)
     load_money_rule_bundle.cache_clear()
 

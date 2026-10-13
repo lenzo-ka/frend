@@ -47,17 +47,5 @@
       }
     ]
   },
-  "records": [
-    {
-      "derived_from": [
-        "mext/math-grade4#ja-fractions"
-      ],
-      "forms": {
-        "default": "cardinal"
-      },
-      "id": "denominator-strategy",
-      "kind": "fraction-denominator-strategy"
-    }
-  ],
-  "schema": 2
+  "schema": 3
 }

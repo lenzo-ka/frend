@@ -15,10 +15,11 @@ from types import MappingProxyType
 
 import icu
 from icukit.detectors import DateTimeValue
-from tiergraph import GrammarDeclaration, GrammarHole, Realization, grammar_loads
+from tiergraph import Realization
 
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
+from frend.normalization_components import load_runtime_records
 
 _LOCALES = locales_for("time")
 _SHAPES = ("H", "HM", "HMS", "PH", "PHM", "PHMS")
@@ -72,40 +73,9 @@ class TimeRuleRecipe:
 @dataclass(frozen=True)
 class TimeRuleBundle:
     locale: str
-    declaration: GrammarDeclaration
     recipes: Mapping[str, tuple[TimeRuleRecipe, ...]]
     periods: Mapping[int, str]
     records: Mapping[str, Mapping[str, object]]
-
-
-def _declaration_recipes(declaration: GrammarDeclaration) -> dict[str, tuple[TimeRuleRecipe, ...]]:
-    result = {shape: [] for shape in _SHAPES}
-    for rule in declaration.rules:
-        if rule.left != declaration.start:
-            continue
-        source = tuple(
-            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
-        )
-        semantic = "".join(item for item in source if item in {"P", "H", "M", "S"})
-        if semantic not in result:
-            raise ValueError(f"time grammar has unknown shape {semantic!r}")
-        target_holes = tuple(
-            item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
-        )
-        if len(source) != len(set(source)) or set(source) != set(target_holes):
-            raise ValueError("time grammar must consume and emit every field hole exactly once")
-        result[semantic].append(
-            TimeRuleRecipe(
-                tuple(
-                    f"\ufff0{item.nonterminal.local_name}\ufff1"
-                    if isinstance(item, GrammarHole)
-                    else item.text.lexical
-                    for item in rule.target
-                ),
-                tuple(value.lexical for value in rule.provenance),
-            )
-        )
-    return {shape: tuple(items) for shape, items in result.items()}
 
 
 @cache
@@ -116,35 +86,29 @@ def load_time_rule_bundle(locale: str) -> TimeRuleBundle:
         raise ValueError(f"no generated time-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "time_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
-    if document.get("schema") != 2 or document.get("locale") != locale:
+    required = {
+        "schema",
+        "provenance",
+        "locale",
+        "icu_version",
+        "normalization_sha256",
+        "projection_sha256",
+        "recipes",
+        "periods",
+    }
+    if set(document) != required or document.get("schema") != 3 or document.get("locale") != locale:
         raise ValueError(f"time-rule bundle identity mismatch for {locale!r}")
     if document.get("icu_version") != icu.ICU_VERSION:
         raise ValueError(
             f"time-rule bundle {locale!r} was built with ICU {document.get('icu_version')}, "
             f"not runtime ICU {icu.ICU_VERSION}"
         )
-    projection = {key: document.get(key) for key in ("grammar", "recipes", "periods", "records")}
+    projection = {key: document.get(key) for key in ("recipes", "periods")}
     if (
         document.get("projection_sha256")
         != hashlib.sha256(_canonical_bytes(projection)).hexdigest()
     ):
         raise ValueError(f"time-rule bundle {locale!r} projection hash mismatch")
-    normalization_sha256 = document.get("normalization_sha256")
-    if (
-        not isinstance(normalization_sha256, str)
-        or len(normalization_sha256) != 64
-        or any(char not in "0123456789abcdef" for char in normalization_sha256)
-    ):
-        raise ValueError(f"time-rule bundle {locale!r} has invalid normalization hash")
-    if any(
-        key in {"quoted_passage", "receipt", "source_text"}
-        for record in document.get("records", ())
-        if isinstance(record, Mapping)
-        for key in record
-    ):
-        raise ValueError(f"time-rule bundle {locale!r} retains source text or receipts")
-    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
-    wanted = _declaration_recipes(declaration)
     raw_recipes = document.get("recipes")
     if not isinstance(raw_recipes, Mapping) or set(raw_recipes) != set(_SHAPES):
         raise ValueError(f"time-rule bundle {locale!r} has incomplete compiled recipes")
@@ -155,24 +119,16 @@ def load_time_rule_bundle(locale: str) -> TimeRuleBundle:
         )
         for shape in _SHAPES
     }
-    if observed != wanted or any(len(items) not in {0, 1} for items in observed.values()):
-        raise ValueError(f"time-rule bundle {locale!r} recipes do not match its grammar")
-    raw_records = document.get("records")
-    if not isinstance(raw_records, list):
-        raise ValueError(f"time-rule bundle {locale!r} has invalid runtime records")
-    records = {
-        str(item["id"]): MappingProxyType(dict(item))
-        for item in raw_records
-        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
-    }
-    if len(records) != len(raw_records):
-        raise ValueError(f"time-rule bundle {locale!r} has invalid or duplicate records")
+    if any(len(items) not in {0, 1} for items in observed.values()):
+        raise ValueError(f"time-rule bundle {locale!r} has duplicate recipes")
+    records = load_runtime_records(
+        f"time_{locale}.json", locale, document.get("normalization_sha256")
+    )
     periods = document.get("periods")
     if not isinstance(periods, Mapping) or set(periods) != {str(hour) for hour in range(24)}:
         raise ValueError(f"time-rule bundle {locale!r} has a non-total period selector")
     return TimeRuleBundle(
         locale,
-        declaration,
         MappingProxyType(observed),
         MappingProxyType({int(hour): str(value) for hour, value in periods.items()}),
         MappingProxyType(records),

@@ -13,7 +13,6 @@ from icukit.detectors import detect
 from frend import normalize, prewarm
 from frend.fraction_rules import (
     _denominator_realizations,
-    _validate_compiled_recipes,
     generate_fraction_alternatives,
     load_fraction_rule_bundle,
     render_fraction_tokens,
@@ -274,21 +273,44 @@ def test_runtime_uses_precompiled_recipes_without_tiergraph_generation():
     assert rules.fraction_rule_events() == {"load": 1, "lower": 0, "generate": 0}
 
 
-@pytest.mark.parametrize("field", ["tokens", "provenance"])
-def test_runtime_rejects_compiled_recipe_drift_from_grammar(field):
+@pytest.mark.parametrize("duplicate", ["grammar", "records"])
+def test_runtime_rejects_embedded_duplicate_bundle_forms(tmp_path, monkeypatch, duplicate):
+    import frend.fraction_rules as rules
+
+    locale = "fr_FR"
+    runtime_dir = tmp_path / "data/fraction_rules"
+    runtime_dir.mkdir(parents=True)
+    runtime = json.loads((REPO / "frend/data/fraction_rules" / f"{locale}.json").read_text("utf-8"))
+    runtime[duplicate] = []
+    (runtime_dir / f"{locale}.json").write_text(json.dumps(runtime), encoding="utf-8")
+    monkeypatch.setattr(rules, "files", lambda _package: tmp_path)
+    load_fraction_rule_bundle.cache_clear()
+    with pytest.raises(ValueError, match="identity mismatch"):
+        load_fraction_rule_bundle(locale)
+    load_fraction_rule_bundle.cache_clear()
+
+
+def test_builder_projection_exactly_matches_runtime_recipes():
     import tools.build_fraction_rules as builder
 
-    bundle = load_fraction_rule_bundle("fr_FR")
-    source = json.loads((REPO / "frend/data/normalization/fr_FR.json").read_text(encoding="utf-8"))
-    declaration = builder.compile_grammar("fr_FR", source)
-    recipes = {kind: list(items) for kind, items in bundle.recipes.items()}
-    original = recipes["fraction"][0]
-    recipes["fraction"][0] = replace(
-        original,
-        **{field: (*getattr(original, field), "unbound-drift")},
-    )
-    with pytest.raises(ValueError, match="compiled recipes do not match grammar"):
-        _validate_compiled_recipes(declaration, recipes, "fr_FR")
+    for locale in GENERATED_FRACTION_LOCALES:
+        source = load_normalization_bundle(locale)
+        declaration = builder.compile_grammar(locale, source)
+        runtime = json.loads(
+            (REPO / "frend/data/fraction_rules" / f"{locale}.json").read_text("utf-8")
+        )
+        assert set(runtime) == {
+            "schema",
+            "provenance",
+            "locale",
+            "icu_version",
+            "normalization_sha256",
+            "recipes",
+        }
+        assert runtime["recipes"] == builder.compile_recipes(declaration)
+        assert dict(load_fraction_rule_bundle(locale).records) == {
+            item["id"]: item for item in source["resources"]
+        }
 
 
 def test_generation_refuses_above_cap_before_generate(monkeypatch):

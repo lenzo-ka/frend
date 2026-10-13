@@ -45,53 +45,5 @@
       }
     ]
   },
-  "records": [
-    {
-      "derived_from": [
-        "serlo/fractions#de-denominators",
-        "rechtschreibrat/amtliches-regelwerk-2018#de-fraction-capitalization"
-      ],
-      "forms": {
-        "default": "german-cardinal-tel"
-      },
-      "id": "denominator-strategy",
-      "kind": "fraction-denominator-strategy"
-    },
-    {
-      "derived_from": [
-        "duden/online#de-halb"
-      ],
-      "forms": {
-        "default": "Halb"
-      },
-      "gender": "neuter",
-      "id": "denominator-2-singular",
-      "kind": "fraction-denominator",
-      "number": "one"
-    },
-    {
-      "derived_from": [
-        "serlo/fractions#de-halbe"
-      ],
-      "forms": {
-        "default": "Halbe"
-      },
-      "gender": "neuter",
-      "id": "denominator-2-plural",
-      "kind": "fraction-denominator",
-      "number": "other"
-    },
-    {
-      "derived_from": [
-        "duden/online#de-halb"
-      ],
-      "forms": {
-        "compound": "einhalb",
-        "default": "ein halb"
-      },
-      "id": "fraction-one-half",
-      "kind": "fraction-reading"
-    }
-  ],
-  "schema": 2
+  "schema": 3
 }

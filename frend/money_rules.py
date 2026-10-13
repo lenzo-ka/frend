@@ -16,16 +16,14 @@ from types import MappingProxyType
 import icu
 from icukit.detectors import NumberValue
 from tiergraph import (
-    GrammarDeclaration,
-    GrammarHole,
     GrammarInput,
     GrammarInputToken,
     Realization,
-    grammar_loads,
 )
 
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
+from frend.normalization_components import load_runtime_records
 
 _LOCALES = locales_for("money")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
@@ -48,49 +46,8 @@ class MoneyRuleRecipe:
 @dataclass(frozen=True)
 class MoneyRuleBundle:
     locale: str
-    declaration: GrammarDeclaration
     recipes: Mapping[str, tuple[MoneyRuleRecipe, ...]]
     records: Mapping[str, Mapping[str, object]]
-
-
-def _declaration_recipes(
-    declaration: GrammarDeclaration,
-) -> dict[str, tuple[MoneyRuleRecipe, ...]]:
-    result: dict[str, list[MoneyRuleRecipe]] = {}
-    for rule in declaration.rules:
-        if rule.left != declaration.start:
-            continue
-        source = tuple(
-            item.nonterminal.local_name for item in rule.source if isinstance(item, GrammarHole)
-        )
-        target_holes = tuple(
-            item.nonterminal.local_name for item in rule.target if isinstance(item, GrammarHole)
-        )
-        if len(source) != len(set(source)) or set(source) != set(target_holes):
-            raise ValueError("money grammar must consume and emit every field hole exactly once")
-        provenance = tuple(value.lexical for value in rule.provenance)
-        key = next(
-            (
-                item.removeprefix("money-key:")
-                for item in provenance
-                if item.startswith("money-key:")
-            ),
-            None,
-        )
-        if key is None:
-            raise ValueError("money grammar rule has no shape/currency key")
-        result.setdefault(key, []).append(
-            MoneyRuleRecipe(
-                tuple(
-                    f"\ufff0{item.nonterminal.local_name}\ufff1"
-                    if isinstance(item, GrammarHole)
-                    else item.text.lexical
-                    for item in rule.target
-                ),
-                provenance,
-            )
-        )
-    return {key: tuple(values) for key, values in result.items()}
 
 
 @cache
@@ -101,33 +58,26 @@ def load_money_rule_bundle(locale: str) -> MoneyRuleBundle:
         raise ValueError(f"no generated money-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "money_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))
-    if document.get("schema") != 2 or document.get("locale") != locale:
+    required = {
+        "schema",
+        "provenance",
+        "locale",
+        "icu_version",
+        "normalization_sha256",
+        "projection_sha256",
+        "recipes",
+    }
+    if set(document) != required or document.get("schema") != 3 or document.get("locale") != locale:
         raise ValueError(f"money-rule bundle identity mismatch for {locale!r}")
     if document.get("icu_version") != icu.ICU_VERSION:
         raise ValueError(
             f"money-rule bundle {locale!r} was built with ICU "
             f"{document.get('icu_version')}, not runtime ICU {icu.ICU_VERSION}"
         )
-    normalization = files("frend").joinpath("data", "normalization", f"money_{locale}.json")
-    normalization_document = json.loads(normalization.read_text(encoding="utf-8"))
-    if (
-        document.get("normalization_sha256")
-        != hashlib.sha256(_canonical_bytes(normalization_document)).hexdigest()
-    ):
-        raise ValueError(f"money-rule bundle {locale!r} normalization hash mismatch")
-    projection = {key: document.get(key) for key in ("grammar", "recipes", "records")}
+    projection = {"recipes": document.get("recipes")}
     projection_hash = hashlib.sha256(_canonical_bytes(projection)).hexdigest()
     if document.get("projection_sha256") != projection_hash:
         raise ValueError(f"money-rule bundle {locale!r} projection hash mismatch")
-    if any(
-        key in {"quoted_passage", "receipt", "source_text"}
-        for record in document.get("records", ())
-        if isinstance(record, Mapping)
-        for key in record
-    ):
-        raise ValueError(f"money-rule bundle {locale!r} retains source text or receipts")
-    declaration = grammar_loads(json.dumps(document["grammar"], ensure_ascii=False))
-    wanted = _declaration_recipes(declaration)
     raw = document.get("recipes")
     if not isinstance(raw, Mapping):
         raise ValueError(f"money-rule bundle {locale!r} has invalid recipes")
@@ -137,21 +87,12 @@ def load_money_rule_bundle(locale: str) -> MoneyRuleBundle:
         )
         for key, values in raw.items()
     }
-    if observed != wanted or any(len(values) != 1 for values in observed.values()):
-        raise ValueError(f"money-rule bundle {locale!r} recipes do not match its grammar")
-    records_raw = document.get("records")
-    if not isinstance(records_raw, list):
-        raise ValueError(f"money-rule bundle {locale!r} has invalid runtime records")
-    records = {
-        str(item["id"]): MappingProxyType(dict(item))
-        for item in records_raw
-        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
-    }
-    if len(records) != len(records_raw):
-        raise ValueError(f"money-rule bundle {locale!r} has invalid or duplicate records")
-    return MoneyRuleBundle(
-        locale, declaration, MappingProxyType(observed), MappingProxyType(records)
+    if any(len(values) != 1 for values in observed.values()):
+        raise ValueError(f"money-rule bundle {locale!r} has duplicate recipes")
+    records = load_runtime_records(
+        f"money_{locale}.json", locale, document.get("normalization_sha256")
     )
+    return MoneyRuleBundle(locale, MappingProxyType(observed), records)
 
 
 def _capture(detection: Mapping[str, object], name: str) -> object | None:
