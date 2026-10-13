@@ -26,6 +26,35 @@ def test_normalize_returns_a_string_by_default():
 
 
 @pytest.mark.parametrize(
+    ("source", "formula", "spoken", "formula_spoken"),
+    [
+        ("Drink H2O daily.", "H2O", " drink   h two o   daily .", " h two o "),
+        ("CO2 levels rose.", "CO2", " c o two   levels   rose .", " c o two "),
+    ],
+)
+def test_simple_ascii_chemical_formulas_keep_their_alphanumeric_run(
+    source, formula, spoken, formula_spoken
+):
+    normalized = frend.normalize(source, locale="en_US", offsets=True)
+
+    assert isinstance(normalized, NormalizedText)
+    assert normalized.text == spoken
+    formula_units = [
+        unit for unit in normalized.units if source[slice(*unit.source_span)] == formula
+    ]
+    assert [
+        (unit.reader, unit.source_span, normalized.text[slice(*unit.output_span)])
+        for unit in formula_units
+    ] == [
+        (
+            "alnum:runs",
+            (source.index(formula), source.index(formula) + len(formula)),
+            formula_spoken,
+        )
+    ]
+
+
+@pytest.mark.parametrize(
     ("canonical", "aliases", "localized_reading"),
     [
         ("en_US", ("en-US", "EN_us"), " one hundred twenty-three "),
@@ -284,6 +313,41 @@ def _assert_alignment_tiles(source: str, result: NormalizedText):
         source_at = unit.source_span[1]
     assert output_at == len(result.text)
     assert source_at == len(source)
+
+
+@pytest.mark.parametrize(
+    ("source", "electronic", "reader", "spoken"),
+    [
+        (
+            "Visit https://example.com today.",
+            "https://example.com",
+            "electronic:url",
+            " visit   h t t p s colon slash slash example dot com   today .",
+        ),
+        (
+            "Email me at user@example.com please.",
+            "user@example.com",
+            "electronic:email",
+            " email   me   at   user at example dot com   please .",
+        ),
+    ],
+)
+def test_public_normalize_composes_electronic_spans_with_surrounding_prose(
+    source, electronic, reader, spoken
+):
+    result = frend.normalize(source, locale="en_US", offsets=True)
+
+    assert isinstance(result, NormalizedText)
+    assert result.text == spoken
+    _assert_alignment_tiles(source, result)
+    electronic_units = [
+        unit
+        for unit in result.units
+        if unit.reader is not None and unit.reader.startswith("electronic:")
+    ]
+    assert [(unit.reader, source[slice(*unit.source_span)]) for unit in electronic_units] == [
+        (reader, electronic)
+    ]
 
 
 @pytest.mark.parametrize(

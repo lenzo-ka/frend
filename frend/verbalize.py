@@ -108,6 +108,7 @@ from frend.symbols import (
     symbol_names,
 )
 from frend.telephone import TelephoneValue
+from frend.versions import VersionValue
 from frend.written_forms import DigitsValue
 
 __all__ = [
@@ -1149,6 +1150,7 @@ _SPOKEN_CAPTURES = {
     "digits": frozenset({"digits"}),
     "telephone": frozenset({"telephone"}),
     "grouped-id": frozenset({"grouped-id"}),
+    "version": frozenset({"version", "prefix", "component", "separator"}),
     "symbol": frozenset({"symbol"}),
     "symbol-run": frozenset({"symbol"}),
     "letters": frozenset({"letters", "suffix", "period"}),
@@ -1582,10 +1584,14 @@ def _spoken_letter_hyphen_word(
     profile: str | None = None,
     case_variant_lookup: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
-    """Name the letter, leave the structural hyphen silent, and say the word."""
-    letter = spelled(value.letter, locale)
-    if letter is None:
-        raise NotImplementedError(f"no authoritative letter names for {locale}")
+    """Name the letter sequence, leave the structural hyphen silent, and say the word."""
+    foreign_name = symbol_names(value.letter, locale)[:1]
+    if foreign_name:
+        letter = SpokenAlternative(*foreign_name[0])
+    else:
+        letter = spelled(value.letter, locale)
+        if letter is None:
+            raise NotImplementedError(f"no authoritative letter names for {locale}")
     words = (
         _spoken_letters(
             LettersValue(value.word, value.word, ""),
@@ -1593,7 +1599,7 @@ def _spoken_letter_hyphen_word(
             profile,
             case_variant_lookup,
         )
-        if is_spelled_token(value.word, locale)
+        if is_letter_run(value.word) or is_spelled_token(value.word, locale)
         else (SpokenAlternative(_NFC.normalize(value.word).lower(), "surface:word"),)
     )
     return _compose(((letter,), words), "{} {}")
@@ -3143,6 +3149,63 @@ def _spoken_grouped_id(value: GroupedDigitsValue, locale: str) -> tuple[SpokenAl
     )
 
 
+def _version_separator(locale: str) -> SpokenAlternative | None:
+    """Name the written period, without borrowing a comma locale's decimal mark."""
+    decimal_symbol = icu.DecimalFormatSymbols(icu.Locale(locale)).getSymbol(
+        icu.DecimalFormatSymbols.kDecimalSeparatorSymbol
+    )
+    if decimal_symbol != ".":
+        names = symbol_names(".", locale)
+        if not names:
+            return None
+        text, provenance = names[0]
+        return SpokenAlternative(text, provenance)
+    lexical_separator = _lexical("decimal.separator", locale)
+    if lexical_separator is not None:
+        return SpokenAlternative(str(lexical_separator), lexical_source(locale))
+    rules = _decimal_separator_rules(locale)
+    if not rules:
+        return None
+    rule = rules[0]
+    return SpokenAlternative(rule.separator.strip(), _rbnf_provenance(rule.ruleset, locale))
+
+
+def _spoken_version(value: VersionValue, locale: str) -> tuple[SpokenAlternative, ...]:
+    """Say every numeric component and every written dot in a prefixed version."""
+    names = letter_names(value.prefix, locale)
+    if names is None:
+        return ()
+    prefix = SpokenAlternative(" ".join(names.spoken), names.provenance)
+    components = []
+    for component in value.components:
+        if len(component) > 1 and component.startswith("0"):
+            alternatives = _spoken_digits(DigitsValue(component), locale)
+        else:
+            try:
+                alternatives = _number_leaf(Decimal(component), "cardinal", locale)
+            except NotImplementedError:
+                alternatives = _spoken_big_integer(component, locale)
+        if not alternatives:
+            return ()
+        # A version is one structured reading, not a free product of every ICU
+        # cardinal rule-set variant for each component.
+        components.append(alternatives[0])
+
+    separator = _version_separator(locale)
+    if not components or separator is None:
+        return ()
+
+    parts = [prefix, components[0]]
+    for component in components[1:]:
+        parts.extend((separator, component))
+    return (
+        SpokenAlternative(
+            " ".join(part.text for part in parts),
+            "+".join(part.provenance for part in parts),
+        ),
+    )
+
+
 def _telephone_group(digits: str, mode: str, locale: str) -> tuple[SpokenAlternative, ...]:
     if mode == "cardinal":
         return _number_leaf(Decimal(digits), "cardinal", locale)
@@ -4407,6 +4470,10 @@ def _verbalize_edge(
             alternatives = _spoken_grouped_id(value, locale)
             key_value = value.groups
             path = "grouped-id"
+        elif isinstance(value, VersionValue):
+            alternatives = _spoken_version(value, locale)
+            key_value = value.components
+            path = "version"
         elif isinstance(value, TelephoneValue):
             alternatives = _spoken_telephone(value, locale)
             key_value = value.groups
