@@ -55,6 +55,28 @@ def test_simple_ascii_chemical_formulas_keep_their_alphanumeric_run(
 
 
 @pytest.mark.parametrize(
+    ("source", "reader", "spoken_number"),
+    [
+        ("The ratio is 16:9.", "range:ratio", "sixteen to nine"),
+        ("Mix at a 1:100 ratio.", "range:ratio", "one to one hundred"),
+        ("The time is 16:09.", "time:flexible", "sixteen o nine"),
+    ],
+)
+def test_explicit_english_ratio_contexts_stay_distinct_from_clock_time(
+    source, reader, spoken_number
+):
+    result = frend.normalize(source, locale="en_US", offsets=True)
+    assert isinstance(result, NormalizedText)
+
+    number_units = [
+        unit for unit in result.units if unit.reader in {"range:ratio", "time:flexible"}
+    ]
+    assert len(number_units) == 1
+    assert number_units[0].reader == reader
+    assert result.text[slice(*number_units[0].output_span)].strip() == spoken_number
+
+
+@pytest.mark.parametrize(
     ("canonical", "aliases", "localized_reading"),
     [
         ("en_US", ("en-US", "EN_us"), " one hundred twenty-three "),
