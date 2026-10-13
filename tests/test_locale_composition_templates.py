@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from icukit.recognize import FlexibleCurrencyDetector, FlexibleFractionDetector
 
 from frend import normalize, resolve_lattice, verbalize_edge
 from frend import verbalize as verbalize_module
+
+REPO = Path(__file__).resolve().parents[1]
 
 
 def _fraction_alternatives(locale: str, written: str):
@@ -85,6 +89,10 @@ def test_money_minor_joiner_comes_from_en_lexical(monkeypatch):
 
 def test_money_minor_joiner_is_a_two_phrase_frame():
     assert verbalize_module._lexical("money.minor_joiner", "en_US") == "{0} and {1}"
+
+
+def test_no_english_money_bundle_exists():
+    assert not (REPO / "frend/data/money_rules/en_US.json").exists()
 
 
 @pytest.mark.parametrize(

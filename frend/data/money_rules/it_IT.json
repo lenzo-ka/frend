@@ -1,0 +1,439 @@
+{
+  "grammar": {
+    "nonterminals": [
+      {
+        "local_name": "MONEY",
+        "namespace": "urn:frend:money:v1:it_IT"
+      },
+      {
+        "local_name": "AMOUNT",
+        "namespace": "urn:frend:money:v1:it_IT"
+      },
+      {
+        "local_name": "CURRENCY",
+        "namespace": "urn:frend:money:v1:it_IT"
+      },
+      {
+        "local_name": "MAJOR",
+        "namespace": "urn:frend:money:v1:it_IT"
+      },
+      {
+        "local_name": "MINOR",
+        "namespace": "urn:frend:money:v1:it_IT"
+      },
+      {
+        "local_name": "MINOR_CURRENCY",
+        "namespace": "urn:frend:money:v1:it_IT"
+      },
+      {
+        "local_name": "SCALE",
+        "namespace": "urn:frend:money:v1:it_IT"
+      }
+    ],
+    "rules": [
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MONEY",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "provenance": [
+          {
+            "lexical": "money-key:major:EUR",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:money:v1:it_IT"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:treccani/vocabolario#cardinal-before-monetary-noun",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:money:v1:it_IT"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "AMOUNT",
+              "namespace": "urn:frend:money:v1:it_IT"
+            },
+            "variable": {
+              "lexical": "amount",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:it_IT"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "AMOUNT",
+              "namespace": "urn:frend:money:v1:it_IT"
+            },
+            "variable": {
+              "lexical": "amount",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:it_IT"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "AMOUNT",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:AMOUNT",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:AMOUNT",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CURRENCY",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MAJOR",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MAJOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MAJOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MINOR",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MINOR_CURRENCY",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR_CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR_CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "SCALE",
+          "namespace": "urn:frend:money:v1:it_IT"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:SCALE",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:SCALE",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:it_IT"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      }
+    ],
+    "start": {
+      "local_name": "MONEY",
+      "namespace": "urn:frend:money:v1:it_IT"
+    }
+  },
+  "icu_version": "78.3",
+  "locale": "it_IT",
+  "normalization_sha256": "2a2223a60b1f293232ab4d4da52c54c6f26eb6ad473b1e3a17544575076db139",
+  "projection_sha256": "ed4682afda38c8cb2737e47a181fb99d93d8406aa15c0ef5d1b9fff2ce7337fa",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "major:EUR": [
+      {
+        "provenance": [
+          "money-key:major:EUR",
+          "normalization-record:treccani/vocabolario#cardinal-before-monetary-noun"
+        ],
+        "tokens": [
+          "￰AMOUNT￱",
+          " ",
+          "￰CURRENCY￱"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "code": "EUR",
+      "derived_from": [
+        "treccani/vocabolario#euro-invariant"
+      ],
+      "forms": {
+        "one": "euro",
+        "other": "euro"
+      },
+      "gender": "masculine",
+      "id": "currency-major-EUR",
+      "kind": "currency"
+    }
+  ],
+  "schema": 2
+}

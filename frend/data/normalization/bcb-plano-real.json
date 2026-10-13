@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public Banco Central do Brasil page",
+  "fetched_at": "2026-10-12T12:00:00-04:00",
+  "license_sha256": "85890e4dd16f2bd1c7478f4b9be885c297b19127d64af101ae74a919d990e104",
+  "locator": "https://www.bcb.gov.br/controleinflacao/planoreal",
+  "manual_citation": true,
+  "revision": "Banco Central do Brasil Plano Real denominations",
+  "sha256": "c745364ab247be733fb35b1871ad46362707207b6986a49c490e2aa7351ffcfa",
+  "source": "bcb/plano-real",
+  "transform_command": "manual source-claim transcription"
+}

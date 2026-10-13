@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public Banco Central do Brasil PDF",
+  "fetched_at": "2026-10-12T12:00:00-04:00",
+  "license_sha256": "85890e4dd16f2bd1c7478f4b9be885c297b19127d64af101ae74a919d990e104",
+  "locator": "https://www.bcb.gov.br/conteudo/cmn/AtasCmn/Ata_1076_CMN_sem_tarja.pdf#page=71",
+  "manual_citation": true,
+  "revision": "Banco Central do Brasil CMN 1076 page 71",
+  "sha256": "068e622f3ea192897ccb7833854dd4fd5633b61fe635f000715f5a942624993a",
+  "source": "bcb/cmn-1076",
+  "transform_command": "manual source-claim transcription"
+}

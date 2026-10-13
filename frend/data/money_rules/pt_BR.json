@@ -1,0 +1,791 @@
+{
+  "grammar": {
+    "nonterminals": [
+      {
+        "local_name": "MONEY",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      },
+      {
+        "local_name": "AMOUNT",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      },
+      {
+        "local_name": "CURRENCY",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      },
+      {
+        "local_name": "MAJOR",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      },
+      {
+        "local_name": "MINOR",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      },
+      {
+        "local_name": "MINOR_CURRENCY",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      },
+      {
+        "local_name": "SCALE",
+        "namespace": "urn:frend:money:v1:pt_BR"
+      }
+    ],
+    "rules": [
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MONEY",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "provenance": [
+          {
+            "lexical": "money-key:major:BRL",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:bcb/plano-real#real-denominations",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "AMOUNT",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "amount",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "AMOUNT",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "amount",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MONEY",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "provenance": [
+          {
+            "lexical": "money-key:major_minor:BRL",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:bcb/cmn-1076#major-minor-wording",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:currency-minor-BRL",
+            "name": {
+              "local_name": "source-3",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MAJOR",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "major",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MINOR",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "minor",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MINOR_CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "minor_currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MAJOR",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "major",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " e ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MINOR",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "minor",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MINOR_CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "minor_currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MONEY",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "provenance": [
+          {
+            "lexical": "money-key:minor_only:BRL",
+            "name": {
+              "local_name": "source-1",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          },
+          {
+            "lexical": "normalization-record:bcb/cmn-1076#minor-only-wording",
+            "name": {
+              "local_name": "source-2",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "value_type": "string"
+          }
+        ],
+        "source": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MINOR",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "minor",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "MINOR",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "minor",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": " ",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          },
+          {
+            "kind": "hole",
+            "nonterminal": {
+              "local_name": "CURRENCY",
+              "namespace": "urn:frend:money:v1:pt_BR"
+            },
+            "variable": {
+              "lexical": "currency",
+              "name": {
+                "local_name": "variable",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "AMOUNT",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:AMOUNT",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:AMOUNT",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "CURRENCY",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MAJOR",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MAJOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MAJOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MINOR",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "MINOR_CURRENCY",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR_CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:MINOR_CURRENCY",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      },
+      {
+        "awaited_variables": [],
+        "boundary": {
+          "lexical": "complete",
+          "name": {
+            "local_name": "boundary",
+            "namespace": "urn:tiergraph:grammar"
+          },
+          "value_type": "string"
+        },
+        "left": {
+          "local_name": "SCALE",
+          "namespace": "urn:frend:money:v1:pt_BR"
+        },
+        "source": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:SCALE",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "target": [
+          {
+            "kind": "terminal",
+            "text": {
+              "lexical": "FIELD:SCALE",
+              "name": {
+                "local_name": "text",
+                "namespace": "urn:frend:money:v1:pt_BR"
+              },
+              "value_type": "string"
+            }
+          }
+        ],
+        "weight": null
+      }
+    ],
+    "start": {
+      "local_name": "MONEY",
+      "namespace": "urn:frend:money:v1:pt_BR"
+    }
+  },
+  "icu_version": "78.3",
+  "locale": "pt_BR",
+  "normalization_sha256": "42bb1a1348877dd752d710c360b0b07017061e2057bda3c5df470831b1021225",
+  "projection_sha256": "fe899dac625e27bbe070347e4da1e98303384ef6235dfc58096680582c8c13e7",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "major:BRL": [
+      {
+        "provenance": [
+          "money-key:major:BRL",
+          "normalization-record:bcb/plano-real#real-denominations"
+        ],
+        "tokens": [
+          "￰AMOUNT￱",
+          " ",
+          "￰CURRENCY￱"
+        ]
+      }
+    ],
+    "major_minor:BRL": [
+      {
+        "provenance": [
+          "money-key:major_minor:BRL",
+          "normalization-record:bcb/cmn-1076#major-minor-wording",
+          "normalization-record:currency-minor-BRL"
+        ],
+        "tokens": [
+          "￰MAJOR￱",
+          " ",
+          "￰CURRENCY￱",
+          " e ",
+          "￰MINOR￱",
+          " ",
+          "￰MINOR_CURRENCY￱"
+        ]
+      }
+    ],
+    "minor_only:BRL": [
+      {
+        "provenance": [
+          "money-key:minor_only:BRL",
+          "normalization-record:bcb/cmn-1076#minor-only-wording"
+        ],
+        "tokens": [
+          "￰MINOR￱",
+          " ",
+          "￰CURRENCY￱"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "code": "BRL",
+      "derived_from": [
+        "bcb/plano-real#real-denominations"
+      ],
+      "forms": {
+        "one": "real",
+        "other": "reais"
+      },
+      "gender": "masculine",
+      "id": "currency-major-BRL",
+      "kind": "currency"
+    },
+    {
+      "code": "BRL",
+      "derived_from": [
+        "bcb/plano-real#centavo-denominations"
+      ],
+      "forms": {
+        "one": "centavo",
+        "other": "centavos"
+      },
+      "gender": "masculine",
+      "id": "currency-minor-BRL",
+      "kind": "minor"
+    }
+  ],
+  "schema": 2
+}

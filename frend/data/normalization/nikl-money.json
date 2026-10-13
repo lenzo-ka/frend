@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public NIKL answer",
+  "fetched_at": "2026-10-12T12:00:00-04:00",
+  "license_sha256": "85890e4dd16f2bd1c7478f4b9be885c297b19127d64af101ae74a919d990e104",
+  "locator": "https://korean.go.kr/front/onlineQna/onlineQnaView.do?qna_seq=312190",
+  "manual_citation": true,
+  "revision": "NIKL Online Q&A amount spelling, answer 2025-04-02",
+  "sha256": "1b1b33ba2c23d59e65ff3565a060762f0d2e7695039bc90f3f9e1c18308782f2",
+  "source": "nikl/online-qna",
+  "transform_command": "manual source-claim transcription"
+}

@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
-from functools import lru_cache
+from functools import cache, lru_cache
 from typing import Literal, overload
 
+import icu
 from icukit import ReflowMode, SentenceOverride
 from icukit.detectors import DetectorSet, date_detectors
 from icukit.engine import DATE_TIME_SKELETON_FAMILY
@@ -133,6 +134,16 @@ _MEASURE_UNITS = (
     "cubic-meter",
     "cubic-foot",
 )
+
+
+@cache
+def _currencies(locale: str) -> tuple[str, ...]:
+    """The narrow shipped inventory plus ICU's locale currency, stably deduped."""
+    locale = canonical_locale(locale)
+    default = icu.NumberFormat.createCurrencyInstance(icu.Locale(locale)).getCurrency()
+    return tuple(dict.fromkeys((*_CURRENCIES, default)))
+
+
 _MIXED_MEASURES = ("foot-and-inch", "pound-and-ounce")
 
 
@@ -252,7 +263,7 @@ def _reading_detectors(
     scientific = ScientificNotationDetector(locale, measure_detectors=measures)
     money = tuple(
         detector
-        for code in _CURRENCIES
+        for code in _currencies(locale)
         for detector in (
             FlexibleCurrencyDetector(locale, code),
             FlexibleCurrencyNameDetector(locale, code),
