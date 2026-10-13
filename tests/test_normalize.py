@@ -168,6 +168,36 @@ def test_leading_negative_and_numeric_range_keep_their_readings():
     assert frend.normalize("1-2-3") == " one  minus two  minus three "
 
 
+@pytest.mark.parametrize(
+    ("source", "spoken_score", "expected"),
+    [
+        (
+            "The score was 3-1.",
+            "three to one",
+            " the   score   was   three to one .",
+        ),
+        (
+            "The final was 21–17.",
+            "twenty-one to seventeen",
+            " the   final   was   twenty-one to seventeen .",
+        ),
+    ],
+)
+def test_public_english_sports_scores_keep_unsigned_range_endpoints(source, spoken_score, expected):
+    normalized = frend.normalize(source, locale="en_US", offsets=True)
+    assert isinstance(normalized, NormalizedText)
+    assert normalized.text == expected
+
+    (score,) = [unit for unit in normalized.units if "range" in (unit.reader or "")]
+    score_reading = normalized.text[slice(*score.output_span)].strip()
+    assert score_reading == spoken_score
+    assert "minus" not in score_reading
+
+    assert frend.normalize("The score was -1.", locale="en_US") == (
+        " the   score   was   minus one ."
+    )
+
+
 @pytest.mark.parametrize("written", ["call 555-123-4567", "call (555) 123-4567"])
 def test_us_telephone_numbers_read_digits_with_group_pauses(written):
     assert frend.normalize(written) == (
