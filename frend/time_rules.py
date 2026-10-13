@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from decimal import Decimal
 from functools import cache
 from importlib.resources import files
-from itertools import product
 from types import MappingProxyType
 
 import icu
@@ -20,6 +18,13 @@ from tiergraph import Realization
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 from frend.normalization_components import load_runtime_records
+from frend.rule_composition import (
+    FieldProvider,
+    RuleRecipe,
+    compose_recipes,
+    exact_composition_count,
+    preserve_legacy_ranking,
+)
 
 _LOCALES = locales_for("time")
 _SHAPES = ("H", "HM", "HMS", "PH", "PHM", "PHMS")
@@ -65,15 +70,9 @@ def time_rule_events() -> Mapping[str, int]:
 
 
 @dataclass(frozen=True)
-class TimeRuleRecipe:
-    tokens: tuple[str, ...]
-    provenance: tuple[str, ...]
-
-
-@dataclass(frozen=True)
 class TimeRuleBundle:
     locale: str
-    recipes: Mapping[str, tuple[TimeRuleRecipe, ...]]
+    recipes: Mapping[str, tuple[RuleRecipe, ...]]
     periods: Mapping[int, str]
     records: Mapping[str, Mapping[str, object]]
 
@@ -114,7 +113,7 @@ def load_time_rule_bundle(locale: str) -> TimeRuleBundle:
         raise ValueError(f"time-rule bundle {locale!r} has incomplete compiled recipes")
     observed = {
         shape: tuple(
-            TimeRuleRecipe(tuple(item["tokens"]), tuple(item["provenance"]))
+            RuleRecipe(tuple(item["tokens"]), tuple(item["provenance"]))
             for item in raw_recipes[shape]
         )
         for shape in _SHAPES
@@ -221,26 +220,6 @@ def _field_realizations(
     )
 
 
-def _preserve_unchanged_ranking(generated, previous):
-    """Keep every legacy reading in exact order/metadata, then add genuinely new text."""
-    remaining = list(generated)
-    preserved = []
-    for old in previous:
-        match = next((item for item in remaining if item.text == old.text), None)
-        if match is None:
-            preserved.append(old)
-            continue
-        remaining.remove(match)
-        preserved.append(
-            replace(
-                match,
-                weight=old.weight,
-                prior_provenance=old.prior_provenance or old.provenance,
-            )
-        )
-    return tuple((*preserved, *remaining))
-
-
 def generate_time_alternatives(
     value: DateTimeValue,
     detection: Mapping[str, object],
@@ -291,58 +270,45 @@ def generate_time_alternatives(
     if not recipes:
         raise NotImplementedError(f"time rules have no sourced {shape} recipe for {bundle.locale}")
     recipe = recipes[0]
-    symbols = [token[1:-1] for token in recipe.tokens if token.startswith("\ufff0")]
-    realizations = [
-        _field_realizations(
-            bundle,
-            symbol,
-            realized,
-            period=has_period,
-            semantic_hour=normalized["H"],
+    symbols = tuple(token[1:-1] for token in recipe.tokens if token.startswith("\ufff0"))
+    fields = {
+        symbol: FieldProvider(
+            _field_realizations(
+                bundle,
+                symbol,
+                realized,
+                period=has_period,
+                semantic_hour=normalized["H"],
+            )
         )
         for symbol in symbols
-    ]
+    }
     tails = _time_tail(detection, bundle.locale)
-    exact_count = math.prod(len(items) for items in realizations) * max(1, len(tails))
+    suffixes = tuple(
+        Realization(tuple(tokens), tuple(provenance), weight)
+        for tokens, provenance, weight in tails
+    ) or (Realization((), (), None),)
+    exact_count = exact_composition_count(recipes, fields, suffixes=suffixes)
     if exact_count < 1 or exact_count > max_derivations:
         raise ValueError(f"time generation for {bundle.locale} has {exact_count} derivations")
-    alternatives = []
-    for selected in product(*realizations):
-        by_symbol = dict(zip(symbols, selected, strict=True))
-        rendered = []
-        provenance = [f"time-rule:{bundle.locale}", *recipe.provenance]
-        weights = []
-        prior = []
-        for token in recipe.tokens:
-            symbol = token[1:-1] if token.startswith("\ufff0") else None
-            realization = by_symbol.get(symbol)
-            if realization is None:
-                rendered.append(token)
-                continue
-            rendered.extend(realization.tokens)
-            provenance.extend(realization.provenance)
-            prior.extend(realization.provenance[:1])
-            weights.append(realization.weight)
-        core = "".join(rendered)
-        tail_options = tails or (((), (), None),)
-        for tail_tokens, tail_provenance, tail_weight in tail_options:
-            text = " ".join(item for item in (core, *tail_tokens) if item)
-            sources = tuple(dict.fromkeys((*provenance, *tail_provenance)))
-            all_weights = (*weights, tail_weight)
-            alternatives.append(
-                SpokenAlternative(
-                    text,
-                    "+".join(sources),
-                    sum((item for item in all_weights if item is not None), Decimal(0))
-                    if all_weights and all(item is not None for item in all_weights)
-                    else None,
-                    prior_provenance="+".join(dict.fromkeys(prior)) or None,
-                )
-            )
+    alternatives = compose_recipes(
+        recipes,
+        fields,
+        base_provenance=(f"time-rule:{bundle.locale}",),
+        make=lambda text, provenance, weight, prior: SpokenAlternative(
+            text, provenance, weight, prior_provenance=prior
+        ),
+        render=lambda core, suffix, selected: " ".join(
+            item for item in ("".join(core), *suffix) if item
+        ),
+        max_derivations=max_derivations,
+        exact_count=exact_count,
+        suffixes=suffixes,
+    )
     if written_uhr:
         return tuple(alternatives)
     try:
         previous = _legacy_spoken_time(value, detection, bundle.locale)
     except NotImplementedError:
         previous = ()
-    return _preserve_unchanged_ranking(alternatives, previous)
+    return preserve_legacy_ranking(alternatives, previous, unmatched="retain")

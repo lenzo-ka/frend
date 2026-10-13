@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import json
-import math
 import unicodedata
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from decimal import Decimal
 from functools import cache
 from importlib.resources import files
-from itertools import product
 from types import MappingProxyType
 
 import icu
@@ -19,6 +17,13 @@ from tiergraph import GrammarInput, GrammarInputToken, Realization
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 from frend.normalization_components import load_runtime_records
+from frend.rule_composition import (
+    FieldProvider,
+    RuleRecipe,
+    compose_recipes,
+    exact_composition_count,
+    preserve_legacy_ranking,
+)
 
 _LOCALES = locales_for("fraction")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
@@ -31,14 +36,8 @@ def fraction_rule_events() -> Mapping[str, int]:
 @dataclass(frozen=True)
 class FractionRuleBundle:
     locale: str
-    recipes: Mapping[str, tuple[FractionRuleRecipe, ...]]
+    recipes: Mapping[str, tuple[RuleRecipe, ...]]
     records: Mapping[str, Mapping[str, object]]
-
-
-@dataclass(frozen=True)
-class FractionRuleRecipe:
-    tokens: tuple[str, ...]
-    provenance: tuple[str, ...]
 
 
 @cache
@@ -71,7 +70,7 @@ def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
         "percent",
     }:
         raise ValueError(f"fraction-rule bundle {locale!r} has no complete compiled recipes")
-    recipes: dict[str, tuple[FractionRuleRecipe, ...]] = {}
+    recipes: dict[str, tuple[RuleRecipe, ...]] = {}
     for kind, items in raw_recipes.items():
         if not isinstance(kind, str) or not isinstance(items, list) or not items:
             raise ValueError(f"fraction-rule bundle {locale!r} has invalid {kind!r} recipes")
@@ -87,7 +86,7 @@ def load_fraction_rule_bundle(locale: str) -> FractionRuleBundle:
                 isinstance(source, str) for source in provenance
             ):
                 raise ValueError(f"fraction-rule bundle {locale!r} has invalid recipe provenance")
-            compiled.append(FractionRuleRecipe(tuple(tokens), tuple(provenance)))
+            compiled.append(RuleRecipe(tuple(tokens), tuple(provenance)))
         recipes[kind] = tuple(compiled)
     records = load_runtime_records(f"{locale}.json", locale, document.get("normalization_sha256"))
     return FractionRuleBundle(
@@ -414,7 +413,7 @@ def _source_path_count(bundle: FractionRuleBundle, symbols: tuple[str, ...]) -> 
 
 
 @cache
-def _fraction_rule_recipes(locale: str, kind: str) -> tuple[FractionRuleRecipe, ...]:
+def _fraction_rule_recipes(locale: str, kind: str) -> tuple[RuleRecipe, ...]:
     bundle = load_fraction_rule_bundle(locale)
     try:
         return bundle.recipes[kind]
@@ -446,7 +445,12 @@ def _generate(
     symbols = tuple(token.symbol.removeprefix("FIELD:") for token in grammar_input.tokens)
     paths = _source_path_count(bundle, symbols)
     counts = tuple(len(token.realization) for token in grammar_input.tokens)
-    exact_count = paths * math.prod(counts)
+    recipes = _fraction_rule_recipes(bundle.locale, kind)
+    fields = {
+        token.symbol.removeprefix("FIELD:"): FieldProvider(token.realization)
+        for token in grammar_input.tokens
+    }
+    exact_count = exact_composition_count(recipes, fields)
     if exact_count > max_derivations:
         raise ValueError(
             f"fraction generation for {bundle.locale} has field realization counts {counts}, "
@@ -454,94 +458,33 @@ def _generate(
         )
     if exact_count < 1:
         raise ValueError(f"fraction grammar for {bundle.locale} recognized no complete derivation")
-    recipes = _fraction_rule_recipes(bundle.locale, kind)
     if len(recipes) != paths:
         raise ValueError(
             f"fraction grammar for {bundle.locale} {kind} compiled "
             f"{len(recipes)} of {paths} source paths"
         )
-    by_placeholder = {
-        f"\ufff0{token.symbol.removeprefix('FIELD:')}\ufff1": token
-        for token in grammar_input.tokens
-    }
-    alternatives = []
-    for recipe in recipes:
-        fields = [token for token in recipe.tokens if token in by_placeholder]
-        for realizations in product(*(by_placeholder[field].realization for field in fields)):
-            selected = dict(zip(fields, realizations, strict=True))
-            rendered: list[str] = []
-            provenance = [
-                f"fraction-rule:{bundle.locale}",
-                f"lexical:{bundle.locale}",
-                *recipe.provenance,
-            ]
-            prior: list[str] = []
-            weights: list[Decimal | None] = []
-            skip_space_after_omitted_numerator = False
-            for token in recipe.tokens:
-                realization = selected.get(token)
-                if realization is None:
-                    if skip_space_after_omitted_numerator and token.isspace():
-                        skip_space_after_omitted_numerator = False
-                        continue
-                    rendered.append(token)
-                    continue
-                if omit_numerator and token == "\ufff0NUM\ufff1":
-                    skip_space_after_omitted_numerator = True
-                    continue
-                rendered.extend(realization.tokens)
-                provenance.extend(realization.provenance)
-                prior.extend(realization.provenance[:1])
-                weights.append(realization.weight)
-            provenance = list(
-                dict.fromkeys(
-                    item for item in provenance if item and not item.startswith("recipe:")
-                )
-            )
-            prior = list(
-                dict.fromkeys(item for item in prior if item and not item.startswith("recipe:"))
-            )
-            text = render_fraction_tokens(rendered)
-            if kind == "mixed" and bundle.locale == "de_DE":
-                text = text.lower()
-            if "{{WA_GWA}}" in text:
-                whole = selected["\ufff0WHOLE\ufff1"].tokens[0]
-                text = text.replace("{{WA_GWA}}", _korean_mixed_particle(whole))
-            alternatives.append(
-                SpokenAlternative(
-                    text,
-                    "+".join(provenance),
-                    sum(weights, Decimal(0))
-                    if weights and all(item is not None for item in weights)
-                    else None,
-                    prior_provenance="+".join(prior) or None,
-                )
-            )
-    if len(alternatives) != exact_count:
-        raise ValueError(
-            f"fraction generation for {bundle.locale} returned "
-            f"{len(alternatives)} of {exact_count} derivations"
-        )
-    return tuple(alternatives)
 
+    def render(core, suffix, selected):
+        text = render_fraction_tokens(core)
+        if kind == "mixed" and bundle.locale == "de_DE":
+            text = text.lower()
+        if "{{WA_GWA}}" in text:
+            text = text.replace("{{WA_GWA}}", _korean_mixed_particle(selected["WHOLE"].tokens[0]))
+        return text
 
-def _preserve_unchanged_ranking(generated, previous):
-    """Keep the old measurement key, weight, and order for byte-identical readings."""
-    remaining = list(generated)
-    preserved = []
-    for old in previous:
-        match = next((item for item in remaining if item.text == old.text), None)
-        if match is None:
-            continue
-        remaining.remove(match)
-        preserved.append(
-            replace(
-                match,
-                weight=old.weight,
-                prior_provenance=old.prior_provenance or old.provenance,
-            )
-        )
-    return tuple((*preserved, *remaining))
+    return compose_recipes(
+        recipes,
+        fields,
+        base_provenance=(f"fraction-rule:{bundle.locale}", f"lexical:{bundle.locale}"),
+        make=lambda text, provenance, weight, prior: SpokenAlternative(
+            text, provenance, weight, prior_provenance=prior
+        ),
+        render=render,
+        max_derivations=max_derivations,
+        exact_count=exact_count,
+        omit_placeholders=frozenset({"NUM"}) if omit_numerator else frozenset(),
+        provenance_filter=lambda item: bool(item) and not item.startswith("recipe:"),
+    )
 
 
 def generate_fraction_alternatives(
@@ -601,7 +544,7 @@ def generate_fraction_alternatives(
         previous = _spoken_fraction(detection, bundle.locale)
     except NotImplementedError:
         previous = ()
-    ranked = _preserve_unchanged_ranking(generated, previous)
+    ranked = preserve_legacy_ranking(generated, previous, unmatched="drop")
     if (
         bundle.locale == "de_DE"
         and whole is None
@@ -633,4 +576,4 @@ def generate_percent_alternatives(
         )
         for item in _spoken_decimal(amount, bundle.locale)
     )
-    return _preserve_unchanged_ranking(generated, previous)
+    return preserve_legacy_ranking(generated, previous, unmatched="drop")

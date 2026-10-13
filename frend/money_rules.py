@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from decimal import Decimal
 from functools import cache
 from importlib.resources import files
-from itertools import product
 from types import MappingProxyType
 
 import icu
@@ -24,6 +22,13 @@ from tiergraph import (
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 from frend.normalization_components import load_runtime_records
+from frend.rule_composition import (
+    FieldProvider,
+    RuleRecipe,
+    compose_recipes,
+    exact_composition_count,
+    preserve_legacy_ranking,
+)
 
 _LOCALES = locales_for("money")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
@@ -38,15 +43,9 @@ def money_rule_events() -> Mapping[str, int]:
 
 
 @dataclass(frozen=True)
-class MoneyRuleRecipe:
-    tokens: tuple[str, ...]
-    provenance: tuple[str, ...]
-
-
-@dataclass(frozen=True)
 class MoneyRuleBundle:
     locale: str
-    recipes: Mapping[str, tuple[MoneyRuleRecipe, ...]]
+    recipes: Mapping[str, tuple[RuleRecipe, ...]]
     records: Mapping[str, Mapping[str, object]]
 
 
@@ -82,9 +81,7 @@ def load_money_rule_bundle(locale: str) -> MoneyRuleBundle:
     if not isinstance(raw, Mapping):
         raise ValueError(f"money-rule bundle {locale!r} has invalid recipes")
     observed = {
-        key: tuple(
-            MoneyRuleRecipe(tuple(item["tokens"]), tuple(item["provenance"])) for item in values
-        )
+        key: tuple(RuleRecipe(tuple(item["tokens"]), tuple(item["provenance"])) for item in values)
         for key, values in raw.items()
     }
     if any(len(values) != 1 for values in observed.values()):
@@ -203,25 +200,6 @@ def _currency_realization(
     return Realization((text,), (f"normalization-record:{record['id']}",), None)
 
 
-def _preserve_unchanged_ranking(generated, previous):
-    remaining = list(generated)
-    preserved = []
-    for old in previous:
-        match = next((item for item in remaining if item.text == old.text), None)
-        if match is None:
-            preserved.append(old)
-            continue
-        remaining.remove(match)
-        preserved.append(
-            replace(
-                match,
-                weight=old.weight,
-                prior_provenance=old.prior_provenance or old.provenance,
-            )
-        )
-    return tuple((*preserved, *remaining))
-
-
 def generate_money_alternatives(
     value: NumberValue,
     detection: Mapping[str, object],
@@ -266,40 +244,21 @@ def generate_money_alternatives(
     }
     if shape == "major_minor":
         values["MINOR_CURRENCY"] = (_currency_realization(bundle, currency, minor, minor=True),)
-    generated = []
-    for recipe in recipes:
-        symbols = tuple(token[1:-1] for token in recipe.tokens if token.startswith("\ufff0"))
-        exact_count = math.prod(len(values[symbol]) for symbol in symbols)
-        if exact_count < 1 or exact_count > max_derivations:
-            raise ValueError(f"money generation for {bundle.locale} has {exact_count} derivations")
-        for selected in product(*(values[symbol] for symbol in symbols)):
-            by_symbol = dict(zip(symbols, selected, strict=True))
-            rendered = []
-            provenance = [
-                f"money-rule:{bundle.locale}",
-                *(item for item in recipe.provenance if not item.startswith("money-key:")),
-            ]
-            weights = []
-            prior = []
-            for token in recipe.tokens:
-                symbol = token[1:-1] if token.startswith("\ufff0") else None
-                realization = by_symbol.get(symbol)
-                if realization is None:
-                    rendered.append(token)
-                else:
-                    rendered.extend(realization.tokens)
-                    provenance.extend(realization.provenance)
-                    prior.extend(realization.provenance[:1])
-                    weights.append(realization.weight)
-            generated.append(
-                SpokenAlternative(
-                    "".join(rendered),
-                    "+".join(dict.fromkeys(provenance)),
-                    sum((weight for weight in weights if weight is not None), Decimal(0))
-                    if weights and all(weight is not None for weight in weights)
-                    else None,
-                    prior_provenance="+".join(dict.fromkeys(prior)) or None,
-                )
-            )
+    fields = {symbol: FieldProvider(realizations) for symbol, realizations in values.items()}
+    exact_count = exact_composition_count(recipes, fields)
+    if exact_count < 1 or exact_count > max_derivations:
+        raise ValueError(f"money generation for {bundle.locale} has {exact_count} derivations")
+    generated = compose_recipes(
+        recipes,
+        fields,
+        base_provenance=(f"money-rule:{bundle.locale}",),
+        make=lambda text, provenance, weight, prior: SpokenAlternative(
+            text, provenance, weight, prior_provenance=prior
+        ),
+        render=lambda core, suffix, selected: "".join(core),
+        max_derivations=max_derivations,
+        exact_count=exact_count,
+        provenance_filter=lambda item: bool(item) and not item.startswith("money-key:"),
+    )
     previous = _spoken_money(amount, currency, bundle.locale)
-    return _preserve_unchanged_ranking(generated, previous)
+    return preserve_legacy_ranking(generated, previous, unmatched="retain")
