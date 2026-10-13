@@ -161,6 +161,39 @@ def test_capital_letter_hyphen_word_reads_as_a_letter_and_word(written, spoken):
     ]
 
 
+@pytest.mark.parametrize(
+    ("written", "spoken"),
+    [("e-mail", "e mail"), ("X-Men", "x men"), ("DNA-based", "d n a based")],
+)
+def test_letter_or_acronym_hyphen_word_reads_as_letters_and_word(written, spoken):
+    normalized = normalize(written, offsets=True)
+
+    assert normalized.text.strip() == spoken
+    assert [(unit.source_span, unit.reader) for unit in normalized.units] == [
+        ((0, len(written)), "letters:hyphen-word")
+    ]
+
+
+def test_letter_hyphen_word_names_a_wrong_script_lowercase_prefix():
+    written = "β-blocker"
+    normalized = normalize(written, offsets=True)
+
+    assert normalized.text.strip() == "beta blocker"
+    assert [(unit.source_span, unit.reader) for unit in normalized.units] == [
+        ((0, len(written)), "letters:hyphen-word")
+    ]
+
+
+def test_letter_hyphen_word_keeps_an_uppercase_suffix_as_an_acronym():
+    written = "US-UK"
+    normalized = normalize(written, offsets=True)
+
+    assert normalized.text.strip() == "u s u k"
+    assert [(unit.source_span, unit.reader) for unit in normalized.units] == [
+        ((0, len(written)), "letters:hyphen-word")
+    ]
+
+
 @pytest.mark.parametrize("written", ["A-b", "A-β", "A-βή"])
 def test_capital_letter_hyphen_word_requires_a_locale_word_suffix(written):
     detections = [
@@ -175,9 +208,15 @@ def test_capital_letter_hyphen_word_requires_a_locale_word_suffix(written):
     )
 
 
-@pytest.mark.parametrize(("written", "spoken"), [("F-16", "F sixteen"), ("A-1", "A one")])
+@pytest.mark.parametrize(
+    ("written", "spoken"), [("F-16", "F sixteen"), ("A-1", "A one"), ("I-95", "I ninety-five")]
+)
 def test_capital_letter_hyphen_number_keeps_its_reading(written, spoken):
     assert " ".join(normalize(written).split()) == spoken
+
+
+def test_ordinary_hyphenated_word_keeps_its_reading():
+    assert normalize("well-known") == "well-known"
 
 
 def test_hyphenated_serial_requires_authoritative_locale_letter_names():

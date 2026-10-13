@@ -1582,10 +1582,14 @@ def _spoken_letter_hyphen_word(
     profile: str | None = None,
     case_variant_lookup: bool = False,
 ) -> tuple[SpokenAlternative, ...]:
-    """Name the letter, leave the structural hyphen silent, and say the word."""
-    letter = spelled(value.letter, locale)
-    if letter is None:
-        raise NotImplementedError(f"no authoritative letter names for {locale}")
+    """Name the letter sequence, leave the structural hyphen silent, and say the word."""
+    foreign_name = symbol_names(value.letter, locale)[:1]
+    if foreign_name:
+        letter = SpokenAlternative(*foreign_name[0])
+    else:
+        letter = spelled(value.letter, locale)
+        if letter is None:
+            raise NotImplementedError(f"no authoritative letter names for {locale}")
     words = (
         _spoken_letters(
             LettersValue(value.word, value.word, ""),
@@ -1593,7 +1597,7 @@ def _spoken_letter_hyphen_word(
             profile,
             case_variant_lookup,
         )
-        if is_spelled_token(value.word, locale)
+        if is_letter_run(value.word) or is_spelled_token(value.word, locale)
         else (SpokenAlternative(_NFC.normalize(value.word).lower(), "surface:word"),)
     )
     return _compose(((letter,), words), "{} {}")
