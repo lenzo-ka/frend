@@ -25,7 +25,7 @@ from tiergraph import (
     recognize,
 )
 
-from frend.fraction_rules import GENERATED_FRACTION_LOCALES
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 
 REPO = Path(__file__).resolve().parents[1]
@@ -176,7 +176,7 @@ def main() -> int:
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     DATA.mkdir(parents=True, exist_ok=True)
-    for locale in GENERATED_FRACTION_LOCALES:
+    for locale in locales_for("fraction"):
         path = DATA / f"{locale}.json"
         expected = _bytes(build_bundle(locale))
         if args.check:

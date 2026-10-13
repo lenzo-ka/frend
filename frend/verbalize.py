@@ -54,6 +54,7 @@ from frend.electronic import (
     separator_names,
     tld_positions,
 )
+from frend.generated_rule_locales import locales_for
 from frend.grouped_ids import GroupedDigitsValue
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
@@ -1454,17 +1455,13 @@ def _spoken_time(
     value: DateTimeValue, detection: object, locale: str
 ) -> tuple[SpokenAlternative, ...]:
     """Keep English legacy-first; route supported non-English clocks to PR7 rules."""
-    from frend.time_rules import (
-        _WRITTEN_UHR_MARKER,
-        GENERATED_TIME_LOCALES,
-        generate_time_alternatives,
-    )
+    from frend.time_rules import _WRITTEN_UHR_MARKER, generate_time_alternatives
 
     if locale.startswith("en") or (
         locale == "de_DE" and detection.get(_WRITTEN_UHR_MARKER) is not True
     ):
         alternatives = _legacy_spoken_time(value, detection, locale)
-    elif locale in GENERATED_TIME_LOCALES:
+    elif locale in locales_for("time"):
         alternatives = generate_time_alternatives(value, detection, locale)
     else:
         alternatives = _legacy_spoken_time(value, detection, locale)
@@ -2375,19 +2372,7 @@ def _spoken_date(
     detected_value = detection.get("value") if isinstance(detection, Mapping) else None
     if (
         not locale.startswith("en")
-        and locale
-        in {
-            "es_MX",
-            "es_ES",
-            "fr_FR",
-            "de_DE",
-            "pt_BR",
-            "pt_PT",
-            "it_IT",
-            "zh_CN",
-            "ko_KR",
-            "ja_JP",
-        }
+        and locale in locales_for("date")
         and set(fields) in ({"M", "d"}, {"y", "M", "d"})
         and isinstance(detected_value, DateTimeValue)
         and all(dict(detected_value.fields).get(key) == item for key, item in value.fields)
@@ -2517,17 +2502,17 @@ def _spoken_number(
     if not preserve_negative_zero and not decimal:
         decimal = abs(decimal)
     if type_.startswith("fraction:") or type_.startswith("number:fraction"):
-        from frend.fraction_rules import GENERATED_FRACTION_LOCALES, generate_fraction_alternatives
+        from frend.fraction_rules import generate_fraction_alternatives
 
-        if locale in GENERATED_FRACTION_LOCALES:
+        if locale in locales_for("fraction"):
             return generate_fraction_alternatives(detection, locale)
         return _spoken_fraction(detection, locale, negative=decimal.is_signed())
     compact = _capture(detection, "compact")
     if compact is not None:
         if value.currency is not None and locale != "en_US":
-            from frend.money_rules import GENERATED_MONEY_LOCALES, generate_money_alternatives
+            from frend.money_rules import generate_money_alternatives
 
-            if locale in GENERATED_MONEY_LOCALES:
+            if locale in locales_for("money"):
                 try:
                     return generate_money_alternatives(value, detection, locale)
                 except NotImplementedError:
@@ -2548,9 +2533,9 @@ def _spoken_number(
         if value.currency is None:
             raise NotImplementedError("currency reading has no captured ISO currency code")
         if locale != "en_US":
-            from frend.money_rules import GENERATED_MONEY_LOCALES, generate_money_alternatives
+            from frend.money_rules import generate_money_alternatives
 
-            if locale in GENERATED_MONEY_LOCALES:
+            if locale in locales_for("money"):
                 try:
                     return generate_money_alternatives(value, detection, locale)
                 except NotImplementedError:
@@ -2579,9 +2564,9 @@ def _spoken_number(
             digits = "".join(ch for ch in str(integer.text) if ch.isdigit())
             sign = "-" if decimal.is_signed() else ""
             amount = Decimal(f"{sign}{digits or '0'}.{fraction.text}")
-        from frend.fraction_rules import GENERATED_FRACTION_LOCALES, generate_percent_alternatives
+        from frend.fraction_rules import generate_percent_alternatives
 
-        if locale in GENERATED_FRACTION_LOCALES:
+        if locale in locales_for("fraction"):
             return generate_percent_alternatives(amount, detection, locale)
         suffix = _percent_name(locale)
         return tuple(

@@ -26,12 +26,13 @@ from tiergraph import (
     recognize,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 
 REPO = Path(__file__).resolve().parents[1]
 RECORDS = REPO / "frend" / "data" / "normalization"
 DATA = REPO / "frend" / "data" / "money_rules"
-LOCALES = ("es_MX", "fr_FR", "pt_BR", "it_IT", "ko_KR")
+LOCALES = locales_for("money")
 SHAPE_SYMBOLS = {
     "major": ("AMOUNT", "CURRENCY"),
     "major_minor": ("MAJOR", "CURRENCY", "MINOR", "MINOR_CURRENCY"),

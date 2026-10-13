@@ -26,23 +26,13 @@ from tiergraph import (
     recognize,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 
 REPO = Path(__file__).resolve().parents[1]
 RECORDS = REPO / "frend" / "data" / "normalization"
 DATA = REPO / "frend" / "data" / "time_rules"
-LOCALES = (
-    "es_MX",
-    "es_ES",
-    "fr_FR",
-    "de_DE",
-    "pt_BR",
-    "pt_PT",
-    "it_IT",
-    "zh_CN",
-    "ko_KR",
-    "ja_JP",
-)
+LOCALES = locales_for("time")
 SHAPES = ("H", "HM", "HMS", "PH", "PHM", "PHMS")
 
 

@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from frend import normalize, prewarm
-from frend.fraction_rules import GENERATED_FRACTION_LOCALES
+from frend.generated_rule_locales import locales_for
 
-LOCALES = (*GENERATED_FRACTION_LOCALES, "en_US")
+LOCALES = (*locales_for("fraction"), "en_US")
 
 
 def cases():

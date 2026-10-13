@@ -10,6 +10,7 @@ from icukit.detectors import NumberValue
 from tiergraph import Realization
 
 from frend import resolve_lattice, verbalize_edge
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 from frend.normalize import _reading_detectors
 
@@ -25,7 +26,7 @@ except ModuleNotFoundError as error:
     money_grammar_input = None
     money_rule_events = None
 else:
-    GENERATED_MONEY_LOCALES = money_rules_module.GENERATED_MONEY_LOCALES
+    GENERATED_MONEY_LOCALES = locales_for("money")
     generate_money_alternatives = money_rules_module.generate_money_alternatives
     load_money_rule_bundle = money_rules_module.load_money_rule_bundle
     money_grammar_input = money_rules_module.money_grammar_input

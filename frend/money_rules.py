@@ -24,9 +24,10 @@ from tiergraph import (
     grammar_loads,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 
-GENERATED_MONEY_LOCALES = ("es_MX", "fr_FR", "pt_BR", "it_IT", "ko_KR")
+_LOCALES = locales_for("money")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
 
 
@@ -96,7 +97,7 @@ def _declaration_recipes(
 def load_money_rule_bundle(locale: str) -> MoneyRuleBundle:
     _EVENTS["load"] += 1
     locale = canonical_locale(locale)
-    if locale not in GENERATED_MONEY_LOCALES:
+    if locale not in _LOCALES:
         raise ValueError(f"no generated money-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "money_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))

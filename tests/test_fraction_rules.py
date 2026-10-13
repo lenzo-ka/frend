@@ -12,17 +12,18 @@ from icukit.detectors import detect
 
 from frend import normalize, prewarm
 from frend.fraction_rules import (
-    GENERATED_FRACTION_LOCALES,
     _denominator_realizations,
     _validate_compiled_recipes,
     generate_fraction_alternatives,
     load_fraction_rule_bundle,
     render_fraction_tokens,
 )
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 from frend.normalize import _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
+GENERATED_FRACTION_LOCALES = locales_for("fraction")
 
 
 def _fraction_detection(locale: str, text: str) -> dict:

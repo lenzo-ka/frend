@@ -17,20 +17,10 @@ import icu
 from icukit.detectors import DateTimeValue
 from tiergraph import GrammarDeclaration, GrammarHole, Realization, grammar_loads
 
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 
-GENERATED_TIME_LOCALES = (
-    "es_MX",
-    "es_ES",
-    "fr_FR",
-    "de_DE",
-    "pt_BR",
-    "pt_PT",
-    "it_IT",
-    "zh_CN",
-    "ko_KR",
-    "ja_JP",
-)
+_LOCALES = locales_for("time")
 _SHAPES = ("H", "HM", "HMS", "PH", "PHM", "PHMS")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
 _WRITTEN_UHR_MARKER = "_frend_written_uhr"
@@ -122,7 +112,7 @@ def _declaration_recipes(declaration: GrammarDeclaration) -> dict[str, tuple[Tim
 def load_time_rule_bundle(locale: str) -> TimeRuleBundle:
     _EVENTS["load"] += 1
     locale = canonical_locale(locale)
-    if locale not in GENERATED_TIME_LOCALES:
+    if locale not in _LOCALES:
         raise ValueError(f"no generated time-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "time_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))

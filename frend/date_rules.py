@@ -31,20 +31,10 @@ from tiergraph import (
     recognize,
 )
 
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 
-GENERATED_DATE_LOCALES = (
-    "es_MX",
-    "es_ES",
-    "fr_FR",
-    "de_DE",
-    "pt_BR",
-    "pt_PT",
-    "it_IT",
-    "zh_CN",
-    "ko_KR",
-    "ja_JP",
-)
+_LOCALES = locales_for("date")
 _EVENTS = {"load": 0, "lower": 0, "generate": 0}
 
 
@@ -101,7 +91,7 @@ def _validate_field_holes(declaration: GrammarDeclaration) -> None:
 def load_date_rule_bundle(locale: str) -> DateRuleBundle:
     _EVENTS["load"] += 1
     locale = canonical_locale(locale)
-    if locale not in GENERATED_DATE_LOCALES:
+    if locale not in _LOCALES:
         raise ValueError(f"no generated date-rule bundle for {locale!r}")
     resource = files("frend").joinpath("data", "date_rules", f"{locale}.json")
     document = json.loads(resource.read_text(encoding="utf-8"))

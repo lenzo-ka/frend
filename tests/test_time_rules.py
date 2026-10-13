@@ -10,14 +10,16 @@ from icukit.detectors import Capture, DateTimeValue
 from tiergraph import GrammarHole, grammar_loads
 
 from frend import normalize, resolve_lattice, verbalize_edge
+from frend.generated_rule_locales import locales_for
 from frend.normalization_schema import validate_bundle
 from frend.runtime import prewarm
 from frend.time_rules import (
-    GENERATED_TIME_LOCALES,
     generate_time_alternatives,
     load_time_rule_bundle,
     time_rule_events,
 )
+
+GENERATED_TIME_LOCALES = locales_for("time")
 
 REPO = Path(__file__).resolve().parents[1]
 
