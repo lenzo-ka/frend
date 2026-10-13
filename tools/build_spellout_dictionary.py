@@ -18,24 +18,20 @@ from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-import icu
-
 _REPO = Path(__file__).resolve().parents[1]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from build_spoken_priors import _default_corpus_dir  # noqa: E402
-from google_tn_rows import corpus_label, expected, full_training_set  # noqa: E402
+from google_tn_rows import corpus_label, full_training_set  # noqa: E402
 
 from frend.letters import (  # noqa: E402
     is_spelled_token,
-    spelled,
     spelled_token_rule,
     split_acronym_surface,
 )
-from frend.spoken_priors import normalize_spoken  # noqa: E402
+from tools.literal_spell_say import literal_spell_say, normalize_literal  # noqa: E402
 
-_NFC = icu.Normalizer2.getNFCInstance()
 _OUT = _REPO / "frend" / "data" / "en" / "spellout_dictionary.json"
 GOOGLE_SOURCE = "google/tn-en_with_types"
 MINIMUM_SUPPORT = 5
@@ -52,22 +48,7 @@ def _eligible(surface: str, locale: str = "en_US") -> bool:
 
 def literal_outcome(corpus_class: str, written: str, spoken: str, locale: str) -> str | None:
     """Return a label only when the corpus row literally says or spells ``written``."""
-    if corpus_class not in {"LETTERS", "PLAIN"}:
-        return None
-    written = _NFC.normalize(written)
-    if not _eligible(written, locale):
-        return None
-    target = expected(corpus_class, written, spoken)
-    if corpus_class == "PLAIN" and target == normalize_spoken(written):
-        return "say"
-    letter_form = spelled(written, locale)
-    if (
-        corpus_class == "LETTERS"
-        and letter_form is not None
-        and target == normalize_spoken(letter_form.text)
-    ):
-        return "spell"
-    return None
+    return literal_spell_say(corpus_class, written, spoken, locale, eligible=_eligible)
 
 
 def _count_file(job) -> dict[str, dict[str, int]]:
@@ -84,7 +65,7 @@ def _count_file(job) -> dict[str, dict[str, int]]:
             parts = line.rstrip("\n").split("\t")
             if len(parts) < 3:
                 continue
-            surface = _NFC.normalize(parts[1])
+            surface = normalize_literal(parts[1])
             if (label := literal_outcome(parts[0], surface, parts[2], locale)) is not None:
                 counts[surface][label] += 1
     return {surface: dict(labels) for surface, labels in counts.items()}
@@ -164,7 +145,7 @@ def _lexicon_abbreviations(path: Path) -> set[str]:
             form, kind, _case, _sense, _expansion, tags = row
             labels = {kind, *(tag.casefold() for tag in tags.split(","))}
             if labels & {"abbrev", "abbreviation", "acronym", "initialism"}:
-                forms.add(_NFC.normalize(form))
+                forms.add(normalize_literal(form))
     return forms
 
 
@@ -215,7 +196,7 @@ def wiktionary_ordinary_words(path: Path, candidates: set[str]) -> set[str]:
     with handle_context as handle:
         for line in handle:
             entry = json.loads(line)
-            word = _NFC.normalize(str(entry.get("word", "")))
+            word = normalize_literal(str(entry.get("word", "")))
             if word not in evidence:
                 continue
             state = evidence[word]
@@ -227,7 +208,7 @@ def wiktionary_ordinary_words(path: Path, candidates: set[str]) -> set[str]:
             for sense in senses:
                 labels = {str(tag).casefold() for tag in sense.get("tags") or ()}
                 related = {
-                    _NFC.normalize(str(link.get("word", "")))
+                    normalize_literal(str(link.get("word", "")))
                     for field in ("form_of", "alt_of")
                     for link in sense.get(field) or ()
                     if isinstance(link, dict)

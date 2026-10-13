@@ -54,6 +54,7 @@ from frend.electronic import (
     separator_names,
     tld_positions,
 )
+from frend.external_profile import verified_profile_key
 from frend.generated_rule_locales import locales_for
 from frend.grouped_ids import GroupedDigitsValue
 from frend.input_limits import (
@@ -1833,9 +1834,6 @@ def _google_tn_britishisms(*, locale: str = "en_US"):
     return britishisms
 
 
-_PROFILE_FILE_KEYS: dict[str, tuple[tuple[int, int, int, int, int], tuple[str, int, int, str]]] = {}
-
-
 def _missing_profile(path: Path) -> FileNotFoundError:
     return FileNotFoundError(
         f"{GOOGLE_TN!r} profile data is missing at {path}; build it from your licensed "
@@ -1845,32 +1843,13 @@ def _missing_profile(path: Path) -> FileNotFoundError:
 
 def _profile_file_key(path: Path) -> tuple[str, int, int, str]:
     """Resolved path, mtime, size and digest, refreshed on filesystem replacement."""
-    resolved = path.expanduser().resolve()
-    try:
-        stat = resolved.stat()
-    except FileNotFoundError:
-        raise _missing_profile(resolved) from None
-    freshness = (stat.st_dev, stat.st_ino, stat.st_ctime_ns, stat.st_mtime_ns, stat.st_size)
-    cached = _PROFILE_FILE_KEYS.get(str(resolved))
-    if cached is not None and cached[0] == freshness:
-        return cached[1]
-    try:
-        content = resolved.read_bytes()
-        after = resolved.stat()
-    except FileNotFoundError:
-        raise _missing_profile(resolved) from None
-    after_freshness = (
-        after.st_dev,
-        after.st_ino,
-        after.st_ctime_ns,
-        after.st_mtime_ns,
-        after.st_size,
+    return verified_profile_key(
+        path,
+        missing=_missing_profile,
+        changed=lambda resolved: ValueError(
+            f"{GOOGLE_TN!r} profile data changed while being read at {resolved}"
+        ),
     )
-    if freshness != after_freshness:
-        raise ValueError(f"{GOOGLE_TN!r} profile data changed while being read at {resolved}")
-    key = (str(resolved), stat.st_mtime_ns, stat.st_size, hashlib.sha256(content).hexdigest())
-    _PROFILE_FILE_KEYS[str(resolved)] = (freshness, key)
-    return key
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
