@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import unicodedata
 from dataclasses import dataclass
@@ -13,9 +15,12 @@ from phonenumbers import (
     Leniency,
     NumberParseException,
     PhoneMetadata,
+    PhoneNumberFormat,
     PhoneNumberMatcher,
+    format_number,
     is_valid_number,
     national_significant_number,
+    number_type,
     parse,
 )
 
@@ -26,11 +31,14 @@ from frend.artifact_policy import (
     require_policy,
     strict_majority,
 )
+from frend.generated_rule_locales import locales_for
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 from frend.shape import ascii_width_shape
 
 __all__ = [
     "TelephoneDetector",
+    "TelephoneFormat",
+    "RegionalTelephoneValue",
     "TelephoneValue",
     "telephone_shape",
 ]
@@ -222,12 +230,86 @@ def _left_context(text: str, start: int) -> str | None:
 
 
 @dataclass(frozen=True)
+class TelephoneFormat:
+    """A sourced regional format selected from installed libphonenumber metadata."""
+
+    region: str
+    scope: str
+    descriptor_sha256: str
+    rule: str
+    groups: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class TelephoneValue:
     """Digit groups, reading signatures, and an optional explicit country code."""
 
     groups: tuple[str, ...]
     readings: tuple[tuple[tuple[str, ...], int], ...]
     country_code: str | None = None
+
+
+@dataclass(frozen=True)
+class RegionalTelephoneValue(TelephoneValue):
+    """A non-English telephone value authorized by one sourced regional rule."""
+
+    matched_format: TelephoneFormat | None = None
+
+
+def _descriptor_sha256(descriptor: object) -> str:
+    document = {key: value for key, value in vars(descriptor).items() if key != "_mutable"}
+    canonical = json.dumps(document, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _selected_descriptor(region: str, national: str):
+    metadata = PhoneMetadata.metadata_for_region(region)
+    if metadata is None:
+        return None
+    for descriptor in metadata.number_format:
+        leading = descriptor.leading_digits_pattern
+        if leading and re.match(leading[-1], national) is None:
+            continue
+        if re.fullmatch(descriptor.pattern, national) is not None:
+            return descriptor
+    return None
+
+
+def _regional_match(surface: str, number: object, locale: str) -> TelephoneFormat | None:
+    """Match one shipped national route and fail closed on metadata or surface drift."""
+    if locale not in locales_for("telephone") or surface.startswith("+"):
+        return None
+    from frend.telephone_rules import regional_telephone_formats
+
+    region = _phone_region(locale)
+    if region is None or format_number(number, PhoneNumberFormat.NATIONAL) != surface:
+        return None
+    national = national_significant_number(number)
+    descriptor = _selected_descriptor(region, national)
+    if descriptor is None:
+        return None
+    digest = _descriptor_sha256(descriptor)
+    rules = regional_telephone_formats(locale)
+    rule = next(
+        (
+            item
+            for item in rules
+            if item.region == region
+            and item.scope == "national"
+            and item.descriptor_sha256 == digest
+            and number_type(number) in item.number_types
+        ),
+        None,
+    )
+    if rule is None:
+        return None
+    match = re.fullmatch(descriptor.pattern, national)
+    if match is None:
+        return None
+    groups = list(match.groups())
+    if rule.trunk_prefix:
+        groups[0] = rule.trunk_prefix + groups[0]
+    return TelephoneFormat(region, "national", digest, rule.id, tuple(groups))
 
 
 @lru_cache(maxsize=LOCALE_CACHE)
@@ -335,7 +417,8 @@ class TelephoneDetector:
 
     def detect(self, text: str) -> list[dict]:
         table, left_context_vetoes = _prior(self.locale)
-        if not table:
+        regional = self.locale in locales_for("telephone")
+        if not table and not regional:
             return []
         region = _phone_region(self.locale)
         general_pattern = _general_phone_pattern(region) if region is not None else None
@@ -363,8 +446,16 @@ class TelephoneDetector:
                 else _phone_groups(surface)
             )
             readings = None
+            matched_format = None
             national = national_significant_number(number)
-            if groups is not None:
+            if regional:
+                matched_format = _regional_match(surface, number, self.locale)
+                if matched_format is not None:
+                    groups = matched_format.groups
+                    readings = ((tuple("digits" for _group in groups), 1),)
+                else:
+                    groups = None
+            if groups is not None and not regional:
                 if (
                     country_code is not None
                     and "".join(groups) == national
@@ -381,13 +472,18 @@ class TelephoneDetector:
                 continue
             if _left_context(text, match.start) in left_context_vetoes:
                 continue
+            value = (
+                RegionalTelephoneValue(groups, readings, country_code, matched_format)
+                if matched_format is not None
+                else TelephoneValue(groups, readings, country_code)
+            )
             found.append(
                 {
                     "text": surface,
                     "start": match.start,
                     "end": match.end,
                     "type": "telephone:number",
-                    "value": TelephoneValue(groups, readings, country_code),
+                    "value": value,
                     "captures": (
                         Capture(
                             "telephone",

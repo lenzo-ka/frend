@@ -1,0 +1,23 @@
+{
+  "schema": "frend-normalization/2", "locale": "pt_PT",
+  "provenance": {"source": "frend/curated"}, "versions": {"phonenumbers": "9.0.41"},
+  "sources": [
+    {"id": "libphonenumber", "receipt": "libphonenumber-9.0.41.json"},
+    {"id": "acapela/tts-language-manuals", "receipt": "acapela-telephone-pt-PT.json"}
+  ],
+  "selectors": [], "resources": [],
+  "rules": [{
+    "id": "telephone-pt-lisbon", "kind": "telephone-speech-rule",
+    "fields": ["group1", "group2", "group3"], "directions": ["tn"],
+    "target": ["GROUP1", " sil ", "GROUP2", " sil ", "GROUP3"],
+    "value": {"region": "PT", "scope": "national", "metadata_version": "9.0.41", "descriptor_sha256": "63b57cc65bd99d1210818993de7dd3aa47284831d9ebd074e8a91900fd3a37e1", "number_types": ["fixed"], "trunk_prefix": "", "group_modes": ["digits", "digits", "digits"], "max_derivations": 128},
+    "source_category": "vendor documentation", "provenance_status": "provisional",
+    "gender": null, "number": null,
+    "derived_from": ["libphonenumber#pt-national-lisbon", "acapela/tts-language-manuals#pt-telephone-groups"]
+  }],
+  "weights": [], "curated_rows": [],
+  "ancestry": {
+    "libphonenumber#pt-national-lisbon": ["fd7266a89399db9be54f4e5b8ff5b7969d431d232eec9896d03621f6764a0c86"],
+    "acapela/tts-language-manuals#pt-telephone-groups": ["b8bbeeb36502b86470a6ae61c8d5663f2ff5457abd6bd3e7aa877c9e1b8f85bc"]
+  }
+}

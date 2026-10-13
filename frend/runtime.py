@@ -51,12 +51,15 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
             # would defeat the fraction path's first-use laziness.
             from frend.date_rules import load_date_rule_bundle
             from frend.money_rules import load_money_rule_bundle
+            from frend.telephone_rules import regional_telephone_formats
             from frend.time_rules import load_time_rule_bundle
 
             load_date_rule_bundle(locale)
             load_time_rule_bundle(locale)
             if locale in locales_for("money"):
                 load_money_rule_bundle(locale)
+            if locale in locales_for("telephone"):
+                regional_telephone_formats(locale)
     return order
 
 

@@ -1,0 +1,190 @@
+{
+  "counts": {
+    "fr_FR": 2,
+    "pt_BR": 1,
+    "pt_PT": 2
+  },
+  "development_only": true,
+  "phonenumbers": "9.0.41",
+  "rows": [
+    {
+      "capture_groups": [
+        "1",
+        "23",
+        "45",
+        "67",
+        "89"
+      ],
+      "descriptor_audit": {
+        "domestic_carrier_code_formatting_rule": null,
+        "format": "\\1 \\2 \\3 \\4 \\5",
+        "leading_digits_pattern": [
+          "[1-79]"
+        ],
+        "national_prefix_formatting_rule": "0\\1",
+        "national_prefix_optional_when_formatting": null,
+        "pattern": "(\\d)(\\d{2})(\\d{2})(\\d{2})(\\d{2})"
+      },
+      "descriptor_sha256": "105b901824f43bd0e54658b9713ba60dc08bfea1ed430f5d1cf75fbf42e66e32",
+      "exclusion_verdict": "eligible",
+      "id": "fr-fixed",
+      "locale": "fr_FR",
+      "metadata_version": "9.0.41",
+      "national_significant_number": "123456789",
+      "prefix_handling": "trunk-zero",
+      "region": "FR",
+      "scope": "national",
+      "source_claim": "pr10-001",
+      "source_record_id": "telephone-fr-fixed",
+      "surface_sha256": "f3210253245bd6c8eaf813ecdfddaa5662469633e834ce649c30e535ccfde90e",
+      "written_groups": [
+        "01",
+        "23",
+        "45",
+        "67",
+        "89"
+      ]
+    },
+    {
+      "capture_groups": [
+        "6",
+        "12",
+        "34",
+        "56",
+        "78"
+      ],
+      "descriptor_audit": {
+        "domestic_carrier_code_formatting_rule": null,
+        "format": "\\1 \\2 \\3 \\4 \\5",
+        "leading_digits_pattern": [
+          "[1-79]"
+        ],
+        "national_prefix_formatting_rule": "0\\1",
+        "national_prefix_optional_when_formatting": null,
+        "pattern": "(\\d)(\\d{2})(\\d{2})(\\d{2})(\\d{2})"
+      },
+      "descriptor_sha256": "105b901824f43bd0e54658b9713ba60dc08bfea1ed430f5d1cf75fbf42e66e32",
+      "exclusion_verdict": "eligible",
+      "id": "fr-mobile",
+      "locale": "fr_FR",
+      "metadata_version": "9.0.41",
+      "national_significant_number": "612345678",
+      "prefix_handling": "trunk-zero",
+      "region": "FR",
+      "scope": "national",
+      "source_claim": "pr10-001",
+      "source_record_id": "telephone-fr-mobile",
+      "surface_sha256": "1022c1b892045d474331021c671e4678fe5dde53d4bc89470ab7aff5c7ea4738",
+      "written_groups": [
+        "06",
+        "12",
+        "34",
+        "56",
+        "78"
+      ]
+    },
+    {
+      "capture_groups": [
+        "11",
+        "96123",
+        "4567"
+      ],
+      "descriptor_audit": {
+        "domestic_carrier_code_formatting_rule": "0 $CC (\\1)",
+        "format": "\\1 \\2-\\3",
+        "leading_digits_pattern": [
+          "[16][1-9]|[2-57-9]"
+        ],
+        "national_prefix_formatting_rule": "(\\1)",
+        "national_prefix_optional_when_formatting": null,
+        "pattern": "(\\d{2})(\\d{5})(\\d{4})"
+      },
+      "descriptor_sha256": "9efbb2436de44bc435f927106d3eaa69a1fd32ad9951749c8daf7a34e281d59a",
+      "exclusion_verdict": "eligible",
+      "id": "br-mobile",
+      "locale": "pt_BR",
+      "metadata_version": "9.0.41",
+      "national_significant_number": "11961234567",
+      "prefix_handling": "none",
+      "region": "BR",
+      "scope": "national",
+      "source_claim": "pr10-006",
+      "source_record_id": "telephone-br-mobile",
+      "surface_sha256": "1842af6e0cfe660525bb45172b997f49ec74cc783232fbeb2b621c86c2fc6ad1",
+      "written_groups": [
+        "11",
+        "96123",
+        "4567"
+      ]
+    },
+    {
+      "capture_groups": [
+        "21",
+        "234",
+        "5678"
+      ],
+      "descriptor_audit": {
+        "domestic_carrier_code_formatting_rule": null,
+        "format": "\\1 \\2 \\3",
+        "leading_digits_pattern": [
+          "2[12]"
+        ],
+        "national_prefix_formatting_rule": null,
+        "national_prefix_optional_when_formatting": null,
+        "pattern": "(\\d{2})(\\d{3})(\\d{4})"
+      },
+      "descriptor_sha256": "63b57cc65bd99d1210818993de7dd3aa47284831d9ebd074e8a91900fd3a37e1",
+      "exclusion_verdict": "eligible",
+      "id": "pt-lisbon",
+      "locale": "pt_PT",
+      "metadata_version": "9.0.41",
+      "national_significant_number": "212345678",
+      "prefix_handling": "none",
+      "region": "PT",
+      "scope": "national",
+      "source_claim": "pr10-009",
+      "source_record_id": "telephone-pt-lisbon",
+      "surface_sha256": "d3b8321969222073f25ebb846902ba36e6622c63bb7ca73b4287150887144f39",
+      "written_groups": [
+        "21",
+        "234",
+        "5678"
+      ]
+    },
+    {
+      "capture_groups": [
+        "21",
+        "203",
+        "0405"
+      ],
+      "descriptor_audit": {
+        "domestic_carrier_code_formatting_rule": null,
+        "format": "\\1 \\2 \\3",
+        "leading_digits_pattern": [
+          "2[12]"
+        ],
+        "national_prefix_formatting_rule": null,
+        "national_prefix_optional_when_formatting": null,
+        "pattern": "(\\d{2})(\\d{3})(\\d{4})"
+      },
+      "descriptor_sha256": "63b57cc65bd99d1210818993de7dd3aa47284831d9ebd074e8a91900fd3a37e1",
+      "exclusion_verdict": "eligible",
+      "id": "pt-lisbon-zero",
+      "locale": "pt_PT",
+      "metadata_version": "9.0.41",
+      "national_significant_number": "212030405",
+      "prefix_handling": "none",
+      "region": "PT",
+      "scope": "national",
+      "source_claim": "pr10-009",
+      "source_record_id": "telephone-pt-lisbon",
+      "surface_sha256": "f018bde7296bb8957bb8231cf3e4c74ac580d07cbf989ba9eeac54435a49f3fb",
+      "written_groups": [
+        "21",
+        "203",
+        "0405"
+      ]
+    }
+  ],
+  "schema": 1
+}

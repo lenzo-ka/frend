@@ -1,0 +1,37 @@
+{
+  "rows": [
+    {
+      "detections": [],
+      "id": "fr-fixed",
+      "locale": "fr_FR",
+      "written_sha256": "f3210253245bd6c8eaf813ecdfddaa5662469633e834ce649c30e535ccfde90e"
+    },
+    {
+      "detections": [],
+      "id": "fr-mobile",
+      "locale": "fr_FR",
+      "written_sha256": "1022c1b892045d474331021c671e4678fe5dde53d4bc89470ab7aff5c7ea4738"
+    },
+    {
+      "detections": [],
+      "id": "br-mobile",
+      "locale": "pt_BR",
+      "written_sha256": "1842af6e0cfe660525bb45172b997f49ec74cc783232fbeb2b621c86c2fc6ad1"
+    },
+    {
+      "detections": [],
+      "id": "pt-lisbon",
+      "locale": "pt_PT",
+      "written_sha256": "d3b8321969222073f25ebb846902ba36e6622c63bb7ca73b4287150887144f39"
+    },
+    {
+      "detections": [],
+      "id": "pt-lisbon-zero",
+      "locale": "pt_PT",
+      "written_sha256": "f018bde7296bb8957bb8231cf3e4c74ac580d07cbf989ba9eeac54435a49f3fb"
+    }
+  ],
+  "rows_sha256": "6efe024b930bbf4855ad610f005c5e3397db085d5304c2d2f17ae22a0a167f14",
+  "schema": 1,
+  "subject_head": "b15eac60d1a996ea2c2710edfacd56a0648b1c41"
+}

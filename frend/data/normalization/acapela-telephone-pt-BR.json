@@ -1,0 +1,12 @@
+{
+  "fetch_method": "vendor documentation download",
+  "fetched_at": "2026-10-13T12:00:00-04:00",
+  "license": "not stated",
+  "license_sha256": "109df22c5a753d340af3ecee225f7a2a432a65dedfb163736943dfa7af638104",
+  "locator": "https://download.mytobiidynavox.com/Voices/AcapelaDocumentation/AcapelaLanguageManual_pt-BR.pdf",
+  "manual_citation": true,
+  "revision": "Acapela Language Manual pt-BR, page 16",
+  "sha256": "36aeb8a12ad815bc68233b728fabc296c43be6ec2f9e541e691c9244cfd9288a",
+  "source": "acapela/tts-language-manuals",
+  "transform_command": "manual source-claim transcription"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "fr_FR",
+  "provenance": {"source": "frend/curated"},
+  "versions": {"phonenumbers": "9.0.41"},
+  "sources": [
+    {"id": "libphonenumber", "receipt": "libphonenumber-9.0.41.json"},
+    {"id": "acapela/tts-language-manuals", "receipt": "acapela-telephone-fr-FR.json"}
+  ],
+  "selectors": [],
+  "resources": [],
+  "rules": [
+    {
+      "id": "telephone-fr-fixed", "kind": "telephone-speech-rule",
+      "fields": ["group1", "group2", "group3", "group4", "group5"],
+      "directions": ["tn"], "target": ["GROUP1", " sil ", "GROUP2", " sil ", "GROUP3", " sil ", "GROUP4", " sil ", "GROUP5"],
+      "value": {"region": "FR", "scope": "national", "metadata_version": "9.0.41", "descriptor_sha256": "105b901824f43bd0e54658b9713ba60dc08bfea1ed430f5d1cf75fbf42e66e32", "number_types": ["fixed"], "trunk_prefix": "0", "group_modes": ["digits", "cardinal", "cardinal", "cardinal", "cardinal"], "max_derivations": 128},
+      "source_category": "vendor documentation", "provenance_status": "provisional",
+      "gender": null, "number": null,
+      "derived_from": ["libphonenumber#fr-national-general", "acapela/tts-language-manuals#fr-telephone-groups"]
+    },
+    {
+      "id": "telephone-fr-mobile", "kind": "telephone-speech-rule",
+      "fields": ["group1", "group2", "group3", "group4", "group5"],
+      "directions": ["tn"], "target": ["GROUP1", " sil ", "GROUP2", " sil ", "GROUP3", " sil ", "GROUP4", " sil ", "GROUP5"],
+      "value": {"region": "FR", "scope": "national", "metadata_version": "9.0.41", "descriptor_sha256": "105b901824f43bd0e54658b9713ba60dc08bfea1ed430f5d1cf75fbf42e66e32", "number_types": ["mobile"], "trunk_prefix": "0", "group_modes": ["digits", "cardinal", "cardinal", "cardinal", "cardinal"], "max_derivations": 128},
+      "source_category": "vendor documentation", "provenance_status": "provisional",
+      "gender": null, "number": null,
+      "derived_from": ["libphonenumber#fr-national-general", "acapela/tts-language-manuals#fr-telephone-groups"]
+    }
+  ],
+  "weights": [], "curated_rows": [],
+  "ancestry": {
+    "libphonenumber#fr-national-general": ["fd7266a89399db9be54f4e5b8ff5b7969d431d232eec9896d03621f6764a0c86"],
+    "acapela/tts-language-manuals#fr-telephone-groups": ["02ed8cfaf7052bd2b9c81d7b5011745f671e6c476a64f2da782b1351aeef78af"]
+  }
+}

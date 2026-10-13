@@ -3340,6 +3340,10 @@ def _telephone_group(digits: str, mode: str, locale: str) -> tuple[SpokenAlterna
 
 def _spoken_telephone(value: TelephoneValue, locale: str) -> tuple[SpokenAlternative, ...]:
     """Render telephone groups; Google-TN's embedded ``sil`` is load-bearing."""
+    if getattr(value, "matched_format", None) is not None:
+        from frend.telephone_rules import generate_telephone_alternatives
+
+        return generate_telephone_alternatives(value, locale)
     total = sum(count for _modes, count in value.readings)
     prefix: tuple[SpokenAlternative, ...] = ()
     source = "measured:telephone"
