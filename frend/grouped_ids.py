@@ -11,6 +11,7 @@ from functools import lru_cache
 from icukit.detectors import Capture
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
+from frend.shape import ascii_width_shape
 
 __all__ = [
     "GroupedDigitsDetector",
@@ -25,19 +26,7 @@ _SHAPE = re.compile(r"N[1-9][0-9]*(?:[- ]N[1-9][0-9]*)+(?:[- ]X)?\Z")
 
 def grouped_id_shape(text: str) -> str:
     """A width-preserving ASCII shape (``0-306-40615-2`` -> ``N1-N3-N5-N1``)."""
-    out: list[str] = []
-    at = 0
-    while at < len(text):
-        if text[at] in "0123456789":
-            end = at + 1
-            while end < len(text) and text[end] in "0123456789":
-                end += 1
-            out.append(f"N{end - at}")
-            at = end
-        else:
-            out.append(text[at].upper())
-            at += 1
-    return "".join(out)
+    return ascii_width_shape(text, str.upper)
 
 
 def _groups(text: str) -> tuple[str, ...] | None:

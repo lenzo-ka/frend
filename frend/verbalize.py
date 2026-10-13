@@ -77,6 +77,10 @@ from frend.letters import (
     spellout_dictionary_entry,
     split_acronym_surface,
 )
+from frend.lexical_boundaries import (
+    letter_bearing_hyphenated_alnum_before,
+    separator_classes,
+)
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms
 from frend.number_priors import load_number_priors
 from frend.profiles import (
@@ -3281,9 +3285,12 @@ def range_separators(locale: str) -> frozenset[str]:
 def _range_separators(locale: str, lexical, lexical_for) -> frozenset[str]:
     if _range_connector(locale, lexical, lexical_for) is None:
         return frozenset()
-    written = set((lexical("range.separator", locale) or {}).get("range", ()))
-    cldr = cldr_range_separator(locale)
-    return frozenset(written | ({cldr} if cldr else set()))
+    connector = _range_connector(locale, lexical, lexical_for)
+    connectors = {} if connector is None else {"range": (connector,)}
+    written = lexical("range.separator", locale) or {}
+    return separator_classes(connectors, written, cldr_range_separator(locale)).get(
+        "range", frozenset()
+    )
 
 
 # The digit groups a separator joins (``frend.ranges.digit_groups``, R3's chain).
@@ -3297,22 +3304,6 @@ def _is_identifier(text: str, start: int, end: int, separators: frozenset[str]) 
     ("555-1212")."""
     groups = _digit_groups(text, start, end, separators)
     return len(groups) >= 3 or groups == [3, 4]
-
-
-def _letter_bearing_hyphenated_alnum_before(text: str, end: int) -> bool:
-    """Whether the joined hyphenated alphanumeric run before ``end`` has a letter."""
-    cursor = end
-    while True:
-        group_end = cursor
-        while cursor > 0 and text[cursor - 1].isalnum():
-            cursor -= 1
-        if cursor == group_end:
-            return False
-        if any(char.isalpha() for char in text[cursor:group_end]):
-            return True
-        if cursor == 0 or text[cursor - 1] != "-":
-            return False
-        cursor -= 1
 
 
 def _range_to(
@@ -3341,7 +3332,7 @@ def _range_to(
         return None
     if not between_numbers(context.text, a, b):
         return None
-    if _letter_bearing_hyphenated_alnum_before(context.text, a):
+    if letter_bearing_hyphenated_alnum_before(context.text, a):
         return None
     if _is_identifier(context.text, a, b, separators):
         return None

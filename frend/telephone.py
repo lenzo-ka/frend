@@ -20,6 +20,7 @@ from phonenumbers import (
 )
 
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
+from frend.shape import ascii_width_shape
 
 __all__ = [
     "TelephoneDetector",
@@ -58,19 +59,7 @@ _LEFT_CONTEXT_LENGTHS = frozenset({"1", "2", "3", "4", "5-8", "9+"})
 
 def telephone_shape(text: str) -> str:
     """A digit-width-preserving surface shape (``212-555-1212`` -> ``N3-N3-N4``)."""
-    out: list[str] = []
-    at = 0
-    while at < len(text):
-        if text[at] in "0123456789":
-            end = at + 1
-            while end < len(text) and text[end] in "0123456789":
-                end += 1
-            out.append(f"N{end - at}")
-            at = end
-        else:
-            out.append(text[at])
-            at += 1
-    return "".join(out)
+    return ascii_width_shape(text, lambda character: character)
 
 
 def telephone_reading_key(groups: tuple[str, ...]) -> str:

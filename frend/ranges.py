@@ -59,6 +59,10 @@ from icukit.engine import DATE_INTERVAL_FAMILY, Family, generated_detectors, ran
 
 from frend.abbreviation_variants import abbreviation_expansions
 from frend.durations import fractional_duration_shape
+from frend.lexical_boundaries import (
+    letter_bearing_hyphenated_alnum_before,
+    separator_classes,
+)
 from frend.locale_data import LOCALE_CACHE, canonical_locale, lexical_forms, measured_table
 
 __all__ = [
@@ -481,16 +485,7 @@ def _separator_classes(locale: str) -> Mapping[str, frozenset[str]]:
     forms = lexical_forms(locale)
     connectors = (forms.get("range.connector") or {}).get("value") or {}
     written = (forms.get("range.separator") or {}).get("value") or {}
-    out: dict[str, frozenset[str]] = {}
-    for cls in RANGE_TYPES:
-        separators = set(written.get(cls, ()))
-        if cls == "range":
-            cldr = cldr_range_separator(locale)
-            if cldr:
-                separators.add(cldr)
-        if separators and connectors.get(cls):
-            out[cls] = frozenset(separators)
-    return MappingProxyType(out)
+    return separator_classes(connectors, written, cldr_range_separator(locale))
 
 
 def _class_of(separator: str, classes: Mapping[str, frozenset[str]]) -> str | None:
@@ -590,22 +585,6 @@ def _starts_an_amount(text: str) -> bool:
     if text[:1] in _ASCII_DIGITS:
         return True
     return len(text) > 1 and unicodedata.category(text[0]) == "Sc" and text[1] in _ASCII_DIGITS
-
-
-def _letter_bearing_hyphenated_alnum_before(text: str, end: int) -> bool:
-    """Whether the joined hyphenated alphanumeric run before ``end`` has a letter."""
-    cursor = end
-    while True:
-        group_end = cursor
-        while cursor > 0 and text[cursor - 1].isalnum():
-            cursor -= 1
-        if cursor == group_end:
-            return False
-        if any(char.isalpha() for char in text[cursor:group_end]):
-            return True
-        if cursor == 0 or text[cursor - 1] != "-":
-            return False
-        cursor -= 1
 
 
 def emit_relevant(
@@ -1382,7 +1361,7 @@ class RangeDetector:
             # R1: an ASCII digit before, an ASCII digit (or a currency sign and one) after.
             if left_edge == 0 or text[left_edge - 1] not in _ASCII_DIGITS:
                 continue
-            if _letter_bearing_hyphenated_alnum_before(text, left_edge):
+            if letter_bearing_hyphenated_alnum_before(text, left_edge):
                 continue
             if not _starts_an_amount(text[right_edge : right_edge + 2]):
                 continue
