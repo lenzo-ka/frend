@@ -19,6 +19,13 @@ from phonenumbers import (
     parse,
 )
 
+from frend.artifact_policy import (
+    TELEPHONE_CONTEXT_POLICY,
+    TELEPHONE_READING_POLICY,
+    TELEPHONE_SHAPE_POLICY,
+    require_policy,
+    strict_majority,
+)
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
 from frend.shape import ascii_width_shape
 
@@ -232,6 +239,17 @@ def _prior(
         return {}, frozenset()
     if document.get("schema_version") != 3:
         raise ValueError("invalid telephone prior table: wrong schema version")
+    provenance = document.get("provenance")
+    for key, policy in (
+        ("shape_policy", TELEPHONE_SHAPE_POLICY),
+        ("reading_policy", TELEPHONE_READING_POLICY),
+        ("context_policy", TELEPHONE_CONTEXT_POLICY),
+    ):
+        require_policy(
+            provenance.get(key) if isinstance(provenance, dict) else None,
+            policy,
+            f"telephone {key.replace('_', ' ')}",
+        )
     rows = document.get("shapes")
     if not isinstance(rows, dict):
         raise ValueError("invalid telephone prior table: shapes must be an object")
@@ -260,7 +278,18 @@ def _prior(
                 ):
                     raise ValueError(f"invalid telephone prior reading for {shape!r}")
                 parsed.append((tuple(modes), count))
+            if sum(count for _modes, count in parsed) < int(
+                TELEPHONE_READING_POLICY["minimum_support"]
+            ):
+                raise ValueError(f"unselected telephone prior reading for {shape!r}")
             loaded[f"{shape}|{pattern}"] = tuple(parsed)
+        classes = row.get("classes") if isinstance(row, dict) else None
+        if not isinstance(classes, dict) or not strict_majority(
+            classes,
+            str(TELEPHONE_SHAPE_POLICY["label"]),
+            minimum_support=int(TELEPHONE_SHAPE_POLICY["minimum_support"]),
+        ):
+            raise ValueError(f"unselected telephone prior row for {shape!r}")
     context_rows = document.get("left_contexts")
     if not isinstance(context_rows, dict):
         raise ValueError("invalid telephone prior table: left_contexts must be an object")
@@ -282,10 +311,13 @@ def _prior(
                 for name, count in classes.items()
             )
             or not isinstance(prediction, str)
-            or prediction in {"PLAIN", "PUNCT", "TELEPHONE"}
+            or prediction in TELEPHONE_CONTEXT_POLICY["excluded_predictions"]
             or prediction not in classes
-            or sum(classes.values()) < 3
-            or 2 * classes[prediction] <= sum(classes.values())
+            or not strict_majority(
+                classes,
+                prediction,
+                minimum_observations=int(TELEPHONE_CONTEXT_POLICY["minimum_observations"]),
+            )
         ):
             raise ValueError(f"invalid telephone left context {context!r}")
         vetoes.add(context)

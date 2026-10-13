@@ -26,6 +26,7 @@ from importlib.resources import files
 import icu
 from icukit.detectors import Capture
 
+from frend.artifact_policy import ELECTRONIC_SPAN_POLICY, require_policy, strict_majority
 from frend.input_limits import DEFAULT_MAX_INPUT_CHARS, validate_input
 from frend.letters import letter_vowels
 from frend.locale_data import LOCALE_CACHE, canonical_locale, measured_table
@@ -230,8 +231,11 @@ def _supported_span_features(text: str, locale: str) -> tuple[str, ...]:
         row = document["features"][feature]
         classes = row.get("classes") if isinstance(row, dict) else None
         _validate_count_row(classes, f"features.{feature}.classes")
-        electronic = classes.get("ELECTRONIC", 0)
-        if electronic >= 3 and electronic > sum(classes.values()) - electronic:
+        if strict_majority(
+            classes,
+            str(ELECTRONIC_SPAN_POLICY["label"]),
+            minimum_support=int(ELECTRONIC_SPAN_POLICY["minimum_support"]),
+        ):
             supported.append(feature)
     return tuple(supported)
 
@@ -439,6 +443,12 @@ def _validate_electronic_priors(document: object) -> dict:
 def _validate_electronic_span_priors(document: object) -> dict:
     if not isinstance(document, dict) or not isinstance(document.get("features"), dict):
         raise ValueError("invalid electronic span prior table: features must be an object")
+    provenance = document.get("provenance")
+    require_policy(
+        provenance.get("policy") if isinstance(provenance, dict) else None,
+        ELECTRONIC_SPAN_POLICY,
+        "electronic span",
+    )
     for feature, row in document["features"].items():
         classes = row.get("classes") if isinstance(row, dict) else None
         _validate_count_row(classes, f"features.{feature}.classes")

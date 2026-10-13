@@ -12,6 +12,7 @@ from icukit.detectors import detect
 
 from frend import grouped_ids as grouped_module
 from frend import resolve_lattice
+from frend.artifact_policy import GROUPED_ID_POLICY, policy_document
 from frend.grouped_ids import GroupedDigitsDetector
 from frend.spoken_priors import normalize_spoken
 from frend.telephone import TelephoneDetector
@@ -214,14 +215,11 @@ def _assert_grouped_prior_is_aggregate(document):
     assert type(document["schema_version"]) is int and document["schema_version"] == 1
     assert document["locale"] == "en"
     provenance = document["provenance"]
-    assert set(provenance) == {"builder", "corpus", "locale", "shards", "selection", "reading"}
+    assert set(provenance) == {"builder", "corpus", "locale", "shards", "policy", "reading"}
     assert provenance["builder"] == "tools/build_grouped_id_priors.py"
     assert provenance["corpus"] == "google-tn:en_with_types"
     assert provenance["locale"] == "en"
-    assert provenance["selection"] == (
-        "exact ASCII digit-group shape with at least 3 grouped-reading rows "
-        "and a strict grouped-reading majority over all corpus rows"
-    )
+    assert provenance["policy"] == policy_document(GROUPED_ID_POLICY)
     assert provenance["reading"] == (
         "one ICU digit name per written digit, locale lexical o for zero, "
         "and literal sil between written groups"
