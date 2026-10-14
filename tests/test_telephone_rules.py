@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -112,8 +115,22 @@ def test_regional_non_phone_shapes_skip_libphonenumber(monkeypatch, locale, writ
     def unexpected_matcher(*_args, **_kwargs):
         raise AssertionError("non-phone input reached libphonenumber")
 
-    monkeypatch.setattr(telephone, "PhoneNumberMatcher", unexpected_matcher)
+    monkeypatch.setattr(telephone, "_phonenumbers", unexpected_matcher)
     assert TelephoneDetector(locale).detect(written) == []
+
+
+def test_ordinary_english_normalization_does_not_import_phonenumbers():
+    script = """
+import sys
+
+assert not any(name == "phonenumbers" or name.startswith("phonenumbers.") for name in sys.modules)
+import frend
+assert not any(name == "phonenumbers" or name.startswith("phonenumbers.") for name in sys.modules)
+frend.normalize("Ordinary English text has no telephone number.", locale="en_US")
+assert not any(name == "phonenumbers" or name.startswith("phonenumbers.") for name in sys.modules)
+"""
+    environment = dict(os.environ, PYTHONPATH=str(REPO), PYTHONDONTWRITEBYTECODE="1")
+    subprocess.run([sys.executable, "-B", "-c", script], env=environment, check=True, cwd=REPO)
 
 
 def test_regional_candidate_guard_allows_phone_in_running_text():

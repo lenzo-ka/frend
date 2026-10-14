@@ -11,18 +11,6 @@ from functools import lru_cache
 
 from icukit import add_likely_subtags, parse_locale
 from icukit.detectors import Capture
-from phonenumbers import (
-    Leniency,
-    NumberParseException,
-    PhoneMetadata,
-    PhoneNumberFormat,
-    PhoneNumberMatcher,
-    format_number,
-    is_valid_number,
-    national_significant_number,
-    number_type,
-    parse,
-)
 
 from frend.artifact_policy import (
     TELEPHONE_CONTEXT_POLICY,
@@ -46,6 +34,7 @@ __all__ = [
 _SPACED_DASH = re.compile(r"\s-|\-\s")
 _LEFT_TOKEN = re.compile(r"(\S+)\s*$")
 _REGIONAL_CANDIDATE = re.compile(r"(?<![0-9A-Za-z_])(?:[0-9][ ()-]*){9,11}(?![0-9A-Za-z_])")
+_LEGACY_CANDIDATE = re.compile(r"\+?(?:[0-9][ () .-]*){10,15}")
 _LEFT_CONTEXT_CLASSES = frozenset(
     {
         "digit",
@@ -123,10 +112,18 @@ def _phone_region(locale: str) -> str | None:
     return region if isinstance(region, str) else None
 
 
+@lru_cache(maxsize=1)
+def _phonenumbers():
+    """Import libphonenumber only after a phone-shaped candidate is present."""
+    import phonenumbers
+
+    return phonenumbers
+
+
 @lru_cache(maxsize=LOCALE_CACHE)
 def _general_phone_pattern(region: str) -> re.Pattern[str] | None:
     """Return libphonenumber's general national-number pattern for ``region``."""
-    metadata = PhoneMetadata.metadata_for_region(region)
+    metadata = _phonenumbers().PhoneMetadata.metadata_for_region(region)
     if metadata is None or metadata.general_desc is None:
         return None
     pattern = metadata.general_desc.national_number_pattern
@@ -264,7 +261,7 @@ def _descriptor_sha256(descriptor: object) -> str:
 
 
 def _selected_descriptor(region: str, national: str):
-    metadata = PhoneMetadata.metadata_for_region(region)
+    metadata = _phonenumbers().PhoneMetadata.metadata_for_region(region)
     if metadata is None:
         return None
     for descriptor in metadata.number_format:
@@ -282,10 +279,14 @@ def _regional_match(surface: str, number: object, locale: str) -> TelephoneForma
         return None
     from frend.telephone_rules import regional_telephone_formats
 
+    phonenumbers = _phonenumbers()
     region = _phone_region(locale)
-    if region is None or format_number(number, PhoneNumberFormat.NATIONAL) != surface:
+    if (
+        region is None
+        or phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.NATIONAL) != surface
+    ):
         return None
-    national = national_significant_number(number)
+    national = phonenumbers.national_significant_number(number)
     descriptor = _selected_descriptor(region, national)
     if descriptor is None:
         return None
@@ -298,7 +299,7 @@ def _regional_match(surface: str, number: object, locale: str) -> TelephoneForma
             if item.region == region
             and item.scope == "national"
             and item.descriptor_sha256 == digest
-            and number_type(number) in item.number_types
+            and phonenumbers.number_type(number) in item.number_types
         ),
         None,
     )
@@ -423,12 +424,17 @@ class TelephoneDetector:
             return []
         if regional and _REGIONAL_CANDIDATE.search(text) is None:
             return []
+        if not regional and _LEGACY_CANDIDATE.search(text) is None:
+            return []
+        phonenumbers = _phonenumbers()
         region = _phone_region(self.locale)
         general_pattern = _general_phone_pattern(region) if region is not None else None
         if region is None or general_pattern is None:
             return []
         found = []
-        matches = PhoneNumberMatcher(text, region, leniency=Leniency.POSSIBLE)
+        matches = phonenumbers.PhoneNumberMatcher(
+            text, region, leniency=phonenumbers.Leniency.POSSIBLE
+        )
         for match in matches:
             if not _valid_left_boundary(text, match.start) or not _valid_right_boundary(
                 text, match.end
@@ -439,8 +445,8 @@ class TelephoneDetector:
             country_code = None
             if surface.startswith("+"):
                 try:
-                    number = parse(surface, None)
-                except NumberParseException:
+                    number = phonenumbers.parse(surface, None)
+                except phonenumbers.NumberParseException:
                     continue
                 country_code = str(number.country_code)
             groups = (
@@ -450,7 +456,7 @@ class TelephoneDetector:
             )
             readings = None
             matched_format = None
-            national = national_significant_number(number)
+            national = phonenumbers.national_significant_number(number)
             if regional:
                 matched_format = _regional_match(surface, number, self.locale)
                 if matched_format is not None:
@@ -462,7 +468,7 @@ class TelephoneDetector:
                 if (
                     country_code is not None
                     and "".join(groups) == national
-                    and is_valid_number(number)
+                    and phonenumbers.is_valid_number(number)
                 ):
                     readings = ((tuple("digits" for _group in groups), 1),)
                 elif country_code is None and general_pattern.fullmatch(national) is not None:
