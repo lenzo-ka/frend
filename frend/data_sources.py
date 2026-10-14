@@ -202,6 +202,11 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
         "beijing-language/numbers-publications": _citation_source(
             "Beijing Language and Writing Committee Office"
         ),
+        "acapela/tts-language-manuals": {
+            **_citation_source("Acapela TTS language manuals (vendor documentation)"),
+            "license": "not stated",
+            "allowed_use": "provisional vendor documentation for normalization rules",
+        },
         # Festival's hand-curated word lists (github.com/festvox/festival): free to use
         # and distribute with its notice kept and changes marked, which
         # en/context/festival_classes.json carries.

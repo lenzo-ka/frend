@@ -1,0 +1,23 @@
+{
+  "schema": "frend-normalization/2", "locale": "pt_BR",
+  "provenance": {"source": "frend/curated"}, "versions": {"phonenumbers": "9.0.41"},
+  "sources": [
+    {"id": "libphonenumber", "receipt": "libphonenumber-9.0.41.json"},
+    {"id": "acapela/tts-language-manuals", "receipt": "acapela-telephone-pt-BR.json"}
+  ],
+  "selectors": [], "resources": [],
+  "rules": [{
+    "id": "telephone-br-mobile", "kind": "telephone-speech-rule",
+    "fields": ["group1", "group2", "group3"], "directions": ["tn"],
+    "target": ["GROUP1", " sil ", "GROUP2", " sil ", "GROUP3"],
+    "value": {"region": "BR", "scope": "national", "metadata_version": "9.0.41", "descriptor_sha256": "9efbb2436de44bc435f927106d3eaa69a1fd32ad9951749c8daf7a34e281d59a", "number_types": ["mobile"], "trunk_prefix": "", "group_modes": ["digits", "digits", "digits"], "max_derivations": 128},
+    "source_category": "vendor documentation", "provenance_status": "provisional",
+    "gender": null, "number": null,
+    "derived_from": ["libphonenumber#br-national-mobile", "acapela/tts-language-manuals#br-telephone-groups"]
+  }],
+  "weights": [], "curated_rows": [],
+  "ancestry": {
+    "libphonenumber#br-national-mobile": ["fd7266a89399db9be54f4e5b8ff5b7969d431d232eec9896d03621f6764a0c86"],
+    "acapela/tts-language-manuals#br-telephone-groups": ["8bb0831fac41fd0ca7c3814194b5508ae033b214d5ad1f7d569bb965e9bec5c4"]
+  }
+}

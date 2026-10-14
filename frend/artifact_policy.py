@@ -48,6 +48,20 @@ ELECTRONIC_SPAN_POLICY = MappingProxyType(
         "strict_majority": True,
     }
 )
+TELEPHONE_REGIONAL_POLICY = MappingProxyType(
+    {
+        "id": "telephone-regional-libphonenumber",
+        "version": 1,
+        "metadata_version": "9.0.41",
+        "scopes": ("national",),
+        "separators": (" ", "-", "(", ")"),
+        "full_span": True,
+        "leading_digits": True,
+        "exclusions": ("extension", "international", "service", "vanity"),
+        "max_groups": 5,
+        "max_derivations": 128,
+    }
+)
 ELECTRONIC_RULE_POLICY = MappingProxyType(
     {
         "id": "sourced-electronic-alternatives",

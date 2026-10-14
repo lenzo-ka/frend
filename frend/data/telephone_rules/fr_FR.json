@@ -1,0 +1,104 @@
+{
+  "locale": "fr_FR",
+  "metadata_version": "9.0.41",
+  "normalization_sha256": "4880f832d4b648faa0d96c54ad1d1cad63b2bb1713b6e8c33ae1240c4b3557d4",
+  "policy": {
+    "exclusions": [
+      "extension",
+      "international",
+      "service",
+      "vanity"
+    ],
+    "full_span": true,
+    "id": "telephone-regional-libphonenumber",
+    "leading_digits": true,
+    "max_derivations": 128,
+    "max_groups": 5,
+    "metadata_version": "9.0.41",
+    "scopes": [
+      "national"
+    ],
+    "separators": [
+      " ",
+      "-",
+      "(",
+      ")"
+    ],
+    "version": 1
+  },
+  "projection_sha256": "08d8cde511a5ac33c4113e488d6c7e4e065cdb1c66b757f80b2ea7746214f06e",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "rules": [
+    {
+      "descriptor_sha256": "105b901824f43bd0e54658b9713ba60dc08bfea1ed430f5d1cf75fbf42e66e32",
+      "id": "telephone-fr-fixed",
+      "modes": [
+        "digits",
+        "cardinal",
+        "cardinal",
+        "cardinal",
+        "cardinal"
+      ],
+      "number_types": [
+        "fixed"
+      ],
+      "recipe": {
+        "provenance": [
+          "normalization-record:telephone-fr-fixed:libphonenumber#fr-national-general",
+          "normalization-record:telephone-fr-fixed:acapela/tts-language-manuals#fr-telephone-groups"
+        ],
+        "tokens": [
+          "￰GROUP1￱",
+          " sil ",
+          "￰GROUP2￱",
+          " sil ",
+          "￰GROUP3￱",
+          " sil ",
+          "￰GROUP4￱",
+          " sil ",
+          "￰GROUP5￱"
+        ]
+      },
+      "region": "FR",
+      "scope": "national",
+      "trunk_prefix": "0"
+    },
+    {
+      "descriptor_sha256": "105b901824f43bd0e54658b9713ba60dc08bfea1ed430f5d1cf75fbf42e66e32",
+      "id": "telephone-fr-mobile",
+      "modes": [
+        "digits",
+        "cardinal",
+        "cardinal",
+        "cardinal",
+        "cardinal"
+      ],
+      "number_types": [
+        "mobile"
+      ],
+      "recipe": {
+        "provenance": [
+          "normalization-record:telephone-fr-mobile:libphonenumber#fr-national-general",
+          "normalization-record:telephone-fr-mobile:acapela/tts-language-manuals#fr-telephone-groups"
+        ],
+        "tokens": [
+          "￰GROUP1￱",
+          " sil ",
+          "￰GROUP2￱",
+          " sil ",
+          "￰GROUP3￱",
+          " sil ",
+          "￰GROUP4￱",
+          " sil ",
+          "￰GROUP5￱"
+        ]
+      },
+      "region": "FR",
+      "scope": "national",
+      "trunk_prefix": "0"
+    }
+  ],
+  "schema": 1
+}

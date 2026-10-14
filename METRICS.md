@@ -5,6 +5,15 @@ accuracies; `pp` means percentage points. Results are not comparable unless the 
 cut, scorer, profile, and commit all match. Paths beginning with `lanes/` are relative
 to the external experiment-lane workspace.
 
+## Regional telephone rules (PR10)
+
+PR10 adds provisional, vendor-documented national telephone readings for French
+fixed and mobile numbers, Brazilian Portuguese mobile numbers, and Lisbon Portuguese
+fixed numbers. Recognition and grouping are pinned to exact libphonenumber 9.0.41
+descriptor digests; changed metadata fails closed. The five approved witnesses,
+development coverage comparison, crash sweep, English S0, and time/RSS receipts are
+recorded in the PR10 gate report. English remains on its existing measured path.
+
 ## Data and split
 
 The Google TN `en_with_types` split is fixed as follows:

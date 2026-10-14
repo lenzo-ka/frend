@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "rows": [
+    {"id": "fr-fixed", "expected_text": "zéro un sil vingt-trois sil quarante-cinq sil soixante-sept sil quatre-vingt-neuf", "source_record_id": "telephone-fr-fixed"},
+    {"id": "fr-mobile", "expected_text": "zéro six sil douze sil trente-quatre sil cinquante-six sil soixante-dix-huit", "source_record_id": "telephone-fr-mobile"},
+    {"id": "br-mobile", "expected_text": "um um sil nove seis um dois três sil quatro cinco seis sete", "source_record_id": "telephone-br-mobile"},
+    {"id": "pt-lisbon", "expected_text": "dois um sil dois três quatro sil cinco seis sete oito", "source_record_id": "telephone-pt-lisbon"},
+    {"id": "pt-lisbon-zero", "expected_text": "dois um sil dois zero três sil zero quatro zero cinco", "source_record_id": "telephone-pt-lisbon"}
+  ]
+}

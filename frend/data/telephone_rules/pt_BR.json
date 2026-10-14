@@ -1,0 +1,64 @@
+{
+  "locale": "pt_BR",
+  "metadata_version": "9.0.41",
+  "normalization_sha256": "051fb1feefc08cd681fd9735c7ab79ed56dfe2e08d68bb9eaeef33bd2b417121",
+  "policy": {
+    "exclusions": [
+      "extension",
+      "international",
+      "service",
+      "vanity"
+    ],
+    "full_span": true,
+    "id": "telephone-regional-libphonenumber",
+    "leading_digits": true,
+    "max_derivations": 128,
+    "max_groups": 5,
+    "metadata_version": "9.0.41",
+    "scopes": [
+      "national"
+    ],
+    "separators": [
+      " ",
+      "-",
+      "(",
+      ")"
+    ],
+    "version": 1
+  },
+  "projection_sha256": "93d4c0e0e91ea7dce9c69b6bb9cf6e9e47de4f348ddeec7b1a4cd4dcb20226e5",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "rules": [
+    {
+      "descriptor_sha256": "9efbb2436de44bc435f927106d3eaa69a1fd32ad9951749c8daf7a34e281d59a",
+      "id": "telephone-br-mobile",
+      "modes": [
+        "digits",
+        "digits",
+        "digits"
+      ],
+      "number_types": [
+        "mobile"
+      ],
+      "recipe": {
+        "provenance": [
+          "normalization-record:telephone-br-mobile:libphonenumber#br-national-mobile",
+          "normalization-record:telephone-br-mobile:acapela/tts-language-manuals#br-telephone-groups"
+        ],
+        "tokens": [
+          "￰GROUP1￱",
+          " sil ",
+          "￰GROUP2￱",
+          " sil ",
+          "￰GROUP3￱"
+        ]
+      },
+      "region": "BR",
+      "scope": "national",
+      "trunk_prefix": ""
+    }
+  ],
+  "schema": 1
+}

@@ -1,0 +1,64 @@
+{
+  "locale": "pt_PT",
+  "metadata_version": "9.0.41",
+  "normalization_sha256": "a7b6d26a3b28ecd10c9aea49f42ae7d32137adc18eaf9f448c69d754554a83d2",
+  "policy": {
+    "exclusions": [
+      "extension",
+      "international",
+      "service",
+      "vanity"
+    ],
+    "full_span": true,
+    "id": "telephone-regional-libphonenumber",
+    "leading_digits": true,
+    "max_derivations": 128,
+    "max_groups": 5,
+    "metadata_version": "9.0.41",
+    "scopes": [
+      "national"
+    ],
+    "separators": [
+      " ",
+      "-",
+      "(",
+      ")"
+    ],
+    "version": 1
+  },
+  "projection_sha256": "db9d847989ddc59db486c2d8211a4c3a9024556e5f9000f832f0360291aeede8",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "rules": [
+    {
+      "descriptor_sha256": "63b57cc65bd99d1210818993de7dd3aa47284831d9ebd074e8a91900fd3a37e1",
+      "id": "telephone-pt-lisbon",
+      "modes": [
+        "digits",
+        "digits",
+        "digits"
+      ],
+      "number_types": [
+        "fixed"
+      ],
+      "recipe": {
+        "provenance": [
+          "normalization-record:telephone-pt-lisbon:libphonenumber#pt-national-lisbon",
+          "normalization-record:telephone-pt-lisbon:acapela/tts-language-manuals#pt-telephone-groups"
+        ],
+        "tokens": [
+          "￰GROUP1￱",
+          " sil ",
+          "￰GROUP2￱",
+          " sil ",
+          "￰GROUP3￱"
+        ]
+      },
+      "region": "PT",
+      "scope": "national",
+      "trunk_prefix": ""
+    }
+  ],
+  "schema": 1
+}
