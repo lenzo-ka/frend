@@ -25,14 +25,14 @@ classifiers = [
 ]
 # Floors only, deliberately uncapped: a sibling release that breaks frend should break
 # frend's tests where it can be seen, not be held back silently by a cap.
-# icukit 0.10.0 is the floor: bounded regexes, attributed sentence breaking,
-# behavior loading, reflow, and linear sentence/detection streams are required.
+# icukit 0.10.1 is the floor: bounded regexes, attributed sentence breaking,
+# behavior loading, reflow, linear streams, offset conversion, and unit surfaces are required.
 # phonenumbers 9.0.41 is the floor: its tested regional metadata gates telephone spans.
 # tiergraph 0.9.0 is the floor: frend uses the shared path-index parser and compiled order.
 # cartlet 0.8 is the floor: opt-in sentence models use its compiled decision trees.
 dependencies = [
     "cartlet>=0.8",
-    "icukit>=0.10.0",
+    "icukit>=0.10.1",
     "phonenumbers>=9.0.41",
     "tiergraph>=0.9.0",
 ]
