@@ -54,6 +54,7 @@ from types import MappingProxyType
 from typing import Any, Literal
 
 import icu
+from icukit import TextOffsets
 from icukit.detectors import Capture, DateTimeValue, DetectorSet, NumberValue
 from icukit.engine import DATE_INTERVAL_FAMILY, Family, generated_detectors, range_detectors
 
@@ -306,12 +307,6 @@ _DATE_CATEGORY = 1  # UFIELD_CATEGORY_DATE
 _SKELETON_FIELDS = {"h": "H", "K": "H", "k": "H", "L": "M"}
 
 
-def _utf16_index(text: str, at: int) -> int:
-    """The code point index of UTF-16 offset ``at`` in ``text`` (ICU's positions are
-    UTF-16; a character outside the BMP, as Adlam's digits are, takes two units)."""
-    return len(text.encode("utf-16-le")[: 2 * at].decode("utf-16-le"))
-
-
 def _interval_ends(detection: Mapping, skeleton: str) -> tuple[Mapping, Mapping] | None:
     """Each end of a date interval as a date or time detection of its own, holding the
     fields ICU writes on that end: ICU's interval format of the same two values says
@@ -374,13 +369,20 @@ def _placed_fields(
             found.append((_ICU_FIELDS[field], position.getStart(), position.getLimit()))
     if set(spans) != {0, 1}:
         return None  # ICU wrote one date, not an interval
+    codepoint_offsets = iter(
+        TextOffsets(text).convert(
+            (offset for _, at, limit in found for offset in (at, limit)),
+            source="utf16",
+            target="codepoint",
+        )
+    )
     placed: dict[tuple[str, int], tuple[int, str]] = {}
-    for letter, at, limit in found:
+    for letter, at, _limit in found:
         side = next(
             (s for s, (a, b) in spans.items() if a <= at < b),
             0 if at < spans[0][0] else 1,
         )
-        first, last = _utf16_index(text, at), _utf16_index(text, limit)
+        first, last = next(codepoint_offsets), next(codepoint_offsets)
         placed.setdefault((letter, side), (first, text[first:last]))
     return placed
 
