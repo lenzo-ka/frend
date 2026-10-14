@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-14)
 
 frend 0.1.0 introduces a text-normalization front end that recognizes formatted
 values, resolves overlapping readings, and verbalizes them for `en_US`, `es_MX`,
