@@ -133,6 +133,10 @@ Other ICU locale identifiers are accepted through ICU's fallback behavior on a
 best-effort basis. They are not part of the checked service profile, so their available
 readers and output can differ and are not release-qualified.
 
+[The locale contribution guide](docs/locales.md) explains how to inspect an ICU
+baseline, add or extend sourced locale bundles, run the qualification gates, and
+maintain client locale data in a fork.
+
 ### icukit disk cache
 
 On first use, icukit may compute deterministic Python detector tables and store their
