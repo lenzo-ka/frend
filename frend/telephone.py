@@ -45,6 +45,7 @@ __all__ = [
 
 _SPACED_DASH = re.compile(r"\s-|\-\s")
 _LEFT_TOKEN = re.compile(r"(\S+)\s*$")
+_REGIONAL_CANDIDATE = re.compile(r"(?<![0-9A-Za-z_])(?:[0-9][ ()-]*){9,11}(?![0-9A-Za-z_])")
 _LEFT_CONTEXT_CLASSES = frozenset(
     {
         "digit",
@@ -419,6 +420,8 @@ class TelephoneDetector:
         table, left_context_vetoes = _prior(self.locale)
         regional = self.locale in locales_for("telephone")
         if not table and not regional:
+            return []
+        if regional and _REGIONAL_CANDIDATE.search(text) is None:
             return []
         region = _phone_region(self.locale)
         general_pattern = _general_phone_pattern(region) if region is not None else None

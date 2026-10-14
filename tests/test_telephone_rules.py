@@ -104,6 +104,23 @@ def test_guard_english_legacy_route_is_unchanged():
     )
 
 
+@pytest.mark.parametrize("locale", ("fr_FR", "pt_BR", "pt_PT"))
+@pytest.mark.parametrize("written", ("15/03/2024", "12345/67", "12:34:56"))
+def test_regional_non_phone_shapes_skip_libphonenumber(monkeypatch, locale, written):
+    import frend.telephone as telephone
+
+    def unexpected_matcher(*_args, **_kwargs):
+        raise AssertionError("non-phone input reached libphonenumber")
+
+    monkeypatch.setattr(telephone, "PhoneNumberMatcher", unexpected_matcher)
+    assert TelephoneDetector(locale).detect(written) == []
+
+
+def test_regional_candidate_guard_allows_phone_in_running_text():
+    matches = TelephoneDetector("pt_PT").detect("ligue 21 234 5678 agora")
+    assert [match["text"] for match in matches] == ["21 234 5678"]
+
+
 def test_new_runtime_fails_closed_on_descriptor_drift(monkeypatch):
     import frend.telephone as telephone
 
