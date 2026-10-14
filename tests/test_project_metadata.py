@@ -129,7 +129,7 @@ def test_frend_modules_do_not_import_ipakit():
 
 def test_010_changelog_names_public_features_since_pr_57():
     text = _CHANGELOG.read_text(encoding="utf-8")
-    release = text.partition("## 0.1.0 (unreleased)")[2].partition("\n## ")[0]
+    release = text.partition("## 0.1.0 (2026-10-14)")[2].partition("\n## ")[0]
 
     public_features = (
         "`normalize`",
