@@ -20,6 +20,7 @@ __all__ = ["bundle_refusals", "validate_bundle"]
 
 _SCHEMA = "frend-normalization/2"
 _ENTRY_SECTIONS = ("selectors", "resources", "rules", "weights", "curated_rows")
+_ELECTRONIC_KINDS = frozenset({"email", "url", "domain", "hashtag", "document"})
 
 
 def _reason(name: str, detail: str) -> str:
@@ -245,6 +246,15 @@ def _content_refusals(bundle: Mapping[object, object]) -> list[str]:
         for index, rule in enumerate(rules):
             if not isinstance(rule, Mapping):
                 continue
+            if rule.get("kind") == "electronic-rule" and rule.get("electronic_kind") not in (
+                _ELECTRONIC_KINDS
+            ):
+                refusals.append(
+                    _reason(
+                        "invalid-rule",
+                        f"rules[{index}] has no valid electronic_kind",
+                    )
+                )
             if not _is_string_list(rule.get("fields"), nonempty=True):
                 refusals.append(_reason("invalid-rule", f"rules[{index}] has no nonempty fields"))
                 fields: set[str] = set()

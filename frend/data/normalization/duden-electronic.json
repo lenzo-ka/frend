@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of public pronunciation entries",
+  "fetched_at": "2026-10-13T10:00:00-04:00",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://www.duden.de/woerterbuch",
+  "revision": "Duden online A-Z pronunciation entries, audited 2026-10-13",
+  "sha256": "dce2749b149d0fd02aa95d364a4bd688d4451f6bacaa1676a38e49bfc15da3d9",
+  "manual_citation": true,
+  "source": "duden/online",
+  "transform_command": "manual source-claim transcription"
+}

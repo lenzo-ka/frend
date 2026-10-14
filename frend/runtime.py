@@ -50,6 +50,7 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
             # slashes and also form valid fraction candidates; normalizing them here
             # would defeat the fraction path's first-use laziness.
             from frend.date_rules import load_date_rule_bundle
+            from frend.electronic_rules import load_electronic_rule_bundle
             from frend.money_rules import load_money_rule_bundle
             from frend.time_rules import load_time_rule_bundle
 
@@ -57,6 +58,8 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
             load_time_rule_bundle(locale)
             if locale in locales_for("money"):
                 load_money_rule_bundle(locale)
+            if locale in locales_for("electronic"):
+                load_electronic_rule_bundle(locale)
     return order
 
 

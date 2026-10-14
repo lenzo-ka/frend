@@ -6,14 +6,14 @@ from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Literal
 
-RuleFamily = Literal["date", "time", "fraction", "money"]
+RuleFamily = Literal["date", "time", "fraction", "money", "electronic"]
 
 GENERATED_RULE_CAPABILITIES: Mapping[str, frozenset[RuleFamily]] = MappingProxyType(
     {
         "es_MX": frozenset(("date", "time", "fraction", "money")),
         "es_ES": frozenset(("date", "time", "fraction")),
         "fr_FR": frozenset(("date", "time", "fraction", "money")),
-        "de_DE": frozenset(("date", "time", "fraction")),
+        "de_DE": frozenset(("date", "time", "fraction", "electronic")),
         "pt_BR": frozenset(("date", "time", "fraction", "money")),
         "pt_PT": frozenset(("date", "time", "fraction")),
         "it_IT": frozenset(("date", "time", "fraction", "money")),

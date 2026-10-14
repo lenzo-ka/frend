@@ -1,0 +1,409 @@
+{
+  "icu_version": "78.3",
+  "locale": "de_DE",
+  "normalization_sha256": "fbc4a216f5569de9324cc4e0ea41b6c788cef657b8c0f61ce8703cc196e75b05",
+  "policy": {
+    "id": "sourced-electronic-alternatives",
+    "max_total_alternatives": 8,
+    "prior_provenance": null,
+    "version": 1,
+    "weight": null
+  },
+  "projection_sha256": "fdd8c7bd27a91f278aa703d510b24169b7eaf60b0877ddfef6d040763e0bd6fb",
+  "provenance": {
+    "source": "frend/curated"
+  },
+  "recipes": {
+    "email": [
+      {
+        "provenance": [
+          "electronic-kind:email",
+          "normalization-record:electronic-email"
+        ],
+        "tokens": [
+          "￰RUNS￱"
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "derived_from": [
+        "duden/online#letter-A"
+      ],
+      "forms": {
+        "default": "a"
+      },
+      "id": "letter-A",
+      "kind": "electronic-letter-name",
+      "value": "A"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-B"
+      ],
+      "forms": {
+        "default": "be"
+      },
+      "id": "letter-B",
+      "kind": "electronic-letter-name",
+      "value": "B"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-C"
+      ],
+      "forms": {
+        "default": "ce"
+      },
+      "id": "letter-C",
+      "kind": "electronic-letter-name",
+      "value": "C"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-D"
+      ],
+      "forms": {
+        "default": "de"
+      },
+      "id": "letter-D",
+      "kind": "electronic-letter-name",
+      "value": "D"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-E"
+      ],
+      "forms": {
+        "default": "e"
+      },
+      "id": "letter-E",
+      "kind": "electronic-letter-name",
+      "value": "E"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-F"
+      ],
+      "forms": {
+        "default": "ef"
+      },
+      "id": "letter-F",
+      "kind": "electronic-letter-name",
+      "value": "F"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-G"
+      ],
+      "forms": {
+        "default": "ge"
+      },
+      "id": "letter-G",
+      "kind": "electronic-letter-name",
+      "value": "G"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-H"
+      ],
+      "forms": {
+        "default": "ha"
+      },
+      "id": "letter-H",
+      "kind": "electronic-letter-name",
+      "value": "H"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-I"
+      ],
+      "forms": {
+        "default": "i"
+      },
+      "id": "letter-I",
+      "kind": "electronic-letter-name",
+      "value": "I"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-J"
+      ],
+      "forms": {
+        "default": "jot"
+      },
+      "id": "letter-J",
+      "kind": "electronic-letter-name",
+      "value": "J"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-K"
+      ],
+      "forms": {
+        "default": "ka"
+      },
+      "id": "letter-K",
+      "kind": "electronic-letter-name",
+      "value": "K"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-L"
+      ],
+      "forms": {
+        "default": "el"
+      },
+      "id": "letter-L",
+      "kind": "electronic-letter-name",
+      "value": "L"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-M"
+      ],
+      "forms": {
+        "default": "em"
+      },
+      "id": "letter-M",
+      "kind": "electronic-letter-name",
+      "value": "M"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-N"
+      ],
+      "forms": {
+        "default": "en"
+      },
+      "id": "letter-N",
+      "kind": "electronic-letter-name",
+      "value": "N"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-O"
+      ],
+      "forms": {
+        "default": "o"
+      },
+      "id": "letter-O",
+      "kind": "electronic-letter-name",
+      "value": "O"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-P"
+      ],
+      "forms": {
+        "default": "pe"
+      },
+      "id": "letter-P",
+      "kind": "electronic-letter-name",
+      "value": "P"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-Q"
+      ],
+      "forms": {
+        "default": "ku"
+      },
+      "id": "letter-Q",
+      "kind": "electronic-letter-name",
+      "value": "Q"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-R"
+      ],
+      "forms": {
+        "default": "er"
+      },
+      "id": "letter-R",
+      "kind": "electronic-letter-name",
+      "value": "R"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-S"
+      ],
+      "forms": {
+        "default": "es"
+      },
+      "id": "letter-S",
+      "kind": "electronic-letter-name",
+      "value": "S"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-T"
+      ],
+      "forms": {
+        "default": "te"
+      },
+      "id": "letter-T",
+      "kind": "electronic-letter-name",
+      "value": "T"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-U"
+      ],
+      "forms": {
+        "default": "u"
+      },
+      "id": "letter-U",
+      "kind": "electronic-letter-name",
+      "value": "U"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-V"
+      ],
+      "forms": {
+        "default": "vau"
+      },
+      "id": "letter-V",
+      "kind": "electronic-letter-name",
+      "value": "V"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-W"
+      ],
+      "forms": {
+        "default": "we"
+      },
+      "id": "letter-W",
+      "kind": "electronic-letter-name",
+      "value": "W"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-X"
+      ],
+      "forms": {
+        "default": "ix"
+      },
+      "id": "letter-X",
+      "kind": "electronic-letter-name",
+      "value": "X"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-Y"
+      ],
+      "forms": {
+        "default": "Ypsilon"
+      },
+      "id": "letter-Y",
+      "kind": "electronic-letter-name",
+      "value": "Y"
+    },
+    {
+      "derived_from": [
+        "duden/online#letter-Z"
+      ],
+      "forms": {
+        "default": "zett"
+      },
+      "id": "letter-Z",
+      "kind": "electronic-letter-name",
+      "value": "Z"
+    },
+    {
+      "derived_from": [
+        "goethe/a1-deutsch-online#email-at"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "at"
+      },
+      "id": "separator-0040",
+      "kind": "electronic-separator",
+      "priority": 0,
+      "value": "@"
+    },
+    {
+      "derived_from": [
+        "cldr/48#de-at-tts"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "At-Zeichen"
+      },
+      "id": "separator-0040-cldr",
+      "kind": "electronic-separator",
+      "priority": 1,
+      "value": "@"
+    },
+    {
+      "derived_from": [
+        "cldr/48#de-dot-tts"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "Punkt"
+      },
+      "id": "separator-002e",
+      "kind": "electronic-separator",
+      "priority": 0,
+      "value": "."
+    },
+    {
+      "derived_from": [
+        "cldr/48#de-slash-tts"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "Schrägstrich"
+      },
+      "id": "separator-002f",
+      "kind": "electronic-separator",
+      "priority": 0,
+      "value": "/"
+    },
+    {
+      "derived_from": [
+        "goethe/a1-deutsch-online#email-minus"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "Minus"
+      },
+      "id": "separator-002d",
+      "kind": "electronic-separator",
+      "priority": 0,
+      "value": "-"
+    },
+    {
+      "derived_from": [
+        "cldr/48#de-minus-tts"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "Bindestrich-Minus"
+      },
+      "id": "separator-002d-cldr",
+      "kind": "electronic-separator",
+      "priority": 1,
+      "value": "-"
+    },
+    {
+      "derived_from": [
+        "cldr/48#de-underscore-tts"
+      ],
+      "electronic_kind": "email",
+      "forms": {
+        "default": "Unterstrich"
+      },
+      "id": "separator-005f",
+      "kind": "electronic-separator",
+      "priority": 0,
+      "value": "_"
+    }
+  ],
+  "schema": 1
+}
