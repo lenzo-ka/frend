@@ -249,7 +249,7 @@ class NormalizationStream:
 
     def _feed_stable_fold(self, *, final: bool = False) -> NormalizationBatch:
         """Feed only folded source whose contextual mapping can no longer change."""
-        self._folded = apply_input_fold(self._source, self.fold)
+        self._folded = apply_input_fold(self._source, self.fold, locale=self.locale)
         local_end = (
             len(self._source) if final else _stable_fold_prefix_length(self._source, self.fold)
         )

@@ -33,7 +33,7 @@ from icukit.recognize import (
 from frend.abbreviation_variants import AbbreviationVariantDetector
 from frend.durations import NumericDurationDetector
 from frend.electronic import _ValidatedElectronicDetector
-from frend.input_folds import InputFold, apply_input_fold
+from frend.input_folds import _MEASURE_UNITS, InputFold, apply_input_fold
 from frend.input_limits import (
     DEFAULT_MAX_INPUT_CHARS,
     DEFAULT_MAX_UNIT_CHARS,
@@ -86,60 +86,6 @@ SentenceBase = Literal["none", "en-tn@1", "en-tn-cart@1", "en-real-cart@1"]
 
 _DATE_SKELETONS = ("yMd", "Md", "y")
 _CURRENCIES = ("USD", "EUR", "GBP", "JPY", "CNY", "INR", "CAD", "AUD", "KRW", "RUB", "XCD")
-_MEASURE_UNITS = (
-    "kilometer",
-    "meter",
-    "millimeter",
-    "centimeter",
-    "micrometer",
-    "nanometer",
-    "foot",
-    "inch",
-    "mile",
-    "yard",
-    "kilometer-per-hour",
-    "mile-per-hour",
-    "kilogram",
-    "gram",
-    "milligram",
-    "pound",
-    "ounce",
-    "ton",
-    "hectare",
-    "acre",
-    "square-kilometer",
-    "square-mile",
-    "square-meter",
-    "square-yard",
-    "square-inch",
-    "kilowatt",
-    "megawatt",
-    "watt",
-    "horsepower",
-    "volt",
-    "hertz",
-    "kilohertz",
-    "megahertz",
-    "gigahertz",
-    "kilobyte",
-    "megabyte",
-    "gigabyte",
-    "terabyte",
-    "liter",
-    "milliliter",
-    "degree",
-    "celsius",
-    "fahrenheit",
-    "second",
-    "minute",
-    "hour",
-    "gigawatt",
-    "meter-per-second",
-    "square-foot",
-    "millibar",
-    "cubic-meter",
-    "cubic-foot",
-)
 
 
 @cache
@@ -627,9 +573,9 @@ def normalize(
     validate_unit_length(0, max_unit_chars=max_unit_chars)
     SymbolDetector("root", run_threshold=symbol_run_threshold)
     raw_text = validated_text
-    text = apply_input_fold(raw_text, fold)
-    symbol_code_ranges = _symbol_code_ranges(text)
     locale = canonical_locale(locale)
+    text = apply_input_fold(raw_text, fold, locale=locale)
+    symbol_code_ranges = _symbol_code_ranges(text)
     profile = validate_profile(profile)
     groups = None if groups is None else dict(validate_groups(groups) or ())
     meter = work_meter(work_budget)
