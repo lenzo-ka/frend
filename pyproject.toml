@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,7 +9,8 @@ description = "The front end: text normalization over tiergraph and icukit"
 authors = [
     {name = "Kevin Lenzo", email = "kevinlenzo@gmail.com"}
 ]
-license = {text = "BSD-2-Clause"}
+license = "BSD-2-Clause AND CC-BY-SA-4.0 AND Unicode-3.0 AND Apache-2.0 AND LicenseRef-Festival AND LicenseRef-IANA-public"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "LICENSES/*.txt"]
 readme = "README.md"
 requires-python = ">=3.12"
 keywords = ["text-normalization", "verbalization", "tts", "i18n", "tiergraph", "icukit"]

@@ -15,6 +15,7 @@ __all__ = [
 # tiergraph's deterministic logical steps, not seconds, so identical work has the
 # same boundary on every machine.  Operations refuse whole with BudgetExhausted.
 DEFAULT_TIERGRAPH_WORK_BUDGET = WorkBudget(steps=1 << 24)
+"""Default deterministic tiergraph step budget for one public operation."""
 
 type TiergraphWorkBudget = WorkBudget | WorkMeter
 

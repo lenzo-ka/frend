@@ -9,6 +9,8 @@ from pathlib import Path
 
 from conftest import assert_dependency_floor
 
+from frend.generated_rule_locales import GENERATED_RULE_CAPABILITIES
+
 _REPO = Path(__file__).resolve().parents[1]
 _README = _REPO / "README.md"
 _PACKAGE_INIT = _REPO / "frend" / "__init__.py"
@@ -16,16 +18,17 @@ _PYPROJECT = _REPO / "pyproject.toml"
 _CHANGELOG = _REPO / "CHANGELOG.md"
 _FREND = _REPO / "frend"
 _SERVICE_LOCALES_TEST = _REPO / "tests" / "test_service_locales.py"
+_API_REFERENCE = _REPO / "docs" / "api.md"
 
 
-def _service_profile_bullets(readme: str) -> tuple[str, ...]:
-    section = readme.partition("### Eleven-locale service profile")[2].partition("\n### ")[0]
-    return tuple(re.findall(r"^- (.+)$", section, re.MULTILINE))
+def _service_profile_rows(readme: str) -> tuple[tuple[str, str], ...]:
+    section = readme.partition("### Checked locale service profile")[2].partition("\n### ")[0]
+    return tuple(re.findall(r"^\| `([^`]+)` \| (.+) \|$", section, re.MULTILINE))
 
 
-def test_readme_lists_checked_eleven_locale_service_profile():
+def test_readme_lists_checked_locale_service_profile():
     readme = _README.read_text(encoding="utf-8")
-    documented = _service_profile_bullets(readme)
+    documented = _service_profile_rows(readme)
 
     service_test = ast.parse(_SERVICE_LOCALES_TEST.read_text(encoding="utf-8"))
     assignment = next(
@@ -38,14 +41,23 @@ def test_readme_lists_checked_eleven_locale_service_profile():
     )
     checked = ast.literal_eval(assignment.value)
 
-    assert documented == tuple(f"`{locale}`" for locale in checked)
+    assert tuple(locale for locale, _ in documented) == checked
+    families = ("date", "time", "fraction", "money", "electronic", "telephone")
+    for locale, coverage in documented:
+        if locale == "en_US":
+            assert "English measured/default tables" in coverage
+            assert "measured telephone route" in coverage
+        else:
+            assert {family for family in families if family in coverage} == set(
+                GENERATED_RULE_CAPABILITIES[locale]
+            )
 
 
-def test_readme_service_profile_parser_includes_unformatted_bullets():
+def test_readme_service_profile_parser_includes_an_added_matrix_row():
     readme = _README.read_text(encoding="utf-8")
-    with_unformatted_locale = readme.replace("- `en_US`", "- `en_US`\n- en_GB", 1)
+    with_extra_locale = readme.replace("| `en_US` |", "| `en_GB` | best effort |\n| `en_US` |", 1)
 
-    assert "en_GB" in _service_profile_bullets(with_unformatted_locale)
+    assert ("en_GB", "best effort") in _service_profile_rows(with_extra_locale)
 
 
 def test_description_names_only_current_pipeline_dependencies():
@@ -115,9 +127,9 @@ def test_frend_modules_do_not_import_ipakit():
     assert imported_by == []
 
 
-def test_unreleased_changelog_names_public_features_since_pr_57():
+def test_010_changelog_names_public_features_since_pr_57():
     text = _CHANGELOG.read_text(encoding="utf-8")
-    unreleased = text.partition("## Unreleased")[2].partition("\n## ")[0]
+    release = text.partition("## 0.1.0 (unreleased)")[2].partition("\n## ")[0]
 
     public_features = (
         "`normalize`",
@@ -131,17 +143,93 @@ def test_unreleased_changelog_names_public_features_since_pr_57():
         "electronic spans",
         "spell-out dictionary",
     )
-    missing = [feature for feature in public_features if feature not in unreleased]
+    missing = [feature for feature in public_features if feature not in release]
 
-    assert not missing, f"Unreleased changelog is missing: {', '.join(missing)}"
-    assert "every limit and the fold are configurable" not in unreleased
+    assert not missing, f"0.1.0 changelog is missing: {', '.join(missing)}"
+    assert "every limit and the fold are configurable" not in release
     assert (
         "The document and\n"
         "  graph-building unit limits and the fold are configurable through `normalize`"
-    ) in unreleased
+    ) in release
     assert "Standalone `ElectronicDetector` exposes separate URL, email, and input caps" in (
-        unreleased
+        release
     )
+
+
+def test_pep639_license_metadata_and_notice_files_are_packaged():
+    configuration = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))
+    project = configuration["project"]
+
+    assert configuration["build-system"]["requires"][0] == "setuptools>=77.0"
+    assert project["license"] == (
+        "BSD-2-Clause AND CC-BY-SA-4.0 AND Unicode-3.0 AND Apache-2.0 AND "
+        "LicenseRef-Festival AND LicenseRef-IANA-public"
+    )
+    assert project["license-files"] == [
+        "LICENSE",
+        "THIRD_PARTY_NOTICES.md",
+        "LICENSES/*.txt",
+    ]
+    assert (_REPO / "LICENSE").is_file()
+    assert (_REPO / "THIRD_PARTY_NOTICES.md").is_file()
+    assert {path.name for path in (_REPO / "LICENSES").glob("*.txt")} == {
+        "Apache-2.0.txt",
+        "CC-BY-SA-4.0.txt",
+        "LicenseRef-Festival.txt",
+        "LicenseRef-IANA-public.txt",
+        "Unicode-3.0.txt",
+    }
+
+
+def test_public_api_reference_covers_exactly_the_package_exports():
+    package = ast.parse(_PACKAGE_INIT.read_text(encoding="utf-8"))
+    assignment = next(
+        statement
+        for statement in package.body
+        if isinstance(statement, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "__all__" for target in statement.targets
+        )
+    )
+    exports = ast.literal_eval(assignment.value)
+    documented = re.findall(
+        r"^- `([^`]+)` — ", _API_REFERENCE.read_text(encoding="utf-8"), re.MULTILINE
+    )
+
+    assert documented == exports
+
+
+def test_exported_aliases_and_constants_have_attribute_docstrings():
+    definitions = {
+        "__version__": _PACKAGE_INIT,
+        "InputFold": _FREND / "input_folds.py",
+        "SentenceBase": _FREND / "normalize.py",
+        "DEFAULT_MAX_INPUT_CHARS": _FREND / "input_limits.py",
+        "DEFAULT_MAX_UNIT_CHARS": _FREND / "input_limits.py",
+        "MAX_NON_TEXT_SHARE": _FREND / "input_limits.py",
+        "DEFAULT_SYMBOL_RUN_THRESHOLD": _FREND / "symbols.py",
+        "DEFAULT_TIERGRAPH_WORK_BUDGET": _FREND / "work_budgets.py",
+    }
+
+    for name, path in definitions.items():
+        statements = ast.parse(path.read_text(encoding="utf-8"), filename=str(path)).body
+        index = next(
+            position
+            for position, statement in enumerate(statements)
+            if isinstance(statement, (ast.Assign, ast.AnnAssign))
+            and (
+                any(
+                    isinstance(target, ast.Name) and target.id == name
+                    for target in statement.targets
+                )
+                if isinstance(statement, ast.Assign)
+                else isinstance(statement.target, ast.Name) and statement.target.id == name
+            )
+        )
+        docstring = statements[index + 1]
+        assert isinstance(docstring, ast.Expr), name
+        assert isinstance(docstring.value, ast.Constant), name
+        assert isinstance(docstring.value.value, str) and docstring.value.value, name
 
 
 def test_cartlet_floor_comment_matches_dependency_specifier():

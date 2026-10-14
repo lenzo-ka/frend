@@ -77,6 +77,66 @@ def test_missing_final_newline_keeps_last_case(tmp_path):
     ]
 
 
+def test_checked_workloads_are_locale_keyed_and_require_sources(tmp_path, monkeypatch):
+    nl = tmp_path / "nl.tsv"
+    nl.write_text(
+        "written\tspoken\tclass\tsource\n"
+        "02-03-2003\ttwee maart tweeduizenddrie\tdate\tTRIAL source record\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(gate, "GATE_LOCALES", (*gate.GATE_LOCALES, "nl_NL"))
+
+    checked = gate._parse_checked([f"pt_PT={gate.CHECKED_PT_PT}", f"nl-NL={nl}"])
+    workloads = gate._workloads(tmp_path / "nemo", checked)
+
+    assert checked["nl_NL"] == nl
+    assert workloads["nl_NL"] == ["02-03-2003"]
+    assert workloads["pt_PT"]
+
+
+def test_checked_workload_locale_must_be_in_the_gate(tmp_path):
+    with pytest.raises(ValueError, match="not in GATE_LOCALES"):
+        gate._parse_checked([f"ru_RU={tmp_path / 'ru.tsv'}"])
+
+
+def test_date_only_locale_receipts_do_not_expect_fraction_or_time_bundles(monkeypatch):
+    monkeypatch.setattr(gate, "_GENERATED_FRACTION_LOCALES", frozenset())
+    monkeypatch.setattr(gate, "_GENERATED_TIME_LOCALES", frozenset())
+    monkeypatch.setattr(
+        gate,
+        "_fraction_latency_probes",
+        lambda: {"nl_NL": {"fraction": "3/7", "percent": "45%"}},
+    )
+    monkeypatch.setattr(gate, "_time_latency_probes", lambda: {"nl_NL": "14:30:05"})
+
+    _, fraction = gate._normalize_fraction_probes("nl_NL")
+    _, time = gate._normalize_time_probe("nl_NL")
+
+    assert fraction["bundle_available"] is False
+    assert all(item["selected_generated"] is False for item in fraction["probes"].values())
+    assert time["bundle_available"] is False
+    assert time["offered_generated"] is False
+    assert time["expected_selected_generated"] is False
+
+
+def test_unseen_soak_budget_is_a_head_over_base_delta():
+    mib = 2**20
+    base = {
+        "summary": {"pass3_minus_pass1_bytes": {"median": 2 * mib, "min": 2 * mib, "max": 2 * mib}},
+        "runs": [],
+    }
+    head = {
+        "summary": {"pass3_minus_pass1_bytes": {"median": 3 * mib, "min": 3 * mib, "max": 3 * mib}},
+        "runs": [],
+    }
+
+    checks = gate._soak_comparisons(base, head, gate.GateBudget())
+    [plateau] = [check for check in checks if check["metric"] == "soak.pass3_minus_pass1_bytes"]
+
+    assert plateau["limit"] == 4 * mib
+    assert plateau["passed"]
+
+
 def test_strict_form_deletes_format_characters():
     assert gate.strict_form("drei\u00adund\u200bzwanzig") == "dreiundzwanzig"
 
@@ -303,7 +363,7 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                             "percent": {"units": 1, "selected_generated": False},
                         },
                         "events": {"load": 0, "lower": 0, "generate": 0},
-                        "bundle_available": True,
+                        "bundle_available": "en_US" in gate._GENERATED_FRACTION_LOCALES,
                     }
                 },
                 "time_probes": {
@@ -314,7 +374,7 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                         "expected_selected_generated": False,
                         "candidates": [],
                         "events": {"load": 0, "lower": 0, "generate": 0},
-                        "bundle_available": True,
+                        "bundle_available": "en_US" in gate._GENERATED_TIME_LOCALES,
                     }
                 },
             }
@@ -328,7 +388,7 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
             "pass": pass_index,
             "count": 1,
             "successful_date_detections": 1,
-            "selected_generated": 0 if locale == "en_US" else 1,
+            "selected_generated": 1 if locale in gate._GENERATED_DATE_LOCALES else 0,
         }
         for locale in gate.GATE_LOCALES
         for pass_index in range(1, 4)
@@ -345,7 +405,9 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                         "pass": row["pass"],
                         "count": 1,
                         "successful_fraction_detections": 1,
-                        "selected_generated": 0 if row["locale"] == "en_US" else 1,
+                        "selected_generated": (
+                            1 if row["locale"] in gate._GENERATED_FRACTION_LOCALES else 0
+                        ),
                     }
                     for row in soak_receipts
                 ],
@@ -356,7 +418,12 @@ def _resource_documents(head_rss_mib: int, base_max_rss_mib: int):
                         "count": 1,
                         "successful_time_detections": 1,
                         "selected_generated": (
-                            0 if row["locale"] in {"en_US", "de_DE", "it_IT"} else 1
+                            1
+                            if row["locale"]
+                            in gate._GENERATED_TIME_LOCALES
+                            - {"de_DE"}
+                            - gate._TIME_SOAK_LEGACY_WINNER_LOCALES
+                            else 0
                         ),
                     }
                     for row in soak_receipts

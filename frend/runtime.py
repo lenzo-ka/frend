@@ -12,19 +12,7 @@ from collections.abc import Iterable
 from frend.generated_rule_locales import locales_for
 from frend.locale_data import canonical_locale
 
-_DATE_PROBES = {
-    "de_DE": "02.03.2003",
-    "en_US": "March 3, 2020",
-    "es_ES": "15/03/2024",
-    "es_MX": "15/03/2024",
-    "fr_FR": "02.03.2003",
-    "it_IT": "02/03/2003",
-    "ja_JP": "2024/01/30",
-    "ko_KR": "2024. 6. 30.",
-    "pt_BR": "15/03/2024",
-    "pt_PT": "01/01/2000",
-    "zh_CN": "2019/2/10",
-}
+_ENGLISH_DATE_PROBE = "March 3, 2020"
 
 
 def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ...]:
@@ -44,19 +32,21 @@ def prewarm(locales: Iterable[str], *, probe_text: str = "123") -> tuple[str, ..
     for locale in order:
         normalize(probe_text, locale=locale)
         if locale == "en_US":
-            normalize(_DATE_PROBES[locale], locale=locale)
-        elif locale in _DATE_PROBES:
-            # Load the compiled date path directly. Several locale date probes use
-            # slashes and also form valid fraction candidates; normalizing them here
-            # would defeat the fraction path's first-use laziness.
+            normalize(_ENGLISH_DATE_PROBE, locale=locale)
+        else:
+            # Load compiled paths directly. Several locale date probes use slashes
+            # and also form valid fraction candidates; normalizing them here would
+            # defeat the fraction path's first-use laziness.
             from frend.date_rules import load_date_rule_bundle
             from frend.electronic_rules import load_electronic_rule_bundle
             from frend.money_rules import load_money_rule_bundle
             from frend.telephone_rules import regional_telephone_formats
             from frend.time_rules import load_time_rule_bundle
 
-            load_date_rule_bundle(locale)
-            load_time_rule_bundle(locale)
+            if locale in locales_for("date"):
+                load_date_rule_bundle(locale)
+            if locale in locales_for("time"):
+                load_time_rule_bundle(locale)
             if locale in locales_for("money"):
                 load_money_rule_bundle(locale)
             if locale in locales_for("telephone"):

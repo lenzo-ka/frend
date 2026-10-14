@@ -10,6 +10,7 @@ from icukit import unit_surface_inventory
 __all__ = ["InputFold", "apply_input_fold"]
 
 InputFold = Literal["typographic"]
+"""A named, length-preserving input fold accepted by public APIs."""
 
 # Every replacement is exactly one code point. U+2013 EN DASH is deliberately absent:
 # icukit 0.8.0's generated en_US date-interval readers accept ICU's en dash but do not

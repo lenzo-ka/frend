@@ -1,0 +1,13 @@
+IANA Root Zone Database public data notice
+
+Source: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
+Description: https://www.iana.org/domains/root/files
+
+The Internet Assigned Numbers Authority publishes this file as root-zone registry data
+for importing into software and systems that need to know what is a valid top-level
+domain. The file is redistributed unchanged, including its version line. IANA and ICANN
+names and marks are not licensed for endorsement or promotion.
+
+No additional copyright license or warranty is stated on the source file. This
+LicenseRef records the distribution basis and attribution for that public registry data;
+it does not apply to unrelated IANA or ICANN website content.

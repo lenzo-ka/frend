@@ -83,6 +83,7 @@ from frend.written_forms import WrittenFormsDetector
 __all__ = ["NormalizedText", "NormalizedUnit", "SentenceBase", "normalize"]
 
 SentenceBase = Literal["none", "en-tn@1", "en-tn-cart@1", "en-real-cart@1"]
+"""A named optional sentence-ranking model accepted by :func:`normalize`."""
 
 _DATE_SKELETONS = ("yMd", "Md", "y")
 _CURRENCIES = ("USD", "EUR", "GBP", "JPY", "CNY", "INR", "CAD", "AUD", "KRW", "RUB", "XCD")

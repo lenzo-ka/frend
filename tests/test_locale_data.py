@@ -578,6 +578,20 @@ def test_every_shipped_table_names_a_shippable_source():
     assert refusals == []
 
 
+def test_third_party_notice_names_every_shipped_third_party_source():
+    from tools import build_third_party_notices as builder
+
+    notice = (_REPO / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
+    index = builder.source_file_index()
+
+    assert index
+    assert builder.render_index(index) in notice
+    for source, covered_files in index.items():
+        section = notice.split(f"### `{source}`", 1)[1].split("\n### `", 1)[0]
+        assert covered_files
+        assert all(f"`{path}`" in section for path in covered_files)
+
+
 @pytest.mark.parametrize(
     "document",
     [
