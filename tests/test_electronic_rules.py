@@ -23,7 +23,6 @@ from frend.normalization_schema import bundle_refusals, validate_bundle
 from frend.normalize import _reading_detectors
 
 REPO = Path(__file__).resolve().parents[1]
-CLAIMS = REPO.parent / "agents/untracked/frend/lanes/nine-locales/pr9/source-claims.tsv"
 
 
 def _email_detection(text: str, locale: str = "de_DE"):
@@ -47,6 +46,26 @@ def _public_alternatives(text: str, locale: str = "de_DE"):
 
 def _source_document():
     return json.loads((REPO / "frend/data/normalization/electronic_de_DE.json").read_text("utf-8"))
+
+
+def _approved_claim_rows(document) -> list[dict[str, str]]:
+    """One approved claim row per resource and rule, built in-repo (no external register)."""
+    rows = []
+    for item in [*document["resources"], *document["rules"]]:
+        rows.append(
+            {
+                "claim_id": f"test-{item['id']}",
+                "record_id": f"de_DE:{item['id']}",
+                "electronic_kind": item.get("electronic_kind", ""),
+                "claim": "test fixture",
+                "source_id": "test",
+                "stable_locator": "test",
+                "quoted_passage": "test",
+                "verdict": "SUPPORTED",
+                "reviewer": "kal approved (test fixture)",
+            }
+        )
+    return rows
 
 
 def _write_claims(path: Path, rows: list[dict[str, str]]) -> None:
@@ -267,7 +286,7 @@ def test_guard_rule_schema_rejects_missing_or_cross_kind_discriminator():
 def test_guard_claim_join_rejects_cross_kind_and_unapproved_rows(tmp_path):
     import tools.build_electronic_rules as builder
 
-    rows = list(csv.DictReader(CLAIMS.open(encoding="utf-8"), delimiter="\t"))
+    rows = _approved_claim_rows(_source_document())
     claim = next(row for row in rows if row["record_id"] == "de_DE:electronic-email")
     claim["electronic_kind"] = "url"
     path = tmp_path / "claims.tsv"
