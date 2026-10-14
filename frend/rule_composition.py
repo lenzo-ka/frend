@@ -160,21 +160,38 @@ def preserve_legacy_ranking[T](
     *,
     unmatched: Literal["retain", "drop"],
 ) -> tuple[T, ...]:
-    """Match duplicate texts first-to-first while preserving the declared legacy policy."""
+    """Match duplicate texts first-to-first while preserving real-reading order.
+
+    A raw passthrough is a completeness fallback, not a spoken reading.  Keep its
+    relative order with other raw fallbacks, but place it after every generated
+    spoken reading.  The order of all non-fallback legacy and generated readings is
+    otherwise unchanged.
+    """
     remaining = list(generated)
     preserved = []
+    raw_fallbacks = []
     for old in previous:
         match = next((item for item in remaining if item.text == old.text), None)
         if match is None:
             if unmatched == "retain":
-                preserved.append(old)
+                target = (
+                    raw_fallbacks
+                    if old.provenance in {"surface:passthrough", "surface:unsupported"}
+                    else preserved
+                )
+                target.append(old)
             continue
         remaining.remove(match)
-        preserved.append(
+        target = (
+            raw_fallbacks
+            if old.provenance in {"surface:passthrough", "surface:unsupported"}
+            else preserved
+        )
+        target.append(
             replace(
                 match,
                 weight=old.weight,
                 prior_provenance=old.prior_provenance or old.provenance,
             )
         )
-    return tuple((*preserved, *remaining))
+    return tuple((*preserved, *remaining, *raw_fallbacks))

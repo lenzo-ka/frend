@@ -1,0 +1,57 @@
+{
+  "schema": "frend-normalization/2",
+  "locale": "de_DE",
+  "provenance": {"source": "frend/curated"},
+  "versions": {"cldr": "48", "icu": "78.3"},
+  "sources": [
+    {"id": "duden/online", "receipt": "duden-electronic.json"},
+    {"id": "cldr/48", "receipt": "cldr-48-electronic.json"},
+    {"id": "goethe/a1-deutsch-online", "receipt": "goethe-electronic.json"}
+  ],
+  "selectors": [],
+  "resources": [
+    {"id":"letter-A","kind":"electronic-letter-name","value":"A","forms":{"default":"a"},"derived_from":["duden/online#letter-A"]},
+    {"id":"letter-B","kind":"electronic-letter-name","value":"B","forms":{"default":"be"},"derived_from":["duden/online#letter-B"]},
+    {"id":"letter-C","kind":"electronic-letter-name","value":"C","forms":{"default":"ce"},"derived_from":["duden/online#letter-C"]},
+    {"id":"letter-D","kind":"electronic-letter-name","value":"D","forms":{"default":"de"},"derived_from":["duden/online#letter-D"]},
+    {"id":"letter-E","kind":"electronic-letter-name","value":"E","forms":{"default":"e"},"derived_from":["duden/online#letter-E"]},
+    {"id":"letter-F","kind":"electronic-letter-name","value":"F","forms":{"default":"ef"},"derived_from":["duden/online#letter-F"]},
+    {"id":"letter-G","kind":"electronic-letter-name","value":"G","forms":{"default":"ge"},"derived_from":["duden/online#letter-G"]},
+    {"id":"letter-H","kind":"electronic-letter-name","value":"H","forms":{"default":"ha"},"derived_from":["duden/online#letter-H"]},
+    {"id":"letter-I","kind":"electronic-letter-name","value":"I","forms":{"default":"i"},"derived_from":["duden/online#letter-I"]},
+    {"id":"letter-J","kind":"electronic-letter-name","value":"J","forms":{"default":"jot"},"derived_from":["duden/online#letter-J"]},
+    {"id":"letter-K","kind":"electronic-letter-name","value":"K","forms":{"default":"ka"},"derived_from":["duden/online#letter-K"]},
+    {"id":"letter-L","kind":"electronic-letter-name","value":"L","forms":{"default":"el"},"derived_from":["duden/online#letter-L"]},
+    {"id":"letter-M","kind":"electronic-letter-name","value":"M","forms":{"default":"em"},"derived_from":["duden/online#letter-M"]},
+    {"id":"letter-N","kind":"electronic-letter-name","value":"N","forms":{"default":"en"},"derived_from":["duden/online#letter-N"]},
+    {"id":"letter-O","kind":"electronic-letter-name","value":"O","forms":{"default":"o"},"derived_from":["duden/online#letter-O"]},
+    {"id":"letter-P","kind":"electronic-letter-name","value":"P","forms":{"default":"pe"},"derived_from":["duden/online#letter-P"]},
+    {"id":"letter-Q","kind":"electronic-letter-name","value":"Q","forms":{"default":"ku"},"derived_from":["duden/online#letter-Q"]},
+    {"id":"letter-R","kind":"electronic-letter-name","value":"R","forms":{"default":"er"},"derived_from":["duden/online#letter-R"]},
+    {"id":"letter-S","kind":"electronic-letter-name","value":"S","forms":{"default":"es"},"derived_from":["duden/online#letter-S"]},
+    {"id":"letter-T","kind":"electronic-letter-name","value":"T","forms":{"default":"te"},"derived_from":["duden/online#letter-T"]},
+    {"id":"letter-U","kind":"electronic-letter-name","value":"U","forms":{"default":"u"},"derived_from":["duden/online#letter-U"]},
+    {"id":"letter-V","kind":"electronic-letter-name","value":"V","forms":{"default":"vau"},"derived_from":["duden/online#letter-V"]},
+    {"id":"letter-W","kind":"electronic-letter-name","value":"W","forms":{"default":"we"},"derived_from":["duden/online#letter-W"]},
+    {"id":"letter-X","kind":"electronic-letter-name","value":"X","forms":{"default":"ix"},"derived_from":["duden/online#letter-X"]},
+    {"id":"letter-Y","kind":"electronic-letter-name","value":"Y","forms":{"default":"Ypsilon"},"derived_from":["duden/online#letter-Y"]},
+    {"id":"letter-Z","kind":"electronic-letter-name","value":"Z","forms":{"default":"zett"},"derived_from":["duden/online#letter-Z"]},
+    {"id":"separator-0040","kind":"electronic-separator","electronic_kind":"email","value":"@","forms":{"default":"at"},"priority":0,"derived_from":["goethe/a1-deutsch-online#email-at"]},
+    {"id":"separator-0040-cldr","kind":"electronic-separator","electronic_kind":"email","value":"@","forms":{"default":"At-Zeichen"},"priority":1,"derived_from":["cldr/48#de-at-tts"]},
+    {"id":"separator-002e","kind":"electronic-separator","electronic_kind":"email","value":".","forms":{"default":"Punkt"},"priority":0,"derived_from":["cldr/48#de-dot-tts"]},
+    {"id":"separator-002f","kind":"electronic-separator","electronic_kind":"email","value":"/","forms":{"default":"Schrägstrich"},"priority":0,"derived_from":["cldr/48#de-slash-tts"]},
+    {"id":"separator-002d","kind":"electronic-separator","electronic_kind":"email","value":"-","forms":{"default":"Minus"},"priority":0,"derived_from":["goethe/a1-deutsch-online#email-minus"]},
+    {"id":"separator-002d-cldr","kind":"electronic-separator","electronic_kind":"email","value":"-","forms":{"default":"Bindestrich-Minus"},"priority":1,"derived_from":["cldr/48#de-minus-tts"]},
+    {"id":"separator-005f","kind":"electronic-separator","electronic_kind":"email","value":"_","forms":{"default":"Unterstrich"},"priority":0,"derived_from":["cldr/48#de-underscore-tts"]}
+  ],
+  "rules": [
+    {"id":"electronic-email","kind":"electronic-rule","electronic_kind":"email","fields":["RUNS"],"target":["RUNS"],"directions":["tn"],"derived_from":["goethe/a1-deutsch-online#spoken-email-sequence"]}
+  ],
+  "weights": [],
+  "curated_rows": [],
+  "ancestry": {
+    "duden/online#letter-A":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-B":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-C":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-D":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-E":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-F":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-G":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-H":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-I":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-J":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-K":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-L":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-M":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-N":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-O":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-P":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-Q":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-R":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-S":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-T":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-U":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-V":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-W":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-X":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-Y":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],"duden/online#letter-Z":["bdc4be7f62ea02fa326d553c47b1162d68fcaa6a5f7fc63cd3575b0bd4fd8400"],
+    "goethe/a1-deutsch-online#email-at":["fc3352bfb4e69aca43d16cee8a78c122050d65adfdd16ad0ae71bbe3b47c2105"],"goethe/a1-deutsch-online#email-minus":["fc3352bfb4e69aca43d16cee8a78c122050d65adfdd16ad0ae71bbe3b47c2105"],"goethe/a1-deutsch-online#spoken-email-sequence":["fc3352bfb4e69aca43d16cee8a78c122050d65adfdd16ad0ae71bbe3b47c2105"],
+    "cldr/48#de-at-tts":["d7c39a5ee295e00914696152bab6f8d1f74ea1af94b66097ffe8772a30058352"],"cldr/48#de-dot-tts":["d7c39a5ee295e00914696152bab6f8d1f74ea1af94b66097ffe8772a30058352"],"cldr/48#de-slash-tts":["d7c39a5ee295e00914696152bab6f8d1f74ea1af94b66097ffe8772a30058352"],"cldr/48#de-minus-tts":["d7c39a5ee295e00914696152bab6f8d1f74ea1af94b66097ffe8772a30058352"],"cldr/48#de-underscore-tts":["d7c39a5ee295e00914696152bab6f8d1f74ea1af94b66097ffe8772a30058352"]
+  }
+}

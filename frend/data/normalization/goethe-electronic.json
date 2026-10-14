@@ -1,0 +1,11 @@
+{
+  "fetch_method": "manual citation of the public Goethe-Institut A1 lesson",
+  "fetched_at": "2026-10-13T10:00:00-04:00",
+  "license_sha256": "9998982ae03137a412de0aec1a17871d5ece88c8d22143bbce90ff8a5d77041f",
+  "locator": "https://lernen.goethe.de/deutschonline/A1/PDF/EN/A1_deutschonline_course_vocabulary_1-18.pdf#page=5",
+  "revision": "Deutsch Online A1 email-address glossary, page 5",
+  "sha256": "398555b024d50be095b8ca1ee2043963843146dc467e3469e74fa3aedb117cda",
+  "manual_citation": true,
+  "source": "goethe/a1-deutsch-online",
+  "transform_command": "manual source-claim transcription"
+}
