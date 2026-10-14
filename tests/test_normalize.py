@@ -538,15 +538,18 @@ def test_fullwidth_decimal_digits_fold_to_ascii_numbers_and_measures(locale, one
         assert fullwidth_digit[slice(*result.units[0].source_span)] == fullwidth_digit
 
 
-@pytest.mark.parametrize("locale", ["en_US", "ja_JP", "zh_CN"])
 @pytest.mark.parametrize(
-    ("fullwidth", "ascii_twin"),
+    ("locale", "fullwidth", "ascii_twin"),
     [
-        ("３．５km", "3.5km"),
-        ("５０％", "50%"),
-        ("１，２３４", "1,234"),
-        ("３．５ｋｍ", "3.5km"),
-    ],
+        (locale, fullwidth, ascii_twin)
+        for locale in ("en_US", "ja_JP", "zh_CN")
+        for fullwidth, ascii_twin in (
+            ("３．５km", "3.5km"),
+            ("５０％", "50%"),
+            ("１，２３４", "1,234"),
+        )
+    ]
+    + [(locale, "３．５ｋｍ", "3.5km") for locale in ("en_US", "ja_JP")],
 )
 def test_fullwidth_number_punctuation_and_units_read_as_ascii_twins(locale, fullwidth, ascii_twin):
     assert frend.normalize(fullwidth, locale=locale) == frend.normalize(
@@ -566,8 +569,21 @@ def test_fullwidth_number_punctuation_is_contextual_and_length_preserving():
 
 
 def test_fullwidth_cjk_punctuation_and_non_unit_letters_stay_fullwidth():
-    source = "語，語。 語．語 １Ａ"
+    source = "語，語。 語．語 １Ｘ"
     assert frend.apply_input_fold(source) == source.replace("１", "1")
+
+
+def test_fullwidth_unit_fold_excludes_units_without_an_installed_reader():
+    assert frend.apply_input_fold("１Ａ", locale="en_US") == "1Ａ"
+
+
+def test_fullwidth_guarded_unit_symbol_after_number_folds_to_ascii():
+    assert frend.apply_input_fold("１ＫＢ", locale="en_US") == "1KB"
+    assert frend.apply_input_fold("１Ｖ", locale="en_US") == "1V"
+
+
+def test_fullwidth_unit_fold_uses_the_requested_locale_inventory():
+    assert frend.apply_input_fold("３．５ｋｍ", locale="zh_CN") == "3.5ｋｍ"
 
 
 @pytest.mark.parametrize(

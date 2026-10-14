@@ -663,7 +663,7 @@ def resolve_lattice(
     if detections is None:
         if raw_source_text is None:
             raise ValueError("source_text is required when detections is None")
-        source_text = apply_input_fold(raw_source_text, fold)
+        source_text = apply_input_fold(raw_source_text, fold, locale=canonical)
         applied_fold = fold
         from icukit.detectors import detect
 

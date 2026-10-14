@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from functools import cache
 from typing import Literal
+
+from icukit import unit_surface_inventory
 
 __all__ = ["InputFold", "apply_input_fold"]
 
@@ -46,47 +49,64 @@ _DECIMAL_DIGITS = _ASCII_DIGITS | _FULLWIDTH_DIGITS
 _BETWEEN_DIGITS = {"，": ",", "．": "."}
 _NEXT_TO_DIGIT = {"％": "%", "＋": "+", "－": "-"}
 
-# Fold only unit symbols the installed measure readers already recognize, and only as
-# a fullwidth Latin run immediately following a number. This deliberately does not
-# make fullwidth Latin text generally equivalent to ASCII (for example, ``1Ａ``).
-_MEASURE_UNIT_SYMBOLS = frozenset(
-    {
-        "cm",
-        "ft",
-        "g",
-        "GB",
-        "GHz",
-        "GW",
-        "h",
-        "ha",
-        "hp",
-        "Hz",
-        "in",
-        "kB",
-        "kg",
-        "kHz",
-        "km",
-        "kW",
-        "L",
-        "lb",
-        "m",
-        "MB",
-        "mbar",
-        "mg",
-        "MHz",
-        "mi",
-        "min",
-        "mL",
-        "mm",
-        "mph",
-        "nm",
-        "oz",
-        "TB",
-        "V",
-        "W",
-        "yd",
-    }
+# Keep this inventory shared with the detector construction below. ICUkit's guarded
+# inventory deliberately includes every ambiguous unit, including units Frend does not
+# read; the input fold must admit only surfaces backed by an installed measure reader.
+_MEASURE_UNITS = (
+    "kilometer",
+    "meter",
+    "millimeter",
+    "centimeter",
+    "micrometer",
+    "nanometer",
+    "foot",
+    "inch",
+    "mile",
+    "yard",
+    "kilometer-per-hour",
+    "mile-per-hour",
+    "kilogram",
+    "gram",
+    "milligram",
+    "pound",
+    "ounce",
+    "ton",
+    "hectare",
+    "acre",
+    "square-kilometer",
+    "square-mile",
+    "square-meter",
+    "square-yard",
+    "square-inch",
+    "kilowatt",
+    "megawatt",
+    "watt",
+    "horsepower",
+    "volt",
+    "hertz",
+    "kilohertz",
+    "megahertz",
+    "gigahertz",
+    "kilobyte",
+    "megabyte",
+    "gigabyte",
+    "terabyte",
+    "liter",
+    "milliliter",
+    "degree",
+    "celsius",
+    "fahrenheit",
+    "second",
+    "minute",
+    "hour",
+    "gigawatt",
+    "meter-per-second",
+    "square-foot",
+    "millibar",
+    "cubic-meter",
+    "cubic-foot",
 )
+_MEASURE_UNIT_SET = frozenset(_MEASURE_UNITS)
 
 
 def _is_fullwidth_latin(char: str) -> bool:
@@ -97,7 +117,16 @@ def _ascii_fullwidth_latin(text: str) -> str:
     return "".join(chr(ord(char) - 0xFEE0) for char in text)
 
 
-def _contextual_number_fold(text: str, folded: list[str]) -> None:
+@cache
+def _measure_unit_surfaces(locale: str) -> frozenset[str]:
+    return frozenset(
+        row.surface
+        for row in unit_surface_inventory(locale, guarded=True)
+        if row.unit in _MEASURE_UNIT_SET
+    )
+
+
+def _contextual_number_fold(text: str, folded: list[str], locale: str) -> None:
     """Fold punctuation and unit letters only where they are part of a number."""
     for index, char in enumerate(text):
         before_digit = index > 0 and text[index - 1] in _DECIMAL_DIGITS
@@ -116,12 +145,16 @@ def _contextual_number_fold(text: str, folded: list[str]) -> None:
         while end < len(text) and _is_fullwidth_latin(text[end]):
             end += 1
         unit = _ascii_fullwidth_latin(text[index:end])
-        if unit in _MEASURE_UNIT_SYMBOLS:
+        # A fullwidth Latin run immediately after a number already has the context
+        # guarded unit surfaces require; in particular, this preserves ``1Ｖ``.
+        if unit in _measure_unit_surfaces(locale):
             folded[index:end] = unit
         index = end
 
 
-def apply_input_fold(text: str, fold: InputFold | None = "typographic") -> str:
+def apply_input_fold(
+    text: str, fold: InputFold | None = "typographic", *, locale: str = "en_US"
+) -> str:
     """Return ``text`` after the declared input ``fold``.
 
     ``None`` disables folding. The typographic fold is code-point-length preserving,
@@ -132,7 +165,7 @@ def apply_input_fold(text: str, fold: InputFold | None = "typographic") -> str:
     if fold != "typographic":
         raise ValueError(f"unknown input fold: {fold!r}")
     folded_chars = list(text.translate(_TYPOGRAPHIC))
-    _contextual_number_fold(text, folded_chars)
+    _contextual_number_fold(text, folded_chars, locale)
     folded = "".join(folded_chars)
     assert len(folded) == len(text)
     return folded
