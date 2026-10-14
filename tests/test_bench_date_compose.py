@@ -27,7 +27,7 @@ def test_one_sample_covers_load_lower_recognize_generate_and_render():
     assert row["target_piece_count"] > 0
 
 
-def test_latency_manifest_has_exactly_the_eleven_gate_locales():
+def test_latency_manifest_has_exactly_the_gate_locales():
     import json
 
     document = json.loads(bench.INPUTS.read_text(encoding="utf-8"))

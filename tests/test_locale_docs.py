@@ -17,7 +17,7 @@ def test_locale_guide_references_only_existing_repository_paths():
     text = DOC.read_text(encoding="utf-8")
     references = set(
         re.findall(
-            r"(?<![A-Za-z0-9_.-])((?:frend|pr10|tests|tools)/[A-Za-z0-9_.-]+"
+            r"(?<![A-Za-z0-9_./-])((?:frend|pr10|tests|tools)/[A-Za-z0-9_.-]+"
             r"(?:/[A-Za-z0-9_.-]+)*)",
             text,
         )

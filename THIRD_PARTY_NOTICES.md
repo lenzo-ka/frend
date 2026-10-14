@@ -144,3 +144,422 @@ NVIDIA NeMo text processing is registered under Apache-2.0 solely as compatibili
 evidence. No NeMo-derived fixture or data artifact is included in this distribution.
 Wikidata is likewise registered as a possible CC0 source, but no shipped artifact in
 this release names it as its source.
+
+<!-- BEGIN GENERATED THIRD-PARTY FILE INDEX -->
+## Transitive covered-file index
+
+This index is generated from the shipped files' own provenance fields by
+`python -B tools/build_third_party_notices.py`. It is authoritative for the
+files covered by each source notice, including compiled derivatives.
+
+### `academie-francaise/dictionnaire`
+
+- `frend/data/fraction_rules/fr_FR.json`
+- `frend/data/normalization/academie-clock-seconds.json`
+- `frend/data/normalization/academie-clock.json`
+- `frend/data/normalization/academie-demi-8e.json`
+- `frend/data/normalization/academie-demi-9e.json`
+- `frend/data/normalization/academie-quart.json`
+- `frend/data/normalization/fr_FR.json`
+- `frend/data/normalization/time_fr_FR.json`
+- `frend/data/time_rules/fr_FR.json`
+
+### `academie-francaise/questions-de-langue`
+
+- `frend/data/money_rules/fr_FR.json`
+- `frend/data/normalization/academie-money.json`
+- `frend/data/normalization/money_fr_FR.json`
+
+### `acapela/tts-language-manuals`
+
+- `frend/data/normalization/acapela-telephone-fr-FR.json`
+- `frend/data/normalization/acapela-telephone-pt-BR.json`
+- `frend/data/normalization/acapela-telephone-pt-PT.json`
+- `frend/data/normalization/telephone_fr_FR.json`
+- `frend/data/normalization/telephone_pt_BR.json`
+- `frend/data/normalization/telephone_pt_PT.json`
+- `frend/data/telephone_rules/fr_FR.json`
+- `frend/data/telephone_rules/pt_BR.json`
+- `frend/data/telephone_rules/pt_PT.json`
+
+### `accademia-crusca/consulenza`
+
+- `frend/data/normalization/crusca-clock.json`
+- `frend/data/normalization/time_it_IT.json`
+- `frend/data/time_rules/it_IT.json`
+
+### `banxico/numismatica`
+
+- `frend/data/money_rules/es_MX.json`
+- `frend/data/normalization/banxico-money.json`
+- `frend/data/normalization/money_es_MX.json`
+
+### `bcb/cmn-1076`
+
+- `frend/data/money_rules/pt_BR.json`
+- `frend/data/normalization/bcb-cmn-1076.json`
+- `frend/data/normalization/money_pt_BR.json`
+
+### `bcb/plano-real`
+
+- `frend/data/money_rules/pt_BR.json`
+- `frend/data/normalization/bcb-plano-real.json`
+- `frend/data/normalization/money_pt_BR.json`
+
+### `beijing-language/numbers-publications`
+
+- `frend/data/normalization/beijing-numbers-publications.json`
+- `frend/data/normalization/time_zh_CN.json`
+- `frend/data/time_rules/zh_CN.json`
+
+### `boe/gaceta`
+
+- `frend/data/normalization/boe-clock-seconds.json`
+- `frend/data/normalization/time_es_ES.json`
+- `frend/data/normalization/time_es_MX.json`
+- `frend/data/time_rules/es_ES.json`
+- `frend/data/time_rules/es_MX.json`
+
+### `ciberduvidas/consultorio`
+
+- `frend/data/fraction_rules/pt_BR.json`
+- `frend/data/fraction_rules/pt_PT.json`
+- `frend/data/normalization/ciberduvidas-clock.json`
+- `frend/data/normalization/ciberduvidas-fractions.json`
+- `frend/data/normalization/ciberduvidas-meio.json`
+- `frend/data/normalization/ciberduvidas-tercos.json`
+- `frend/data/normalization/pt-default.json`
+- `frend/data/normalization/time_pt_BR.json`
+- `frend/data/normalization/time_pt_PT.json`
+- `frend/data/time_rules/pt_BR.json`
+- `frend/data/time_rules/pt_PT.json`
+
+### `cldr/48`
+
+- `frend/data/electronic_rules/de_DE.json`
+- `frend/data/normalization/cldr-48-electronic.json`
+- `frend/data/normalization/electronic_de_DE.json`
+
+### `duden/online`
+
+- `frend/data/electronic_rules/de_DE.json`
+- `frend/data/fraction_rules/de_DE.json`
+- `frend/data/normalization/de_DE.json`
+- `frend/data/normalization/duden-eineinviertel.json`
+- `frend/data/normalization/duden-electronic.json`
+- `frend/data/normalization/duden-halb.json`
+- `frend/data/normalization/duden-uhrzeit.json`
+- `frend/data/normalization/duden-zweieinhalb.json`
+- `frend/data/normalization/electronic_de_DE.json`
+- `frend/data/normalization/time_de_DE.json`
+- `frend/data/time_rules/de_DE.json`
+
+### `eduscol/fractions-cycle-3`
+
+- `frend/data/fraction_rules/fr_FR.json`
+- `frend/data/normalization/eduscol-fractions.json`
+- `frend/data/normalization/fr_FR.json`
+
+### `festvox/festival`
+
+- `frend/data/en/context/festival_classes.json`
+
+### `german-grammar/fractions`
+
+- `frend/data/fraction_rules/de_DE.json`
+- `frend/data/normalization/de_DE.json`
+- `frend/data/normalization/german-fractions.json`
+
+### `goethe/a1-deutsch-online`
+
+- `frend/data/electronic_rules/de_DE.json`
+- `frend/data/normalization/electronic_de_DE.json`
+- `frend/data/normalization/goethe-electronic.json`
+
+### `google/tn-en_with_types`
+
+- `frend/data/en/abbreviation_priors.json`
+- `frend/data/en/acronym_priors.json`
+- `frend/data/en/context/index.json`
+- `frend/data/en/context/trees/05f9c74a5cbf.cart`
+- `frend/data/en/context/trees/075cba7551ac.cart`
+- `frend/data/en/context/trees/0a64b444bf49.cart`
+- `frend/data/en/context/trees/0b4e0aa3e560.cart`
+- `frend/data/en/context/trees/0b4e760886bf.cart`
+- `frend/data/en/context/trees/1320fa15f3aa.cart`
+- `frend/data/en/context/trees/1393e194e58a.cart`
+- `frend/data/en/context/trees/18cc1535c691.cart`
+- `frend/data/en/context/trees/1f2ef4893593.cart`
+- `frend/data/en/context/trees/1f8d3ffd9018.cart`
+- `frend/data/en/context/trees/21bb157e7032.cart`
+- `frend/data/en/context/trees/2290bb44e800.cart`
+- `frend/data/en/context/trees/2ddb36e16367.cart`
+- `frend/data/en/context/trees/3048774c63c3.cart`
+- `frend/data/en/context/trees/31034ca7e091.cart`
+- `frend/data/en/context/trees/328a30953c3e.cart`
+- `frend/data/en/context/trees/34a84c88b72b.cart`
+- `frend/data/en/context/trees/3a9296711eb1.cart`
+- `frend/data/en/context/trees/3caee6c74d29.cart`
+- `frend/data/en/context/trees/3fe1b4526d5f.cart`
+- `frend/data/en/context/trees/407a01b7830a.cart`
+- `frend/data/en/context/trees/465750e66128.cart`
+- `frend/data/en/context/trees/47fe893e2742.cart`
+- `frend/data/en/context/trees/49e7a861adf9.cart`
+- `frend/data/en/context/trees/4c2eed8a9df0.cart`
+- `frend/data/en/context/trees/4db519f7a586.cart`
+- `frend/data/en/context/trees/520bac64ed0b.cart`
+- `frend/data/en/context/trees/540a0cb280e7.cart`
+- `frend/data/en/context/trees/554fc9bf40a9.cart`
+- `frend/data/en/context/trees/55c6141177f9.cart`
+- `frend/data/en/context/trees/574c74980184.cart`
+- `frend/data/en/context/trees/6dcb8c4b620c.cart`
+- `frend/data/en/context/trees/7ce519ec98b4.cart`
+- `frend/data/en/context/trees/7d928ce2933c.cart`
+- `frend/data/en/context/trees/86fe09d7eff2.cart`
+- `frend/data/en/context/trees/8bee8046856d.cart`
+- `frend/data/en/context/trees/8d4515587195.cart`
+- `frend/data/en/context/trees/99daccef2728.cart`
+- `frend/data/en/context/trees/a55b7822c9ab.cart`
+- `frend/data/en/context/trees/a594e90328c1.cart`
+- `frend/data/en/context/trees/a7b9e5f7f426.cart`
+- `frend/data/en/context/trees/a8226db3c036.cart`
+- `frend/data/en/context/trees/aa808c894ba0.cart`
+- `frend/data/en/context/trees/ada159e41fa4.cart`
+- `frend/data/en/context/trees/b1ae6a87f4dd.cart`
+- `frend/data/en/context/trees/b513182c330a.cart`
+- `frend/data/en/context/trees/bd8b7319152c.cart`
+- `frend/data/en/context/trees/cb491deed07c.cart`
+- `frend/data/en/context/trees/cec4bd37fa27.cart`
+- `frend/data/en/context/trees/d110d44cade4.cart`
+- `frend/data/en/context/trees/d92b41b57938.cart`
+- `frend/data/en/context/trees/dc4772eb1067.cart`
+- `frend/data/en/context/trees/de2bdedc2381.cart`
+- `frend/data/en/context/trees/eef8970abc6a.cart`
+- `frend/data/en/context/trees/f418027f4a98.cart`
+- `frend/data/en/context/trees/f536797113eb.cart`
+- `frend/data/en/context/trees/ff0ddfa3bada.cart`
+- `frend/data/en/electronic_priors.json`
+- `frend/data/en/electronic_span_priors.json`
+- `frend/data/en/grouped_id_priors.json`
+- `frend/data/en/inch_context_priors.json`
+- `frend/data/en/number_priors.json`
+- `frend/data/en/range_priors.json`
+- `frend/data/en/spelled_token_priors.json`
+- `frend/data/en/spellout_dictionary.json`
+- `frend/data/en/spoken_priors.json`
+- `frend/data/en/telephone_priors.json`
+- `frend/data/en/type_priors.json`
+- `frend/data/en/zero_priors.json`
+
+### `iana/tlds-alpha-by-domain`
+
+- `frend/data/root/tlds-alpha-by-domain.txt`
+
+### `icu/78.3/cldr-date-patterns`
+
+- `frend/data/date_rules/de_DE.json`
+- `frend/data/date_rules/es_ES.json`
+- `frend/data/date_rules/es_MX.json`
+- `frend/data/date_rules/fr_FR.json`
+- `frend/data/date_rules/it_IT.json`
+- `frend/data/date_rules/ja_JP.json`
+- `frend/data/date_rules/ko_KR.json`
+- `frend/data/date_rules/pt_BR.json`
+- `frend/data/date_rules/pt_PT.json`
+- `frend/data/date_rules/zh_CN.json`
+
+### `icu/78.3/fraction-percent`
+
+- `frend/data/fraction_rules/de_DE.json`
+- `frend/data/fraction_rules/es_ES.json`
+- `frend/data/fraction_rules/es_MX.json`
+- `frend/data/fraction_rules/fr_FR.json`
+- `frend/data/fraction_rules/it_IT.json`
+- `frend/data/fraction_rules/ja_JP.json`
+- `frend/data/fraction_rules/ko_KR.json`
+- `frend/data/fraction_rules/pt_BR.json`
+- `frend/data/fraction_rules/pt_PT.json`
+- `frend/data/fraction_rules/zh_CN.json`
+- `frend/data/normalization/de_DE.json`
+- `frend/data/normalization/es-default.json`
+- `frend/data/normalization/es_ES.json`
+- `frend/data/normalization/es_MX.json`
+- `frend/data/normalization/fr_FR.json`
+- `frend/data/normalization/icu-78.3.json`
+- `frend/data/normalization/it_IT.json`
+- `frend/data/normalization/ja_JP.json`
+- `frend/data/normalization/ko_KR.json`
+- `frend/data/normalization/pt-default.json`
+- `frend/data/normalization/pt_BR.json`
+- `frend/data/normalization/pt_PT.json`
+- `frend/data/normalization/zh_CN.json`
+
+### `icu/78.3/reflective-generation`
+
+- `frend/data/root/icu_shape_backfill.json`
+
+### `icu/78.3/time`
+
+- `frend/data/normalization/icu-78.3-time.json`
+- `frend/data/normalization/time_de_DE.json`
+- `frend/data/normalization/time_es_ES.json`
+- `frend/data/normalization/time_es_MX.json`
+- `frend/data/normalization/time_fr_FR.json`
+- `frend/data/normalization/time_it_IT.json`
+- `frend/data/normalization/time_ja_JP.json`
+- `frend/data/normalization/time_ko_KR.json`
+- `frend/data/normalization/time_pt_BR.json`
+- `frend/data/normalization/time_pt_PT.json`
+- `frend/data/normalization/time_zh_CN.json`
+- `frend/data/time_rules/de_DE.json`
+- `frend/data/time_rules/es_ES.json`
+- `frend/data/time_rules/es_MX.json`
+- `frend/data/time_rules/fr_FR.json`
+- `frend/data/time_rules/it_IT.json`
+- `frend/data/time_rules/ja_JP.json`
+- `frend/data/time_rules/ko_KR.json`
+- `frend/data/time_rules/pt_BR.json`
+- `frend/data/time_rules/pt_PT.json`
+- `frend/data/time_rules/zh_CN.json`
+
+### `impa/obmep`
+
+- `frend/data/normalization/impa-fractions.json`
+- `frend/data/normalization/pt-default.json`
+
+### `jixi/education-cloud`
+
+- `frend/data/fraction_rules/zh_CN.json`
+- `frend/data/normalization/chinese-fractions.json`
+- `frend/data/normalization/zh_CN.json`
+
+### `libphonenumber`
+
+- `frend/data/normalization/libphonenumber-9.0.41.json`
+- `frend/data/normalization/telephone_fr_FR.json`
+- `frend/data/normalization/telephone_pt_BR.json`
+- `frend/data/normalization/telephone_pt_PT.json`
+- `frend/data/telephone_rules/fr_FR.json`
+- `frend/data/telephone_rules/pt_BR.json`
+- `frend/data/telephone_rules/pt_PT.json`
+
+### `life-education/journal`
+
+- `frend/data/fraction_rules/zh_CN.json`
+- `frend/data/normalization/chinese-mixed-fractions.json`
+- `frend/data/normalization/zh_CN.json`
+
+### `mext/math-grade4`
+
+- `frend/data/fraction_rules/ja_JP.json`
+- `frend/data/normalization/ja_JP.json`
+- `frend/data/normalization/japanese-fractions.json`
+- `frend/data/normalization/mext-clock.json`
+- `frend/data/normalization/time_ja_JP.json`
+- `frend/data/time_rules/ja_JP.json`
+
+### `nikl/basic-dictionary`
+
+- `frend/data/fraction_rules/ko_KR.json`
+- `frend/data/normalization/ko_KR.json`
+- `frend/data/normalization/korean-percent.json`
+
+### `nikl/online-qna`
+
+- `frend/data/fraction_rules/ko_KR.json`
+- `frend/data/money_rules/ko_KR.json`
+- `frend/data/normalization/ko_KR.json`
+- `frend/data/normalization/korean-fractions.json`
+- `frend/data/normalization/money_ko_KR.json`
+- `frend/data/normalization/nikl-clock.json`
+- `frend/data/normalization/nikl-money.json`
+- `frend/data/normalization/nikl-wa-gwa.json`
+- `frend/data/normalization/time_ko_KR.json`
+- `frend/data/time_rules/ko_KR.json`
+
+### `nikl/standard-dictionary`
+
+- `frend/data/normalization/nikl-wa-standard.json`
+
+### `oqlf/bdl`
+
+- `frend/data/fraction_rules/fr_FR.json`
+- `frend/data/normalization/fr_FR.json`
+- `frend/data/normalization/oqlf-fractions.json`
+
+### `rae/brae`
+
+- `frend/data/normalization/rae-alemany-fractions.json`
+
+### `rae/dpd-2`
+
+- `frend/data/fraction_rules/es_ES.json`
+- `frend/data/fraction_rules/es_MX.json`
+- `frend/data/normalization/es-default.json`
+- `frend/data/normalization/rae-clock.json`
+- `frend/data/normalization/rae-fractions.json`
+- `frend/data/normalization/rae-medio.json`
+- `frend/data/normalization/time_es_ES.json`
+- `frend/data/normalization/time_es_MX.json`
+- `frend/data/time_rules/es_ES.json`
+- `frend/data/time_rules/es_MX.json`
+
+### `rae/gramatica-basica`
+
+- `frend/data/normalization/rae-gramatica-fraccionarios.json`
+
+### `rechtschreibrat/amtliches-regelwerk-2018`
+
+- `frend/data/fraction_rules/de_DE.json`
+- `frend/data/normalization/de_DE.json`
+- `frend/data/normalization/rechtschreibrat-fractions.json`
+
+### `sep/nueva-escuela-mexicana`
+
+- `frend/data/normalization/es-default.json`
+- `frend/data/normalization/sep-fractions.json`
+- `frend/data/normalization/sep-mixed-fractions.json`
+
+### `serlo/fractions`
+
+- `frend/data/fraction_rules/de_DE.json`
+- `frend/data/normalization/de_DE.json`
+- `frend/data/normalization/serlo-fractions.json`
+
+### `treccani/enciclopedia-italiano`
+
+- `frend/data/fraction_rules/it_IT.json`
+- `frend/data/normalization/it_IT.json`
+- `frend/data/normalization/treccani-fractions.json`
+
+### `treccani/vocabolario`
+
+- `frend/data/fraction_rules/it_IT.json`
+- `frend/data/money_rules/it_IT.json`
+- `frend/data/normalization/it_IT.json`
+- `frend/data/normalization/money_it_IT.json`
+- `frend/data/normalization/time_it_IT.json`
+- `frend/data/normalization/treccani-clock.json`
+- `frend/data/normalization/treccani-mezzo.json`
+- `frend/data/normalization/treccani-money.json`
+- `frend/data/time_rules/it_IT.json`
+
+### `ua/matesfacil`
+
+- `frend/data/fraction_rules/es_ES.json`
+- `frend/data/fraction_rules/es_MX.json`
+- `frend/data/normalization/es-default.json`
+- `frend/data/normalization/ua-mixed-fractions.json`
+
+### `uel/matematica-essencial`
+
+- `frend/data/normalization/pt-default.json`
+- `frend/data/normalization/uel-fractions.json`
+
+### `urumqi/government`
+
+- `frend/data/fraction_rules/zh_CN.json`
+- `frend/data/normalization/chinese-percent.json`
+- `frend/data/normalization/zh_CN.json`
+
+<!-- END GENERATED THIRD-PARTY FILE INDEX -->

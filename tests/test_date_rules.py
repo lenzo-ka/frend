@@ -145,7 +145,7 @@ def test_bundles_name_only_shippable_icu_source():
 def test_prewarm_makes_all_generated_date_bundles_resident():
     load_date_rule_bundle.cache_clear()
     prewarm(("en_US", *GENERATED_DATE_LOCALES))
-    assert load_date_rule_bundle.cache_info().currsize == 10
+    assert load_date_rule_bundle.cache_info().currsize == len(GENERATED_DATE_LOCALES)
     misses = load_date_rule_bundle.cache_info().misses
     for locale in GENERATED_DATE_LOCALES:
         load_date_rule_bundle(locale)

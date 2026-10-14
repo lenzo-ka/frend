@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Eleven-locale fixture coverage and resource gate.
+"""Checked-locale fixture coverage and resource gate.
 
 The fixture reader consumes NeMo test text only.  It never imports NeMo code and
 the repository does not vendor those fixtures.  Coverage is report-only: release
@@ -34,6 +34,7 @@ from typing import Any
 import icu
 from icukit.detectors import detect
 
+import frend as frend_package
 from frend import apply_input_fold, compose_choices, normalize, resolve_choices
 from frend.lattice import ChoiceGraph
 from frend.locale_data import canonical_locale
@@ -41,6 +42,7 @@ from frend.normalize import _append_alternative_part, _reading_detectors
 from frend.spacing import unit_gap
 
 REPO = Path(__file__).resolve().parents[1]
+SUBJECT_REPO = Path(frend_package.__file__).resolve().parents[1]
 CHECKED_PT_PT = REPO / "tests" / "data" / "locales" / "pt_PT_checked.tsv"
 EXCLUSIONS_PATH = Path(__file__).with_name("nemo_exclusions.tsv")
 CONVENTIONS_PATH = Path(__file__).with_name("locale_conventions.json")
@@ -61,6 +63,16 @@ LOCALES: dict[str, tuple[str, ...]] = {
 }
 GATE_LOCALES = tuple(locale for locales in LOCALES.values() for locale in locales) + ("pt_PT",)
 _ALL_GATE_LOCALES = GATE_LOCALES
+
+
+def _bundled_locales(family: str) -> frozenset[str]:
+    root = Path(frend_package.__file__).resolve().parent / "data" / f"{family}_rules"
+    return frozenset(path.stem for path in root.glob("*.json"))
+
+
+_GENERATED_DATE_LOCALES = _bundled_locales("date")
+_GENERATED_FRACTION_LOCALES = _bundled_locales("fraction")
+_GENERATED_TIME_LOCALES = _bundled_locales("time")
 
 # These public probes have a sourced legacy reading at rank 0 and a distinct sourced
 # PR7 reading at rank 1.  The PR6 rank amendment preserves the shared legacy reading's
@@ -738,7 +750,19 @@ def _merge_locale_rows(rows: Sequence[dict], locales: tuple[str, ...]) -> list[d
     return sorted(merged, key=lambda row: row["case_id"])
 
 
-def coverage(nemo_root: Path, out_dir: Path, checked_path: Path = CHECKED_PT_PT) -> dict:
+def _checked_paths(
+    checked: Path | Mapping[str, Path] = CHECKED_PT_PT,
+) -> dict[str, Path]:
+    if isinstance(checked, Path):
+        return {"pt_PT": checked}
+    return dict(checked)
+
+
+def coverage(
+    nemo_root: Path,
+    out_dir: Path,
+    checked: Path | Mapping[str, Path] = CHECKED_PT_PT,
+) -> dict:
     exclusions = load_exclusions()
     rows: list[dict] = []
     language_rows: dict[str, list[dict]] = defaultdict(list)
@@ -747,8 +771,12 @@ def coverage(nemo_root: Path, out_dir: Path, checked_path: Path = CHECKED_PT_PT)
             row = _evaluate(case, exclusions)
             rows.append(row)
             language_rows[language].append(row)
+    checked_rows_by_locale = {
+        locale: [_evaluate(case, exclusions) for case in load_checked_cases(path, locale)]
+        for locale, path in _checked_paths(checked).items()
+    }
     checked_rows = [
-        _evaluate(case, exclusions) for case in load_checked_cases(checked_path, "pt_PT")
+        row for rows_for_locale in checked_rows_by_locale.values() for row in rows_for_locale
     ]
     rows.extend(checked_rows)
 
@@ -767,12 +795,16 @@ def coverage(nemo_root: Path, out_dir: Path, checked_path: Path = CHECKED_PT_PT)
     report = {
         "schema": 2,
         "frend_head": subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
+            ["git", "rev-parse", "HEAD"], cwd=SUBJECT_REPO, text=True
         ).strip(),
         "icu_version": icu.ICU_VERSION,
         "locales": per_locale,
         "logical_nemo": nemo_summary,
-        "pt_PT_checked": _summarize(checked_rows),
+        "checked": {
+            locale: _summarize(rows_for_locale)
+            for locale, rows_for_locale in checked_rows_by_locale.items()
+        },
+        "pt_PT_checked": _summarize(checked_rows_by_locale.get("pt_PT", [])),
         "all_gate_workloads": _summarize(logical_rows + checked_rows),
         "cases": rows,
     }
@@ -892,7 +924,7 @@ def _runtime_comparisons(
             }
         )
         for locale, receipt in date_probes.items():
-            generated_locale = locale != "en_US"
+            generated_locale = locale in _GENERATED_DATE_LOCALES
             events = receipt.get("events", {})
             passed = (
                 receipt.get("date_units", 0) >= 1
@@ -929,7 +961,7 @@ def _runtime_comparisons(
             }
         )
         for locale, receipt in fraction_probes.items():
-            generated_locale = locale != "en_US"
+            generated_locale = locale in _GENERATED_FRACTION_LOCALES
             probes = receipt.get("probes", {})
             events = receipt.get("events", {})
             passed = (
@@ -938,7 +970,7 @@ def _runtime_comparisons(
                 and all(
                     item.get("selected_generated") is generated_locale for item in probes.values()
                 )
-                and receipt.get("bundle_available") is True
+                and receipt.get("bundle_available") is generated_locale
                 and (
                     not generated_locale
                     or events.get("load") == 1
@@ -975,7 +1007,7 @@ def _runtime_comparisons(
             }
         )
         for locale, receipt in time_probes.items():
-            routed_locale = locale not in {"en_US", "de_DE"}
+            routed_locale = locale in _GENERATED_TIME_LOCALES - {"de_DE"}
             expected_selected = (
                 routed_locale
                 and (
@@ -998,7 +1030,7 @@ def _runtime_comparisons(
                     and receipt.get("selected_provenance")
                     == receipt.get("candidates", [{}])[0].get("provenance")
                 )
-                and receipt.get("bundle_available") is True
+                and receipt.get("bundle_available") is (locale in _GENERATED_TIME_LOCALES)
                 and (
                     routed_locale
                     and events == {"load": 1, "lower": 0, "generate": 0}
@@ -1108,7 +1140,7 @@ def _runtime_comparisons(
 
 def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
     checks = [
-        _absolute_comparison(
+        _delta_comparison(
             "soak.pass3_minus_pass1_bytes",
             base["summary"]["pass3_minus_pass1_bytes"],
             head["summary"]["pass3_minus_pass1_bytes"],
@@ -1150,7 +1182,7 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
         )
         for receipt in date_receipts:
             count = receipt.get("count", 0)
-            generated_expected = receipt.get("locale") != "en_US"
+            generated_expected = receipt.get("locale") in _GENERATED_DATE_LOCALES
             passed = receipt.get("successful_date_detections") == count and (
                 receipt.get("selected_generated") == count if generated_expected else True
             )
@@ -1187,7 +1219,7 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
         )
         for receipt in fraction_receipts:
             count = receipt.get("count", 0)
-            generated_expected = receipt.get("locale") != "en_US"
+            generated_expected = receipt.get("locale") in _GENERATED_FRACTION_LOCALES
             passed = receipt.get("successful_fraction_detections") == count and (
                 receipt.get("selected_generated") == count
                 if generated_expected
@@ -1226,8 +1258,8 @@ def _soak_comparisons(base: dict, head: dict, budget: GateBudget) -> list[dict]:
         )
         for receipt in time_receipts:
             count = receipt.get("count", 0)
-            generated_expected = receipt.get("locale") not in (
-                {"en_US", "de_DE"} | _TIME_SOAK_LEGACY_WINNER_LOCALES
+            generated_expected = receipt.get("locale") in (
+                _GENERATED_TIME_LOCALES - {"de_DE"} - _TIME_SOAK_LEGACY_WINNER_LOCALES
             )
             passed = receipt.get("successful_time_detections") == count and (
                 receipt.get("selected_generated") == count
@@ -1845,12 +1877,13 @@ def _refuse_tracemalloc() -> None:
         raise RuntimeError("locale gate refuses to run while tracemalloc is imported")
 
 
-def _workloads(nemo_root: Path, checked_path: Path) -> dict[str, list[str]]:
+def _workloads(nemo_root: Path, checked: Path | Mapping[str, Path]) -> dict[str, list[str]]:
     result: dict[str, list[str]] = {locale: [] for locale in GATE_LOCALES}
     for language, locales in LOCALES.items():
         for case in load_cases(nemo_root, language, locales):
             result[case.locale].append(case.written)
-    result["pt_PT"] = [case.written for case in load_checked_cases(checked_path, "pt_PT")]
+    for locale, path in _checked_paths(checked).items():
+        result[locale].extend(case.written for case in load_checked_cases(path, locale))
     return result
 
 
@@ -1858,7 +1891,7 @@ def _workloads(nemo_root: Path, checked_path: Path) -> dict[str, list[str]]:
 def _date_latency_probes() -> dict[str, dict[str, str]]:
     document = json.loads(DATE_LATENCY_INPUTS.read_text(encoding="utf-8"))
     if document.get("schema") != 1 or set(document.get("locales", ())) != set(_ALL_GATE_LOCALES):
-        raise ValueError("date latency manifest must name exactly the eleven gate locales")
+        raise ValueError("date latency manifest must name exactly the gate locales")
     return document["locales"]
 
 
@@ -1890,7 +1923,7 @@ def _normalize_date_probe(locale: str) -> tuple[int, dict]:
 def _fraction_latency_probes() -> dict[str, dict[str, str]]:
     document = json.loads(FRACTION_LATENCY_INPUTS.read_text(encoding="utf-8"))
     if document.get("schema") != 1 or set(document.get("locales", ())) != set(_ALL_GATE_LOCALES):
-        raise ValueError("fraction latency manifest must name exactly the eleven gate locales")
+        raise ValueError("fraction latency manifest must name exactly the gate locales")
     return document["locales"]
 
 
@@ -1926,7 +1959,7 @@ def _normalize_fraction_probes(locale: str) -> tuple[int, dict]:
     return elapsed, {
         "probes": receipts,
         "events": {key: after[key] - before[key] for key in before},
-        "bundle_available": fraction_rule_events is not None,
+        "bundle_available": locale in _GENERATED_FRACTION_LOCALES,
     }
 
 
@@ -1934,7 +1967,7 @@ def _normalize_fraction_probes(locale: str) -> tuple[int, dict]:
 def _time_latency_probes() -> dict[str, str]:
     document = json.loads(TIME_LATENCY_INPUTS.read_text(encoding="utf-8"))
     if document.get("schema") != 1 or set(document.get("locales", ())) != set(_ALL_GATE_LOCALES):
-        raise ValueError("time latency manifest must name exactly the eleven gate locales")
+        raise ValueError("time latency manifest must name exactly the gate locales")
     return document["locales"]
 
 
@@ -1984,8 +2017,9 @@ def _normalize_time_probe(locale: str) -> tuple[int, dict]:
     offered_generated = any(
         f"time-rule:{locale}" in str(item["provenance"]).split("+") for item in candidates
     )
+    routed_locale = locale in _GENERATED_TIME_LOCALES - {"de_DE"}
     expected_selected = (
-        locale not in {"en_US", "de_DE"}
+        routed_locale
         and (
             locale,
             probe,
@@ -2003,11 +2037,16 @@ def _normalize_time_probe(locale: str) -> tuple[int, dict]:
         "expected_selected_generated": expected_selected,
         "candidates": candidates,
         "events": {key: after[key] - before[key] for key in before},
-        "bundle_available": time_rule_events is not None,
+        "bundle_available": locale in _GENERATED_TIME_LOCALES,
     }
 
 
-def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path: Path) -> dict:
+def _runtime_child(
+    kind: str,
+    locale: str | None,
+    nemo_root: Path,
+    checked: Path | Mapping[str, Path],
+) -> dict:
     _refuse_tracemalloc()
     if kind == "first":
         assert locale is not None
@@ -2038,7 +2077,7 @@ def _runtime_child(kind: str, locale: str | None, nemo_root: Path, checked_path:
             "prewarm_total_ns": time.perf_counter_ns() - started,
             "order": list(order),
         }
-    workloads = _workloads(nemo_root, checked_path)
+    workloads = _workloads(nemo_root, checked)
     sequential: dict[str, int] = {}
     started_total = time.perf_counter_ns()
     for item in GATE_LOCALES:
@@ -2111,7 +2150,7 @@ def _median_range(values: Sequence[int]) -> dict[str, int]:
 def _runtime_once(
     repo: Path,
     nemo_root: Path,
-    checked_path: Path,
+    checked: Path | Mapping[str, Path],
     *,
     include_prewarm: bool,
 ) -> dict:
@@ -2119,6 +2158,11 @@ def _runtime_once(
     date_probes = {}
     fraction_probes = {}
     time_probes = {}
+    checked_arguments = [
+        argument
+        for locale, path in _checked_paths(checked).items()
+        for argument in ("--checked", f"{locale}={path}")
+    ]
     for locale in GATE_LOCALES:
         payload = _child_command(
             "_runtime-child",
@@ -2128,8 +2172,7 @@ def _runtime_once(
             locale,
             "--nemo-root",
             str(nemo_root),
-            "--checked",
-            str(checked_path),
+            *checked_arguments,
             repo=repo,
         )
         first_hits[locale] = payload["first_hit_ns"]
@@ -2142,8 +2185,7 @@ def _runtime_once(
         "combined",
         "--nemo-root",
         str(nemo_root),
-        "--checked",
-        str(checked_path),
+        *checked_arguments,
         repo=repo,
     )
     combined["first_hit_ns"] = first_hits
@@ -2157,8 +2199,7 @@ def _runtime_once(
             "prewarm",
             "--nemo-root",
             str(nemo_root),
-            "--checked",
-            str(checked_path),
+            *checked_arguments,
             repo=repo,
         )
         if prewarm_result.get("prewarm_available"):
@@ -2209,11 +2250,16 @@ def _runtime_report(runs: Sequence[dict]) -> dict:
     }
 
 
-def runtime(nemo_root: Path, out_dir: Path, checked_path: Path, repeat: int) -> dict:
+def runtime(
+    nemo_root: Path,
+    out_dir: Path,
+    checked: Path | Mapping[str, Path],
+    repeat: int,
+) -> dict:
     _refuse_tracemalloc()
     runs = []
     for run_number in range(1, repeat + 1):
-        combined = _runtime_once(REPO, nemo_root, checked_path, include_prewarm=True)
+        combined = _runtime_once(REPO, nemo_root, checked, include_prewarm=True)
         combined["run"] = run_number
         runs.append(combined)
         print(f"runtime {run_number}/{repeat}", file=sys.stderr, flush=True)
@@ -2230,7 +2276,7 @@ def runtime_pair(
     head_repo: Path,
     nemo_root: Path,
     out_dir: Path,
-    checked_path: Path,
+    checked: Path | Mapping[str, Path],
     repeat: int,
 ) -> tuple[dict, dict]:
     """Measure fresh base/head processes in alternating order."""
@@ -2241,7 +2287,7 @@ def runtime_pair(
             run = _runtime_once(
                 repo,
                 nemo_root,
-                checked_path,
+                checked,
                 include_prewarm=True,
             )
             run["run"] = run_number
@@ -2550,18 +2596,18 @@ def _parser() -> argparse.ArgumentParser:
     coverage_parser = subparsers.add_parser("coverage")
     coverage_parser.add_argument("--nemo-root", type=Path, required=True)
     coverage_parser.add_argument("--out-dir", type=Path, required=True)
-    coverage_parser.add_argument("--checked", type=Path, default=CHECKED_PT_PT)
+    coverage_parser.add_argument("--checked", action="append", default=[])
     runtime_parser = subparsers.add_parser("runtime")
     runtime_parser.add_argument("--nemo-root", type=Path, required=True)
     runtime_parser.add_argument("--out-dir", type=Path, required=True)
-    runtime_parser.add_argument("--checked", type=Path, default=CHECKED_PT_PT)
+    runtime_parser.add_argument("--checked", action="append", default=[])
     runtime_parser.add_argument("--repeat", type=int, default=5)
     runtime_pair_parser = subparsers.add_parser("runtime-pair")
     runtime_pair_parser.add_argument("--base-repo", type=Path, required=True)
     runtime_pair_parser.add_argument("--head-repo", type=Path, required=True)
     runtime_pair_parser.add_argument("--nemo-root", type=Path, required=True)
     runtime_pair_parser.add_argument("--out-dir", type=Path, required=True)
-    runtime_pair_parser.add_argument("--checked", type=Path, default=CHECKED_PT_PT)
+    runtime_pair_parser.add_argument("--checked", action="append", default=[])
     runtime_pair_parser.add_argument("--repeat", type=int, default=5)
     soak_parser = subparsers.add_parser("soak")
     soak_parser.add_argument("--out-dir", type=Path, required=True)
@@ -2596,24 +2642,43 @@ def _parser() -> argparse.ArgumentParser:
     child.add_argument("--kind", choices=("first", "combined", "prewarm"), required=True)
     child.add_argument("--locale")
     child.add_argument("--nemo-root", type=Path, required=True)
-    child.add_argument("--checked", type=Path, required=True)
+    child.add_argument("--checked", action="append", default=[])
     subparsers.add_parser("_soak-child")
     return parser
 
 
+def _parse_checked(arguments: Sequence[str]) -> dict[str, Path]:
+    result = {"pt_PT": CHECKED_PT_PT}
+    explicit = set()
+    for argument in arguments:
+        if "=" in argument:
+            locale, raw_path = argument.split("=", 1)
+        else:
+            locale, raw_path = "pt_PT", argument
+        locale = canonical_locale(locale)
+        if locale not in GATE_LOCALES:
+            raise ValueError(f"checked workload locale is not in GATE_LOCALES: {locale}")
+        if locale in explicit:
+            raise ValueError(f"duplicate checked workload locale: {locale}")
+        result[locale] = Path(raw_path)
+        explicit.add(locale)
+    return result
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    checked = _parse_checked(args.checked) if hasattr(args, "checked") else None
     if args.command == "coverage":
-        coverage(args.nemo_root, args.out_dir, args.checked)
+        coverage(args.nemo_root, args.out_dir, checked)
     elif args.command == "runtime":
-        runtime(args.nemo_root, args.out_dir, args.checked, args.repeat)
+        runtime(args.nemo_root, args.out_dir, checked, args.repeat)
     elif args.command == "runtime-pair":
         runtime_pair(
             args.base_repo,
             args.head_repo,
             args.nemo_root,
             args.out_dir,
-            args.checked,
+            checked,
             args.repeat,
         )
     elif args.command == "soak":
@@ -2669,7 +2734,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         }
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     elif args.command == "_runtime-child":
-        print(json.dumps(_runtime_child(args.kind, args.locale, args.nemo_root, args.checked)))
+        print(json.dumps(_runtime_child(args.kind, args.locale, args.nemo_root, checked)))
     elif args.command == "_soak-child":
         print(json.dumps(_soak_child()))
     return 0

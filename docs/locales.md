@@ -49,12 +49,13 @@ API, but they are not release-qualified.
 
 ### 1. Probe the baseline
 
-Choose the canonical ICU spelling and inspect what ICU actually supplies. This command
+Choose the canonical ICU spelling and inspect what ICU actually supplies. This `nl_NL`
+example records a useful date-only baseline:
 records ICU, PyICU, and icukit versions, RBNF rules and fallback source, plural categories,
 script, and CLDR formatter availability:
 
 ```console
-export LOCALE=fr_FR
+export LOCALE=nl_NL
 export ARTIFACT_DIR="$(mktemp -d)"
 python -B tools/locale_recipe.py probe --locale "$LOCALE" --out "$ARTIFACT_DIR/probe.json"
 python -c 'import os, frend; print(repr(frend.normalize("123", locale=os.environ["LOCALE"])))'
@@ -63,20 +64,39 @@ python -c 'import os, frend; print(repr(frend.normalize("123", locale=os.environ
 `tools/locale_recipe.py` only has the `probe` command in 0.1.0. It does not register or
 build a locale.
 
-If the ICU baseline is enough, no package registration is needed. To make the locale a
-checked service profile, add it to the appropriate language entry in `LOCALES` in
-`tools/locale_gate.py` (and therefore `GATE_LOCALES`), add source-checked fixtures, and
-update the tests that pin the eleven-locale population. Add a locale directory such as
-`frend/data/fr_FR` only when the locale needs package data. A `lexical.json` entry must
-have `schema_version`, the matching `locale`, `source`, and nonempty `forms`; every form
-has exactly a `value` and a specific `why`.
+If the ICU baseline is enough, no package registration is needed. Add a locale directory
+such as `frend/data/<locale>` only when the locale needs package data. A `lexical.json`
+entry must have `schema_version`, the matching `locale`, `source`, and nonempty `forms`;
+every form has exactly a `value` and a specific `why`.
+
+Making a locale a checked service profile is a separate, exact population change. Add
+the locale to every item below in one change:
+
+- the appropriate language entry in `LOCALES` in `tools/locale_gate.py`, which derives
+  `GATE_LOCALES`;
+- `tools/date_latency_inputs.json`, `tools/fraction_latency_inputs.json`, and
+  `tools/time_latency_inputs.json`; the runtime gate requires each manifest to name
+  exactly `GATE_LOCALES`, even when the locale adds only date rules, because the other
+  probes verify the unchanged ICU baseline;
+- `LOCALES` in `tests/test_service_locales.py` and the service-profile matrix in
+  `README.md`, plus the checked-profile population sentence in this guide;
+  `tests/test_project_metadata.py` checks that the code and README populations agree;
+- either the language's NeMo fixture workload or a checked TSV workload described under
+  [Gate setup](#gate-setup).
+
+The date composition benchmark also reads `tools/date_latency_inputs.json`; use a probe
+with a full-span year, month, and day detection. The fraction manifest needs `fraction`
+and `percent` probes, and the time manifest needs one full-span clock probe. Run the
+focused tests for those three manifests before the resource gates.
 
 ### 2. Add only the rule families you can support
 
 Add the locale and family to `GENERATED_RULE_CAPABILITIES` in
 `frend/generated_rule_locales.py`. That declaration controls builders and runtime
-loaders; do not declare a family until its source document, compiled bundle, and tests
-exist.
+loaders, so the builder cannot create a new locale until the declaration exists. Prepare
+the source document and tests, then declare the capability, build the compiled bundle,
+and run its `--check` in the same change. Do not submit a declaration without its source,
+compiled bundle, and tests.
 
 | Family | Source declaration | Runtime bundle | Builder |
 | --- | --- | --- | --- |
@@ -124,9 +144,11 @@ for every distributed source or derivative.
 
 ### 4. Build and verify bundles
 
-Run the builder without `--check` after editing a source declaration. Then run its
-`--check` mode, which recompiles in memory and compares the checked-in runtime artifact.
-Run all affected builders; the commands are intentionally explicit:
+After preparing the source declaration, add the capability declaration, run the builder
+without `--check`, and immediately run its `--check` mode, which recompiles in memory and
+compares the checked-in runtime artifact. Declaration, generated file, and successful
+check travel together before submission. Run all affected builders; the commands are
+intentionally explicit:
 
 ```console
 python -B tools/build_date_rules.py
@@ -208,6 +230,57 @@ external fixture checkout, and output directories outside both repositories. The
 tools write reports; inspect their `failures`, `breached`, and negative-flip rows rather
 than treating process success alone as evidence.
 
+### Gate setup
+
+Use the public NVIDIA NeMo text-processing fixture repository. Clone it outside frend,
+record the revision used by the qualification report, and point `NEMO_ROOT` at the
+language directories under its test tree:
+
+```console
+git clone https://github.com/NVIDIA/NeMo-text-processing.git /path/to/NeMo-text-processing
+export NEMO_ROOT=/path/to/NeMo-text-processing/tests/nemo_text_processing
+git -C /path/to/NeMo-text-processing rev-parse HEAD
+```
+
+`HEAD_REPO` is the candidate checkout. `BASE_REPO` is a separate clean worktree at the
+commit the candidate is compared against; it must not be the candidate directory at an
+older in-memory state. `BASE_GATE` and `HEAD_GATE` are separate output directories, and
+`ARTIFACT_DIR` holds comparisons and benchmarks. Set and verify them before running a
+gate:
+
+```console
+export HEAD_REPO="$PWD"
+export BASE_REPO=/path/to/clean/base-worktree
+export ARTIFACT_DIR="$(mktemp -d)"
+export BASE_GATE="$ARTIFACT_DIR/base-gate"
+export HEAD_GATE="$ARTIFACT_DIR/head-gate"
+test -f "$HEAD_REPO/tools/locale_gate.py"
+test -f "$BASE_REPO/pyproject.toml"
+test -d "$NEMO_ROOT"
+```
+
+The candidate gate program must drive both coverage arms. That gives base and head the
+same new locale population and probe manifests while `PYTHONPATH` selects the frend code
+under measurement. `runtime-pair` performs the same alternating base/head isolation
+internally; do not replace it with two unrelated `runtime` runs.
+
+NeMo has no fixture directory for every language. If
+`$NEMO_ROOT/<language>/data_text_normalization` is absent or empty, add a repository TSV
+such as `tests/data/locales/<locale>_checked.tsv` with exactly these columns:
+
+```text
+written	spoken	class	source
+02-03-2003	twee maart tweeduizenddrie	date	Exact public source locator and claim
+```
+
+Every row needs a nonempty, reviewable source locator. Repeat a written form on separate
+rows when multiple spoken targets are admissible. Set
+`CHECKED_WORKLOAD="$HEAD_REPO/tests/data/locales/${LOCALE}_checked.tsv"` and pass the file
+to coverage and runtime with `--checked "$LOCALE=$CHECKED_WORKLOAD"`. The built-in
+`pt_PT` checked workload remains included. A trial-only row must say `TRIAL` in its
+source field and must not be committed. Confirm every new service locale has cases in
+the resulting coverage report; a zero-row locale is not qualified.
+
 ### Unit, lint, and path gates
 
 ```console
@@ -238,9 +311,9 @@ Run coverage once from the base and once from the candidate against the same ext
 NeMo fixture checkout. NeMo remains report-only compatibility evidence:
 
 ```console
-PYTHONPATH="$BASE_REPO" python -B "$BASE_REPO/tools/locale_gate.py" coverage --nemo-root "$NEMO_ROOT" --out-dir "$BASE_GATE"
-PYTHONPATH="$HEAD_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" coverage --nemo-root "$NEMO_ROOT" --out-dir "$HEAD_GATE"
-python -B tools/locale_gate.py compare --base "$BASE_GATE/coverage.json" --head "$HEAD_GATE/coverage.json" --require-no-negative-flips --out "$ARTIFACT_DIR/coverage-comparison.json"
+PYTHONPATH="$BASE_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" coverage --nemo-root "$NEMO_ROOT" --out-dir "$BASE_GATE" --checked "$LOCALE=$CHECKED_WORKLOAD"
+PYTHONPATH="$HEAD_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" coverage --nemo-root "$NEMO_ROOT" --out-dir "$HEAD_GATE" --checked "$LOCALE=$CHECKED_WORKLOAD"
+PYTHONPATH="$HEAD_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" compare --base "$BASE_GATE/coverage.json" --head "$HEAD_GATE/coverage.json" --require-no-negative-flips --out "$ARTIFACT_DIR/coverage-comparison.json"
 ```
 
 The comparison must show the intended reading is offered, no unexplained negative flip,
@@ -266,9 +339,9 @@ Collect alternating fresh-process base/head measurements and make the locale gat
 its embedded latency and RSS ceilings:
 
 ```console
-python -B tools/locale_gate.py runtime-pair --base-repo "$BASE_REPO" --head-repo "$HEAD_REPO" --nemo-root "$NEMO_ROOT" --out-dir "$ARTIFACT_DIR/runtime-pair"
-python -B tools/locale_gate.py soak-pair --base-repo "$BASE_REPO" --head-repo "$HEAD_REPO" --out-dir "$ARTIFACT_DIR/soak-pair" --unseen
-python -B tools/locale_gate.py compare --base "$BASE_GATE/coverage.json" --head "$HEAD_GATE/coverage.json" --base-runtime "$ARTIFACT_DIR/runtime-pair/base/runtime.json" --head-runtime "$ARTIFACT_DIR/runtime-pair/head/runtime.json" --base-soak "$ARTIFACT_DIR/soak-pair/base/soak.json" --head-soak "$ARTIFACT_DIR/soak-pair/head/soak.json" --require-no-negative-flips --out "$ARTIFACT_DIR/resource-comparison.json"
+PYTHONPATH="$HEAD_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" runtime-pair --base-repo "$BASE_REPO" --head-repo "$HEAD_REPO" --nemo-root "$NEMO_ROOT" --out-dir "$ARTIFACT_DIR/runtime-pair" --checked "$LOCALE=$CHECKED_WORKLOAD"
+PYTHONPATH="$HEAD_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" soak-pair --base-repo "$BASE_REPO" --head-repo "$HEAD_REPO" --out-dir "$ARTIFACT_DIR/soak-pair" --unseen
+PYTHONPATH="$HEAD_REPO" python -B "$HEAD_REPO/tools/locale_gate.py" compare --base "$BASE_GATE/coverage.json" --head "$HEAD_GATE/coverage.json" --base-runtime "$ARTIFACT_DIR/runtime-pair/base/runtime.json" --head-runtime "$ARTIFACT_DIR/runtime-pair/head/runtime.json" --base-soak "$ARTIFACT_DIR/soak-pair/base/soak.json" --head-soak "$ARTIFACT_DIR/soak-pair/head/soak.json" --require-no-negative-flips --out "$ARTIFACT_DIR/resource-comparison.json"
 ```
 
 Also run the absolute composition benchmark for every affected family:

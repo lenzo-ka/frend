@@ -22,11 +22,11 @@ _API_REFERENCE = _REPO / "docs" / "api.md"
 
 
 def _service_profile_rows(readme: str) -> tuple[tuple[str, str], ...]:
-    section = readme.partition("### Eleven-locale service profile")[2].partition("\n### ")[0]
+    section = readme.partition("### Checked locale service profile")[2].partition("\n### ")[0]
     return tuple(re.findall(r"^\| `([^`]+)` \| (.+) \|$", section, re.MULTILINE))
 
 
-def test_readme_lists_checked_eleven_locale_service_profile():
+def test_readme_lists_checked_locale_service_profile():
     readme = _README.read_text(encoding="utf-8")
     documented = _service_profile_rows(readme)
 
@@ -161,7 +161,10 @@ def test_pep639_license_metadata_and_notice_files_are_packaged():
     project = configuration["project"]
 
     assert configuration["build-system"]["requires"][0] == "setuptools>=77.0"
-    assert project["license"] == "BSD-2-Clause AND CC-BY-SA-4.0"
+    assert project["license"] == (
+        "BSD-2-Clause AND CC-BY-SA-4.0 AND Unicode-3.0 AND Apache-2.0 AND "
+        "LicenseRef-Festival AND LicenseRef-IANA-public"
+    )
     assert project["license-files"] == [
         "LICENSE",
         "THIRD_PARTY_NOTICES.md",
@@ -172,6 +175,8 @@ def test_pep639_license_metadata_and_notice_files_are_packaged():
     assert {path.name for path in (_REPO / "LICENSES").glob("*.txt")} == {
         "Apache-2.0.txt",
         "CC-BY-SA-4.0.txt",
+        "LicenseRef-Festival.txt",
+        "LicenseRef-IANA-public.txt",
         "Unicode-3.0.txt",
     }
 

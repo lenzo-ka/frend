@@ -109,9 +109,9 @@ Set `FREND_GOOGLE_TN_PROFILE_PATH` to the built `acronym_surfaces.json` and
 `FREND_GOOGLE_TN_BRITISHISMS_PATH` to the matching `britishisms.json`. The exact build
 and verification commands are in [the data guide](frend/data/README.md#enacronym_priorsjson).
 
-### Eleven-locale service profile
+### Checked locale service profile
 
-All eleven checked locales receive the common ICU-backed recognition surface. The
+All checked locales receive the common ICU-backed recognition surface. The
 matrix lists frend's additional measured data or generated linguistic bundles. These
 are checked service profiles, not an accepted-locale allowlist.
 
@@ -216,10 +216,13 @@ callers that depend on other output details should pin a version and qualify upg
 
 ## License
 
-frend is distributed under `BSD-2-Clause AND CC-BY-SA-4.0`: the original code and
-project-authored data use the [BSD 2-Clause License](LICENSE), while Google-TN-derived
-data files use CC BY-SA 4.0. See [Third-party notices](THIRD_PARTY_NOTICES.md) for the
-file-level scope and all required license and attribution notices.
+frend is distributed under `BSD-2-Clause AND CC-BY-SA-4.0 AND Unicode-3.0 AND
+Apache-2.0 AND LicenseRef-Festival AND LicenseRef-IANA-public`. The original code and
+project-authored data use the [BSD 2-Clause License](LICENSE); shipped third-party data
+and derivatives retain their applicable terms. See [Third-party
+notices](THIRD_PARTY_NOTICES.md) for the generated file-level scope and all required
+license and attribution notices, and [`LICENSES/`](LICENSES/) for every included license
+text.
 
 ## Data provenance
 

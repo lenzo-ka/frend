@@ -1,4 +1,4 @@
-"""Service-startup and resolver-cost contracts for the eleven-locale profile."""
+"""Service-startup and resolver-cost contracts for the checked locale profile."""
 
 from __future__ import annotations
 
