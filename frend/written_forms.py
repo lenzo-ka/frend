@@ -11,9 +11,8 @@ speech stays ICU's (numbers, era names) or the corpus's:
 - numeric runs with two or more dots ("3.12.1"), as ``number:dotted-run``. Bare
   versions use the version reader's component and separator readings; structural
   IPv4 addresses use the corpus-measured electronic digit and dot readings. Valid
-  dotted calendar dates are not claimed: icukit still has a recognition gap for
-  ``2009.01.22``, ``3.28.2016``, ``10.15.2010``, ``1999.05.11``, and
-  ``1925.05.29``, so these keep the main pipeline's existing readings;
+  English Y.M.D and unambiguous M.D.Y calendar dates fill icukit's recognition gap
+  as ``date:dotted`` and use frend's existing date composition;
 - an era written with dotted letters, attached to the year, or before it ("500
   B.C.", "4AD", "A.D. 1066"), as ``date:era``; "500 BC." is ICU's "500 BC" and a
   sentence-final period, left to icukit.
@@ -93,6 +92,38 @@ class DottedNumericValue:
                 continue
             return True
         return False
+
+    @property
+    def date_fields(self) -> tuple[tuple[str, int], ...] | None:
+        """A calendar-valid English dotted date outside icukit's D.M.Y coverage.
+
+        A four-digit first group makes Y.M.D unambiguous. M.D.Y is claimed only when
+        its day is above 12: otherwise the same surface is a valid D.M.Y form already
+        read by icukit. Two-digit final years follow icukit's 2000-based interpretation.
+        """
+        if len(self.groups) != 3:
+            return None
+
+        first, second, third = self.groups
+        if len(first) == 4 and 1 <= len(second) <= 2 and 1 <= len(third) <= 2:
+            year, month, day = int(first), int(second), int(third)
+        elif (
+            len(third) in (2, 4)
+            and 1 <= len(first) <= 2
+            and 1 <= len(second) <= 2
+            and int(second) > 12
+        ):
+            year, month, day = int(third), int(first), int(second)
+            if len(third) == 2:
+                year += 2000
+        else:
+            return None
+
+        try:
+            date(year, month, day)
+        except ValueError:
+            return None
+        return (("y", year), ("M", month), ("d", day))
 
 
 def _era_index(text: str) -> int:
@@ -193,6 +224,32 @@ class WrittenFormsDetector:
         for match in _DOTTED_NUMERIC_RUN.finditer(text):
             groups = tuple(match.group().split("."))
             value = DottedNumericValue(groups)
+            date_fields = value.date_fields
+            if self.locale.partition("_")[0] == "en" and date_fields is not None:
+                positions = tuple(re.finditer(r"\d+", match.group()))
+                names = ("y", "M", "d") if len(groups[0]) == 4 else ("M", "d", "y")
+                fields = dict(date_fields)
+                found.append(
+                    _detection(
+                        text,
+                        match.start(),
+                        match.end(),
+                        "date:dotted",
+                        DateTimeValue(date_fields, "gregorian"),
+                        tuple(
+                            Capture(
+                                name,
+                                match.start() + position.start(),
+                                match.start() + position.end(),
+                                position.group(),
+                                fields[name],
+                                "numeric",
+                            )
+                            for name, position in zip(names, positions, strict=True)
+                        ),
+                    )
+                )
+                continue
             if value.is_date:
                 continue
             found.append(

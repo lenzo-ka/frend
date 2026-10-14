@@ -94,19 +94,18 @@ def test_dotted_numeric_runs_leave_decimals_and_dates_to_their_readers(written, 
 
 
 @pytest.mark.parametrize(
-    "written",
+    ("written", "spoken"),
     [
-        "2009.01.22",
-        "3.28.2016",
-        "10.15.2010",
-        "1999.05.11",
-        "1925.05.29",
+        ("2009.01.22", "the twenty second of january two thousand nine"),
+        ("3.28.2016", "march twenty eighth twenty sixteen"),
+        ("10.15.2010", "october fifteenth twenty ten"),
+        ("1999.05.11", "the eleventh of may nineteen ninety nine"),
+        ("1925.05.29", "the twenty ninth of may nineteen twenty five"),
     ],
 )
-def test_dotted_calendar_dates_keep_their_main_readings(written):
-    """These valid dates expose an icukit recognition gap, so frend leaves them alone."""
-    assert _spans(written) == []
-    assert normalize(written) == written
+def test_english_dotted_calendar_dates_fill_the_icukit_gap(written, spoken):
+    assert _spans(written) == [("date:dotted", written)]
+    assert normalize_spoken(normalize(written)) == spoken
 
 
 @pytest.mark.parametrize(
@@ -123,6 +122,12 @@ def test_nondate_dotted_numeric_runs_keep_their_readings(written, spoken):
     assert normalize(written) == spoken
 
 
+@pytest.mark.parametrize("written", ["2023.02.29", "4.31.2024", "3.32.2016"])
+def test_invalid_dotted_dates_keep_the_version_reading(written):
+    assert _spans(written) == [("number:dotted-run", written)]
+    assert "point" in normalize_spoken(normalize(written))
+
+
 @pytest.mark.parametrize(
     ("written", "is_date"),
     [
@@ -136,6 +141,21 @@ def test_nondate_dotted_numeric_runs_keep_their_readings(written, spoken):
 )
 def test_dotted_date_classification_uses_structure_and_calendar_validity(written, is_date):
     assert DottedNumericValue(tuple(written.split("."))).is_date is is_date
+
+
+@pytest.mark.parametrize(
+    ("written", "fields"),
+    [
+        ("2024.2.29", (("y", 2024), ("M", 2), ("d", 29))),
+        ("2.29.24", (("y", 2024), ("M", 2), ("d", 29))),
+        ("29.2.2024", None),
+        ("3.12.2016", None),
+        ("2023.2.29", None),
+        ("3.12.1", None),
+    ],
+)
+def test_only_english_dotted_date_gaps_supply_date_fields(written, fields):
+    assert DottedNumericValue(tuple(written.split("."))).date_fields == fields
 
 
 def test_era_written_first_is_said_first():
