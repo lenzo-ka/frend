@@ -1,7 +1,12 @@
 # Changelog
 
-## Unreleased
-- Require icukit 0.10.0 directly. `normalize` exposes its attributed sentence base,
+## 0.1.0 (unreleased)
+
+frend 0.1.0 introduces a text-normalization front end that recognizes formatted
+values, resolves overlapping readings, and verbalizes them for `en_US`, `es_MX`,
+`es_ES`, `fr_FR`, `de_DE`, `pt_BR`, `it_IT`, `zh_CN`, `ko_KR`, `ja_JP`, and `pt_PT`.
+
+- Require icukit 0.10.1 directly. `normalize` exposes its attributed sentence base,
   1,024-code-point production bound, and offset-preserving reflow modes; forced
   boundaries are never merged back through frend protections. Regex resource-limit
   errors remain visible, and generated CLDR literal-hour readers participate in

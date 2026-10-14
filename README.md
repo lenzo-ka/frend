@@ -31,7 +31,28 @@ URLs, email addresses and bare domains are recognized by frend itself (ICU has n
 recognition, and icukit leaves them to frend), and spoken as the corpus is measured to
 say them.
 
-### Usage
+## Install
+
+Once frend is published on PyPI, install it with `python -m pip install frend`. After
+`v0.1.0` is tagged and until PyPI publication, install the tagged release directly with
+`python -m pip install "frend @ git+https://github.com/lenzo-ka/frend.git@v0.1.0"`.
+frend requires Python 3.12 or newer and icukit 0.10.1 or newer.
+
+## Quick start
+
+```python
+import frend
+
+print(repr(frend.normalize("Meet me at 5:30. It costs $12.50.")))
+```
+
+Expected output (the spaces are reader output and are significant):
+
+```text
+' meet   me   at   five thirty .  it   costs   twelve dollars and fifty cents .'
+```
+
+## API usage
 
 ```python
 import frend
@@ -84,32 +105,43 @@ profile data. Applying the `google-tn` behavior to `normalize` does load profile
 requires both corpus-derived tables, built from the same verified Google TN inventory.
 Configure both local tables explicitly before using that profile:
 
-```sh
-FREND_GOOGLE_TN_PROFILE_PATH=acronym_surfaces.json \
-FREND_GOOGLE_TN_BRITISHISMS_PATH=britishisms.json \
-python - <<'PY'
-import frend
-
-behavior = frend.resolve_behavior(["google-tn"])
-print(frend.normalize("****", **behavior.kwargs))
-PY
-```
+Set `FREND_GOOGLE_TN_PROFILE_PATH` to the built `acronym_surfaces.json` and
+`FREND_GOOGLE_TN_BRITISHISMS_PATH` to the matching `britishisms.json`. The exact build
+and verification commands are in [the data guide](frend/data/README.md#enacronym_priorsjson).
 
 ### Eleven-locale service profile
 
-The checked service profile covers these eleven locales, in this order:
+All eleven checked locales receive the common ICU-backed recognition surface. The
+matrix lists frend's additional measured data or generated linguistic bundles. These
+are checked service profiles, not an accepted-locale allowlist.
 
-- `en_US`
-- `es_MX`
-- `es_ES`
-- `fr_FR`
-- `de_DE`
-- `pt_BR`
-- `it_IT`
-- `zh_CN`
-- `ko_KR`
-- `ja_JP`
-- `pt_PT`
+| Locale | Checked frend coverage beyond common ICU-backed recognition |
+| --- | --- |
+| `en_US` | English measured/default tables; measured telephone route |
+| `es_MX` | generated date, time, fraction, and money bundles |
+| `es_ES` | generated date, time, and fraction bundles |
+| `fr_FR` | generated date, time, fraction, money, and telephone bundles |
+| `de_DE` | generated date, time, fraction, and electronic bundles |
+| `pt_BR` | generated date, time, fraction, money, and telephone bundles |
+| `it_IT` | generated date, time, fraction, and money bundles |
+| `zh_CN` | generated date, time, and fraction bundles |
+| `ko_KR` | generated date, time, fraction, and money bundles |
+| `ja_JP` | generated date, time, and fraction bundles |
+| `pt_PT` | generated date, time, fraction, and telephone bundles |
+
+Other ICU locale identifiers are accepted through ICU's fallback behavior on a
+best-effort basis. They are not part of the checked service profile, so their available
+readers and output can differ and are not release-qualified.
+
+### icukit disk cache
+
+On first use, icukit may compute deterministic Python detector tables and store their
+marshal snapshots in the platform user cache directory (normally
+`$XDG_CACHE_HOME/icukit` on Linux, or the platform equivalent). ICU objects, detector
+instances, and application text remain in memory. Set `ICUKIT_CACHE_DIR` to choose
+another cache root, or `ICUKIT_CACHE=0` to disable both disk reads and writes. Because
+the cache uses Python marshal files, use only a directory trusted against modification
+by other users.
 
 ### Input limits
 
@@ -166,41 +198,47 @@ outside frend; a caller may pass the returned words to ipakit.
 
 Evaluation definitions, frozen results, and reproduction commands are in [METRICS.md](METRICS.md).
 
+## API reference
+
+[The public API reference](docs/api.md) lists every name exported by `frend`, with one
+line describing its contract. The primary convenience API is `normalize`; request
+`offsets=True` when source/output alignment and fold provenance are needed.
+
+## Stability
+
+frend 0.x is alpha software. Public APIs and normalization output may change between
+minor releases. The exact outputs covered by the test suite are the release contract;
+callers that depend on other output details should pin a version and qualify upgrades.
+
+## License
+
+frend is distributed under `BSD-2-Clause AND CC-BY-SA-4.0`: the original code and
+project-authored data use the [BSD 2-Clause License](LICENSE), while Google-TN-derived
+data files use CC BY-SA 4.0. See [Third-party notices](THIRD_PARTY_NOTICES.md) for the
+file-level scope and all required license and attribution notices.
+
+## Data provenance
+
+[Third-party notices](THIRD_PARTY_NOTICES.md) summarizes every shipped third-party
+source, license, attribution, and modification. [The data guide](frend/data/README.md)
+records the per-table inputs, held-out splits, builders, and provenance policy.
+
 ## Development
 
-```
-pip install -e ".[dev]"
-pytest
-ruff check . && ruff format --check .
-```
+Install an editable development checkout with `python -m pip install -e ".[dev]"`.
+Run the suite with `python -m pytest`, lint with `ruff check .`, and check formatting
+with `ruff format --check .`.
 
 The sibling repos (tiergraph, icukit, ipakit) may be installed editable during development.
 CI tests compatible released dependencies and, in a separate floor job, explicitly tests
-icukit 0.10.0.
+icukit 0.10.1.
 
 ### Reproducing the data tables
 
-The tables under `frend/data` are measured from public corpora, and each builder's
-`--check` re-derives its table from them byte for byte. To get the corpora:
-
-```
-python tools/fetch_corpora.py            # both sources, into ../tn-corpus
-python tools/fetch_corpora.py --verify   # check a copy you already have
-python tools/build_type_priors.py --check
-python tools/build_spoken_priors.py --check
-.venv/bin/python -B tools/build_grouped_id_priors.py \
-  --locale en_US --source-id google/tn-en_with_types --pool training \
-  --receipt /tmp/frend-grouped-id-priors-rebuild.json
-.venv/bin/python -B tools/build_grouped_id_priors.py --check \
-  --locale en_US --source-id google/tn-en_with_types --pool training \
-  --receipt /tmp/frend-grouped-id-priors-check.json
-```
-
-`tools/corpora.json` pins every source by sha256: the Google/Sproat English
-text-normalization corpus from Kaggle (CC BY-SA 4.0; about 3.9 GB, 20 GB unpacked; no
-account needed), and the English text-normalization test tables of NVIDIA
-NeMo-text-processing at a fixed commit (Apache 2.0). Pass `--root` to put them elsewhere,
-and point the builders at the shards with `FREND_TN_CORPUS_DIR`.
+The tables under `frend/data` are measured from public sources, and their builders'
+`--check` modes rederive them byte for byte. The complete corpus setup, verification,
+and builder commands live in [the data guide](frend/data/README.md); the large external
+corpora are not part of this repository or package.
 
 ## The name
 

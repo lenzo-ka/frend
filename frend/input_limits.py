@@ -18,16 +18,19 @@ __all__ = [
 # can submit a modest book or batch while a mistaken core file is refused before frend
 # allocates a node and passthrough edge for every code point.
 DEFAULT_MAX_INPUT_CHARS = 4 * 1024 * 1024
+"""Default maximum Unicode code points accepted by document-scale entry points."""
 
 # Resolution constructs at least one node and passthrough edge per code point. The
 # isolated Gutenberg timing buckets recorded in the length-bounds lane keep this at a
 # practical sentence-sized unit while leaving the document-scale ingress guard above
 # available to recognizers and callers that batch their own sentences.
 DEFAULT_MAX_UNIT_CHARS = 8 * 1024
+"""Default maximum Unicode code points in one graph-building resolution unit."""
 
 # The five Gutenberg books used to choose the sentence bound and a 10,000-sentence
 # sample of Google TN runtime-evaluation shards 90--94 all measured zero here.
 MAX_NON_TEXT_SHARE = 0.01
+"""Maximum share of non-whitespace controls and unassigned code points in input."""
 
 
 class InputValidationError(ValueError):

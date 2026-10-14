@@ -578,6 +578,35 @@ def test_every_shipped_table_names_a_shippable_source():
     assert refusals == []
 
 
+def test_third_party_notice_names_every_shipped_third_party_source():
+    notice = (_REPO / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
+    named_sources = set()
+    for path in sorted(_DATA.rglob("*")):
+        if not path.is_file() or path.name == "README.md":
+            continue
+        relative = path.relative_to(_DATA).as_posix()
+        document = _document(path)
+        if not isinstance(document, dict):
+            named_sources.update(
+                source
+                for source, entry in data_sources.SHIPPABLE_SOURCES.items()
+                if relative in entry["vendored"]
+            )
+            continue
+        provenance = document.get("provenance")
+        records = [document] + ([provenance] if isinstance(provenance, dict) else [])
+        named_sources.update(
+            data_sources.source_id(record[field], record)
+            for record in records
+            for field in ("corpus", "source")
+            if isinstance(record.get(field), str)
+        )
+
+    third_party_sources = named_sources - {"frend/curated", "lenzo/break_exceptions"}
+    assert third_party_sources
+    assert {source for source in third_party_sources if f"`{source}`" not in notice} == set()
+
+
 @pytest.mark.parametrize(
     "document",
     [

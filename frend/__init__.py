@@ -10,8 +10,6 @@ downstream phonetics system such as ipakit.
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
-
 from frend.behavior import BehaviorLoadError, ResolvedBehavior, resolve_behavior
 from frend.fold_resolve import Resolution, resolve
 from frend.input_folds import InputFold, apply_input_fold
@@ -52,6 +50,9 @@ from frend.verbalize import (
     verbalize_lattice,
 )
 from frend.work_budgets import DEFAULT_TIERGRAPH_WORK_BUDGET, BudgetExhausted
+
+__version__ = "0.1.0"
+"""The installed frend release version."""
 
 __all__ = [
     "BehaviorLoadError",

@@ -79,6 +79,7 @@ LETTER_NAME_SOURCE = "icu-name:letter"
 PROPERTY_NAME_SOURCE = "icu-name:property"
 SYMBOL_NAME_SOURCE = "icu-name:symbol"
 DEFAULT_SYMBOL_RUN_THRESHOLD = 3
+"""Default minimum adjacent-symbol count for treating a symbol run as one unit."""
 _GRAPHEME_BREAKER = Breaker("root")
 
 _COORDINATE_RE = re.compile(
