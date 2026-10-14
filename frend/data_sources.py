@@ -156,6 +156,7 @@ SHIPPABLE_SOURCES: Mapping[str, Mapping[str, object]] = MappingProxyType(
             "Rat fuer deutsche Rechtschreibung"
         ),
         "duden/online": _citation_source("Duden online"),
+        "goethe/a1-deutsch-online": _citation_source("Goethe-Institut, Deutsch Online A1"),
         "boe/gaceta": _citation_source("Boletin Oficial del Estado, Gaceta de Madrid"),
         "accademia-crusca/consulenza": _citation_source("Accademia della Crusca"),
         "rae/dpd-2": _citation_source("RAE and ASALE, Diccionario panhispanico de dudas"),

@@ -111,3 +111,34 @@ def test_legacy_ranking_uses_first_duplicate_match_and_explicit_unmatched_policy
     same = tuple(item for item in result if item.text == "same")
     assert tuple(item.provenance for item in same) == ("generated-first", "generated-second")
     assert tuple(item.weight for item in same) == (Decimal("1"), Decimal("2"))
+
+
+@pytest.mark.parametrize("provenance", ("surface:passthrough", "surface:unsupported"))
+def test_sourced_spoken_readings_rank_before_raw_surface_fallbacks(provenance):
+    generated = (
+        Alternative("spoken first", "normalization-record:first"),
+        Alternative("spoken second", "normalization-record:second"),
+    )
+    previous = (
+        Alternative("raw", provenance),
+        Alternative("legacy spoken", "lexical:locale"),
+    )
+
+    result = preserve_legacy_ranking(generated, previous, unmatched="retain")
+
+    assert tuple(item.text for item in result) == (
+        "legacy spoken",
+        "spoken first",
+        "spoken second",
+        "raw",
+    )
+
+
+def test_as_written_reading_is_not_treated_as_a_raw_passthrough():
+    result = preserve_legacy_ranking(
+        (Alternative("generated", "normalization-record:new"),),
+        (Alternative("as written", "surface:as-written"),),
+        unmatched="retain",
+    )
+
+    assert tuple(item.text for item in result) == ("as written", "generated")

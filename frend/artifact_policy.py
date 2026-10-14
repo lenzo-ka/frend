@@ -62,6 +62,15 @@ TELEPHONE_REGIONAL_POLICY = MappingProxyType(
         "max_derivations": 128,
     }
 )
+ELECTRONIC_RULE_POLICY = MappingProxyType(
+    {
+        "id": "sourced-electronic-alternatives",
+        "version": 1,
+        "max_total_alternatives": 8,
+        "weight": None,
+        "prior_provenance": None,
+    }
+)
 
 
 def strict_majority(

@@ -3114,6 +3114,26 @@ def _spoken_electronic(value: ElectronicValue, locale: str) -> tuple[SpokenAlter
     """
     from frend.electronic import load_electronic_priors
 
+    if (
+        not locale.startswith("en")
+        and locale in locales_for("electronic")
+        and value.kind == "email"
+    ):
+        from frend.electronic_rules import (
+            ElectronicInputRefusal,
+            generate_electronic_alternatives,
+        )
+
+        try:
+            return generate_electronic_alternatives(value, locale)
+        except ElectronicInputRefusal:
+            return (
+                SpokenAlternative(
+                    "".join(text for _kind, text in value.parts),
+                    "surface:unsupported",
+                ),
+            )
+
     if load_electronic_priors(locale=locale) is None:
         raise NotImplementedError(f"no measured electronic prior for {locale}")
     tlds = tld_positions(value.parts)
