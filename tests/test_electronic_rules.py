@@ -79,6 +79,18 @@ def test_new_de_email_isolated_letters_and_digits_use_private_sourced_units():
     )
 
 
+@pytest.mark.parametrize(
+    ("text", "spoken"),
+    (
+        ("max@example.de", "em a ix at e ix a em pe el e Punkt de e"),
+        ("a-b@c.de", "a Minus be at ce Punkt de e"),
+        ("Q7@x.de", "ku sieben at ix Punkt de e"),
+    ),
+)
+def test_new_de_email_sourced_spoken_reading_ranks_before_raw_surface(text, spoken):
+    assert normalize(text, locale="de_DE") == f" {spoken} "
+
+
 def test_new_email_grammar_input_retains_each_labeled_run_once_in_order():
     value = _email_detection("ab@c.de")["value"]
     [token] = electronic_grammar_input(value, "de_DE").tokens
@@ -92,7 +104,7 @@ def test_new_email_grammar_input_retains_each_labeled_run_once_in_order():
 def test_guard_surface_reading_is_retained_and_total_cap_includes_it():
     value = _email_detection("a-b@c.de")["value"]
     alternatives = generate_electronic_alternatives(value, "de_DE")
-    assert alternatives[0].text == "a-b@c.de"
+    assert alternatives[-1].text == "a-b@c.de"
     assert len(alternatives) == 5
     assert len(alternatives) <= 8
 
@@ -184,6 +196,25 @@ def test_guard_english_electronic_candidates_are_byte_identical():
             "0.0002152395171254271256257585202",
         ),
     ]
+
+
+@pytest.mark.parametrize(
+    ("locale", "expected"),
+    (
+        ("en_US", " max at example dot d e "),
+        ("es_MX", " max@example.de "),
+        ("es_ES", " max@example.de "),
+        ("fr_FR", " max@example.de "),
+        ("it_IT", " max@example.de "),
+        ("ja_JP", " max@example.de "),
+        ("ko_KR", " max@example.de "),
+        ("pt_BR", " max@example.de "),
+        ("pt_PT", " max@example.de "),
+        ("zh_CN", " max@example.de "),
+    ),
+)
+def test_guard_non_german_email_output_is_byte_identical(locale, expected):
+    assert normalize("max@example.de", locale=locale).encode() == expected.encode()
 
 
 def test_guard_electronic_capability_is_only_de_de():
